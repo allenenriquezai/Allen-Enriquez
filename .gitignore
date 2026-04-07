@@ -1,0 +1,25 @@
+# Secrets — never commit these
+.env
+credentials.json
+credentials_*.json
+token.json
+token.pickle
+token_*.pickle
+projects/**/.env
+
+# Temporary processing files
+.tmp/
+projects/**/.tmp/
+
+# Shared (personal — keep off remote)
+shared/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# macOS
+.DS_Store

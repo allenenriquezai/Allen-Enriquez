@@ -1,0 +1,21 @@
+SUBJECT: Your Bond Clean Quote — [address]
+
+[firstName],
+
+[opener]
+
+Your Bond Clean Quote is now ready (see attached file). We've included testimonials and references in the quote itself.
+
+Just a quick recap:
+- [scope_bullet_1]
+- [scope_bullet_2]
+- [scope_bullet_3]
+
+[bonus_line]
+
+P.S. Investment costs are based on the property being unfurnished and in standard Brisbane bond clean condition. We are not restoring the property to new condition — existing damage, wear and tear, and factors outside our control are not within our responsibility.
+
+If everything looks good, reply with your preferred date and we'll organise the next steps.
+
+Best,
+[senderName]

@@ -1,0 +1,147 @@
+{
+  "products": [
+    {
+      "code": "DEPOSIT",
+      "name": "Deposit",
+      "unit_price_aud": 0,
+      "unit": "item",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSMOB",
+      "name": "Mobilisation Fee",
+      "unit_price_aud": 100,
+      "unit": "item",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-BONUS SERVICE",
+      "name": "Bonus Service (Gutter/Fascia/Eaves Pressure Cleaning, Driveway Pressure Cleaning, or Full Internal House Cleaning)",
+      "unit_price_aud": 0,
+      "unit": "item",
+      "tax": "GST",
+      "notes": "Client chooses one option"
+    },
+    {
+      "code": "EPSPAINT-DAYRATE",
+      "name": "EPS Paint Day Rate Per Painter - Materials Excluded",
+      "unit_price_aud": 1300,
+      "unit": "day",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-EXT-01",
+      "name": "External Wall Painting - Low Level (Up to 3m)",
+      "unit_price_aud": 22,
+      "unit": "sqm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-EXT-02",
+      "name": "External Wall Painting - High Level (3m+)",
+      "unit_price_aud": 30,
+      "unit": "sqm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-EXT-03",
+      "name": "Fascia, Eaves & Gutter Painting",
+      "unit_price_aud": 20,
+      "unit": "lm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-EXT-04",
+      "name": "Timber Deck - Repaint or Stain",
+      "unit_price_aud": 50,
+      "unit": "sqm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-EXT-05",
+      "name": "Garage Door - Paint",
+      "unit_price_aud": 500,
+      "unit": "item",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-EXT-06",
+      "name": "Roof Painting (Tile/Metal)",
+      "unit_price_aud": 25,
+      "unit": "sqm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-EXT-07",
+      "name": "EXT-07",
+      "unit_price_aud": 0,
+      "unit": "item",
+      "tax": "GST",
+      "notes": "Custom line item — price TBD"
+    },
+    {
+      "code": "EPSPAINT-HR",
+      "name": "Hourly Rate Per Painter - Materials Excluded",
+      "unit_price_aud": 160,
+      "unit": "hour",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-INT-01",
+      "name": "Internal Wall Painting - Standard Finish",
+      "unit_price_aud": 22,
+      "unit": "sqm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-INT-02",
+      "name": "Internal Ceiling Painting - Flat White",
+      "unit_price_aud": 22,
+      "unit": "sqm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-INT-03",
+      "name": "Internal Door Painting (Both Sides)",
+      "unit_price_aud": 150,
+      "unit": "door",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-INT-04",
+      "name": "Skirting Boards - Repaint",
+      "unit_price_aud": 10,
+      "unit": "lm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-INT-05",
+      "name": "Architraves - Repaint",
+      "unit_price_aud": 9,
+      "unit": "lm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-INT-06",
+      "name": "Patch & Prep Work - Minor",
+      "unit_price_aud": 12,
+      "unit": "sqm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-INT-07",
+      "name": "Feature Wall Painting",
+      "unit_price_aud": 28,
+      "unit": "sqm",
+      "tax": "GST"
+    },
+    {
+      "code": "EPSPAINT-MISC",
+      "name": "Fix Fence Gate and Areas Damaged",
+      "unit_price_aud": 0,
+      "unit": "item",
+      "tax": "GST",
+      "notes": "Custom line item — price TBD"
+    }
+  ]
+}
