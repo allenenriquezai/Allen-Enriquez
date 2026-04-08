@@ -24,6 +24,14 @@ Straightforward, neutral, problem-focused. No fluff, no jargon.
 - Never write in long paragraphs for comms
 
 ## Workflows
-- `prospect-research.md` — find and qualify painting companies
-- `manage_google_sheet.md` — read/write prospect data to Sheets
-- `scrape_bbb.md` — scrape BBB for company data
+- `create-quote.md` — full quote pipeline (intake -> measure -> line items -> doc -> email)
+- `calculate-line-items.md` — calculate priced line items from scope
+- `measure-floor-plan.md` — extract room measurements from floor plan
+- `crm-ops.md` — Pipedrive operations (deals, stages, notes)
+- `deposit-process.md` — deposit process after client accepts
+- `follow-up-email.md` — post-quote follow-up emails
+- `qa.md` — QA checklists (quote structure + email validation)
+
+## Tools
+- `fetch_call_transcript.py` — fetch JustCall transcript for a Pipedrive deal (warm leads)
+- `process_cold_calls.py` — batch fetch/post for cold outreach leads

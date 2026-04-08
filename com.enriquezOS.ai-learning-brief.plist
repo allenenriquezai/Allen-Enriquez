@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.enriquezOS.ai-learning-brief</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3</string>
+        <string>tools/ai_learning_brief.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>7</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>PYTHONPATH</key>
+        <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/ai-learning-brief-cron.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/ai-learning-brief-cron-error.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

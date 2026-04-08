@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "Bash(python scraper.py)"
+      "Bash(python scraper.py)",
+      "Bash(find '/Users/allenenriquez/Desktop/Allen Enriquez' -type f -name *[Ss]ervice[Mm]8*)",
+      "Bash(find /Users/allenenriquez/Desktop/Allen Enriquez -type f \\\\\\(-name *.json -o -name *.js -o -name *.ts -o -name *.py -o -name *.yaml -o -name *.yml -o -name *.md \\\\\\))",
+      "WebFetch(domain:developer.servicem8.com)",
+      "mcp__mcp-registry__search_mcp_registry"
     ]
   },
   "hooks": {

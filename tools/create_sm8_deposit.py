@@ -1,28 +1,25 @@
 """
-create_sm8_deposit.py — Create a deposit (partial invoice) in SM8.
+create_sm8_deposit.py — Calculate deposit amount for a job.
 
 Usage:
     python tools/create_sm8_deposit.py --deal-id 1076
     python tools/create_sm8_deposit.py --deal-id 1076 --pct 30
+    python tools/create_sm8_deposit.py --deal-id 1076 --amount 50
 
 What it does:
-    1. Reads sm8_data.json + quote_data.json from projects/eps/.tmp/
-    2. Calculates deposit amount (default 50% of quote total, ex-GST)
-    3. Records a deposit payment against the SM8 job (default 50% of total inc-GST)
-    4. Prints the deposit amount for confirmation
+    1. Reads sm8_data.json (+ quote_data.json if using --pct) from projects/eps/.tmp/
+    2. Calculates deposit amount
+    3. Prints the SM8 job details and deposit amount to use in the SM8 UI
 
-NOTE: SM8's API records payments received (JobPayment endpoint).
-If you need SM8 to generate and send an invoice PDF to the client,
-that currently requires: SM8 UI → Job → Invoice → Partial Invoice.
-This script handles the backend record. Invoice sending = manual step for now.
+NOTE: SM8's REST API does not support creating invoices or partial invoices.
+The partial invoice must be created in the SM8 UI:
+    Billing → Send Quote → Partial Invoice → set amount → Send
 """
 
 import argparse
 import json
 import os
 import sys
-import requests
-from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -33,29 +30,7 @@ TMP_DIR = EPS_DIR / ".tmp"
 
 load_dotenv(EPS_DIR / ".env")
 
-# ── config ────────────────────────────────────────────────────────────────────
-SM8_API_KEY_CLEAN = os.getenv("SM8_API_KEY_CLEAN")
-SM8_API_KEY_PAINT = os.getenv("SM8_API_KEY_PAINT")
-SM8_BASE_URL = "https://api.servicem8.com/api_1.0"
-
-PIPELINE_API_KEYS = {
-    "EPS Clean": SM8_API_KEY_CLEAN,
-    "EPS Paint": SM8_API_KEY_PAINT,
-}
-
 DEFAULT_DEPOSIT_PCT = 50
-
-
-def sm8_post(path, api_key, payload):
-    headers = {
-        "X-API-Key": api_key,
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-    }
-    url = f"{SM8_BASE_URL}{path}"
-    r = requests.post(url, headers=headers, json=payload)
-    r.raise_for_status()
-    return r.json()
 
 
 def main():
@@ -64,28 +39,28 @@ def main():
     parser.add_argument(
         "--pct",
         type=float,
-        default=DEFAULT_DEPOSIT_PCT,
-        help=f"Deposit percentage (default: {DEFAULT_DEPOSIT_PCT})",
+        help=f"Deposit as percentage of quote total (default: {DEFAULT_DEPOSIT_PCT})",
+    )
+    parser.add_argument(
+        "--amount",
+        type=float,
+        help="Deposit as a fixed dollar amount (inc GST)",
     )
     args = parser.parse_args()
 
-    # ── load tmp data ──────────────────────────────────────────────────────────
-    sm8_path = TMP_DIR / "sm8_data.json"
-    quote_path = TMP_DIR / "quote_data.json"
+    if args.amount and args.pct:
+        print("ERROR: Use --amount or --pct, not both.")
+        sys.exit(1)
 
-    for path in [sm8_path, quote_path]:
-        if not path.exists():
-            print(f"ERROR: {path} not found.")
-            print("Run push_sm8_job.py first.")
-            sys.exit(1)
+    # ── load sm8 data ──────────────────────────────────────────────────────────
+    sm8_path = TMP_DIR / "sm8_data.json"
+    if not sm8_path.exists():
+        print(f"ERROR: {sm8_path} not found. Run push_sm8_job.py first.")
+        sys.exit(1)
 
     with open(sm8_path) as f:
         sm8_data = json.load(f)
 
-    with open(quote_path) as f:
-        quote = json.load(f)
-
-    # ── validate deal match ────────────────────────────────────────────────────
     if sm8_data["deal_id"] != args.deal_id:
         print(
             f"WARNING: sm8_data.json is for deal #{sm8_data['deal_id']}, "
@@ -95,56 +70,38 @@ def main():
         if confirm != "y":
             sys.exit(0)
 
-    sm8_uuid = sm8_data["sm8_job_uuid"]
-    pipeline = sm8_data["pipeline"]
-    api_key = PIPELINE_API_KEYS.get(pipeline)
-
-    if not api_key:
-        env_var = "SM8_API_KEY_CLEAN" if pipeline == "EPS Clean" else "SM8_API_KEY_PAINT"
-        print(f"ERROR: {env_var} is not set in .env")
-        sys.exit(1)
-
     # ── calculate deposit ──────────────────────────────────────────────────────
-    total_inc_gst = quote["total"]
-    deposit_amount = round(total_inc_gst * args.pct / 100, 2)
+    if args.amount:
+        deposit_amount = round(args.amount, 2)
+        pct_label = "fixed"
+    else:
+        quote_path = TMP_DIR / "quote_data.json"
+        if not quote_path.exists():
+            print(f"ERROR: {quote_path} not found. Use --amount for a fixed dollar deposit.")
+            sys.exit(1)
+        with open(quote_path) as f:
+            quote = json.load(f)
+        pct = args.pct if args.pct else DEFAULT_DEPOSIT_PCT
+        total_inc_gst = quote["total"]
+        deposit_amount = round(total_inc_gst * pct / 100, 2)
+        pct_label = f"{pct}%"
+        print(f"  Quote total (inc GST): ${total_inc_gst:,.2f}")
 
-    print(f"\nDeposit calculation:")
-    print(f"  Quote total (inc GST): ${total_inc_gst:,.2f}")
-    print(f"  Deposit:               {args.pct}% = ${deposit_amount:,.2f}")
-    print(f"  SM8 Job:               {sm8_data['sm8_job_number']}")
-    print(f"  Pipeline:              {pipeline}")
-
-    confirm = input("\nCreate deposit payment record in SM8? (y/N): ").strip().lower()
-    if confirm != "y":
-        print("Cancelled.")
-        sys.exit(0)
-
-    # ── create payment record in SM8 ───────────────────────────────────────────
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    payload = {
-        "job_uuid": sm8_uuid,
-        "amount": str(deposit_amount),
-        "timestamp": now,
-        "note": f"{int(args.pct)}% deposit — {quote['quote_title']}",
-    }
-
-    print("\nCreating deposit payment in SM8...")
-    sm8_post("/jobpayment.json", api_key, payload)
-    print("Payment record created.")
-
-    # ── summary ────────────────────────────────────────────────────────────────
+    # ── print instructions ─────────────────────────────────────────────────────
     print(f"""
 ─────────────────────────────────────────
-Deposit Recorded
+Deposit Invoice — Manual Step Required
 ─────────────────────────────────────────
 Deal:          #{args.deal_id}
 SM8 Job:       {sm8_data['sm8_job_number']}
-Deposit:       {args.pct}% = ${deposit_amount:,.2f}
+Pipeline:      {sm8_data['pipeline']}
+Deposit:       {pct_label} = ${deposit_amount:,.2f}
 ─────────────────────────────────────────
-NEXT STEP (manual):
-Open SM8 → find job {sm8_data['sm8_job_number']} →
-Invoices → New Partial Invoice → set amount to ${deposit_amount:,.2f}
-Send invoice to client from SM8.
+In SM8:
+  1. Open job {sm8_data['sm8_job_number']}
+  2. Billing → Send Quote → Partial Invoice
+  3. Set amount to ${deposit_amount:,.2f}
+  4. Send to client
 ─────────────────────────────────────────
 """)
 

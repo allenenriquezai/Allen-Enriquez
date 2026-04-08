@@ -1,14 +1,67 @@
-# Calculate Line Items
 
-Generate priced line items from a scope of work. Can be run standalone or as part of `/eps-quote`.
+# EPS Line Items Skill
+
+Generate priced line items from a scope of work. Output `quote_data.json`.
+
+---
+
+## Domain Knowledge
+
+### Painting pricing codes (from pricing.json)
+
+| Code | Surface | Rate | Unit |
+|---|---|---|---|
+| INT-01 | Internal walls (standard) | $22/sqm | sqm |
+| INT-02 | Internal ceilings (flat white) | $22/sqm | sqm |
+| INT-03 | Door (both sides + frame) | $150 | each |
+| INT-04 | Skirting boards | $10/lm | lm |
+| INT-05 | Architraves | $9/lm | lm |
+| INT-06 | Patch & prep (repaint with wear) | $12/sqm | sqm |
+| INT-07 | Feature wall | $28/sqm | sqm |
+| EXT-01 | External walls (low, <=3m) | $22/sqm | sqm |
+| EXT-02 | External walls (high, >3m) | $30/sqm | sqm |
+| EXT-03 | Fascia, eaves, gutters | $20/sqm | sqm |
+| EXT-04 | Timber deck | $50/sqm | sqm |
+| EXT-05 | Garage door | $500 | each |
+| EXT-06 | Roof | $25/sqm | sqm |
+| EPSMOB | Mobilisation fee | $100 | item |
+
+**Mob fee is optional** — only include if Allen says it applies. Amount may vary.
+
+### Day rate fallback
+Use when: stairwell, vaulted ceiling, heritage building, or severe damage flagged.
+- Day rate: $1,300/painter/day
+- Hourly: $160/painter/hr
+Always note why the day rate was used.
+
+### Cleaning
+**Do not use this skill for cleaning line items.** Cleaning jobs require writing `quote_data.json` manually — there is no calculator for cleaning. See the eps-quote skill, Stage 3b.
+
+### Scope tokens (for calculate_quote.py)
+`Xsqm walls`, `Xsqm ceilings`, `X doors`, `Xsqm feature wall`, `Xsqm patch`, `Xlm skirting`, `Xlm architraves`, `Xsqm external walls`, `Xsqm external walls >3m`, `Xsqm roof`, `X garage doors`, `Xlm fascia`, `Xsqm deck`
+
+---
+
+## Decision Logic
+
+| Situation | Action |
+|---|---|
+| `rooms.json` exists in `.tmp/` | Load it — use total areas as scope input |
+| No `rooms.json` | Use text scope directly from Allen |
+| Stairwell or vaulted ceiling flagged | Offer day rate option before calculating sqm |
+| Multiplier requested | Pass `--multiplier X.XX` to calculate_quote.py |
+| Custom rates requested | Pass `--rates "INT-01:25,INT-02:24"` |
+| Mob fee applies | Add `--mob AMOUNT` |
+| Cleaning job | Do not run calculator — write quote_data.json manually |
+| Multi-unit job (townhouses, levels, buildings) | Use `--components` not `--scope` |
 
 ---
 
 ## Input Required
 
 Either:
-- **`projects/eps/.tmp/rooms.json`** already exists (from `/eps-measure`), OR
-- You are given a scope directly as text (e.g. "80 sqm walls, 40 sqm ceilings, 3 doors")
+- **`projects/eps/.tmp/rooms.json`** already exists (from eps-measure), OR
+- Text scope from Allen (e.g. "80 sqm walls, 40 sqm ceilings, 3 doors")
 
 If rooms.json exists, load it. If not, use the text input.
 
@@ -21,71 +74,70 @@ Also load: `projects/eps/config/pricing.json`
 For each room in rooms.json, calculate applicable areas based on `surfaces` field:
 
 | Surface | Formula |
-|---------|---------|
-| Walls (internal, standard) | `2 × (length + width) × height` |
-| Ceiling (flat white) | `length × width` |
-| External wall ≤ 3m high | `2 × (length + width) × height` |
-| External wall > 3m high | `2 × (length + width) × height` (use EXT-02 rate) |
-| Roof (tile/metal) | `length × width` of roof footprint |
-| Fascia, eaves, gutters | `perimeter × 0.3m` (estimated depth) |
-| Feature wall | `height × width` of single wall |
+|---|---|
+| Walls (internal, standard) | `2 x (length + width) x height` |
+| Ceiling (flat white) | `length x width` |
+| External wall <=3m high | `2 x (length + width) x height` |
+| External wall >3m high | `2 x (length + width) x height` (use EXT-02 rate) |
+| Roof (tile/metal) | `length x width` of roof footprint |
+| Fascia, eaves, gutters | `perimeter x 0.3m` (estimated depth) |
+| Feature wall | `height x width` of single wall |
 
 For text-only input: use the areas as given.
 
 ---
 
-## Build Line Items
+## Tool
 
-Match each surface to a pricing code from `pricing.json`:
+**Single scope (whole property):**
+```bash
+python3 tools/calculate_quote.py \
+  --client "CLIENT_NAME" \
+  --address "PROPERTY_ADDRESS" \
+  --job-type "JOB_TYPE" \
+  --scope "220sqm walls, 110sqm ceilings, 4 doors, 60lm skirting" \
+  [--mob AMOUNT] \
+  [--multiplier 1.15] \
+  [--date YYYY-MM-DD]
+```
 
-| What | Code | Rate |
-|------|------|------|
-| Internal walls | INT-01 | $22/sqm |
-| Internal ceiling | INT-02 | $22/sqm |
-| Feature wall | INT-07 | $28/sqm |
-| Patch & prep (minor) | INT-06 | $12/sqm — use if job is a repaint with visible wear |
-| External wall (low) | EXT-01 | $22/sqm |
-| External wall (high) | EXT-02 | $30/sqm |
-| Fascia, eaves, gutters | EXT-03 | $20/sqm |
-| Timber deck | EXT-04 | $50/sqm |
-| Roof | EXT-06 | $25/sqm |
+**Multi-component (per unit / per level / per townhouse):**
+```bash
+python3 tools/calculate_quote.py \
+  --client "CLIENT_NAME" \
+  --address "PROPERTY_ADDRESS" \
+  --job-type "JOB_TYPE" \
+  --components projects/eps/.tmp/components.json \
+  [--mob AMOUNT]
+```
 
-Fixed-price items (count from floor plan or ask):
-- Door (both sides): INT-03 → $150 each
-- Garage door: EXT-05 → $500 flat
-- Skirting boards: INT-04 → $10/lm (use total room perimeter)
-- Architraves: INT-05 → $9/lm (use total room perimeter)
+`components.json`:
+```json
+[
+  {"label": "Townhouse 1", "scope": "220sqm walls, 110sqm ceilings, 4 doors"},
+  {"label": "Townhouse 2", "scope": "200sqm walls, 100sqm ceilings, 3 doors"}
+]
+```
 
-**Always include:**
-- Mobilisation fee: EPSMOB → $100 (every job)
+Use `--components` for any job with multiple units, levels, or buildings. Use `--scope` for single-property jobs only.
 
-**Day rate fallback:**
-If the job has flags (stairwell, vaulted ceiling, heritage building, severe damage), quote by:
-- Day rate: $1,300/painter/day
-- Hourly: $160/painter/hr
-Note this in the output and explain why.
+Output: `projects/eps/.tmp/quote_data.json`
+
+**After running:** add `quote_title` to `quote_data.json` manually:
+```json
+"quote_title": "Internal Painting — Full Home Repaint"
+```
+Read the `<!-- quote_title: ... -->` comment from `job_descriptions/<service_type>.md`. Required — `create_sm8_deposit.py` crashes without it.
 
 ---
 
-## Totals
+## Totals (verify after running)
 
 ```
-subtotal  = sum of all line item subtotals
-gst       = subtotal × 0.10
-total     = subtotal + gst
+subtotal = sum of all line item subtotals
+gst      = subtotal x 0.10
+total    = subtotal + gst
 ```
-
----
-
-## Job Description
-
-Write 3–5 bullet points describing what will be done. Plain English, max 5th grade reading level. Client-facing — no jargon, no measurements.
-
-Example:
-- Paint all internal walls throughout the home with two coats of premium paint
-- Paint all ceilings flat white
-- All doors painted both sides including frames
-- Minor patching and prep work included throughout
 
 ---
 
@@ -113,14 +165,6 @@ Save to `projects/eps/.tmp/quote_data.json`:
       "subtotal": 4122.80
     },
     {
-      "code": "INT-02",
-      "description": "Internal Ceiling Painting",
-      "quantity": 98.6,
-      "rate": 22.00,
-      "unit": "sqm",
-      "subtotal": 2169.20
-    },
-    {
       "code": "EPSMOB",
       "description": "Mobilisation Fee",
       "quantity": 1,
@@ -143,12 +187,21 @@ Print a clean summary:
 
 ```
 LINE ITEMS
-──────────────────────────────────────────────────────
-INT-01  Internal Walls         187.4 sqm × $22    $4,122.80
-INT-02  Internal Ceilings       98.6 sqm × $22    $2,169.20
+------------------------------------------------------
+INT-01  Internal Walls         187.4 sqm x $22    $4,122.80
+INT-02  Internal Ceilings       98.6 sqm x $22    $2,169.20
 EPSMOB  Mobilisation Fee             1 item         $100.00
-──────────────────────────────────────────────────────
+------------------------------------------------------
 Subtotal                                          $6,392.00
 GST (10%)                                           $639.20
 TOTAL                                             $7,031.20
 ```
+
+---
+
+## Success Criteria
+
+- `quote_data.json` written with all line items
+- Math verified: subtotals sum correctly, GST = 10%, total = subtotal + GST
+- Flags surfaced (day rate needed, estimated areas, etc.)
+- Ready for `qa_quote.py --data-only` in the next step

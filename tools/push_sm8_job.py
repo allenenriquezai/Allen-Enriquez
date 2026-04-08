@@ -18,6 +18,7 @@ import argparse
 import json
 import os
 import sys
+import uuid
 import requests
 from pathlib import Path
 from dotenv import load_dotenv
@@ -37,6 +38,8 @@ SM8_API_KEY_PAINT = os.getenv("SM8_API_KEY_PAINT")
 
 SM8_JOB_FIELD_KEY = "052a8b8271d035ca4780f8ae06cd7b5370df544c"
 SM8_BASE_URL = "https://api.servicem8.com/api_1.0"
+SM8_CATALOG_PATH = EPS_DIR / "config" / "sm8_catalog.json"
+CATALOG_CODE_FIELD = "item_number"   # SM8 field for item code/SKU — update if needed
 
 PIPELINE_CONFIG = {
     1: {"name": "EPS Clean", "api_key_var": SM8_API_KEY_CLEAN, "deposit_stage": 47},
@@ -84,7 +87,43 @@ def sm8_post(path, api_key, payload):
     url = f"{SM8_BASE_URL}{path}"
     r = requests.post(url, headers=headers, json=payload)
     r.raise_for_status()
+    # Extract UUID from Location header (e.g. /api_1.0/jobmaterial/{uuid}.json)
+    location = r.headers.get("Location", "")
+    uuid = location.split("/")[-1].replace(".json", "") if location else None
+    return r.json(), uuid
+
+
+def sm8_put(path, api_key, payload):
+    headers = {
+        "X-API-Key": api_key,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+    url = f"{SM8_BASE_URL}{path}"
+    r = requests.put(url, headers=headers, json=payload)
+    r.raise_for_status()
     return r.json()
+
+
+def sm8_delete(path, api_key):
+    headers = {"X-API-Key": api_key, "Accept": "application/json"}
+    url = f"{SM8_BASE_URL}{path}"
+    r = requests.delete(url, headers=headers)
+    r.raise_for_status()
+
+
+def delete_existing_line_items(sm8_uuid, api_key):
+    """Deactivate all active JobMaterials for this job so re-runs are clean."""
+    items = sm8_get(
+        "/jobmaterial.json",
+        api_key,
+        params={"$filter": f"job_uuid eq '{sm8_uuid}' and active eq 1"},
+    )
+    if not items:
+        return 0
+    for item in items:
+        sm8_put(f"/jobmaterial/{item['uuid']}.json", api_key, {"active": 0})
+    return len(items)
 
 
 def find_sm8_job(job_number, api_key):
@@ -97,6 +136,20 @@ def find_sm8_job(job_number, api_key):
     if not jobs:
         raise RuntimeError(f"No SM8 job found with generated_job_id = '{job_number}'")
     return jobs[0]
+
+
+def load_catalog(pipeline_name):
+    """Build {item_code: material_uuid} lookup from saved SM8 catalog. Returns {} if no catalog file."""
+    if not SM8_CATALOG_PATH.exists():
+        return {}
+    with open(SM8_CATALOG_PATH) as f:
+        catalog = json.load(f)
+    items = catalog.get(pipeline_name, [])
+    return {
+        item.get(CATALOG_CODE_FIELD, "").strip(): item["uuid"]
+        for item in items
+        if item.get(CATALOG_CODE_FIELD, "").strip() and item.get("uuid")
+    }
 
 
 def main():
@@ -152,24 +205,59 @@ def main():
     # ── push job description ───────────────────────────────────────────────────
     job_description = "\n\n".join(quote["job_description"])
     print("\nPushing job description to SM8...")
-    sm8_post(f"/job/{sm8_uuid}.json", api_key, {"job_description": job_description})
+    sm8_put(f"/job/{sm8_uuid}.json", api_key, {"job_description": job_description})
     print("Job description updated.")
+
+    # ── load SM8 catalog for this pipeline ────────────────────────────────────
+    catalog_lookup = load_catalog(config["name"])
+    if not catalog_lookup:
+        print("ERROR: SM8 catalog not found. Run fetch_sm8_catalog.py first.")
+        sys.exit(1)
+    print(f"Catalog loaded: {len(catalog_lookup)} items for {config['name']}")
+
+    # ── delete existing line items (clean re-runs) ─────────────────────────────
+    deleted = delete_existing_line_items(sm8_uuid, api_key)
+    if deleted:
+        print(f"Deleted {deleted} existing line item(s).")
 
     # ── create line items ──────────────────────────────────────────────────────
     line_items = quote["line_items"]
     print(f"\nCreating {len(line_items)} line items in SM8...")
 
+    # Build material_uuid → rate lookup for price-setting step
+    mat_rate_lookup = {}
+
     for i, item in enumerate(line_items, 1):
-        payload = {
+        item_code = item.get("code", "")
+        material_uuid = catalog_lookup.get(item_code)
+        if not material_uuid:
+            print(f"  ERROR: No catalog match for code '{item_code}' — cannot push without material_uuid")
+            sys.exit(1)
+
+        sm8_post("/jobmaterial.json", api_key, {
             "job_uuid": sm8_uuid,
+            "material_uuid": material_uuid,
             "name": item["description"],
             "quantity": str(item["quantity"]),
-            "price": str(item["rate"]),
-        }
-        sm8_post("/jobmaterial.json", api_key, payload)
+            "active": 1,
+        })
+        mat_rate_lookup[material_uuid] = item["rate"]
         print(f"  [{i}/{len(line_items)}] {item['description']} — {item['quantity']} {item['unit']} @ ${item['rate']}")
 
-    print("Line items created.")
+    print(f"Line items created: {len(line_items)}")
+
+    # ── set prices (SM8 ignores price on POST; must PUT displayed_amount after) ─
+    print("Setting prices...")
+    created = sm8_get(
+        "/jobmaterial.json",
+        api_key,
+        params={"$filter": f"job_uuid eq '{sm8_uuid}' and active eq 1"},
+    )
+    for jm in created:
+        rate = mat_rate_lookup.get(jm.get("material_uuid"))
+        if rate:
+            sm8_put(f"/jobmaterial/{jm['uuid']}.json", api_key, {"displayed_amount": rate})
+    print(f"Prices set: {len(created)} items")
 
     # ── move deal to DEPOSIT PROCESS ───────────────────────────────────────────
     print(f"\nMoving deal to DEPOSIT PROCESS (stage {deposit_stage})...")
@@ -196,7 +284,7 @@ Deal:         #{deal_id}
 SM8 Job:      {sm8_job_raw}
 Pipeline:     {config['name']}
 Description:  pushed
-Line items:   {len(line_items)} created
+Line items:   {len(line_items)}
 Pipedrive:    moved to DEPOSIT PROCESS
 ─────────────────────────────────────────
 Next: python tools/create_sm8_deposit.py --deal-id {deal_id}

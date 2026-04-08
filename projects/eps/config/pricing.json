@@ -25,32 +25,32 @@
   "rates": {
     "cleaning": {
       "HOUR": {
-        "name": "Cleaning \u2014 Hourly Rate",
-        "code": "EPSCLEAN-HOUR",
+        "name": "Cleaning — Hourly Rate",
+        "code": "EPSHR",
         "rate": 70,
         "unit": "hour"
       },
       "GLASS-WINDOW": {
         "name": "Glass & Window Cleaning",
-        "code": "EPSCLEAN-GLASS&WINDOW",
+        "code": "EPSWIN",
         "rate": 85,
         "unit": "hour"
       },
       "BUILD-01": {
-        "name": "Construction Clean \u2014 Stage 1 (Post-Frame)",
-        "code": "EPSCLEAN-BUILD-01",
+        "name": "Construction Clean — Stage 1 (Post-Frame)",
+        "code": "BUILD-01",
         "rate": 7.5,
         "unit": "sqm"
       },
       "BUILD-02": {
-        "name": "Construction Clean \u2014 Stage 2 (Pre-Paint)",
-        "code": "EPSCLEAN-BUILD-02",
+        "name": "Construction Clean — Stage 2 (Pre-Paint)",
+        "code": "BUILD-02",
         "rate": 8.25,
         "unit": "sqm"
       },
       "BUILD-03": {
-        "name": "Construction Clean \u2014 Stage 3 (Final/PCI)",
-        "code": "EPSCLEAN-BUILD-03",
+        "name": "Construction Clean — Stage 3 (Final/PCI)",
+        "code": "BUILD-03",
         "rate": 9.0,
         "unit": "sqm"
       }
@@ -58,43 +58,43 @@
     "internal": {
       "INT-01": {
         "name": "Internal Wall Painting - Standard Finish",
-        "code": "EPSPAINT-INT-01",
+        "code": "INT-01",
         "rate": 22,
         "unit": "sqm"
       },
       "INT-02": {
         "name": "Internal Ceiling Painting - Flat White",
-        "code": "EPSPAINT-INT-02",
+        "code": "INT-02",
         "rate": 22,
         "unit": "sqm"
       },
       "INT-03": {
         "name": "Internal Door Painting (Both Sides)",
-        "code": "EPSPAINT-INT-03",
+        "code": "INT-03",
         "rate": 150,
         "unit": "door"
       },
       "INT-04": {
         "name": "Skirting Boards - Repaint",
-        "code": "EPSPAINT-INT-04",
+        "code": "INT-04",
         "rate": 10,
         "unit": "lm"
       },
       "INT-05": {
         "name": "Architraves - Repaint",
-        "code": "EPSPAINT-INT-05",
+        "code": "INT-05",
         "rate": 9,
         "unit": "lm"
       },
       "INT-06": {
         "name": "Patch & Prep Work - Minor",
-        "code": "EPSPAINT-INT-06",
+        "code": "INT-06",
         "rate": 12,
         "unit": "sqm"
       },
       "INT-07": {
         "name": "Feature Wall Painting",
-        "code": "EPSPAINT-INT-07",
+        "code": "INT-07",
         "rate": 28,
         "unit": "sqm"
       }
@@ -102,37 +102,37 @@
     "external": {
       "EXT-01": {
         "name": "External Wall Painting - Low Level (Up to 3m)",
-        "code": "EPSPAINT-EXT-01",
+        "code": "EXT-01",
         "rate": 22,
         "unit": "sqm"
       },
       "EXT-02": {
         "name": "External Wall Painting - High Level (3m+)",
-        "code": "EPSPAINT-EXT-02",
+        "code": "EXT-02",
         "rate": 30,
         "unit": "sqm"
       },
       "EXT-03": {
         "name": "Fascia, Eaves & Gutter Painting",
-        "code": "EPSPAINT-EXT-03",
+        "code": "EXT-03",
         "rate": 20,
         "unit": "lm"
       },
       "EXT-04": {
         "name": "Timber Deck - Repaint or Stain",
-        "code": "EPSPAINT-EXT-04",
+        "code": "EXT-04",
         "rate": 50,
         "unit": "sqm"
       },
       "EXT-05": {
         "name": "Garage Door - Paint",
-        "code": "EPSPAINT-EXT-05",
+        "code": "EXT-05",
         "rate": 500,
         "unit": "item"
       },
       "EXT-06": {
         "name": "Roof Painting (Tile/Metal)",
-        "code": "EPSPAINT-EXT-06",
+        "code": "EXT-06",
         "rate": 25,
         "unit": "sqm"
       }

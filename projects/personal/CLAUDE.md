@@ -18,6 +18,6 @@ Covers two areas:
 - Fallback (30 days): renovation + cleaning companies, same area
 
 ## Environment
-Credentials: `projects/personal/.env` and `projects/personal-brand/.env`
-Workflows: `projects/personal/workflows/` and `projects/personal-brand/workflows/`
+Credentials: `projects/personal/.env`
+Workflows: `projects/personal/workflows/`
 Temp files: `projects/personal/.tmp/`

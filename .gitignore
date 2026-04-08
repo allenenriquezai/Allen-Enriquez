@@ -6,6 +6,8 @@ token.json
 token.pickle
 token_*.pickle
 projects/**/.env
+projects/personal/credentials_personal.json
+projects/personal/token_personal.pickle
 
 # Temporary processing files
 .tmp/
