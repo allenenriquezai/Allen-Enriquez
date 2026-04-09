@@ -48,13 +48,127 @@ function switchTab(tab) {
     window.scrollTo(0, 0);
 }
 
-// --- Date Navigation ---
-function changeDate(delta) {
+// --- Date Navigation (AJAX — no page reload) ---
+async function changeDate(delta) {
     const d = new Date(currentDate + 'T12:00:00');
     d.setDate(d.getDate() + delta);
     currentDate = d.toISOString().slice(0, 10);
-    window.location.href = `/?date=${currentDate}`;
+
+    // Update URL without reload
+    history.pushState({date: currentDate}, '', `/?date=${currentDate}`);
+
+    // Update all date displays
+    updateDateDisplays();
+
+    // Reload data for the active tab
+    try {
+        const res = await fetch(`/api/checklist/${currentDate}`);
+        const data = await res.json();
+        if (data.ok) updateChecklistUI(data.completions);
+    } catch (err) {
+        showToast('Failed to load habits', 'error');
+    }
+
+    // Also reload spend if that tab exists
+    if (typeof loadSpend === 'function') loadSpend();
+    // Reload command center stats
+    if (typeof loadCommandCenter === 'function') loadCommandCenter();
 }
+
+function updateDateDisplays() {
+    const d = new Date(currentDate + 'T12:00:00');
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    const formatted = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+    const display = document.getElementById('date-display');
+    const label = document.getElementById('date-label');
+    if (display) display.textContent = formatted;
+    if (label) {
+        if (currentDate === today) {
+            label.textContent = 'Today';
+            label.className = 'text-xs text-green-400';
+        } else {
+            label.textContent = currentDate;
+            label.className = 'text-xs text-gray-400';
+        }
+    }
+
+    const spendDate = document.getElementById('spend-date-display');
+    if (spendDate) spendDate.textContent = formatted;
+    const homeDate = document.getElementById('home-date');
+    if (homeDate) homeDate.textContent = formatted;
+}
+
+function updateChecklistUI(completions) {
+    document.querySelectorAll('[data-item][data-type]').forEach(row => {
+        const name = row.dataset.item;
+        const type = row.dataset.type;
+        const val = completions[name] || '';
+
+        if (type === 'check') {
+            const isDone = ['TRUE', '1', 'YES'].includes(val.toUpperCase());
+            const checkbox = row.querySelector('.w-5.h-5');
+            const label = row.querySelector('span.text-base');
+
+            if (isDone) {
+                checkbox.classList.add('bg-green-600', 'border-green-600');
+                checkbox.classList.remove('border-gray-600');
+                checkbox.innerHTML = '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
+                label.classList.add('line-through', 'text-gray-500');
+                label.classList.remove('text-gray-200');
+                row.classList.add('opacity-60');
+            } else {
+                checkbox.classList.remove('bg-green-600', 'border-green-600');
+                checkbox.classList.add('border-gray-600');
+                checkbox.innerHTML = '';
+                label.classList.remove('line-through', 'text-gray-500');
+                label.classList.add('text-gray-200');
+                row.classList.remove('opacity-60');
+            }
+        } else {
+            const input = row.querySelector('.count-input');
+            const value = parseInt(val) || 0;
+            if (input) input.value = value;
+            if (value > 0) row.classList.add('opacity-60');
+            else row.classList.remove('opacity-60');
+        }
+    });
+
+    updateProgress();
+
+    // Update category counters
+    document.querySelectorAll('section.mb-4').forEach(section => {
+        const items = section.querySelectorAll('[data-item][data-type]');
+        let total = items.length, done = 0;
+        items.forEach(item => {
+            if (item.dataset.type === 'check') {
+                if (item.querySelector('.bg-green-600')) done++;
+            } else {
+                const input = item.querySelector('.count-input');
+                if (input && parseInt(input.value) > 0) done++;
+            }
+        });
+        const counter = section.querySelector('.text-xs.text-gray-400');
+        if (counter && counter.textContent.includes('/')) {
+            counter.textContent = `${done}/${total}`;
+        }
+    });
+}
+
+// Handle browser back/forward
+window.addEventListener('popstate', async (e) => {
+    if (e.state && e.state.date) {
+        currentDate = e.state.date;
+        updateDateDisplays();
+        try {
+            const res = await fetch(`/api/checklist/${currentDate}`);
+            const data = await res.json();
+            if (data.ok) updateChecklistUI(data.completions);
+        } catch (err) {}
+        if (typeof loadSpend === 'function') loadSpend();
+    }
+});
 
 // Format date display
 document.addEventListener('DOMContentLoaded', () => {

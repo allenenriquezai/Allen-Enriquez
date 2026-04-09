@@ -16,6 +16,9 @@ projects/**/.tmp/
 # Shared (personal — keep off remote)
 shared/
 
+# Dashboard SQLite cache
+tools/dashboard/dashboard.db
+
 # Python
 __pycache__/
 *.pyc

@@ -277,15 +277,19 @@ def fetch_mini_course():
                 summary = None
                 if source_text:
                     prompt = (
-                        f"You are writing a short, easy-to-understand lesson for someone "
-                        f"learning about AI. The topic is: \"{lesson['title']}\".\n\n"
-                        f"Use the source material below to write:\n"
-                        f"1. A plain-English explanation in 2-3 short paragraphs. "
-                        f"Use simple words (3rd-5th grade reading level). "
-                        f"Use a real-world analogy if it helps.\n"
-                        f"2. 3-5 bullet points with the key takeaways.\n\n"
-                        f"Do NOT use markdown headers. Just paragraphs then bullets (use •).\n"
-                        f"Keep the total under 250 words.\n\n"
+                        f"You are a teacher writing a mini-lesson for someone learning "
+                        f"about AI for the first time. Topic: \"{lesson['title']}\"\n\n"
+                        f"Write a lesson that teaches this topic from scratch:\n"
+                        f"1. Start with a real-world analogy that makes the concept click.\n"
+                        f"2. Explain how it works in 2-3 short paragraphs. Use simple words "
+                        f"(3rd grade reading level). Every paragraph should teach something "
+                        f"new, not just describe the topic.\n"
+                        f"3. Give 3 key takeaways as bullet points (use •).\n"
+                        f"4. End with one \"Try This:\" action the reader can do today.\n\n"
+                        f"Rules:\n"
+                        f"- No jargon without explaining it in the same sentence\n"
+                        f"- Do NOT use markdown headers. Just paragraphs then bullets.\n"
+                        f"- Keep the total under 300 words.\n\n"
                         f"SOURCE MATERIAL:\n{source_text[:4000]}"
                     )
                     print("    Summarising with Claude...")

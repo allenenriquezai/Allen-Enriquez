@@ -407,14 +407,18 @@ function renderLearning(container, data) {
 
 function formatSummary(text) {
     const lines = text.split('\n').filter(l => l.trim());
-    let html = '<div class="space-y-1 mt-1">';
+    let html = '<div class="space-y-2 mt-2">';
     lines.forEach(line => {
         const trimmed = line.trim();
-        if (trimmed === 'BULLETS:' || trimmed === 'ACTION:') {
-            const label = trimmed.replace(':', '');
-            html += `<div class="text-xs font-semibold text-gray-300 mt-2">${label}</div>`;
-        } else if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
-            html += `<div class="text-sm text-gray-400 pl-2">${trimmed}</div>`;
+        // Bold inline markers: **text** → <strong>
+        const withBold = trimmed.replace(/\*\*(.+?)\*\*/g, '<strong class="text-gray-200">$1</strong>');
+        if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
+            // Bullet point — strip leading marker
+            const content = withBold.replace(/^[•\-*]\s*/, '');
+            html += `<div class="text-sm text-gray-400 pl-3 flex gap-2"><span class="text-green-500 shrink-0">•</span><span>${content}</span></div>`;
+        } else {
+            // Paragraph text
+            html += `<p class="text-sm text-gray-300 leading-relaxed">${withBold}</p>`;
         }
     });
     html += '</div>';

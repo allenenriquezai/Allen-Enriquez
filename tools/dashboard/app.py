@@ -2,7 +2,7 @@
 Enriquez OS Dashboard — mobile-first personal productivity app.
 
 Habit tracker + spend tracker + command center + Claude chat.
-Reads/writes Google Sheets as backend.
+SQLite for instant reads/writes, background sync to Google Sheets.
 
 Usage:
     python3 tools/dashboard/app.py
@@ -11,7 +11,6 @@ Usage:
 
 import json
 import sys
-import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -21,15 +20,14 @@ from flask import Flask, jsonify, render_template, request
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from personal_crm import get_sheets_service, load_token
 
+import db
+import sync
+
 app = Flask(__name__)
 
 # --- Config ---
 SHEET_ID_FILE = Path(__file__).parent / 'SHEET_ID.txt'
 DASHBOARD_SHEET_ID = None
-
-# --- In-memory cache ---
-_cache = {}
-CACHE_TTL = 30
 
 
 def get_sheet_id():
@@ -120,59 +118,13 @@ def _svc():
 # ============================================================
 
 def _load_config():
-    """Load active checklist items grouped by category."""
-    now = time.time()
-    if 'config' in _cache and (now - _cache['config_time']) < CACHE_TTL:
-        return _cache['config']
-
-    sheet_id = get_sheet_id()
-    result = _svc().spreadsheets().values().get(
-        spreadsheetId=sheet_id, range="'Checklist Config'"
-    ).execute()
-    rows = result.get('values', [])
-    if len(rows) < 2:
-        return {}
-
-    headers = rows[0]
-    col = {h: i for i, h in enumerate(headers)}
-
-    items_by_cat = {}
-    for row in rows[1:]:
-        active = (row[col['Active']] if col.get('Active', 99) < len(row) else 'TRUE').upper()
-        if active != 'TRUE':
-            continue
-        cat = row[col['Category']] if col.get('Category', 99) < len(row) else 'Other'
-        item = {
-            'name': row[col['Item']] if col.get('Item', 99) < len(row) else '',
-            'type': row[col['Type']] if col.get('Type', 99) < len(row) else 'check',
-            'order': int(row[col['Order']]) if col.get('Order', 99) < len(row) and row[col['Order']].isdigit() else 0,
-        }
-        items_by_cat.setdefault(cat, []).append(item)
-
-    # Sort each category by order
-    for cat in items_by_cat:
-        items_by_cat[cat].sort(key=lambda x: x['order'])
-
-    _cache['config'] = items_by_cat
-    _cache['config_time'] = now
-    return items_by_cat
+    """Load active checklist items grouped by category (from SQLite)."""
+    return db.load_config()
 
 
 def _load_log(date):
-    """Load checklist completions for a date."""
-    sheet_id = get_sheet_id()
-    result = _svc().spreadsheets().values().get(
-        spreadsheetId=sheet_id, range="'Checklist Log'"
-    ).execute()
-    rows = result.get('values', [])
-    if len(rows) < 2:
-        return {}
-
-    completions = {}
-    for row in rows[1:]:
-        if len(row) >= 3 and row[0] == date:
-            completions[row[1]] = row[2]
-    return completions
+    """Load checklist completions for a date (from SQLite)."""
+    return db.load_log(date)
 
 
 # ============================================================
@@ -256,43 +208,7 @@ def api_checklist_toggle():
         return jsonify({'ok': False, 'error': 'Missing date or item'}), 400
 
     try:
-        sheet_id = get_sheet_id()
-        service = _svc()
-
-        # Check if entry exists for this date+item
-        result = service.spreadsheets().values().get(
-            spreadsheetId=sheet_id, range="'Checklist Log'"
-        ).execute()
-        rows = result.get('values', [])
-
-        existing_row = None
-        for i, row in enumerate(rows[1:], start=2):
-            if len(row) >= 2 and row[0] == date and row[1] == item:
-                existing_row = i
-                break
-
-        timestamp = now_ph().strftime('%Y-%m-%d %H:%M:%S')
-
-        if existing_row:
-            # Update existing
-            service.spreadsheets().values().update(
-                spreadsheetId=sheet_id,
-                range=f"'Checklist Log'!C{existing_row}:D{existing_row}",
-                valueInputOption='RAW',
-                body={'values': [[value, timestamp]]},
-            ).execute()
-        else:
-            # Append new
-            service.spreadsheets().values().append(
-                spreadsheetId=sheet_id,
-                range="'Checklist Log'!A:D",
-                valueInputOption='RAW',
-                insertDataOption='INSERT_ROWS',
-                body={'values': [[date, item, value, timestamp]]},
-            ).execute()
-
-        # Invalidate cache
-        _cache.pop('config', None)
+        db.save_toggle(date, item, value)
         return jsonify({'ok': True})
     except Exception as e:
         return jsonify({'ok': False, 'error': str(e)}), 500
@@ -312,30 +228,21 @@ def api_checklist_weekly():
         end_date = datetime.strptime(end, '%Y-%m-%d').date()
         start_date = end_date - timedelta(days=6)
 
-        sheet_id = get_sheet_id()
         config = _load_config()
         total_items = sum(len(items) for items in config.values())
 
-        # Load all log entries
-        result = _svc().spreadsheets().values().get(
-            spreadsheetId=sheet_id, range="'Checklist Log'"
-        ).execute()
-        rows = result.get('values', [])
+        # Load log entries for the date range from SQLite
+        log_range = db.load_log_range(
+            start_date.strftime('%Y-%m-%d'),
+            end_date.strftime('%Y-%m-%d')
+        )
 
         # Build per-day completion map
         daily = {}
-        for row in rows[1:]:
-            if len(row) < 3:
-                continue
-            try:
-                row_date = datetime.strptime(row[0], '%Y-%m-%d').date()
-            except ValueError:
-                continue
-            if start_date <= row_date <= end_date:
-                val = row[2]
+        for day_key, completions in log_range.items():
+            for item_name, val in completions.items():
                 if val and val != '0' and val.upper() != 'FALSE':
-                    day_key = row[0]
-                    daily.setdefault(day_key, set()).add(row[1])
+                    daily.setdefault(day_key, set()).add(item_name)
 
         # Build summary
         days = []
@@ -534,18 +441,27 @@ def _migrate_habits_if_needed(service, sheet_id):
             body={'valueInputOption': 'RAW', 'data': updates},
         ).execute()
 
-    # Clear config cache
-    _cache.pop('config', None)
     print("Checklist config migrated to v2.")
 
 
 @app.before_request
 def _ensure_init():
-    """Lazy init for blueprints on first request."""
+    """Lazy init: SQLite, Sheets sync, blueprints on first request."""
     if not hasattr(app, '_bp_initialized'):
+        # Init SQLite
+        db.init_db()
+
         sheet_id = get_sheet_id()
         service = _svc()
         _migrate_habits_if_needed(service, sheet_id)
+
+        # Pull from Sheets → SQLite on first boot (or if DB is empty)
+        if db.is_empty():
+            sync.sync_from_sheets(service, sheet_id)
+
+        # Start background sync (SQLite → Sheets every 60s)
+        sync.start_background_sync(service, sheet_id)
+
         init_spend(service, sheet_id)
         init_command(service, sheet_id)
         init_brief(service)
