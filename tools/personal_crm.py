@@ -47,7 +47,27 @@ CLEANUP_LOG = TMP_DIR / 'personal_crm_cleanup.log'
 TEMPLATE_DIR = BASE_DIR / 'projects' / 'personal' / 'templates' / 'email'
 
 SPREADSHEET_ID = '1G5ATV3g22TVXdaBHfRTkbXthuvnRQuDbx-eI7bUNNz8'
-TABS = ['Painting Companies', 'Others']
+
+# --- Tab structure ---
+TAB_GROUPS = {
+    'paint': {
+        'call_queue':    'Paint | Call Queue',
+        'warm_interest': 'Paint | Warm Interest',
+        'callbacks':     'Paint | Callbacks',
+        'emails_sent':   'Paint | Emails Sent',
+        'not_interested':'Paint | Not Interested',
+    },
+    'other': {
+        'call_queue':    'Other | Call Queue',
+        'warm_interest': 'Other | Warm Interest',
+        'callbacks':     'Other | Callbacks',
+        'emails_sent':   'Other | Emails Sent',
+        'not_interested':'Other | Not Interested',
+    },
+}
+ALL_TABS = [tab for group in TAB_GROUPS.values() for tab in group.values()]
+OLD_TAB_TO_GROUP = {'Painting Companies': 'paint', 'Others': 'other'}
+TABS = ['Painting Companies', 'Others']  # kept for migration only
 
 BRIEFING_FROM = 'allenenriquez@gmail.com'
 BRIEFING_TO = 'allenenriquez006@gmail.com'
@@ -60,7 +80,7 @@ PRIMARY_COLS = [
 ]
 SECONDARY_COLS = [
     'Date Emailed', 'City', 'Service Areas', 'Social Media', 'LinkedIn',
-    'BBB Rating', 'Connected', 'Source', 'BBB URL',
+    'BBB Rating', 'Connected', 'Source', 'BBB URL', 'Phone 2',
 ]
 TARGET_HEADERS = PRIMARY_COLS + SECONDARY_COLS
 
@@ -68,22 +88,19 @@ TARGET_HEADERS = PRIMARY_COLS + SECONDARY_COLS
 HOT_OUTCOMES = {'Warm Interest', 'Meeting Booked'}
 ACTION_OUTCOMES = {'Asked For Email', 'Call Back', 'Late Follow Up'}
 CALLBACK_OUTCOMES = {'No Answer 1', 'No Answer 2', 'No Answer 3', 'No Answer 4', 'No Answer 5'}
-DEAD_OUTCOMES = {'Not Interested - Convo', 'Not Interested - No Convo', 'Invalid Number'}
+DEAD_OUTCOMES = {'Not Interested - Convo', 'Not Interested - No Convo', 'Invalid Number', 'Hung Up - No Convo'}
 
 DROPDOWN_VALUES = [
     'New / No Label', 'No Answer 1', 'No Answer 2', 'No Answer 3',
     'No Answer 4', 'No Answer 5', 'Not Interested - No Convo',
     'Not Interested - Convo', 'Invalid Number', 'Call Back',
     'Asked For Email', 'Late Follow Up', 'Warm Interest', 'Meeting Booked',
+    'Hung Up - No Convo',
 ]
 
-# Conditional format colours (RGB 0-1)
-COLOUR_GREEN = {'red': 0.863, 'green': 0.988, 'blue': 0.906}   # #dcfce7
-COLOUR_YELLOW = {'red': 0.996, 'green': 0.976, 'blue': 0.765}  # #fef9c3
-COLOUR_GREY = {'red': 0.937, 'green': 0.941, 'blue': 0.945}    # #eff0f1
-COLOUR_RED = {'red': 0.996, 'green': 0.886, 'blue': 0.886}     # #fee2e2
+# Formatting colours (RGB 0-1)
 COLOUR_HEADER_BG = {'red': 0.118, 'green': 0.161, 'blue': 0.231}  # #1e293b
-COLOUR_ALT_ROW = {'red': 0.973, 'green': 0.98, 'blue': 0.984}  # #f8f9fa
+COLOUR_ALT_ROW = {'red': 0.973, 'green': 0.98, 'blue': 0.984}    # #f8f9fa
 COLOUR_WHITE = {'red': 1, 'green': 1, 'blue': 1}
 
 # Day name lookup for relative date parsing
@@ -151,6 +168,8 @@ def parse_notes(text):
             r'(?:call\s*back|follow\s*up).*?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)',
             r'(?:call\s*back|follow\s*up).*?(?:next\s+week\s+)(monday|tuesday|wednesday|thursday|friday|saturday|sunday)',
             r'(?:call\s*back|follow\s*up).*?(mid\s+next\s+week)',
+            r'(?:call\s*back|follow\s*up)\s+in\s+(\d+\s+weeks?)',
+            r'(?:call\s*back|follow\s*up)\s+in\s+(\d+\s+days?)',
         ]
         for pat in callback_patterns:
             m = re.search(pat, entry, re.IGNORECASE)
@@ -185,9 +204,28 @@ def parse_notes(text):
     }
 
 
+def next_weekday(date):
+    """If date falls on Sat/Sun, push to next Monday."""
+    if date.weekday() == 5:  # Saturday
+        return date + timedelta(days=2)
+    if date.weekday() == 6:  # Sunday
+        return date + timedelta(days=1)
+    return date
+
+
 def resolve_relative_date(raw):
     """Try to resolve a relative date string to YYYY-MM-DD. Returns '' if can't."""
     today = datetime.now().date()
+
+    # "N weeks" → N weeks from today, land on a weekday
+    m = re.match(r'^(\d+)\s+weeks?$', raw.strip())
+    if m:
+        return next_weekday(today + timedelta(weeks=int(m.group(1)))).isoformat()
+
+    # "N days" → N days from today, land on a weekday
+    m = re.match(r'^(\d+)\s+days?$', raw.strip())
+    if m:
+        return next_weekday(today + timedelta(days=int(m.group(1)))).isoformat()
 
     # "mid next week" → next Wednesday
     if 'mid next week' in raw:
@@ -255,6 +293,7 @@ def parse_row(row, col_map, tab, row_num):
         'business_name': name,
         'decision_maker': get_cell(row, col_map, dm_key),
         'phone': get_cell(row, col_map, 'Phone'),
+        'phone2': get_cell(row, col_map, 'Phone 2'),
         'call_outcome': get_cell(row, col_map, 'Call Outcome'),
         'notes': notes_text,
         'notes_truncated': notes_text[:200] if notes_text else '',
@@ -305,16 +344,50 @@ def classify_lead(lead):
     return 'other', 'LOW'
 
 
+def determine_target_tab(lead, group_key):
+    """Return the tab name a lead belongs in based on outcome and email status."""
+    outcome = lead.get('call_outcome', '')
+    date_emailed = lead.get('date_emailed', '')
+
+    if outcome in HOT_OUTCOMES:
+        return TAB_GROUPS[group_key]['warm_interest']
+    if outcome in DEAD_OUTCOMES:
+        return TAB_GROUPS[group_key]['not_interested']
+    if outcome in ('Call Back', 'Late Follow Up'):
+        return TAB_GROUPS[group_key]['callbacks']
+    if outcome == 'No Answer 5':
+        return TAB_GROUPS[group_key]['callbacks']
+    if outcome == 'Asked For Email' and date_emailed:
+        return TAB_GROUPS[group_key]['emails_sent']
+    # Everything else: uncalled, No Answer 1-4, Asked For Email (not yet emailed)
+    return TAB_GROUPS[group_key]['call_queue']
+
+
+def group_from_tab(tab_name):
+    """Return group key ('paint'/'other') for a given tab name."""
+    for group_key, tabs in TAB_GROUPS.items():
+        if tab_name in tabs.values():
+            return group_key
+    return OLD_TAB_TO_GROUP.get(tab_name)
+
+
 # ============================================================
 # CRM scan — reads sheet, builds JSON
 # ============================================================
 
 def scan_crm():
-    """Read both tabs, parse all rows, return structured data."""
+    """Read all tabs, parse all rows, return structured data."""
     service = get_sheets_service()
     all_leads = []
 
-    for tab in TABS:
+    # Try new tabs first; fall back to old flat tabs if new ones don't exist yet
+    meta = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+    existing_tabs = {s['properties']['title'] for s in meta['sheets']}
+    tabs_to_scan = ALL_TABS if any(t in existing_tabs for t in ALL_TABS) else TABS
+
+    for tab in tabs_to_scan:
+        if tab not in existing_tabs:
+            continue
         result = service.spreadsheets().values().get(
             spreadsheetId=SPREADSHEET_ID, range=f"'{tab}'"
         ).execute()
@@ -337,8 +410,40 @@ def scan_crm():
                 )
                 all_leads.append(lead)
 
-    # Sort by priority
+    # Deduplicate: same business name + phone = same lead
     priority_order = {'URGENT': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3}
+    dedup = {}
+    for lead in all_leads:
+        key = (lead['business_name'].lower().strip(), lead['phone'].strip())
+        if key in dedup:
+            existing = dedup[key]
+            # Keep the higher-priority version as the base
+            if priority_order.get(lead['priority'], 4) < priority_order.get(existing['priority'], 4):
+                # New lead is higher priority — swap, merge notes from old into new
+                lead['notes'] = (lead.get('notes', '') + '\n---\n' + existing.get('notes', '')).strip()
+                lead['notes_truncated'] = lead['notes'][:200] if lead['notes'] else ''
+                lead['todos'] = list(dict.fromkeys(lead.get('todos', []) + existing.get('todos', [])))
+                lead['personal_details'] = list(dict.fromkeys(lead.get('personal_details', []) + existing.get('personal_details', [])))
+                if not lead.get('follow_up_date') and existing.get('follow_up_date'):
+                    lead['follow_up_date'] = existing['follow_up_date']
+                if not lead.get('email') and existing.get('email'):
+                    lead['email'] = existing['email']
+                dedup[key] = lead
+            else:
+                # Existing is higher priority — merge notes from new into existing
+                existing['notes'] = (existing.get('notes', '') + '\n---\n' + lead.get('notes', '')).strip()
+                existing['notes_truncated'] = existing['notes'][:200] if existing['notes'] else ''
+                existing['todos'] = list(dict.fromkeys(existing.get('todos', []) + lead.get('todos', [])))
+                existing['personal_details'] = list(dict.fromkeys(existing.get('personal_details', []) + lead.get('personal_details', [])))
+                if not existing.get('follow_up_date') and lead.get('follow_up_date'):
+                    existing['follow_up_date'] = lead['follow_up_date']
+                if not existing.get('email') and lead.get('email'):
+                    existing['email'] = lead['email']
+        else:
+            dedup[key] = lead
+    all_leads = list(dedup.values())
+
+    # Sort by priority
     all_leads.sort(key=lambda x: priority_order.get(x['priority'], 4))
 
     # Build output
@@ -591,6 +696,17 @@ def apply_formatting(service, sheet_id, tab):
         }
     })
 
+    # Clear existing banding before adding (prevents duplicate error on re-run)
+    try:
+        sheet_meta = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+        for s in sheet_meta['sheets']:
+            if s['properties']['sheetId'] == sheet_id:
+                for band in s.get('bandedRanges', []):
+                    requests.append({'deleteBanding': {'bandedRangeId': band['bandedRangeId']}})
+                break
+    except Exception:
+        pass
+
     # Alternating row colours (rows 2+)
     requests.append({
         'addBanding': {
@@ -604,32 +720,8 @@ def apply_formatting(service, sheet_id, tab):
         }
     })
 
-    # Conditional formatting on Call Outcome (column D = index 3)
+    # No conditional formatting — Allen manages chip colours manually in Sheets UI
     outcome_col = 3  # Call Outcome is always column D after reorder
-    cf_rules = [
-        ({'Warm Interest', 'Meeting Booked'}, COLOUR_GREEN),
-        ({'Asked For Email', 'Call Back', 'Late Follow Up'}, COLOUR_YELLOW),
-        ({'No Answer 1', 'No Answer 2', 'No Answer 3', 'No Answer 4', 'No Answer 5'}, COLOUR_GREY),
-        ({'Not Interested - Convo', 'Not Interested - No Convo', 'Invalid Number'}, COLOUR_RED),
-    ]
-
-    for values, colour in cf_rules:
-        for val in values:
-            requests.append({
-                'addConditionalFormatRule': {
-                    'rule': {
-                        'ranges': [{'sheetId': sheet_id, 'startRowIndex': 1, 'startColumnIndex': 0, 'endColumnIndex': len(TARGET_HEADERS)}],
-                        'booleanRule': {
-                            'condition': {
-                                'type': 'CUSTOM_FORMULA',
-                                'values': [{'userEnteredValue': f'=$D2="{val}"'}]
-                            },
-                            'format': {'backgroundColor': colour}
-                        }
-                    },
-                    'index': 0
-                }
-            })
 
     # Data validation dropdown on Call Outcome column (all data rows)
     requests.append({
@@ -646,17 +738,191 @@ def apply_formatting(service, sheet_id, tab):
         }
     })
 
-    # Auto-resize columns A-I
-    requests.append({
-        'autoResizeDimensions': {
-            'dimensions': {'sheetId': sheet_id, 'dimension': 'COLUMNS', 'startIndex': 0, 'endIndex': 9}
-        }
-    })
-
     service.spreadsheets().batchUpdate(
         spreadsheetId=SPREADSHEET_ID, body={'requests': requests}
     ).execute()
     print(f"  [{tab}] Formatting applied")
+
+
+# ============================================================
+# reorganize — one-time migration to status-based tabs
+# ============================================================
+
+def cmd_reorganize(args):
+    """Create status-based tabs and move rows from flat tabs."""
+    service = get_sheets_service()
+
+    # Read existing flat tabs
+    buckets = {tab: [] for tab in ALL_TABS}
+    total_rows = 0
+
+    for old_tab in TABS:
+        result = service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID, range=f"'{old_tab}'"
+        ).execute()
+        rows = result.get('values', [])
+        if len(rows) < 2:
+            continue
+
+        headers = rows[0]
+        col_map = {h: i for i, h in enumerate(headers)}
+        group_key = OLD_TAB_TO_GROUP[old_tab]
+
+        for row in rows[1:]:
+            lead = parse_row(row, col_map, old_tab, 0)
+            if not lead:
+                continue
+            # Pad row to full header width
+            while len(row) < len(headers):
+                row.append('')
+            # Reorder columns to TARGET_HEADERS
+            reordered = []
+            for col_name in TARGET_HEADERS:
+                idx = col_map.get(col_name)
+                reordered.append(row[idx] if idx is not None and idx < len(row) else '')
+            target = determine_target_tab(lead, group_key)
+            # Auto-set follow-up for No Answer 5 without one
+            if lead['call_outcome'] == 'No Answer 5' and not lead['follow_up_date']:
+                fu_date = (datetime.now() + timedelta(weeks=3)).date().isoformat()
+                fu_idx = TARGET_HEADERS.index('Follow-up Date')
+                reordered[fu_idx] = fu_date
+            buckets[target].append(reordered)
+            total_rows += 1
+
+    # Print summary
+    print(f"\nMigration plan ({total_rows} total rows):")
+    for tab, rows in buckets.items():
+        if rows:
+            print(f"  {tab}: {len(rows)} leads")
+
+    if args.dry_run:
+        print(f"\nDry run — no changes made. Run without --dry-run to apply.")
+        return
+
+    # Get existing sheet metadata
+    meta = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+    existing = {s['properties']['title']: s['properties']['sheetId'] for s in meta['sheets']}
+
+    # Create new tabs
+    add_requests = []
+    for tab_name in ALL_TABS:
+        if tab_name not in existing:
+            add_requests.append({'addSheet': {'properties': {'title': tab_name}}})
+    if add_requests:
+        resp = service.spreadsheets().batchUpdate(
+            spreadsheetId=SPREADSHEET_ID, body={'requests': add_requests}
+        ).execute()
+        # Update existing map with newly created sheets
+        for reply in resp.get('replies', []):
+            if 'addSheet' in reply:
+                props = reply['addSheet']['properties']
+                existing[props['title']] = props['sheetId']
+        print(f"  Created {len(add_requests)} new tabs")
+
+    # Write data to each new tab
+    for tab_name in ALL_TABS:
+        data = [TARGET_HEADERS] + buckets.get(tab_name, [])
+        service.spreadsheets().values().clear(
+            spreadsheetId=SPREADSHEET_ID, range=f"'{tab_name}'"
+        ).execute()
+        service.spreadsheets().values().update(
+            spreadsheetId=SPREADSHEET_ID,
+            range=f"'{tab_name}'!A1",
+            valueInputOption='RAW',
+            body={'values': data}
+        ).execute()
+        print(f"  [{tab_name}] Wrote {len(data) - 1} rows")
+
+    # Apply formatting to each tab
+    for tab_name in ALL_TABS:
+        sheet_id = existing[tab_name]
+        apply_formatting(service, sheet_id, tab_name)
+
+    # Hide old flat tabs (don't delete for safety)
+    hide_requests = []
+    for old_tab in TABS:
+        if old_tab in existing:
+            hide_requests.append({
+                'updateSheetProperties': {
+                    'properties': {'sheetId': existing[old_tab], 'hidden': True},
+                    'fields': 'hidden'
+                }
+            })
+    if hide_requests:
+        service.spreadsheets().batchUpdate(
+            spreadsheetId=SPREADSHEET_ID, body={'requests': hide_requests}
+        ).execute()
+        print(f"  Hidden old tabs: {', '.join(TABS)}")
+
+    # Refresh cache
+    scan_crm()
+    print(f"\nReorganization complete. {total_rows} leads distributed across {len(ALL_TABS)} tabs.")
+
+
+def move_rows_between_tabs(service, moves, existing_sheets):
+    """Execute row moves: append to destinations, rewrite sources with remaining rows.
+
+    moves: dict of {source_tab: [(row_data, target_tab), ...]}
+    existing_sheets: dict of {tab_name: sheet_id}
+    """
+    if not moves:
+        return 0
+
+    total_moved = 0
+    # Group appends by destination
+    appends = {}  # {target_tab: [row_data, ...]}
+    for source_tab, row_moves in moves.items():
+        for row_data, target_tab in row_moves:
+            appends.setdefault(target_tab, []).append(row_data)
+            total_moved += 1
+
+    # Append rows to destination tabs
+    for target_tab, rows in appends.items():
+        service.spreadsheets().values().append(
+            spreadsheetId=SPREADSHEET_ID,
+            range=f"'{target_tab}'!A1",
+            valueInputOption='RAW',
+            insertDataOption='INSERT_ROWS',
+            body={'values': rows}
+        ).execute()
+
+    # Rewrite source tabs with remaining rows only
+    for source_tab, row_moves in moves.items():
+        moved_indices = set()
+        result = service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID, range=f"'{source_tab}'"
+        ).execute()
+        all_rows = result.get('values', [])
+        if not all_rows:
+            continue
+        headers = all_rows[0]
+
+        # Match moved rows by content (row_data matches)
+        moved_set = set()
+        for row_data, _ in row_moves:
+            moved_set.add(tuple(row_data))
+
+        remaining = [headers]
+        for row in all_rows[1:]:
+            # Pad row for comparison
+            padded = list(row) + [''] * (len(headers) - len(row))
+            if tuple(padded[:len(TARGET_HEADERS)]) not in moved_set:
+                remaining.append(row)
+            else:
+                # Remove from set so duplicates are handled correctly
+                moved_set.discard(tuple(padded[:len(TARGET_HEADERS)]))
+
+        service.spreadsheets().values().clear(
+            spreadsheetId=SPREADSHEET_ID, range=f"'{source_tab}'"
+        ).execute()
+        service.spreadsheets().values().update(
+            spreadsheetId=SPREADSHEET_ID,
+            range=f"'{source_tab}'!A1",
+            valueInputOption='RAW',
+            body={'values': remaining}
+        ).execute()
+
+    return total_moved
 
 
 # ============================================================
@@ -667,7 +933,13 @@ def cmd_cleanup(args):
     service = get_sheets_service()
     changes = []
 
-    for tab in TABS:
+    # Determine which tabs to scan
+    meta = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+    existing = {s['properties']['title']: s['properties']['sheetId'] for s in meta['sheets']}
+    tabs_to_scan = [t for t in ALL_TABS if t in existing] or [t for t in TABS if t in existing]
+
+    # Phase 1: Normalise empty outcomes and follow-up dates
+    for tab in tabs_to_scan:
         result = service.spreadsheets().values().get(
             spreadsheetId=SPREADSHEET_ID, range=f"'{tab}'"
         ).execute()
@@ -679,7 +951,6 @@ def cmd_cleanup(args):
         col_map = {h: i for i, h in enumerate(headers)}
         outcome_idx = col_map.get('Call Outcome')
         followup_idx = col_map.get('Follow-up Date')
-        notes_idx = col_map.get('Notes')
 
         if outcome_idx is None:
             continue
@@ -691,7 +962,6 @@ def cmd_cleanup(args):
             name = get_cell(row, col_map, 'Business Name')
             followup = get_cell(row, col_map, 'Follow-up Date') if followup_idx else ''
 
-            # Normalise empty outcomes with notes
             if not outcome and notes:
                 parsed = parse_notes(notes)
                 if parsed['todos'] or re.search(r'call\s*back', notes, re.IGNORECASE):
@@ -704,7 +974,6 @@ def cmd_cleanup(args):
                 })
                 changes.append(f"  [{tab}] Row {i} ({name}): outcome → '{new_outcome}'")
 
-            # Fill empty follow-up date from notes
             if not followup and notes and followup_idx is not None:
                 parsed = parse_notes(notes)
                 if parsed['follow_up_date'] and parsed['follow_up_source'] == 'notes_parsed':
@@ -715,7 +984,6 @@ def cmd_cleanup(args):
                     changes.append(f"  [{tab}] Row {i} ({name}): follow-up → {parsed['follow_up_date']}")
 
         if args.dry_run:
-            # Print only this tab's changes (skip previously printed ones)
             tab_changes = [c for c in changes if f'[{tab}]' in c]
             for c in tab_changes:
                 print(c)
@@ -725,7 +993,45 @@ def cmd_cleanup(args):
                 body={'valueInputOption': 'RAW', 'data': batch_updates}
             ).execute()
 
-    # Always run a scan to update the cache
+    # Phase 2: Move rows to correct tabs (only if new tabs exist)
+    uses_new_tabs = any(t in existing for t in ALL_TABS)
+    moves = {}  # {source_tab: [(row_data, target_tab), ...]}
+    move_log = []
+
+    if uses_new_tabs:
+        for tab in tabs_to_scan:
+            gk = group_from_tab(tab)
+            if not gk:
+                continue
+            result = service.spreadsheets().values().get(
+                spreadsheetId=SPREADSHEET_ID, range=f"'{tab}'"
+            ).execute()
+            rows = result.get('values', [])
+            if len(rows) < 2:
+                continue
+            headers = rows[0]
+            col_map = {h: i for i, h in enumerate(headers)}
+
+            for row in rows[1:]:
+                lead = parse_row(row, col_map, tab, 0)
+                if not lead:
+                    continue
+                target = determine_target_tab(lead, gk)
+                if target != tab:
+                    padded = list(row) + [''] * (len(headers) - len(row))
+                    moves.setdefault(tab, []).append((padded[:len(TARGET_HEADERS)], target))
+                    name = get_cell(row, col_map, 'Business Name')
+                    move_log.append(f"  MOVE: {name} [{tab}] → [{target}]")
+
+        if args.dry_run:
+            for line in move_log:
+                print(line)
+        elif moves:
+            moved = move_rows_between_tabs(service, moves, existing)
+            changes.extend(move_log)
+            print(f"  Moved {moved} rows between tabs")
+
+    # Refresh cache
     data = scan_crm()
 
     # Log
@@ -901,7 +1207,7 @@ def build_evening_html(crm_data, calendar, emails):
 
     priority_icons = {'URGENT': '&#128308;', 'HIGH': '&#128992;', 'MEDIUM': '&#128993;', 'LOW': '&#9898;'}
 
-    action_count = len(hot_leads) + len(due_today) + len(overdue)
+    # action_count computed after tonight/upcoming split below
 
     html = f"""<!DOCTYPE html><html><head><meta charset="utf-8"></head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f1f5f9; padding: 20px; margin: 0;">
@@ -918,39 +1224,55 @@ def build_evening_html(crm_data, calendar, emails):
   </div>
 """
 
-    # Priority call list
-    priority_items = overdue + due_today + [l for l in hot_leads if l not in due_today and l not in overdue]
-    # Add callbacks and follow-ups
-    callbacks = [l for l in action_items if l['type'] in ('callback', 'no_answer', 'email_needed', 'follow_up') and l not in priority_items]
-    priority_items.extend(callbacks[:10])
+    # Split leads into tonight (actionable now) vs upcoming (future follow-up)
+    today_iso = datetime.now().date().isoformat()
 
-    if priority_items:
-        html += f'  <div style="{HEADER}">Priority Call List ({len(priority_items)})</div>\n'
+    def actionable_tonight(lead):
+        """No future follow-up date = call tonight."""
+        return not lead.get('follow_up_date') or lead['follow_up_date'] <= today_iso
 
-        for item in priority_items:
-            icon = priority_icons.get(item['priority'], '&#9898;')
-            badge = ''
-            if item in overdue:
-                badge = '<span style="background: #dc2626; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">OVERDUE</span>'
-            elif item in due_today:
-                badge = '<span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">DUE TODAY</span>'
+    # Tonight's calls: overdue + due today + hot/callback/no-answer with no future date
+    tonight = []
+    upcoming = []
+    seen = set()
 
-            card_style = AMBER if item['priority'] in ('URGENT', 'HIGH') else CARD
+    # Overdue and due-today first (always tonight)
+    for l in overdue + due_today:
+        if id(l) not in seen:
+            tonight.append(l)
+            seen.add(id(l))
 
-            details_html = ''
-            if item.get('personal_details'):
-                details_html = f'<div style="font-size: 12px; color: #7c3aed; margin-top: 4px;">&#128172; {", ".join(item["personal_details"])}</div>'
+    # Hot leads — split by follow-up date
+    for l in hot_leads:
+        if id(l) not in seen:
+            if actionable_tonight(l):
+                tonight.append(l)
+            else:
+                upcoming.append(l)
+            seen.add(id(l))
 
-            todos_html = ''
-            if item.get('todos'):
-                todos_html = f'<div style="font-size: 12px; color: #dc2626; margin-top: 4px;">&#9888; {"; ".join(item["todos"])}</div>'
+    # Callbacks, email-needed, follow-ups — split by date (no-answers are "call whenever", skip them)
+    for l in action_items:
+        if id(l) not in seen and l['type'] in ('callback', 'email_needed', 'follow_up'):
+            if actionable_tonight(l):
+                tonight.append(l)
+            else:
+                upcoming.append(l)
+            seen.add(id(l))
 
-            notes_html = ''
-            if item.get('notes_truncated'):
-                snippet = item['notes_truncated'][:150].replace('\n', ' ')
-                notes_html = f'<div style="font-size: 12px; color: #64748b; margin-top: 4px; font-style: italic;">{snippet}...</div>'
+    def render_lead_card(item, card_style, icon, badge=''):
+        details_html = ''
+        if item.get('personal_details'):
+            details_html = f'<div style="font-size: 12px; color: #7c3aed; margin-top: 4px;">&#128172; {", ".join(item["personal_details"])}</div>'
+        todos_html = ''
+        if item.get('todos'):
+            todos_html = f'<div style="font-size: 12px; color: #dc2626; margin-top: 4px;">&#9888; {"; ".join(item["todos"])}</div>'
+        notes_html = ''
+        if item.get('notes_truncated'):
+            snippet = item['notes_truncated'][:150].replace('\n', ' ')
+            notes_html = f'<div style="font-size: 12px; color: #64748b; margin-top: 4px; font-style: italic;">{snippet}...</div>'
 
-            html += f"""  <div style="{card_style}">
+        return f"""  <div style="{card_style}">
     <div style="font-size: 14px; font-weight: 600; color: #1e293b;">
       {icon} {item['business_name']}{badge}
     </div>
@@ -966,6 +1288,27 @@ def build_evening_html(crm_data, calendar, emails):
   </div>
 """
 
+    # Tonight's Calls section
+    if tonight:
+        html += f'  <div style="{HEADER}">Tonight\'s Calls ({len(tonight)})</div>\n'
+        for item in tonight:
+            icon = priority_icons.get(item['priority'], '&#9898;')
+            badge = ''
+            if item in overdue:
+                badge = '<span style="background: #dc2626; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">OVERDUE</span>'
+            elif item in due_today:
+                badge = '<span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">DUE TODAY</span>'
+            card_style = AMBER if item['priority'] in ('URGENT', 'HIGH') else CARD
+            html += render_lead_card(item, card_style, icon, badge)
+
+    # Upcoming section (future follow-ups, de-emphasized)
+    if upcoming:
+        HEADER_MUTED = 'background: #64748b; color: white; padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; font-size: 16px; font-weight: 600;'
+        html += f'  <div style="{HEADER_MUTED}">Upcoming ({len(upcoming)})</div>\n'
+        for item in upcoming:
+            icon = priority_icons.get(item['priority'], '&#9898;')
+            html += render_lead_card(item, CARD, icon)
+
     # Calendar
     if calendar:
         html += f'  <div style="{HEADER}">Tonight\'s Schedule</div>\n'
@@ -978,18 +1321,48 @@ def build_evening_html(crm_data, calendar, emails):
             html += '</div>\n'
         html += '  </div>\n'
 
-    # Personal inbox
+    # Personal inbox — split lead replies from other emails
     if emails:
-        html += f'  <div style="{HEADER}">Personal Inbox ({len(emails)})</div>\n'
-        html += f'  <div style="{CARD}">\n'
-        for email in emails[:10]:
-            from_short = email['from'].split('<')[0].strip().strip('"')
-            html += f"""    <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
+        # Build set of known lead emails for matching
+        lead_emails = set()
+        for l in action_items + hot_leads:
+            if l.get('email'):
+                lead_emails.add(l['email'].lower().strip())
+
+        lead_replies = []
+        other_emails = []
+        for email in emails:
+            sender = email.get('from', '').lower()
+            # Check if sender matches any lead email
+            is_lead = any(addr in sender for addr in lead_emails if addr)
+            if is_lead:
+                lead_replies.append(email)
+            else:
+                other_emails.append(email)
+
+        if lead_replies:
+            html += f'  <div style="{HEADER}">Lead Replies ({len(lead_replies)})</div>\n'
+            html += f'  <div style="{CARD} border-left: 4px solid #22c55e;">\n'
+            for email in lead_replies:
+                from_short = email['from'].split('<')[0].strip().strip('"')
+                html += f"""    <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
+      <div style="font-size: 13px; color: #166534; font-weight: 600;">{from_short}</div>
+      <div style="font-size: 14px; font-weight: 600; margin: 2px 0;">{email['subject']}</div>
+      <div style="font-size: 12px; color: #888;">{email['snippet'][:120]}</div>
+    </div>\n"""
+            html += '  </div>\n'
+
+        if other_emails:
+            html += f'  <div style="{HEADER}">Personal Inbox ({len(other_emails)})</div>\n'
+            html += f'  <div style="{CARD}">\n'
+            for email in other_emails[:10]:
+                from_short = email['from'].split('<')[0].strip().strip('"')
+                html += f"""    <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
       <div style="font-size: 13px; color: #666;">{from_short}</div>
       <div style="font-size: 14px; font-weight: 600; margin: 2px 0;">{email['subject']}</div>
       <div style="font-size: 12px; color: #888;">{email['snippet'][:120]}</div>
     </div>\n"""
-        html += '  </div>\n'
+            html += '  </div>\n'
 
     # Footer
     html += f"""
@@ -1007,7 +1380,59 @@ def build_evening_html(crm_data, calendar, emails):
     return html
 
 
+def promote_callbacks_to_queue(service, existing, dry_run=False):
+    """Move callbacks with follow_up_date <= today into Call Queue tabs."""
+    today = datetime.now().date().isoformat()
+    moves = {}
+    promoted = []
+
+    for gk, tabs in TAB_GROUPS.items():
+        cb_tab = tabs['callbacks']
+        cq_tab = tabs['call_queue']
+        if cb_tab not in existing:
+            continue
+
+        result = service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID, range=f"'{cb_tab}'"
+        ).execute()
+        rows = result.get('values', [])
+        if len(rows) < 2:
+            continue
+
+        headers = rows[0]
+        col_map = {h: i for i, h in enumerate(headers)}
+
+        for row in rows[1:]:
+            lead = parse_row(row, col_map, cb_tab, 0)
+            if not lead:
+                continue
+            fu = lead.get('follow_up_date', '')
+            if fu and fu <= today:
+                padded = list(row) + [''] * (len(headers) - len(row))
+                moves.setdefault(cb_tab, []).append((padded[:len(TARGET_HEADERS)], cq_tab))
+                promoted.append(f"  PROMOTE: {lead['business_name']} → {cq_tab}")
+
+    if promoted:
+        for line in promoted:
+            print(line)
+        if not dry_run and moves:
+            moved = move_rows_between_tabs(service, moves, existing)
+            print(f"  Promoted {moved} callbacks to Call Queue")
+
+    return len(promoted)
+
+
 def cmd_evening_brief(args):
+    # Promote due callbacks to Call Queue before building briefing
+    service = get_sheets_service()
+    meta = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+    existing = {s['properties']['title']: s['properties']['sheetId'] for s in meta['sheets']}
+    if any(t in existing for t in ALL_TABS):
+        print("Checking callbacks due today...")
+        promoted = promote_callbacks_to_queue(service, existing, dry_run=args.dry_run)
+        if promoted:
+            print(f"  {promoted} leads promoted to Call Queue")
+
     print("Scanning CRM...")
     crm_data = scan_crm()
     print(f"  {crm_data['stats']['total']} leads, {crm_data['stats']['hot']} hot")
@@ -1044,6 +1469,35 @@ def cmd_evening_brief(args):
     service = get_gmail_service()
     service.users().messages().send(userId='me', body={'raw': raw}).execute()
     print(f"\nEvening briefing sent to {BRIEFING_TO}")
+
+
+# ============================================================
+# check_placeholders — detect unfilled [placeholder] patterns
+# ============================================================
+
+def check_placeholders(subject, body):
+    """Check for unfilled [placeholder] patterns in email text."""
+    import re
+    pattern = r'\[[A-Za-z_][A-Za-z_0-9 ]*\]'
+    found = []
+    for label, text in [("Subject", subject), ("Body", body)]:
+        matches = re.findall(pattern, text)
+        if matches:
+            found.extend([(label, m) for m in matches])
+    return found
+
+
+def send_outreach_email(to_email, subject, body):
+    """Send a plain-text email via personal Gmail."""
+    service = get_gmail_service()
+    msg = MIMEMultipart()
+    msg['to'] = to_email
+    msg['from'] = 'Allen Enriquez <allenenriquez006@gmail.com>'
+    msg['subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+    raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+    service.users().messages().send(userId='me', body={'raw': raw}).execute()
+    print(f"\nEmail sent to {to_email}")
 
 
 # ============================================================
@@ -1104,15 +1558,213 @@ def cmd_draft(args):
         opener = f"{first_name},\n\nI was going through your websites and loved the projects."
 
     # Fill template
+    business_name = lead.get('business_name', '')
     email_text = template.replace('[opener]', opener)
-    email_text = email_text.replace('[businessName]', lead.get('business_name', ''))
+    email_text = email_text.replace('[businessName]', business_name)
+    email_text = email_text.replace('[firstName]', first_name)
 
-    print(f"To: {lead.get('email', '(no email)')}")
-    print(f"Re: {lead['business_name']} ({lead['decision_maker']})")
+    # Extract subject from template (first line after SUBJECT:)
+    subject = f"{first_name} — quick question about {business_name}"
+    if email_text.startswith('SUBJECT:'):
+        subject = email_text.split('\n')[0].replace('SUBJECT:', '').strip()
+        email_text = '\n'.join(email_text.split('\n')[1:]).strip()
+
+    # QA check
+    placeholders = check_placeholders(subject, email_text)
+    if placeholders:
+        print("\n⚠️  WARNING: Unfilled placeholders detected!")
+        for location, placeholder in placeholders:
+            print(f"   {location}: {placeholder}")
+        print("\nDraft (review and fill placeholders before sending):")
+        print(f"\nSubject: {subject}")
+        print(f"\n{email_text}")
+        return
+
+    to_email = lead.get('email', '')
+
+    print(f"To: {to_email or '(no email)'}")
+    print(f"Subject: {subject}")
     print(f"Outcome: {outcome}")
     print(f"\n{'='*50}\n")
     print(email_text)
     print(f"\n{'='*50}")
+
+    # Send if --send flag is set
+    if getattr(args, 'send', False):
+        if not to_email:
+            print("\n⚠️  Cannot send — no email address for this lead.")
+            return
+        send_outreach_email(to_email, subject, email_text)
+    else:
+        print("\nDraft only. Add --send to send.")
+
+
+# ============================================================
+# dedupe-phone — remove duplicate phone numbers, merge rows
+# ============================================================
+
+OUTCOME_PRIORITY = {
+    'Meeting Booked': 0,
+    'Warm Interest': 1,
+    'Asked For Email': 2,
+    'Call Back': 3,
+    'Late Follow Up': 4,
+    'No Answer 5': 5,
+    'No Answer 4': 6,
+    'No Answer 3': 7,
+    'No Answer 2': 8,
+    'No Answer 1': 9,
+    'Not Interested - Convo': 10,
+    'Not Interested - No Convo': 11,
+    'Invalid Number': 12,
+    'New / No Label': 13,
+    '': 14,
+}
+
+
+def normalise_phone(phone):
+    """Strip non-digits for comparison."""
+    return re.sub(r'\D', '', phone)
+
+
+def merge_rows(winner, loser, headers):
+    """Merge loser into winner: fill empty fields, combine notes."""
+    merged = list(winner)
+    # Extend to match header length
+    while len(merged) < len(headers):
+        merged.append('')
+
+    loser_ext = list(loser)
+    while len(loser_ext) < len(headers):
+        loser_ext.append('')
+
+    col_map = {h: i for i, h in enumerate(headers)}
+
+    for h in headers:
+        i = col_map[h]
+        w_val = merged[i].strip() if i < len(merged) else ''
+        l_val = loser_ext[i].strip() if i < len(loser_ext) else ''
+        if not w_val and l_val:
+            merged[i] = l_val
+
+    # Merge Notes specially
+    notes_i = col_map.get('Notes')
+    if notes_i is not None:
+        w_notes = merged[notes_i].strip()
+        l_notes = loser_ext[notes_i].strip()
+        if w_notes and l_notes and w_notes != l_notes:
+            merged[notes_i] = w_notes + '\n___\n' + l_notes
+
+    return merged
+
+
+def cmd_dedupe_phone(args):
+    service = get_sheets_service()
+    tab = 'Painting Companies'
+
+    result = service.spreadsheets().values().get(
+        spreadsheetId=SPREADSHEET_ID, range=f"'{tab}'"
+    ).execute()
+    rows = result.get('values', [])
+    if not rows:
+        print("Sheet is empty.")
+        return
+
+    headers = rows[0]
+    data = rows[1:]
+
+    col_map = {h: i for i, h in enumerate(headers)}
+    phone_i = col_map.get('Phone', 0)
+    outcome_i = col_map.get('Call Outcome', -1)
+
+    # Group rows by normalised phone
+    groups = {}   # norm_phone -> list of rows
+    no_phone = []
+
+    for row in data:
+        phone_raw = row[phone_i].strip() if phone_i < len(row) else ''
+        norm = normalise_phone(phone_raw)
+        if not norm:
+            no_phone.append(row)
+            continue
+        groups.setdefault(norm, []).append(row)
+
+    duplicates_found = sum(len(v) - 1 for v in groups.values() if len(v) > 1)
+    if duplicates_found == 0:
+        print("No duplicate phone numbers found.")
+        return
+
+    print(f"Found {duplicates_found} duplicate row(s) to merge.")
+
+    # Merge each group
+    merged_rows = []
+    for norm, group in groups.items():
+        if len(group) == 1:
+            merged_rows.append(group[0])
+            continue
+
+        # Sort group: best outcome first
+        def outcome_rank(row):
+            outcome = row[outcome_i].strip() if outcome_i >= 0 and outcome_i < len(row) else ''
+            return OUTCOME_PRIORITY.get(outcome, 14)
+
+        group.sort(key=outcome_rank)
+        winner = group[0]
+        for loser in group[1:]:
+            winner = merge_rows(winner, loser, headers)
+        merged_rows.append(winner)
+
+    # Re-sort: called leads on top (same as clean command)
+    def sort_key(row):
+        outcome = row[outcome_i].strip() if outcome_i >= 0 and outcome_i < len(row) else ''
+        if outcome in HOT_OUTCOMES:
+            return 0
+        if outcome in ACTION_OUTCOMES:
+            return 1
+        if outcome in CALLBACK_OUTCOMES:
+            return 2
+        if outcome in DEAD_OUTCOMES:
+            return 4
+        return 3
+
+    def has_outcome(row):
+        return outcome_i >= 0 and outcome_i < len(row) and row[outcome_i].strip()
+
+    called = [r for r in merged_rows if has_outcome(r)]
+    uncalled_merged = [r for r in merged_rows if not has_outcome(r)]
+    called_no_phone = [r for r in no_phone if has_outcome(r)]
+    uncalled_no_phone = [r for r in no_phone if not has_outcome(r)]
+
+    called.sort(key=sort_key)
+    called_no_phone.sort(key=sort_key)
+
+    final_rows = [headers] + called + called_no_phone + uncalled_merged + uncalled_no_phone
+
+    total_before = len(data)
+    total_after = len(final_rows) - 1
+
+    if args.dry_run:
+        print(f"[DRY RUN] Would reduce {total_before} rows → {total_after} rows ({duplicates_found} removed).")
+        for norm, group in groups.items():
+            if len(group) > 1:
+                names = [g[col_map.get('Business Name', 0)] if col_map.get('Business Name', 0) < len(g) else '?' for g in group]
+                print(f"  Phone {norm}: {' + '.join(names)}")
+        return
+
+    service.spreadsheets().values().clear(
+        spreadsheetId=SPREADSHEET_ID, range=f"'{tab}'"
+    ).execute()
+    service.spreadsheets().values().update(
+        spreadsheetId=SPREADSHEET_ID, range=f"'{tab}'!A1",
+        valueInputOption='RAW', body={'values': final_rows}
+    ).execute()
+
+    print(f"Done. {total_before} rows → {total_after} rows ({duplicates_found} duplicates merged).")
+
+    for norm, group in groups.items():
+        if len(group) > 1:
+            names = [g[col_map.get('Business Name', 0)] if col_map.get('Business Name', 0) < len(g) else '?' for g in group]
+            print(f"  Merged: {' + '.join(names)}")
 
 
 # ============================================================
@@ -1135,8 +1787,15 @@ def main():
     p_draft = sub.add_parser('draft', help='Draft outreach email for a lead')
     p_draft.add_argument('--row', type=int, required=True, help='Sheet row number')
     p_draft.add_argument('--tab', required=True, help='Tab name')
+    p_draft.add_argument('--send', action='store_true', help='Send the email after drafting (default: draft only)')
 
     sub.add_parser('review', help='Print terminal summary')
+
+    p_dedupe = sub.add_parser('dedupe-phone', help='Remove duplicate phone numbers, merge rows')
+    p_dedupe.add_argument('--dry-run', action='store_true', help='Preview changes only')
+
+    p_reorg = sub.add_parser('reorganize', help='One-time migration to status-based tabs')
+    p_reorg.add_argument('--dry-run', action='store_true', help='Preview tab assignments only')
 
     args = parser.parse_args()
 
@@ -1150,6 +1809,10 @@ def main():
         cmd_draft(args)
     elif args.command == 'review':
         cmd_review(args)
+    elif args.command == 'dedupe-phone':
+        cmd_dedupe_phone(args)
+    elif args.command == 'reorganize':
+        cmd_reorganize(args)
     else:
         parser.print_help()
 

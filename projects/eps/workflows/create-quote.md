@@ -1,11 +1,9 @@
-
 # EPS Quote Skill
 
 Owns: intake, job description, Google Doc creation, and email template mapping.
 Delegates: measurement (eps-measure), line items (eps-lineitems), QA (eps-qa).
 
 ---
-
 ## Domain Knowledge
 
 ### Service types
@@ -28,7 +26,6 @@ Delegates: measurement (eps-measure), line items (eps-lineitems), QA (eps-qa).
 - Mob fee ($100) is optional and variable — ask if it applies
 
 ---
-
 ## Pipeline
 
 ```
@@ -38,7 +35,6 @@ Intake -> Measure -> Line Items -> Create Doc -> Draft Email -> QA -> Show Allen
 One QA pass at the end on the complete package. If QA fails, fix and re-run from wherever the issue is.
 
 ---
-
 ## Stage 0 — Service Type & Job Description
 
 Collect before anything else:
@@ -51,12 +47,10 @@ Once collected:
 2. Identify the relevant variant
 3. Copy the template text verbatim
 
-**Job description rules (strictly enforced):**
+**Job description rules:**
 - The template is the output. Copy it exactly, section by section.
 - Only fill `[square bracket]` placeholders with client context — 2-3 short bullet points max
-- Each top-level section = one string in the `job_description` JSON array
 - Preserve section heading, numbering, and spacing exactly
-- For multi-stage cleans: Stage sub-sections nest inside SCOPE OF WORK — not separate array items
 - VARIATIONS is a required section — include verbatim
 - Do NOT collapse, merge, or reword sections
 
@@ -73,10 +67,9 @@ Once collected:
 Write the array into `projects/eps/.tmp/quote_data.json`.
 
 ---
-
 ## Stage 1 — Intake
 
-Collect (stop and ask if anything is missing):
+Collect:
 - **Client name**
 - **Property address**
 - **Job type**
@@ -86,20 +79,17 @@ Collect (stop and ask if anything is missing):
 Then ask about rates (default / multiplier / custom). Wait for the answer.
 
 ---
-
 ## Stage 2 — Measure
 
 If floor plan provided: **eps-measure** skill -> output `rooms.json`.
 If text scope: skip to Stage 3.
 
 ---
-
 ## Stage 3 — Line Items
 
 **eps-lineitems** skill -> output `quote_data.json`.
 
 ### Stage 3b — Custom Line Items (skip calculator)
-
 For lump-sum or cleaning jobs, write `quote_data.json` directly:
 
 ```json
@@ -125,14 +115,12 @@ For lump-sum or cleaning jobs, write `quote_data.json` directly:
 All fields required by `fill_quote_template.py`. GST = subtotal x 0.10.
 
 ---
-
 ## Stage 4 — Create Google Doc
 
 ### 4a — Check for existing folder
 ```bash
 python3 tools/get_deal_folder.py --deal-id "DEAL_ID"
 ```
-
 ### 4b — Create folder + copy template
 ```bash
 python3 tools/create_quote_folder.py \
@@ -143,13 +131,11 @@ python3 tools/create_quote_folder.py \
   [--folder-id "EXISTING_FOLDER_ID"]
 ```
 Capture: `DOC_ID`, `DOC_URL`, `FOLDER_URL`, `FOLDER_NEW: true/false`
-
 ### 4c — Fill and export
 ```bash
 python3 tools/fill_quote_template.py --doc-id "DOC_ID" --data "projects/eps/.tmp/quote_data.json"
 python3 tools/export_quote_pdf.py --doc-id "DOC_ID"
 ```
-
 ### 4d — Write links to Pipedrive
 ```bash
 python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field folder --url "FOLDER_URL"  # only if new folder
@@ -157,7 +143,6 @@ python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field doc --url "DO
 ```
 
 ---
-
 ## Stage 5 — Draft Email
 
 Collect:
@@ -186,12 +171,10 @@ python3 tools/draft_quote_email.py \
 ```
 
 ---
-
 ## Stage 6 — QA + Show Allen
 
 Run **eps-qa** skill on the complete package (quote data + doc + email draft).
 If QA passes: post to Pipedrive as pinned note. Allen reviews and approves.
-If QA fails: fix issues, re-run from wherever the problem is.
 
 After Allen approves:
 ```bash
@@ -200,7 +183,6 @@ python3 tools/draft_quote_email.py [same args] --send
 PDF at `.tmp/quote_output.pdf` is attached automatically.
 
 ---
-
 ## Temp Files
 
 | File | Contains |
@@ -210,7 +192,6 @@ PDF at `.tmp/quote_output.pdf` is attached automatically.
 | `projects/eps/.tmp/quote_output.pdf` | Exported PDF |
 
 ---
-
 ## Success Criteria
 
 Return to Allen:

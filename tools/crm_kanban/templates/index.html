@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Board</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: { 800: '#1e293b', 700: '#334155', 600: '#475569' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+    <!-- Top Bar -->
+    <header class="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between sticky top-0 z-40">
+        <div class="flex items-center gap-4">
+            <h1 class="text-lg font-semibold tracking-tight">CRM Board</h1>
+            <div class="flex bg-gray-800 rounded-lg p-0.5 gap-0.5">
+                <a href="/?group=paint"
+                   class="px-3 py-1 rounded-md text-sm font-medium transition
+                          {% if group == 'paint' %}bg-blue-600 text-white{% else %}text-gray-400 hover:text-white{% endif %}">
+                    Paint
+                </a>
+                <a href="/?group=other"
+                   class="px-3 py-1 rounded-md text-sm font-medium transition
+                          {% if group == 'other' %}bg-blue-600 text-white{% else %}text-gray-400 hover:text-white{% endif %}">
+                    Other
+                </a>
+                <a href="/?group=all"
+                   class="px-3 py-1 rounded-md text-sm font-medium transition
+                          {% if group == 'all' %}bg-blue-600 text-white{% else %}text-gray-400 hover:text-white{% endif %}">
+                    All
+                </a>
+            </div>
+        </div>
+        <div class="flex items-center gap-5 text-sm">
+            <span class="text-gray-400">{{ stats.total }} leads</span>
+            <span class="text-green-400">{{ stats.hot }} warm</span>
+            <span class="text-amber-400">{{ stats.callbacks_due }} callbacks due</span>
+            <span class="text-purple-400">{{ stats.emails_pending }} need email</span>
+            <button onclick="location.reload()" class="text-gray-500 hover:text-white transition" title="Refresh">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Kanban Board -->
+    <main class="flex gap-4 p-4 overflow-x-auto kanban-board" style="height: calc(100vh - 57px);">
+        {% for stage in stage_order %}
+        <div class="kanban-column flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-gray-800" style="width: calc((100vw - 10rem) / 9); min-width: 200px;">
+            <!-- Column Header -->
+            <div class="px-3 py-2.5 border-b border-gray-800 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-gray-300">{{ stage_labels[stage] }}</h2>
+                <span class="text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded-full">
+                    {{ columns[stage]|length }}
+                </span>
+            </div>
+            <!-- Column Body (sortable) -->
+            <div class="kanban-column-body flex-1 overflow-y-auto p-2 space-y-2"
+                 data-stage="{{ stage }}"
+                 data-group="{{ group }}">
+                {% for lead in columns[stage] %}
+                <div class="kanban-card bg-gray-800 rounded-lg p-3 cursor-grab active:cursor-grabbing
+                            border-l-3 hover:bg-gray-750 transition group
+                            {% if lead.priority == 'URGENT' %}border-l-red-500
+                            {% elif lead.priority == 'HIGH' %}border-l-amber-500
+                            {% elif lead.priority == 'MEDIUM' %}border-l-blue-500
+                            {% else %}border-l-gray-600{% endif %}"
+                     data-tab="{{ lead.tab }}"
+                     data-row="{{ lead.row_num }}"
+                     data-business="{{ lead.business_name }}"
+                     data-phone="{{ lead.phone }}"
+                     data-lead='{{ lead|tojson }}'
+                     data-row-data='{{ lead._row_data|tojson }}'
+                     onclick="openModal(this)">
+
+                    <div class="font-medium text-sm text-white truncate">{{ lead.business_name }}</div>
+
+                    <div class="flex items-center gap-1.5 mt-1 text-xs text-gray-400">
+                        {% if lead.decision_maker %}
+                        <span class="truncate">{{ lead.decision_maker }}</span>
+                        {% endif %}
+                        {% if lead.phone %}
+                        <span class="shrink-0">&middot;</span>
+                        <a href="tel:{{ lead.phone }}" class="text-blue-400 hover:text-blue-300 shrink-0"
+                           onclick="event.stopPropagation()">{{ lead.phone }}</a>
+                        {% endif %}
+                    </div>
+
+                    {% if lead.call_outcome and lead.call_outcome != 'New / No Label' %}
+                    <div class="mt-1.5">
+                        <span class="outcome-chip text-xs px-1.5 py-0.5 rounded
+                            {% if lead.call_outcome in hot_outcomes %}bg-green-900/50 text-green-400
+                            {% elif lead.call_outcome in action_outcomes %}bg-amber-900/50 text-amber-400
+                            {% elif lead.call_outcome in callback_outcomes %}bg-blue-900/50 text-blue-400
+                            {% elif lead.call_outcome in dead_outcomes %}bg-red-900/50 text-red-400
+                            {% else %}bg-gray-700 text-gray-400{% endif %}">
+                            {{ lead.call_outcome }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    {% if lead.follow_up_date %}
+                    <div class="mt-1 text-xs
+                        {% if lead.priority == 'URGENT' %}text-red-400{% else %}text-gray-500{% endif %}">
+                        Follow-up: {{ lead.follow_up_date }}
+                    </div>
+                    {% endif %}
+
+                    {% if lead.notes_truncated %}
+                    <div class="mt-1 text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                        {{ lead.notes_truncated[:80] }}{% if lead.notes_truncated|length > 80 %}...{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </main>
+
+    <!-- Detail Modal -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center"
+         onclick="if(event.target===this)closeModal()">
+        <div class="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-lg mx-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+            <!-- Modal Header -->
+            <div class="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
+                <h3 id="modal-title" class="text-lg font-semibold text-white"></h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="px-5 py-4 space-y-4">
+                <!-- Contact Info — display as links, pencil to edit -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="linkable-field group/field" data-field="dm">
+                        <label class="text-xs text-gray-500 uppercase tracking-wider">Decision Maker</label>
+                        <div class="flex items-center gap-1.5 mt-1 min-h-[30px]">
+                            <span id="modal-dm-display" class="text-sm text-gray-200 truncate"></span>
+                            <input id="modal-dm" type="text"
+                                   class="hidden flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                                   placeholder="Contact name">
+                            <button onclick="toggleFieldEdit('dm')" class="edit-pencil shrink-0 text-gray-600 hover:text-gray-300 opacity-0 group-hover/field:opacity-100 transition" title="Edit">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="linkable-field group/field" data-field="phone">
+                        <label class="text-xs text-gray-500 uppercase tracking-wider">Phone</label>
+                        <div class="flex items-center gap-1.5 mt-1 min-h-[30px]">
+                            <a id="modal-phone-display" href="#" class="text-sm text-blue-400 hover:text-blue-300 truncate" onclick="event.stopPropagation()"></a>
+                            <input id="modal-phone" type="tel"
+                                   class="hidden flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                                   placeholder="Phone number">
+                            <button onclick="toggleFieldEdit('phone')" class="edit-pencil shrink-0 text-gray-600 hover:text-gray-300 opacity-0 group-hover/field:opacity-100 transition" title="Edit">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="linkable-field group/field" data-field="phone2">
+                        <label class="text-xs text-gray-500 uppercase tracking-wider">Phone 2</label>
+                        <div class="flex items-center gap-1.5 mt-1 min-h-[30px]">
+                            <a id="modal-phone2-display" href="#" class="text-sm text-blue-400 hover:text-blue-300 truncate" onclick="event.stopPropagation()"></a>
+                            <input id="modal-phone2" type="tel"
+                                   class="hidden flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                                   placeholder="Second number">
+                            <button onclick="toggleFieldEdit('phone2')" class="edit-pencil shrink-0 text-gray-600 hover:text-gray-300 opacity-0 group-hover/field:opacity-100 transition" title="Edit">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="linkable-field group/field" data-field="email">
+                        <label class="text-xs text-gray-500 uppercase tracking-wider">Email</label>
+                        <div class="flex items-center gap-1.5 mt-1 min-h-[30px]">
+                            <a id="modal-email-display" href="#" class="text-sm text-blue-400 hover:text-blue-300 truncate" onclick="event.stopPropagation()"></a>
+                            <input id="modal-email" type="email"
+                                   class="hidden flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                                   placeholder="Email address">
+                            <button onclick="toggleFieldEdit('email')" class="edit-pencil shrink-0 text-gray-600 hover:text-gray-300 opacity-0 group-hover/field:opacity-100 transition" title="Edit">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="linkable-field group/field" data-field="website">
+                        <label class="text-xs text-gray-500 uppercase tracking-wider">Website</label>
+                        <div class="flex items-center gap-1.5 mt-1 min-h-[30px]">
+                            <a id="modal-website-display" href="#" target="_blank" class="text-sm text-blue-400 hover:text-blue-300 truncate" onclick="event.stopPropagation()"></a>
+                            <input id="modal-website" type="text"
+                                   class="hidden flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                                   placeholder="Website URL">
+                            <button onclick="toggleFieldEdit('website')" class="edit-pencil shrink-0 text-gray-600 hover:text-gray-300 opacity-0 group-hover/field:opacity-100 transition" title="Edit">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-gray-800">
+
+                <!-- Editable Fields -->
+                <div>
+                    <label class="text-xs text-gray-500 uppercase tracking-wider">Call Outcome</label>
+                    <select id="modal-outcome"
+                            class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
+                        {% for val in dropdown_values %}
+                        <option value="{{ val }}">{{ val }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-500 uppercase tracking-wider">Follow-up Date</label>
+                    <input id="modal-followup" type="date"
+                           class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-500 uppercase tracking-wider">Notes</label>
+                    <textarea id="modal-notes" rows="4"
+                              class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-y"></textarea>
+                </div>
+
+                <hr class="border-gray-800">
+
+                <!-- Enrichment Data (read-only) -->
+                <div class="space-y-2">
+                    <h4 class="text-xs text-gray-500 uppercase tracking-wider">Enrichment</h4>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-500">City:</span>
+                            <span id="modal-city" class="text-gray-300 ml-1"></span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Source:</span>
+                            <span id="modal-source" class="text-gray-300 ml-1"></span>
+                        </div>
+                        <div class="col-span-2">
+                            <span class="text-gray-500">Personal Hook:</span>
+                            <span id="modal-hook" class="text-gray-300 ml-1"></span>
+                        </div>
+                        <div class="col-span-2">
+                            <span class="text-gray-500">LinkedIn:</span>
+                            <span id="modal-linkedin" class="text-gray-300 ml-1"></span>
+                        </div>
+                        <div class="col-span-2">
+                            <span class="text-gray-500">Social:</span>
+                            <span id="modal-social" class="text-gray-300 ml-1"></span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">BBB:</span>
+                            <span id="modal-bbb" class="text-gray-300 ml-1"></span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Called:</span>
+                            <span id="modal-called" class="text-gray-300 ml-1"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-5 py-3 border-t border-gray-800 flex justify-end gap-2">
+                <button onclick="closeModal()" class="px-4 py-2 text-sm text-gray-400 hover:text-white transition">
+                    Cancel
+                </button>
+                <button onclick="saveCard()" id="modal-save-btn"
+                        class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js?v=2"></script>
+</body>
+</html>

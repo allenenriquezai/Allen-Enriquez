@@ -102,6 +102,21 @@ def get_call_id_from_notes(deal_id, env):
     return None
 
 
+def get_iq_transcript_url_from_activities(deal_id, env):
+    """Scan Pipedrive activities for a JustCall AI transcript URL."""
+    data = pipedrive_get(
+        f"deals/{deal_id}/activities?limit=30", env
+    )
+    # Sort by ID descending to check most recent first
+    activities = sorted(data.get("data") or [], key=lambda a: a.get("id", 0), reverse=True)
+    for activity in activities:
+        note = activity.get("note", "") or ""
+        match = re.search(r'(https://iq-app\.justcall\.io/app/(?:voicetranscript|meetingtranscript)[^\s"<>]+)', note)
+        if match:
+            return match.group(1)
+    return None
+
+
 # ── JustCall helpers ───────────────────────────────────────────────
 
 
@@ -190,6 +205,16 @@ def main():
     transcript = extract_transcript(call_data)
 
     if not transcript:
+        # Fallback: look for JustCall AI transcript URL in Pipedrive activities
+        iq_url = get_iq_transcript_url_from_activities(args.deal_id, env)
+        if iq_url:
+            print(json.dumps({
+                "status": "transcript_url",
+                "call_id": call_id,
+                "iq_transcript_url": iq_url,
+                "message": "Transcript available via JustCall AI link — fetch via browser."
+            }))
+            sys.exit(0)
         print(json.dumps({
             "status": "transcript_not_ready",
             "call_id": call_id,

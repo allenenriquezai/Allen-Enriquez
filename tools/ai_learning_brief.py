@@ -2,19 +2,24 @@
 AI Learning Brief — Daily educational email.
 
 One topic per day (mini-course) + expert digest from Anthropic, OpenAI, DeepMind, Hugging Face.
-Sends via personal Gmail, separate from the work morning briefing.
+Fetches articles, summarises them via Claude Haiku, and delivers a self-contained
+brief you can absorb in under 10 minutes — no clicking required.
 
 Usage:
-    python3 tools/ai_learning_brief.py              # send
-    python3 tools/ai_learning_brief.py --dry-run    # preview HTML, don't send
-    python3 tools/ai_learning_brief.py --to x@y.com # override recipient
+    python3 tools/ai_learning_brief.py              # generate data files only (no email)
+    python3 tools/ai_learning_brief.py --send        # generate + send email
+    python3 tools/ai_learning_brief.py --dry-run    # preview only, no files written
+    python3 tools/ai_learning_brief.py --to x@y.com # override recipient (with --send)
 
 Requires:
     projects/personal/token_personal.pickle: Gmail OAuth token with send scope
+    projects/personal/.env: ANTHROPIC_API_KEY
 """
 
 import argparse
 import base64
+import json
+import os
 import pickle
 import re
 import sys
@@ -30,11 +35,25 @@ from googleapiclient.discovery import build
 
 BASE_DIR = Path(__file__).parent.parent
 PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+PERSONAL_ENV = BASE_DIR / 'projects' / 'personal' / '.env'
 TMP_DIR = BASE_DIR / '.tmp'
 
 FROM_EMAIL = 'allenenriquez@gmail.com'
 FROM_NAME = 'Enriquez OS'
 TO_EMAIL_DEFAULT = 'allenenriquez006@gmail.com'
+
+
+def load_env():
+    """Load ANTHROPIC_API_KEY from personal .env."""
+    if PERSONAL_ENV.exists():
+        for line in PERSONAL_ENV.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                k, v = line.split('=', 1)
+                os.environ.setdefault(k.strip(), v.strip())
+
+
+load_env()
 
 # --- 8-Week Curriculum: Beginner → Pro ---
 # Each week has 7 daily lessons. Cycles after week 8 (day 56+).
@@ -176,15 +195,63 @@ def search_articles(query, max_results=5):
     return results
 
 
+def fetch_page_text(url, max_chars=3000):
+    """Fetch a web page and extract readable text (best-effort)."""
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=10) as r:
+            html = r.read().decode('utf-8', errors='ignore')
+    except Exception:
+        return ''
+    # Strip tags, collapse whitespace
+    text = re.sub(r'<script[^>]*>.*?</script>', ' ', html, flags=re.DOTALL)
+    text = re.sub(r'<style[^>]*>.*?</style>', ' ', text, flags=re.DOTALL)
+    text = re.sub(r'<[^>]+>', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text[:max_chars]
+
+
+def call_claude(prompt, max_tokens=1200):
+    """Call Claude Haiku via the Anthropic Messages API."""
+    api_key = os.environ.get('ANTHROPIC_API_KEY', '')
+    if not api_key or api_key == 'your-key-here':
+        print("    WARNING: No ANTHROPIC_API_KEY — falling back to snippets")
+        return None
+
+    body = json.dumps({
+        'model': 'claude-haiku-4-5-20251001',
+        'max_tokens': max_tokens,
+        'messages': [{'role': 'user', 'content': prompt}],
+    }).encode()
+
+    req = urllib.request.Request(
+        'https://api.anthropic.com/v1/messages',
+        data=body,
+        headers={
+            'x-api-key': api_key,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json',
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            resp = json.loads(r.read().decode())
+        return resp['content'][0]['text']
+    except Exception as e:
+        print(f"    Claude API error: {e}")
+        return None
+
+
 # --- Data fetchers ---
 
 def fetch_mini_course():
-    """Pick today's lesson from the 8-week curriculum."""
+    """Pick today's lesson, fetch articles, and summarise via Claude."""
     days_in = (datetime.now() - COURSE_START).days
     total_lessons = sum(len(w['lessons']) for w in CURRICULUM)
-    day_index = days_in % total_lessons  # cycle after 56 days
+    day_index = days_in % total_lessons
 
-    # Find which week and lesson
     count = 0
     for week in CURRICULUM:
         for i, lesson in enumerate(week['lessons']):
@@ -197,6 +264,39 @@ def fetch_mini_course():
                 print(f"    Lesson: {lesson['title']}")
                 articles = search_articles(lesson['query'])
                 print(f"    Found {len(articles)} articles")
+
+                # Fetch page text from top 3 articles
+                source_text = ''
+                for a in articles[:3]:
+                    print(f"    Fetching: {a['title'][:50]}...")
+                    page = fetch_page_text(a['url'])
+                    if page:
+                        source_text += f"\n--- {a['title']} ---\n{page}\n"
+
+                # Summarise with Claude
+                summary = None
+                if source_text:
+                    prompt = (
+                        f"You are writing a short, easy-to-understand lesson for someone "
+                        f"learning about AI. The topic is: \"{lesson['title']}\".\n\n"
+                        f"Use the source material below to write:\n"
+                        f"1. A plain-English explanation in 2-3 short paragraphs. "
+                        f"Use simple words (3rd-5th grade reading level). "
+                        f"Use a real-world analogy if it helps.\n"
+                        f"2. 3-5 bullet points with the key takeaways.\n\n"
+                        f"Do NOT use markdown headers. Just paragraphs then bullets (use •).\n"
+                        f"Keep the total under 250 words.\n\n"
+                        f"SOURCE MATERIAL:\n{source_text[:4000]}"
+                    )
+                    print("    Summarising with Claude...")
+                    summary = call_claude(prompt)
+
+                if not summary:
+                    # Fallback: use search snippets
+                    summary = '\n'.join(
+                        f"• {a['snippet']}" for a in articles[:3]
+                    )
+
                 progress = f"Day {days_in + 1} of {total_lessons}"
                 if days_in >= total_lessons:
                     progress += " (cycle 2+)"
@@ -204,21 +304,66 @@ def fetch_mini_course():
                     'title': lesson['title'],
                     'week_label': label,
                     'progress': progress,
+                    'summary': summary,
                     'articles': articles,
                 }
             count += 1
 
-    return {'title': 'Rest Day', 'week_label': '', 'progress': '', 'articles': []}
+    return {'title': 'Rest Day', 'week_label': '', 'progress': '',
+            'summary': '', 'articles': []}
 
 
 def fetch_expert_digest():
-    """Search for latest content from each expert source."""
+    """Search for latest content from each expert, summarise via Claude."""
     digest = []
+    all_source = ''
     for expert in EXPERTS:
         print(f"  [Expert] {expert['name']}")
         articles = search_articles(expert['query'], max_results=3)
         print(f"    Found {len(articles)} articles")
+
+        # Gather snippets + page text from top article
+        expert_text = ''
+        for a in articles[:1]:
+            page = fetch_page_text(a['url'], max_chars=1500)
+            if page:
+                expert_text = page
+        if not expert_text:
+            expert_text = ' '.join(a['snippet'] for a in articles[:3])
+
+        all_source += f"\n--- {expert['name']} ---\n{expert_text}\n"
         digest.append({'name': expert['name'], 'articles': articles})
+
+    # Single Claude call for all experts
+    if all_source:
+        prompt = (
+            "Summarise what each AI company has been up to recently. "
+            "For each company, write 1-2 sentences in plain English. "
+            "Use simple words. Be specific about what they released or announced.\n"
+            "Format: one line per company, starting with the company name in bold (**Name**).\n"
+            "If the source material has no real news, say 'No major updates this week.'\n\n"
+            f"SOURCE MATERIAL:\n{all_source[:6000]}"
+        )
+        print("    Summarising expert digest with Claude...")
+        expert_summary = call_claude(prompt, max_tokens=500)
+        if expert_summary:
+            # Parse summary lines back to each expert
+            for entry in digest:
+                for line in expert_summary.split('\n'):
+                    if entry['name'].lower() in line.lower():
+                        entry['summary'] = re.sub(
+                            r'\*\*[^*]+\*\*:?\s*', '', line
+                        ).strip()
+                        break
+                if 'summary' not in entry:
+                    entry['summary'] = ''
+
+    # Fallback for any missing summaries
+    for entry in digest:
+        if 'summary' not in entry or not entry['summary']:
+            snippets = [a['snippet'] for a in entry['articles'][:2]]
+            entry['summary'] = snippets[0] if snippets else 'No updates found.'
+
     return digest
 
 
@@ -244,36 +389,44 @@ def format_html(mini_course, expert_digest):
 </div>
 """
 
-    # Mini course
+    # Mini course — summary
     html += f'<div style="{STYLE_GREEN}">\n'
     html += f'  <div style="font-size: 12px; color: #10b981; font-weight: 600; margin-bottom: 4px;">{mini_course.get("week_label", "")}</div>\n'
-    html += f'  <h2 style="margin: 0 0 12px 0; font-size: 16px; color: #065f46;">{mini_course["title"]}</h2>\n'
+    html += f'  <h2 style="margin: 0 0 12px 0; font-size: 18px; color: #065f46;">{mini_course["title"]}</h2>\n'
 
-    if mini_course['articles']:
-        for a in mini_course['articles']:
-            html += f"""  <div style="background: #ecfdf5; border-radius: 8px; padding: 10px; margin-bottom: 6px;">
-    <div style="font-size: 13px; font-weight: 600;"><a href="{a['url']}" style="color: #065f46; text-decoration: none;">{a['title']}</a></div>
-    <div style="font-size: 12px; color: #555; margin-top: 4px;">{a['snippet']}</div>
-  </div>\n"""
-    else:
-        html += '  <p style="color: #888; font-size: 13px;">No articles found. Check back tomorrow.</p>\n'
+    # Render the summary (paragraphs + bullets)
+    summary = mini_course.get('summary', '')
+    if summary:
+        for para in summary.split('\n'):
+            para = para.strip()
+            if not para:
+                continue
+            html += f'  <p style="font-size: 14px; line-height: 1.6; color: #333; margin: 0 0 10px 0;">{para}</p>\n'
+
+    # Read more links
+    if mini_course.get('articles'):
+        html += '  <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid #d1fae5;">\n'
+        html += '    <div style="font-size: 12px; color: #888; margin-bottom: 6px;">Read more:</div>\n'
+        for a in mini_course['articles'][:3]:
+            html += f'    <div style="margin-bottom: 4px;"><a href="{a["url"]}" style="font-size: 12px; color: #065f46;">{a["title"]}</a></div>\n'
+        html += '  </div>\n'
+
     html += '</div>\n'
 
-    # Expert digest
+    # Expert digest — summaries
     html += f'<div style="{STYLE_GREEN}">\n'
-    html += '  <h2 style="margin: 0 0 12px 0; font-size: 16px; color: #065f46;">Expert Digest</h2>\n'
+    html += '  <h2 style="margin: 0 0 12px 0; font-size: 18px; color: #065f46;">Expert Digest</h2>\n'
 
     for expert in expert_digest:
-        html += f'  <div style="margin-bottom: 12px;">\n'
-        html += f'    <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 6px;">{expert["name"]}</div>\n'
-        if expert['articles']:
-            for a in expert['articles']:
-                html += f"""    <div style="background: #ecfdf5; border-radius: 8px; padding: 8px; margin-bottom: 4px;">
-      <div style="font-size: 13px;"><a href="{a['url']}" style="color: #065f46; text-decoration: none; font-weight: 500;">{a['title']}</a></div>
-      <div style="font-size: 12px; color: #666; margin-top: 2px;">{a['snippet'][:120]}</div>
-    </div>\n"""
-        else:
-            html += '    <div style="font-size: 12px; color: #888;">No recent articles found.</div>\n'
+        html += f'  <div style="margin-bottom: 14px;">\n'
+        html += f'    <div style="font-size: 14px; font-weight: 600; color: #065f46; margin-bottom: 4px;">{expert["name"]}</div>\n'
+        summary_text = expert.get('summary', '')
+        if summary_text:
+            html += f'    <div style="font-size: 14px; line-height: 1.5; color: #333;">{summary_text}</div>\n'
+        # Read more link (top article only)
+        if expert.get('articles'):
+            a = expert['articles'][0]
+            html += f'    <div style="margin-top: 4px;"><a href="{a["url"]}" style="font-size: 12px; color: #10b981;">Read more</a></div>\n'
         html += '  </div>\n'
 
     html += '</div>\n'
@@ -320,8 +473,9 @@ def send_email(html, subject, to_email):
 
 def main():
     parser = argparse.ArgumentParser(description='AI Learning Brief')
-    parser.add_argument('--dry-run', action='store_true', help='Preview HTML, don\'t send')
-    parser.add_argument('--to', help='Override recipient email')
+    parser.add_argument('--send', action='store_true', help='Send email (default: generate data files only)')
+    parser.add_argument('--dry-run', action='store_true', help='Preview only, no files written')
+    parser.add_argument('--to', help='Override recipient email (requires --send)')
     args = parser.parse_args()
 
     to_email = args.to or TO_EMAIL_DEFAULT
@@ -337,18 +491,23 @@ def main():
     print("\n--- Formatting ---")
     html = format_html(mini_course, expert_digest)
 
+    if args.dry_run:
+        print(f"\n=== DRY RUN — preview only, no files written ===")
+        print(f"  {mini_course.get('week_label', '')}")
+        print(f"  Lesson: {mini_course['title']} ({len(mini_course['articles'])} articles)")
+        for e in expert_digest:
+            print(f"  {e['name']}: {len(e['articles'])} articles")
+        return
+
+    # Save data files (default behavior + --send)
     TMP_DIR.mkdir(parents=True, exist_ok=True)
     html_file = TMP_DIR / 'ai_learning_brief.html'
     html_file.write_text(html)
     print(f"  HTML saved to: {html_file}")
 
-    if args.dry_run:
-        print(f"\n=== DRY RUN — email not sent ===")
-        print(f"  Open {html_file} in a browser to preview")
-        print(f"  {mini_course.get('week_label', '')}")
-        print(f"  Lesson: {mini_course['title']} ({len(mini_course['articles'])} articles)")
-        for e in expert_digest:
-            print(f"  {e['name']}: {len(e['articles'])} articles")
+    if not args.send:
+        print(f"\n=== Data files generated (no email sent) ===")
+        print(f"  Use --send to also send the learning brief email")
         return
 
     print(f"\n--- Sending to {to_email} ---")

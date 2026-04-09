@@ -1,8 +1,8 @@
 ---
-name: eps-crm-notes
+name: eps-call-notes
 description: EPS call notes processor. Fetches the JustCall transcript for a deal automatically, formats it into a structured summary, and posts it as a pinned note to the Pipedrive deal. On discovery calls, also populates deal fields (address, job type, service date, business division) and fills blank person/org fields. Triggers on requests like "process the latest call for deal", "format call notes for", "post discovery notes for deal", or any time a call transcript needs to be processed for a Pipedrive deal.
 model: haiku
-tools: Bash, Read
+tools: Bash, Read, Write, mcp__Claude_in_Chrome__tabs_context_mcp, mcp__Claude_in_Chrome__navigate, mcp__Claude_in_Chrome__get_page_text
 color: purple
 ---
 
@@ -26,7 +26,10 @@ curl -s "https://${PIPEDRIVE_COMPANY_DOMAIN}/api/v1/deals/search?term=CLIENT_NAM
 python3 tools/fetch_call_transcript.py --deal-id DEAL_ID --call-type CALL_TYPE
 ```
 
-If output shows `"status": "transcript_not_ready"`, STOP and tell Allen to try again later.
+**Handle the status field:**
+- `"status": "ok"` → transcript written to `.tmp/` — proceed to Step 3
+- `"status": "transcript_url"` → transcript not in API yet, but JustCall AI link found. Navigate to the `iq_transcript_url` using the Chrome MCP (`mcp__Claude_in_Chrome__*`), read the page text, write it to `projects/eps/.tmp/transcript_DEAL_ID.txt`, then proceed to Step 3
+- `"status": "transcript_not_ready"` → STOP and tell Allen to try again in a few minutes (transcript not yet ready in either API or Pipedrive activity)
 
 ### Step 3 — Read the transcript
 ```bash

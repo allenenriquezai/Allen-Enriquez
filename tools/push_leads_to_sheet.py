@@ -239,11 +239,11 @@ def main():
 
     print("\nConnecting to Google Sheets...")
     service = get_service()
-    ensure_tabs(service, ["Painting Companies", "Others"])
+    ensure_tabs(service, ["Paint | Call Queue", "Other | Call Queue"])
 
     print("Writing tabs...")
-    write_tab(service, "Painting Companies", painting)
-    write_tab(service, "Others", other)
+    write_tab(service, "Paint | Call Queue", painting)
+    write_tab(service, "Other | Call Queue", other)
 
     print(f"\nDone. {len(painting) + len(other)} total unique leads pushed.")
 

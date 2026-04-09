@@ -22,6 +22,6 @@ Each entry: date, what went wrong, root cause, fix applied, prevention action.
 - Drafted emails only for the 2 leads that actually need them (Renascent QLD, Intebuild)
 
 **Prevention:**
-- [ ] Update eps-cold-calls agent to ALWAYS run `process_cold_calls.py fetch` first and use the batch JSON — never fabricate activity types
-- [ ] Add validation in the agent: cross-check activity type before posting notes
+- [x] Update eps-cold-calls agent to ALWAYS run `process_cold_calls.py fetch` first and use the batch JSON — never fabricate activity types
+- [x] Add validation in the agent: cross-check activity type before posting notes
 - [ ] Consider adding a `--connected-only` flag to `process_cold_calls.py` that filters out No Answer / Invalid Number leads automatically

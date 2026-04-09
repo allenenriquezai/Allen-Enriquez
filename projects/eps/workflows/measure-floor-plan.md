@@ -121,13 +121,9 @@ Mark estimated rooms with `*`. List all flags below the table.
 
 ---
 
-## Togal.ai (Future Enhancement)
+## Togal.ai (Future — Not Yet Built)
 
-When Togal.ai API access is available:
-- Run `tools/togal_measure.py --file "path"` BEFORE the vision step
-- If it returns data, use that instead of vision extraction
-- Fall back to vision if Togal.ai fails or returns low confidence
-
+When Togal.ai API access is available, a measurement tool will be added here.
 For now: vision only.
 
 ---

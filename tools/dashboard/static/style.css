@@ -1,0 +1,135 @@
+/* Enriquez OS Dashboard */
+
+/* Slide-up animation for bottom sheets */
+@keyframes slide-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+}
+
+/* Smooth section collapse */
+.hidden {
+    display: none;
+}
+
+/* PWA safe areas */
+body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Touch-friendly tap targets */
+button, a, [onclick] {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+
+/* Tab transitions */
+.page-content {
+    animation: fade-in 0.15s ease-out;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Prose styling for chat markdown */
+.prose-sm p { margin: 0.25em 0; }
+.prose-sm code { background: #1f2937; padding: 0.1em 0.3em; border-radius: 4px; font-size: 0.85em; }
+.prose-sm pre { background: #1f2937; padding: 0.75em; border-radius: 8px; overflow-x: auto; margin: 0.5em 0; }
+.prose-sm ul, .prose-sm ol { padding-left: 1.25em; margin: 0.25em 0; }
+
+/* --- v2: UI polish --- */
+html { font-size: 17px; }
+
+/* Count input (replaces +/- buttons) */
+.count-input {
+    width: 3.5rem;
+    text-align: center;
+    background: transparent;
+    border: 1px solid #374151;
+    border-radius: 0.5rem;
+    color: #f3f4f6;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.25rem;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+}
+.count-input::-webkit-inner-spin-button,
+.count-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.count-input:focus { border-color: #3b82f6; outline: none; }
+
+/* Floating chat widget */
+.chat-fab {
+    position: fixed;
+    bottom: 5rem;
+    right: 1rem;
+    z-index: 45;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    background: #2563eb;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: transform 0.2s, background 0.2s;
+    cursor: pointer;
+}
+.chat-fab:active { transform: scale(0.92); }
+
+.chat-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    max-height: 85vh;
+    background: #030712;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    border-top: 1px solid #374151;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+}
+.chat-panel.open { transform: translateY(0); }
+
+/* Desktop: chat as right-side panel */
+@media (min-width: 768px) {
+    .chat-panel {
+        left: auto;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 420px;
+        max-height: 100vh;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-left: 1px solid #374151;
+        border-top: none;
+        transform: translateX(100%);
+    }
+    .chat-panel.open { transform: translateX(0); }
+    .chat-fab { bottom: 2rem; right: 2rem; width: 3.5rem; height: 3.5rem; }
+}
+
+.chat-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    background: rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+.chat-backdrop.open { opacity: 1; pointer-events: auto; }

@@ -6,9 +6,8 @@
     <string>com.enriquezOS.personal-crm-cleanup</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/bin/python3</string>
-        <string>/Users/allenenriquez/Desktop/Allen Enriquez/tools/personal_crm.py</string>
-        <string>cleanup</string>
+        <string>/bin/bash</string>
+        <string>/Users/allenenriquez/Desktop/Allen Enriquez/automation/run_personal_crm_cleanup.sh</string>
     </array>
     <key>StartCalendarInterval</key>
     <dict>

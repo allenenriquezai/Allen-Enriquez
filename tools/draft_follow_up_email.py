@@ -213,7 +213,7 @@ def main():
         return
 
     sys.path.insert(0, str(BASE_DIR / 'tools'))
-    from send_email_pipedrive import send_email
+    from send_email_gmail import send_email
 
     send_email(
         to_email=to_email,

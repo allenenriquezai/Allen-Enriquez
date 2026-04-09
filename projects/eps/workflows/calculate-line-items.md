@@ -1,10 +1,8 @@
-
 # EPS Line Items Skill
 
 Generate priced line items from a scope of work. Output `quote_data.json`.
 
 ---
-
 ## Domain Knowledge
 
 ### Painting pricing codes (from pricing.json)
@@ -41,7 +39,6 @@ Always note why the day rate was used.
 `Xsqm walls`, `Xsqm ceilings`, `X doors`, `Xsqm feature wall`, `Xsqm patch`, `Xlm skirting`, `Xlm architraves`, `Xsqm external walls`, `Xsqm external walls >3m`, `Xsqm roof`, `X garage doors`, `Xlm fascia`, `Xsqm deck`
 
 ---
-
 ## Decision Logic
 
 | Situation | Action |
@@ -56,7 +53,6 @@ Always note why the day rate was used.
 | Multi-unit job (townhouses, levels, buildings) | Use `--components` not `--scope` |
 
 ---
-
 ## Input Required
 
 Either:
@@ -68,7 +64,6 @@ If rooms.json exists, load it. If not, use the text input.
 Also load: `projects/eps/config/pricing.json`
 
 ---
-
 ## Calculate Areas
 
 For each room in rooms.json, calculate applicable areas based on `surfaces` field:
@@ -86,7 +81,6 @@ For each room in rooms.json, calculate applicable areas based on `surfaces` fiel
 For text-only input: use the areas as given.
 
 ---
-
 ## Tool
 
 **Single scope (whole property):**
@@ -130,7 +124,6 @@ Output: `projects/eps/.tmp/quote_data.json`
 Read the `<!-- quote_title: ... -->` comment from `job_descriptions/<service_type>.md`. Required — `create_sm8_deposit.py` crashes without it.
 
 ---
-
 ## Totals (verify after running)
 
 ```
@@ -140,7 +133,6 @@ total    = subtotal + gst
 ```
 
 ---
-
 ## Output
 
 Save to `projects/eps/.tmp/quote_data.json`:
@@ -180,7 +172,6 @@ Save to `projects/eps/.tmp/quote_data.json`:
 ```
 
 ---
-
 ## After Output
 
 Print a clean summary:
@@ -198,7 +189,6 @@ TOTAL                                             $7,031.20
 ```
 
 ---
-
 ## Success Criteria
 
 - `quote_data.json` written with all line items

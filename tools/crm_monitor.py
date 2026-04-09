@@ -79,6 +79,31 @@ FOLLOWUP_RULES = {
 # Stale deal threshold
 STALE_DAYS = 7
 
+# Activity type tiers — grouped by Allen's daily schedule priority
+DISCOVERY_TYPES = {'exec___clean_discovery', 'lunch'}  # lunch = Paint Discovery
+CLEAN_FOLLOWUP_TYPES = {'sales__follow_up'}  # sales__follow_up = Clean Follow-Up
+PAINT_FOLLOWUP_TYPES = {'exec__paint_follow_up'}
+VIP_TYPES = {'exec__vip'}
+OPERATIONAL_ACTIVITY_TYPES = {'task', 'meeting', 'deadline', 'discovery___call_back'}
+
+# All exec types combined (for quick checks)
+EXEC_ACTIVITY_TYPES = DISCOVERY_TYPES | CLEAN_FOLLOWUP_TYPES | PAINT_FOLLOWUP_TYPES | VIP_TYPES
+
+COLD_ACTIVITY_PREFIX = 'cold__'
+
+# Display names for activity types (Pipedrive keys → human labels)
+ACTIVITY_TYPE_NAMES = {
+    'exec___clean_discovery': 'Clean Discovery',
+    'lunch': 'Paint Discovery',
+    'sales__follow_up': 'Clean Follow-Up',
+    'exec__paint_follow_up': 'Paint Follow-Up',
+    'exec__vip': 'VIP',
+    'task': 'Task',
+    'meeting': 'Site Visit',
+    'deadline': 'Quote',
+    'discovery___call_back': 'System Improvements',
+}
+
 
 # --- Env & API helpers (reused from qualify_cold_leads.py) ---
 
@@ -286,8 +311,9 @@ def check_follow_ups(deals, today_str):
                 'max_days': rule['max_days'],
                 'recommended_action': rule['action'],
                 'last_activity_date': last_activity[:10],
-                'person_name': deal['person_id']['name'] if isinstance(deal.get('person_id'), dict) else '',
-                'org_name': deal['org_id']['name'] if isinstance(deal.get('org_id'), dict) else '',
+                'person_id': deal.get('person_id') if isinstance(deal.get('person_id'), int) else (deal['person_id'].get('value') if isinstance(deal.get('person_id'), dict) else None),
+                'person_name': deal.get('person_name') or (deal['person_id']['name'] if isinstance(deal.get('person_id'), dict) else ''),
+                'org_name': deal.get('org_name') or (deal['org_id']['name'] if isinstance(deal.get('org_id'), dict) else ''),
             })
 
     return action_items
@@ -350,6 +376,8 @@ def check_stale_deals(deals, today_str):
                 'pipeline': pipeline_name,
                 'stage': stage_name,
                 'owner_id': owner_id,
+                'person_id': deal.get('person_id') if isinstance(deal.get('person_id'), int) else (deal['person_id'].get('value') if isinstance(deal.get('person_id'), dict) else None),
+                'person_name': deal.get('person_name') or (deal['person_id']['name'] if isinstance(deal.get('person_id'), dict) else ''),
                 'days_since_activity': days_since,
                 'last_activity_date': last_activity[:10],
                 'value': deal.get('value') or 0,
@@ -527,6 +555,37 @@ def run_monitor(*, api_key, domain, dry_run=False, verbose=False):
     activities_overdue = [a for a in activities_overdue if (a.get('due_date') or '') < today_str]
     print(f"  Done this week: {len(activities_done_week)} | Overdue: {len(activities_overdue)}")
 
+    # 4b. Fetch Allen's undone activities due today or earlier
+    # (matches Pipedrive filter "8. ALLEN - ACTIVITY TODAY": assigned=Allen, due<=today, done=To do)
+    allen_user = next((u for u in users if 'allen' in u['name'].lower()), None)
+    allen_id = allen_user['id'] if allen_user else None
+    todays_activities = []
+    overdue_activities_allen = []
+    if allen_id:
+        time.sleep(API_DELAY)
+        allen_undone = fetch_activities(
+            api_key=api_key, domain=domain, user_id=allen_id, done=False)
+        todays_activities = [a for a in allen_undone if a.get('due_date') == today_str]
+        overdue_activities_allen = [a for a in allen_undone
+                                    if a.get('due_date') and a['due_date'] < today_str]
+        print(f"  Allen's activities today: {len(todays_activities)} (+{len(overdue_activities_allen)} overdue)")
+
+    # 4c. Fetch yesterday's completed activities (for call counts)
+    # Filter client-side by due_date since API date params filter by add_time
+    yesterday_str = (today - timedelta(days=1)).strftime('%Y-%m-%d')
+    time.sleep(API_DELAY)
+    all_done_recent = fetch_activities(
+        api_key=api_key, domain=domain, done=True,
+        start_date=(today - timedelta(days=3)).strftime('%Y-%m-%d'))
+    activities_yesterday = [a for a in all_done_recent if a.get('due_date') == yesterday_str]
+    yesterday_cold_calls = sum(
+        1 for a in activities_yesterday
+        if (a.get('type') or '').startswith(COLD_ACTIVITY_PREFIX))
+    yesterday_total_calls = sum(
+        1 for a in activities_yesterday
+        if 'call' in (a.get('type') or '').lower() or (a.get('type') or '').startswith(COLD_ACTIVITY_PREFIX))
+    print(f"  Yesterday: {yesterday_total_calls} calls ({yesterday_cold_calls} cold)")
+
     # 5. Run checks
     print("\nRunning checks...")
     follow_up_items = check_follow_ups(all_deals, today_str)
@@ -537,6 +596,11 @@ def run_monitor(*, api_key, domain, dry_run=False, verbose=False):
     all_action_items = follow_up_items + overdue_items + stale_items
     priority_order = {'URGENT': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3}
     all_action_items.sort(key=lambda x: priority_order.get(x.get('priority', 'LOW'), 3))
+
+    # 5b. Enrich flagged items with person-level context
+    print("\nEnriching with person context...")
+    from deal_context import enrich_with_person_context
+    enrich_with_person_context(all_action_items, api_key=api_key, domain=domain, today_str=today_str)
 
     print(f"  Follow-up needed: {len(follow_up_items)}")
     print(f"  Overdue activities: {len(overdue_items)}")
@@ -564,6 +628,10 @@ def run_monitor(*, api_key, domain, dry_run=False, verbose=False):
         'pipeline_summary': pipeline_summary,
         'team_scorecard': team_scorecard,
         'users': users,
+        'todays_activities': todays_activities,
+        'overdue_activities_allen': overdue_activities_allen,
+        'yesterday_cold_calls': yesterday_cold_calls,
+        'yesterday_total_calls': yesterday_total_calls,
     }
 
     return result

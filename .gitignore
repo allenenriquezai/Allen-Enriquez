@@ -23,5 +23,8 @@ __pycache__/
 .venv/
 venv/
 
+# GSD planning artifacts
+.planning/
+
 # macOS
 .DS_Store

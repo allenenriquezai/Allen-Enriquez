@@ -6,7 +6,16 @@
       "Bash(find '/Users/allenenriquez/Desktop/Allen Enriquez' -type f -name *[Ss]ervice[Mm]8*)",
       "Bash(find /Users/allenenriquez/Desktop/Allen Enriquez -type f \\\\\\(-name *.json -o -name *.js -o -name *.ts -o -name *.py -o -name *.yaml -o -name *.yml -o -name *.md \\\\\\))",
       "WebFetch(domain:developer.servicem8.com)",
-      "mcp__mcp-registry__search_mcp_registry"
+      "mcp__mcp-registry__search_mcp_registry",
+      "Bash(grep -oh 'tools/[a-z_]*\\\\.py' .claude/agents/*.md)",
+      "Bash(grep -oh 'tools/[a-z_]*\\\\.py' projects/eps/workflows/*.md)",
+      "Bash(grep -oh 'tools/[a-z_]*\\\\.py' .claude/skills/*/SKILL.md)",
+      "Bash(ls tools/*.py)",
+      "Bash(python3 tools/crm_kanban/app.py)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5001/)",
+      "Bash(kill %1)",
+      "Bash(python3 tools/personal_crm.py report)",
+      "Bash(python3 tools/personal_crm.py evening-brief)"
     ]
   },
   "hooks": {

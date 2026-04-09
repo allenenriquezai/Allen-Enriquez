@@ -5,9 +5,10 @@ Two-bucket triage: Allen's Plate (only he can do) vs AI Can Handle (EA drafts/ac
 Sends via personal Gmail to keep briefings off the EPS sent folder.
 
 Usage:
-    python3 tools/morning_briefing.py                     # send briefing
-    python3 tools/morning_briefing.py --dry-run            # print HTML, don't send
-    python3 tools/morning_briefing.py --to allen@email.com # override recipient
+    python3 tools/morning_briefing.py                     # generate data files only (no email)
+    python3 tools/morning_briefing.py --send               # generate + send email
+    python3 tools/morning_briefing.py --dry-run            # preview only, no files written
+    python3 tools/morning_briefing.py --to allen@email.com # override recipient (with --send)
 
 Requires:
     projects/eps/.env: PIPEDRIVE_API_KEY, PIPEDRIVE_COMPANY_DOMAIN
@@ -40,7 +41,10 @@ BRIEFING_TO_EMAIL_DEFAULT = 'allenenriquez006@gmail.com'
 
 # Import sibling tools
 sys.path.insert(0, str(Path(__file__).parent))
-from crm_monitor import run_monitor, load_env
+from crm_monitor import (run_monitor, load_env, EXEC_ACTIVITY_TYPES,
+                         OPERATIONAL_ACTIVITY_TYPES, ACTIVITY_TYPE_NAMES,
+                         DISCOVERY_TYPES, CLEAN_FOLLOWUP_TYPES,
+                         PAINT_FOLLOWUP_TYPES, VIP_TYPES)
 
 
 # --- Email filtering ---
@@ -229,7 +233,7 @@ def fetch_calendar_today(token_path, label):
 
 # --- Triage classification ---
 
-def classify_for_triage(crm_data, gmail_eps, gmail_personal, calendar_eps, calendar_personal):
+def classify_for_triage(crm_data, gmail_eps):
     """Split all data into two buckets: Allen's Plate vs AI Can Handle."""
     action_items = crm_data.get('action_items', [])
 
@@ -302,10 +306,25 @@ def classify_for_triage(crm_data, gmail_eps, gmail_personal, calendar_eps, calen
             'suggested_action': 'send_checkin',
         })
 
+    # Group today's activities + overdue by tier
+    todays = crm_data.get('todays_activities', [])
+    overdue_allen = crm_data.get('overdue_activities_allen', [])
+    all_due = todays + overdue_allen
+    # Priority order: Discoveries > Clean Follow-Ups > Paint Follow-Ups > VIP
+    _tier1_order = {t: 0 for t in DISCOVERY_TYPES}
+    _tier1_order.update({t: 1 for t in CLEAN_FOLLOWUP_TYPES})
+    _tier1_order.update({t: 2 for t in PAINT_FOLLOWUP_TYPES})
+    _tier1_order.update({t: 3 for t in VIP_TYPES})
+    tier1 = sorted([a for a in all_due if a.get('type') in EXEC_ACTIVITY_TYPES],
+                   key=lambda a: (_tier1_order.get(a.get('type', ''), 9), a.get('due_time') or 'zz'))
+    tier2 = [a for a in all_due if a.get('type') in OPERATIONAL_ACTIVITY_TYPES]
+    tier_other = [a for a in all_due
+                  if a.get('type') not in EXEC_ACTIVITY_TYPES
+                  and a.get('type') not in OPERATIONAL_ACTIVITY_TYPES]
+
     return {
         'eps': {
             'allens_plate': {
-                'calendar': [e for e in calendar_eps],
                 'crm_items': non_stale_crm,
             },
             'ai_can_handle': {
@@ -315,15 +334,17 @@ def classify_for_triage(crm_data, gmail_eps, gmail_personal, calendar_eps, calen
             },
             'other_emails': other_eps_emails,
         },
-        'personal': {
-            'allens_plate': {
-                'calendar': [e for e in calendar_personal],
-            },
-            'emails': gmail_personal,
+        'todays_activities': {'tier1': tier1, 'tier2': tier2, 'other': tier_other},
+        'quick_stats': {
+            'pipeline_deals': crm_data.get('kpis', {}).get('pipeline_deals', 0),
+            'pipeline_value': crm_data.get('kpis', {}).get('pipeline_value', 0),
+            'won_week': crm_data.get('kpis', {}).get('deals_won_week', 0),
+            'won_value_week': crm_data.get('kpis', {}).get('won_value_week', 0),
+            'lost_week': crm_data.get('kpis', {}).get('deals_lost_month', 0),
+            'lost_value_week': crm_data.get('kpis', {}).get('lost_value_month', 0),
+            'yesterday_cold_calls': crm_data.get('yesterday_cold_calls', 0),
+            'yesterday_total_calls': crm_data.get('yesterday_total_calls', 0),
         },
-        'kpis': crm_data.get('kpis', {}),
-        'team_scorecard': crm_data.get('team_scorecard', {}),
-        'pipeline_summary': crm_data.get('pipeline_summary', {}),
         'action_manifest': action_manifest,
     }
 
@@ -345,6 +366,24 @@ def format_time(time_str):
     return time_str
 
 
+def _context_badge_html(item):
+    """Return (badge_html, detail_html) for person-level context, or empty strings."""
+    tag = item.get('context_tag')
+    if not tag:
+        return '', ''
+    colors = {
+        'ACTIVE_ELSEWHERE': ('#e0f2fe', '#0369a1'),
+        'HAS_NEXT_STEP': ('#dcfce7', '#15803d'),
+        'WAITING_ON_CLIENT': ('#fef9c3', '#a16207'),
+        'NEEDS_ATTENTION': ('#fef2f2', '#dc2626'),
+    }
+    bg, fg = colors.get(tag, ('#f3f4f6', '#374151'))
+    label = tag.replace('_', ' ')
+    badge = f'<span style="background: {bg}; color: {fg}; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">{label}</span>'
+    detail = f'<div style="font-size: 12px; color: #6b7280; margin-top: 2px; font-style: italic;">{item.get("context_detail", "")}</div>' if item.get('context_detail') else ''
+    return badge, detail
+
+
 def format_action_item_html(item, bg_color):
     icons = {'URGENT': '&#128308;', 'HIGH': '&#128992;', 'MEDIUM': '&#128993;', 'LOW': '&#9898;'}
     icon = icons.get(item['priority'], '&#9898;')
@@ -359,14 +398,15 @@ def format_action_item_html(item, bg_color):
         value_str = f" &middot; ${item['value']:,.0f}" if item.get('value') else ''
         person = item.get('person_name') or item.get('org_name') or ''
         person_str = f" ({person})" if person else ''
+        ctx_badge, ctx_detail = _context_badge_html(item)
 
         return f"""
   <div style="background: {bg_color}; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
-    <div style="font-size: 14px; font-weight: 600;">{icon} {item['deal_title']}{person_str}</div>
+    <div style="font-size: 14px; font-weight: 600;">{icon} {item['deal_title']}{person_str}{ctx_badge}</div>
     <div style="font-size: 13px; color: #666; margin-top: 4px;">
       {item['pipeline']} &middot; {item['stage']}{value_str}<br>
       Owner: {item.get('owner_name', 'Unknown')} &middot; Last activity: {item['last_activity_date']} ({item['days_since_activity']}d ago)
-    </div>
+    </div>{ctx_detail}
     <div style="font-size: 13px; color: #1d4ed8; margin-top: 6px; font-weight: 500;">&rarr; {action_text}</div>
   </div>"""
 
@@ -382,30 +422,51 @@ def format_action_item_html(item, bg_color):
 
     elif item['type'] == 'stale_deal':
         num = item.get('_action_number', '')
-        badge = f'<span style="background: #3b82f6; color: white; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">#{num} AI: send check-in</span>' if num else ''
+        action_badge = f'<span style="background: #3b82f6; color: white; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">#{num} AI: send check-in</span>' if num else ''
+        ctx_badge, ctx_detail = _context_badge_html(item)
         return f"""
   <div style="background: {bg_color}; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
-    <div style="font-size: 13px;">{icon} {item['deal_title']} &mdash; {item['pipeline']} / {item['stage']} &middot; {item['days_since_activity']}d stale{badge}</div>
+    <div style="font-size: 13px;">{icon} {item['deal_title']} &mdash; {item['pipeline']} / {item['stage']} &middot; {item['days_since_activity']}d stale{ctx_badge}{action_badge}</div>{ctx_detail}
   </div>"""
 
     return ''
 
 
+def format_activity_html(activity, today_str=None):
+    """Format a single Pipedrive activity as HTML."""
+    atype = activity.get('type', '')
+    label = ACTIVITY_TYPE_NAMES.get(atype, atype)
+    subject = activity.get('subject', '')
+    deal_title = activity.get('deal_title', '')
+    due_date = activity.get('due_date', '')
+    due_time = activity.get('due_time', '')
+    time_str = due_time[:5] if due_time else ''
+
+    is_overdue = today_str and due_date and due_date < today_str
+    overdue_badge = f'<span style="background: #fef2f2; color: #dc2626; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">OVERDUE ({due_date})</span>' if is_overdue else ''
+
+    deal_html = f' &middot; {deal_title}' if deal_title else ''
+
+    return f"""  <div style="padding: 8px 10px; border-bottom: 1px solid #f0f0f0; font-size: 13px;">
+    <span style="font-weight: 600;">{label}</span>{deal_html}{overdue_badge}
+    {f'<div style="font-size: 12px; color: #666; margin-top: 2px;">{subject}</div>' if subject else ''}
+  </div>"""
+
+
 def format_html_v2(triage_data):
-    """Build the two-bucket triage briefing HTML."""
-    kpis = triage_data['kpis']
+    """Build the simplified daily action plan briefing HTML."""
     eps = triage_data['eps']
-    personal = triage_data['personal']
-    scorecard = triage_data['team_scorecard']
-    pipeline = triage_data['pipeline_summary']
+    stats = triage_data['quick_stats']
+    activities = triage_data['todays_activities']
     manifest = triage_data['action_manifest']
     date_str = datetime.now().strftime('%A, %d %B %Y')
+    today_str = datetime.now().strftime('%Y-%m-%d')
 
-    # Count totals
-    allen_count = len(eps['allens_plate']['crm_items']) + len(eps['allens_plate']['calendar'])
+    allen_count = len(eps['allens_plate']['crm_items'])
     ai_count = (len(eps['ai_can_handle']['inquiry_emails'])
                 + len(eps['ai_can_handle']['chase_followups'])
                 + len(eps['ai_can_handle']['stale_deals']))
+    total_activities = len(activities['tier1']) + len(activities['tier2']) + len(activities['other'])
 
     html = f"""<!DOCTYPE html>
 <html>
@@ -415,38 +476,55 @@ def format_html_v2(triage_data):
 <div style="{STYLE_CARD}">
   <h1 style="margin: 0 0 4px 0; font-size: 22px;">Morning Briefing</h1>
   <p style="margin: 0; color: #666; font-size: 14px;">{date_str}</p>
-  <p style="margin: 8px 0 0 0; font-size: 13px; color: #888;">
-    <span style="color: #f59e0b;">&#9632;</span> Allen's Plate: {allen_count} items &nbsp;
-    <span style="color: #3b82f6;">&#9632;</span> AI Can Handle: {ai_count} items
-  </p>
 </div>
 """
 
-    # ===================== EPS SECTION =====================
-    html += f'<div style="{STYLE_SECTION_HEADER}">EPS</div>\n'
+    # ===================== QUICK STATS =====================
+    html += f"""<div style="{STYLE_CARD} padding: 14px 20px;">
+  <div style="font-size: 13px; color: #555; line-height: 1.8;">
+    <strong>Yesterday:</strong> {stats['yesterday_total_calls']} calls ({stats['yesterday_cold_calls']} cold) &nbsp;&middot;&nbsp;
+    <strong>Pipeline:</strong> {stats['pipeline_deals']} deals (${stats['pipeline_value']:,.0f}) &nbsp;&middot;&nbsp;
+    <strong>Won this week:</strong> {stats['won_week']} (${stats['won_value_week']:,.0f})
+  </div>
+</div>
+"""
 
-    # --- Allen's Plate ---
-    eps_plate = eps['allens_plate']
-    plate_items = len(eps_plate['calendar']) + len(eps_plate['crm_items'])
+    # ===================== TODAY'S ACTIVITIES =====================
+    html += f'<div style="{STYLE_SECTION_HEADER}">Today\'s Activities ({total_activities})</div>\n'
 
-    html += f'<div style="{STYLE_AMBER_CARD}">\n'
-    html += f'  <h2 style="margin: 0 0 12px 0; font-size: 15px; color: #92400e;">&#9632; Allen\'s Plate ({plate_items})</h2>\n'
-
-    # Calendar
-    if eps_plate['calendar']:
-        html += '  <div style="margin-bottom: 12px;">\n'
-        html += '    <div style="font-size: 13px; font-weight: 600; color: #666; margin-bottom: 6px;">TODAY\'S SCHEDULE</div>\n'
-        for evt in eps_plate['calendar']:
-            time_str = format_time(evt['start'])
-            html += f'    <div style="padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px;"><strong>{time_str}</strong> &mdash; {evt["title"]}'
-            if evt.get('location'):
-                html += f' <span style="color: #888;">@ {evt["location"]}</span>'
+    if total_activities == 0:
+        html += f'<div style="{STYLE_CARD}"><p style="color: #888; font-size: 13px; margin: 0;">No activities scheduled for today.</p></div>\n'
+    else:
+        # Tier 1 — EXEC
+        if activities['tier1']:
+            html += f'<div style="{STYLE_AMBER_CARD}">\n'
+            html += '  <div style="font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 8px;">PRIORITY &mdash; Discoveries & Follow-Ups</div>\n'
+            for act in activities['tier1']:
+                html += format_activity_html(act, today_str)
             html += '</div>\n'
-        html += '  </div>\n'
 
-    # CRM action items
+        # Tier 2 — Operational
+        if activities['tier2']:
+            html += f'<div style="{STYLE_CARD}">\n'
+            html += '  <div style="font-size: 13px; font-weight: 600; color: #555; margin-bottom: 8px;">OPERATIONAL &mdash; Tasks, Site Visits, Quotes</div>\n'
+            for act in activities['tier2']:
+                html += format_activity_html(act, today_str)
+            html += '</div>\n'
+
+        # Other
+        if activities['other']:
+            html += f'<div style="{STYLE_CARD}">\n'
+            html += '  <div style="font-size: 13px; font-weight: 600; color: #888; margin-bottom: 8px;">OTHER</div>\n'
+            for act in activities['other']:
+                html += format_activity_html(act, today_str)
+            html += '</div>\n'
+
+    # ===================== ALLEN'S PLATE =====================
+    eps_plate = eps['allens_plate']
     if eps_plate['crm_items']:
-        html += '  <div style="font-size: 13px; font-weight: 600; color: #666; margin-bottom: 6px;">DEALS & ACTIVITIES</div>\n'
+        html += f'<div style="{STYLE_SECTION_HEADER}">Allen\'s Plate ({len(eps_plate["crm_items"])})</div>\n'
+        html += f'<div style="{STYLE_AMBER_CARD}">\n'
+
         urgent_items = [i for i in eps_plate['crm_items'] if i['priority'] == 'URGENT']
         high_items = [i for i in eps_plate['crm_items'] if i['priority'] == 'HIGH']
         medium_items = [i for i in eps_plate['crm_items'] if i['priority'] == 'MEDIUM']
@@ -456,21 +534,16 @@ def format_html_v2(triage_data):
                           (medium_items, '#fefce8'), (low_items, '#f9fafb')]:
             for item in items:
                 html += format_action_item_html(item, bg)
+        html += '</div>\n'
 
-    if not eps_plate['calendar'] and not eps_plate['crm_items']:
-        html += '  <p style="color: #888; font-size: 13px; margin: 0;">Nothing urgent today.</p>\n'
-
-    html += '</div>\n'
-
-    # --- AI Can Handle ---
+    # ===================== AI CAN HANDLE =====================
     ai = eps['ai_can_handle']
     ai_total = len(ai['inquiry_emails']) + len(ai['chase_followups']) + len(ai['stale_deals'])
 
     if ai_total > 0:
+        html += f'<div style="{STYLE_SECTION_HEADER}">AI Can Handle ({ai_total})</div>\n'
         html += f'<div style="{STYLE_BLUE_CARD}">\n'
-        html += f'  <h2 style="margin: 0 0 12px 0; font-size: 15px; color: #1e40af;">&#9632; AI Can Handle ({ai_total})</h2>\n'
 
-        # Inquiry emails
         if ai['inquiry_emails']:
             html += '  <div style="font-size: 13px; font-weight: 600; color: #666; margin-bottom: 6px;">CUSTOMER INQUIRIES</div>\n'
             for email in ai['inquiry_emails']:
@@ -486,7 +559,6 @@ def format_html_v2(triage_data):
     <div style="font-size: 12px; color: #666; margin-top: 2px;">{email['snippet'][:120]}</div>
   </div>\n"""
 
-        # Chase follow-ups
         if ai['chase_followups']:
             html += '  <div style="font-size: 13px; font-weight: 600; color: #666; margin: 8px 0 6px 0;">FOLLOW-UP EMAILS</div>\n'
             for item in ai['chase_followups']:
@@ -494,34 +566,35 @@ def format_html_v2(triage_data):
                 person = item.get('person_name') or item.get('org_name') or ''
                 person_str = f" ({person})" if person else ''
                 value_str = f" &middot; ${item['value']:,.0f}" if item.get('value') else ''
+                ctx_badge, ctx_detail = _context_badge_html(item)
                 html += f"""  <div style="background: #eff6ff; border-radius: 8px; padding: 10px; margin-bottom: 6px;">
     <div style="font-size: 13px;">
       <span style="background: #3b82f6; color: white; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 600;">#{num}</span>
       <span style="font-weight: 600; margin-left: 4px;">{item['deal_title']}{person_str}</span>
-      <span style="background: #dbeafe; color: #1e40af; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">AI will draft chase</span>
+      <span style="background: #dbeafe; color: #1e40af; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">AI will draft chase</span>{ctx_badge}
     </div>
-    <div style="font-size: 12px; color: #666; margin-top: 4px;">{item['pipeline']} &middot; {item['stage']}{value_str} &middot; {item['days_since_activity']}d since last activity</div>
+    <div style="font-size: 12px; color: #666; margin-top: 4px;">{item['pipeline']} &middot; {item['stage']}{value_str} &middot; {item['days_since_activity']}d since last activity</div>{ctx_detail}
   </div>\n"""
 
-        # Stale deals
         if ai['stale_deals']:
             html += '  <div style="font-size: 13px; font-weight: 600; color: #666; margin: 8px 0 6px 0;">STALE DEALS</div>\n'
             for item in ai['stale_deals']:
                 num = item.get('_action_number', '')
+                ctx_badge, ctx_detail = _context_badge_html(item)
                 html += f"""  <div style="background: #f0f9ff; border-radius: 8px; padding: 10px; margin-bottom: 6px;">
     <div style="font-size: 13px;">
       <span style="background: #3b82f6; color: white; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 600;">#{num}</span>
       <span style="margin-left: 4px;">{item['deal_title']} &mdash; {item['pipeline']} / {item['stage']} &middot; {item['days_since_activity']}d stale</span>
-      <span style="background: #dbeafe; color: #1e40af; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">AI: send check-in</span>
-    </div>
+      <span style="background: #dbeafe; color: #1e40af; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">AI: send check-in</span>{ctx_badge}
+    </div>{ctx_detail}
   </div>\n"""
 
         html += '</div>\n'
 
-    # --- Other EPS emails (not inquiry) ---
+    # ===================== EPS INBOX =====================
     if eps.get('other_emails'):
+        html += f'<div style="{STYLE_SECTION_HEADER}">EPS Inbox ({len(eps["other_emails"])})</div>\n'
         html += f'<div style="{STYLE_CARD}">\n'
-        html += f'  <h2 style="margin: 0 0 12px 0; font-size: 15px; color: #333;">EPS Inbox ({len(eps["other_emails"])})</h2>\n'
         for email in eps['other_emails']:
             badges = ''
             if email.get('important'):
@@ -535,80 +608,6 @@ def format_html_v2(triage_data):
     <div style="font-size: 12px; color: #888;">{email['snippet'][:120]}</div>
   </div>\n"""
         html += '</div>\n'
-
-    # (Personal section removed — moved to evening briefing via personal_crm.py)
-
-    # ===================== REFERENCE (collapsed) =====================
-    html += f"""
-<details style="margin-bottom: 16px;">
-  <summary style="cursor: pointer; {STYLE_CARD} margin-bottom: 0; font-size: 15px; font-weight: 600; color: #333;">Reference &mdash; KPIs, Team, Pipeline</summary>
-
-  <div style="{STYLE_CARD} border-radius: 0 0 12px 12px; margin-top: 0;">
-    <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #555;">Top Line</h3>
-    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Pipeline</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee; text-align: right;">{kpis.get('pipeline_deals', 0)} deals &middot; ${kpis.get('pipeline_value', 0):,.0f}</td></tr>
-      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Quotes in Sent</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee; text-align: right;">{kpis.get('quotes_in_sent', 0)}</td></tr>
-      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Tenders Active</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee; text-align: right;">{kpis.get('tenders_active', 0)}</td></tr>
-      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Won this week</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee; text-align: right;">{kpis.get('deals_won_week', 0)} (${kpis.get('won_value_week', 0):,.0f})</td></tr>
-      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Won this month</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee; text-align: right;">{kpis.get('deals_won_month', 0)} (${kpis.get('won_value_month', 0):,.0f})</td></tr>
-      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Lost this month</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee; text-align: right;">{kpis.get('deals_lost_month', 0)} (${kpis.get('lost_value_month', 0):,.0f})</td></tr>
-      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Conversion rate</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee; text-align: right;">{kpis.get('conversion_rate_month', 0)}%</td></tr>
-      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Calls this week</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee; text-align: right;">{kpis.get('calls_this_week', 0)}</td></tr>
-      <tr><td style="padding: 6px 0;"><strong>Emails this week</strong></td><td style="padding: 6px 0; text-align: right;">{kpis.get('emails_this_week', 0)}</td></tr>
-    </table>
-  </div>
-"""
-
-    # Team scorecard
-    if scorecard:
-        html += f"""
-  <div style="{STYLE_CARD} border-radius: 0; margin-top: 0;">
-    <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #555;">Team Scorecard</h3>
-    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-      <tr style="border-bottom: 2px solid #eee;">
-        <th style="padding: 6px 4px; text-align: left;">Name</th>
-        <th style="padding: 6px 4px; text-align: right;">Calls</th>
-        <th style="padding: 6px 4px; text-align: right;">Emails</th>
-        <th style="padding: 6px 4px; text-align: right;">Deals</th>
-        <th style="padding: 6px 4px; text-align: right;">Value</th>
-        <th style="padding: 6px 4px; text-align: right;">Overdue</th>
-      </tr>"""
-        for name, card in scorecard.items():
-            overdue_style = 'color: #dc2626; font-weight: bold;' if card['overdue_items'] > 0 else ''
-            html += f"""
-      <tr style="border-bottom: 1px solid #eee;">
-        <td style="padding: 6px 4px;">{name}</td>
-        <td style="padding: 6px 4px; text-align: right;">{card['calls_this_week']}</td>
-        <td style="padding: 6px 4px; text-align: right;">{card['emails_this_week']}</td>
-        <td style="padding: 6px 4px; text-align: right;">{card['deals_in_pipeline']}</td>
-        <td style="padding: 6px 4px; text-align: right;">${card['pipeline_value']:,.0f}</td>
-        <td style="padding: 6px 4px; text-align: right; {overdue_style}">{card['overdue_items']}</td>
-      </tr>"""
-        html += "\n    </table>\n  </div>"
-
-    # Pipeline breakdown
-    has_pipeline = any(p['total_deals'] > 0 for p in pipeline.values()) if pipeline else False
-    if has_pipeline:
-        html += f"""
-  <div style="{STYLE_CARD} border-radius: 0 0 12px 12px; margin-top: 0;">
-    <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #555;">Pipeline Breakdown</h3>"""
-        for pname, pdata in pipeline.items():
-            if pdata['total_deals'] == 0:
-                continue
-            html += f"""
-    <h4 style="margin: 8px 0 4px 0; font-size: 13px; color: #666;">{pname} &mdash; {pdata['total_deals']} deals (${pdata['total_value']:,.0f})</h4>
-    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">"""
-            for sname, sdata in pdata['stages'].items():
-                html += f"""
-      <tr style="border-bottom: 1px solid #f0f0f0;">
-        <td style="padding: 3px 0;">{sname}</td>
-        <td style="padding: 3px 0; text-align: right;">{sdata['count']}</td>
-        <td style="padding: 3px 0; text-align: right;">${sdata['value']:,.0f}</td>
-      </tr>"""
-            html += "\n    </table>"
-        html += "\n  </div>"
-
-    html += "\n</details>\n"
 
     # ===================== ACTION FOOTER =====================
     if manifest:
@@ -643,8 +642,9 @@ def format_html_v2(triage_data):
 
 def main():
     parser = argparse.ArgumentParser(description='Morning Briefing v2')
-    parser.add_argument('--dry-run', action='store_true', help='Print HTML, don\'t send')
-    parser.add_argument('--to', help='Override recipient email')
+    parser.add_argument('--send', action='store_true', help='Send email (default: generate data files only)')
+    parser.add_argument('--dry-run', action='store_true', help='Preview only, no files written')
+    parser.add_argument('--to', help='Override recipient email (requires --send)')
     args = parser.parse_args()
 
     env = load_env()
@@ -664,16 +664,15 @@ def main():
     print("\n=== Gmail ===")
     gmail_eps = fetch_gmail_unread(EPS_TOKEN, 'EPS')
 
-    # 3. Calendar (EPS only — personal moved to evening briefing)
-    print("\n=== Calendar ===")
-    calendar_eps = fetch_calendar_today(EPS_TOKEN, 'EPS')
-
-    # 4. Classify into triage buckets
+    # 3. Classify into triage buckets
     print("\n=== Triage ===")
-    triage = classify_for_triage(crm_data, gmail_eps, [], calendar_eps, [])
+    triage = classify_for_triage(crm_data, gmail_eps)
 
-    allen_count = len(triage['eps']['allens_plate']['crm_items']) + len(triage['eps']['allens_plate']['calendar'])
+    activities = triage['todays_activities']
+    total_activities = len(activities['tier1']) + len(activities['tier2']) + len(activities['other'])
+    allen_count = len(triage['eps']['allens_plate']['crm_items'])
     ai_count = len(triage['action_manifest'])
+    print(f"  Today's activities: {total_activities} ({len(activities['tier1'])} exec, {len(activities['tier2'])} operational)")
     print(f"  Allen's Plate: {allen_count} items")
     print(f"  AI Can Handle: {ai_count} items")
 
@@ -681,6 +680,18 @@ def main():
     print("\n=== Formatting ===")
     html = format_html_v2(triage)
 
+    if args.dry_run:
+        print(f"\n=== DRY RUN — preview only, no files written ===")
+        stats = triage['quick_stats']
+        print(f"\n  Pipeline: {stats['pipeline_deals']} deals (${stats['pipeline_value']:,.0f})")
+        print(f"  Yesterday: {stats['yesterday_total_calls']} calls ({stats['yesterday_cold_calls']} cold)")
+        print(f"  Today's activities: {total_activities}")
+        print(f"  Allen's Plate: {allen_count} items")
+        print(f"  AI Can Handle: {ai_count} items")
+        print(f"  Unread emails: {len(gmail_eps)} EPS")
+        return
+
+    # Save data files (default behavior + --send)
     TMP_DIR.mkdir(parents=True, exist_ok=True)
     html_file = TMP_DIR / 'morning_briefing.html'
     html_file.write_text(html)
@@ -695,21 +706,15 @@ def main():
     manifest_file.write_text(json.dumps(manifest_data, indent=2))
     print(f"  Action manifest saved to: {manifest_file}")
 
-    if args.dry_run:
-        print(f"\n=== DRY RUN — email not sent ===")
-        print(f"  Open {html_file} in a browser to preview")
-        kpis = triage['kpis']
-        print(f"\n  Pipeline: {kpis.get('pipeline_deals', 0)} deals (${kpis.get('pipeline_value', 0):,.0f})")
-        print(f"  Allen's Plate: {allen_count} items")
-        print(f"  AI Can Handle: {ai_count} items")
-        print(f"  Unread emails: {len(gmail_eps)} EPS")
-        print(f"  Calendar: {len(calendar_eps)} EPS")
+    if not args.send:
+        print(f"\n=== Data files generated (no email sent) ===")
+        print(f"  Use --send to also send the briefing email")
         return
 
-    # 6. Send via personal Gmail
+    # 6. Send via personal Gmail (only with --send)
     print(f"\n=== Sending to {to_email} (via personal Gmail) ===")
     date_str = crm_data['date']
-    subject = f"Morning Briefing {date_str} — {allen_count} for you, {ai_count} for AI"
+    subject = f"Morning Briefing {date_str} — {total_activities} activities, {allen_count} action items"
 
     if not PERSONAL_TOKEN.exists():
         print("ERROR: Personal token not found. Run: python3 tools/auth_personal.py",

@@ -7,27 +7,16 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3</string>
-        <string>tools/morning_briefing.py</string>
+        <string>/bin/bash</string>
+        <string>/Users/allenenriquez/Desktop/Allen Enriquez/automation/run_morning_briefing.sh</string>
     </array>
-
-    <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
 
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
-        <integer>6</integer>
+        <integer>5</integer>
         <key>Minute</key>
         <integer>30</integer>
-    </dict>
-
-    <key>EnvironmentVariables</key>
-    <dict>
-        <key>PATH</key>
-        <string>/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/bin:/usr/local/bin:/usr/bin:/bin</string>
-        <key>PYTHONPATH</key>
-        <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
     </dict>
 
     <key>StandardOutPath</key>

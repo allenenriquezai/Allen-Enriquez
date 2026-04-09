@@ -1,57 +1,35 @@
-# Workflow: Personal Brand CRM Daily Review
+# Workflow: Personal Brand CRM Daily Rhythm
 
-## Daily Rhythm
+## Schedule
 
-| Time (PH) | What | Command |
+| Time (PH) | What | How |
 |---|---|---|
-| ~6-7 PM | Evening briefing (priorities before calling) | `python3 tools/personal_crm.py evening-brief` |
-| ~12:30 AM | Automated CRM cleanup (after calling) | Runs via launchd |
+| ~6-7 PM | Evening briefing | `python3 tools/personal_crm.py evening-brief` |
+| ~12:30 AM | Automated cleanup | Runs via launchd (moves rows to correct tabs) |
 
-## Commands
+## Tab Structure
 
-### Evening Briefing
-```
-python3 tools/personal_crm.py evening-brief           # send email
-python3 tools/personal_crm.py evening-brief --dry-run  # preview only
-```
-Scans CRM + personal Gmail + Calendar. Sends prioritised call list to allenenriquez006@gmail.com.
+| Tab | Contents |
+|---|---|
+| Paint \| Call Queue | Uncalled + No Answer 1-4 (the calling tab) |
+| Paint \| Warm Interest | Warm Interest + Meeting Booked |
+| Paint \| Callbacks | Call Back + Late Follow Up + No Answer 5 |
+| Paint \| Emails Sent | Leads with email sent |
+| Paint \| Not Interested | Dead leads |
+| Other \| * | Same structure for non-painting companies |
 
-### CRM Cleanup (automated)
-```
-python3 tools/personal_crm.py cleanup           # run now
-python3 tools/personal_crm.py cleanup --dry-run  # preview only
-```
-Normalises empty outcomes, fills follow-up dates from notes. Runs at 12:30 AM daily via launchd.
+## Daily Flow
+1. Evening brief promotes callbacks due today into Call Queue
+2. Allen calls from Call Queue only
+3. Cleanup moves leads out of Call Queue to correct tabs based on outcome
 
-### Review (terminal)
+## Quick Commands
 ```
-python3 tools/personal_crm.py review
-```
-Quick terminal summary of hot leads, callbacks, and stats.
-
-### Draft Email
-```
-python3 tools/personal_crm.py draft --row 3 --tab "Painting Companies"
-```
-Drafts outreach email for a specific lead. Auto-selects opener (cold/warm/asked-for-email).
-
-### One-Time Cleanup
-```
-python3 tools/personal_crm.py clean --dry-run   # preview
-python3 tools/personal_crm.py clean              # apply
-```
-Reorders columns, formats sheet, normalises data. Only needed once.
-
-## launchd Setup
-
-Install the cleanup schedule:
-```
-cp com.enriquezOS.personal-crm-cleanup.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/com.enriquezOS.personal-crm-cleanup.plist
+python3 tools/personal_crm.py review              # terminal stats
+python3 tools/personal_crm.py cleanup --dry-run   # preview post-call moves
+python3 tools/personal_crm.py evening-brief       # send briefing
+python3 tools/personal_crm.py draft --row 3 --tab "Paint | Call Queue"
 ```
 
 ## Google Sheet
 https://docs.google.com/spreadsheets/d/1G5ATV3g22TVXdaBHfRTkbXthuvnRQuDbx-eI7bUNNz8
-
-## Column Order (A-I = primary view)
-Business Name | Decision Maker | Phone | Call Outcome | Notes | Follow-up Date | Date Called | Email | Website

@@ -1,14 +1,17 @@
 """
-Briefing Action Loop — processes Allen's reply to the morning briefing.
+Briefing Action Loop — processes today's action manifest.
 
-Checks personal Gmail for a reply to today's briefing, parses GO/SKIP
-commands, and executes approved AI actions (draft responses, chase emails).
+If an email reply with GO/SKIP commands is found, executes approved actions.
+If no reply is found (default when briefing email is not sent):
+  - inquiry items are auto-queued to pending_inquiries.json for human review
+  - chase and stale items are skipped (they send emails, need explicit approval)
+  - all decisions are logged to .tmp/action_loop.log
 
 Drafts are NOT auto-sent — they're posted as Pipedrive notes for review.
 
 Usage:
-    python3 tools/briefing_action_loop.py              # check for reply, execute
-    python3 tools/briefing_action_loop.py --dry-run     # parse reply but don't execute
+    python3 tools/briefing_action_loop.py              # process manifest (auto-queue if no reply)
+    python3 tools/briefing_action_loop.py --dry-run     # parse but don't execute
     python3 tools/briefing_action_loop.py --show        # show today's manifest only
 
 Requires:
@@ -32,6 +35,8 @@ BASE_DIR = Path(__file__).parent.parent
 TMP_DIR = BASE_DIR / '.tmp'
 PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
 MANIFEST_FILE = TMP_DIR / 'briefing_actions.json'
+
+PENDING_INQUIRIES_FILE = TMP_DIR / 'pending_inquiries.json'
 
 BRIEFING_FROM_EMAIL = 'allenenriquez@gmail.com'
 BRIEFING_FROM_NAME = 'Enriquez OS'
@@ -155,6 +160,27 @@ def parse_commands(reply_text):
     return go_numbers, skip_numbers
 
 
+def queue_inquiry(action):
+    """Add an inquiry to the pending queue for the next interactive session."""
+    existing = []
+    if PENDING_INQUIRIES_FILE.exists():
+        try:
+            existing = json.loads(PENDING_INQUIRIES_FILE.read_text())
+        except (json.JSONDecodeError, ValueError):
+            existing = []
+
+    existing.append({
+        'type': 'inquiry',
+        'from': action.get('from', ''),
+        'subject': action.get('subject', ''),
+        'snippet': action.get('snippet', ''),
+        'gmail_message_id': action.get('gmail_message_id', ''),
+        'queued_at': datetime.now().strftime('%Y-%m-%d %H:%M'),
+    })
+
+    PENDING_INQUIRIES_FILE.write_text(json.dumps(existing, indent=2))
+
+
 def execute_action(action, dry_run=False):
     """Execute a single AI action."""
     action_type = action['type']
@@ -163,9 +189,8 @@ def execute_action(action, dry_run=False):
     if action_type == 'inquiry':
         print(f"  #{num} [inquiry] Draft response to: {action.get('from', '')} — {action.get('subject', '')}")
         if not dry_run:
-            # For now, log to manifest as "pending_draft" — full email drafting
-            # will be wired to eps-email-agent in a future iteration
-            print(f"    → Queued for eps-email-agent (not yet wired)")
+            queue_inquiry(action)
+            print(f"    → Queued to pending_inquiries.json for next session")
         return True
 
     elif action_type == 'chase':
@@ -203,8 +228,38 @@ def execute_action(action, dry_run=False):
     elif action_type == 'stale':
         deal_id = action.get('deal_id')
         print(f"  #{num} [stale] Send check-in for deal {deal_id}: {action.get('deal_title', '')}")
-        if not dry_run:
-            print(f"    → Queued for eps-email-agent (not yet wired)")
+        if not dry_run and deal_id:
+            pipeline = action.get('pipeline', '')
+            if 'clean' in pipeline.lower():
+                template = 'follow_ups/builders_cleaning'
+            elif 'residential' in pipeline.lower() and 'paint' in pipeline.lower():
+                template = 'follow_ups/residential_painting'
+            elif 'residential' in pipeline.lower():
+                template = 'follow_ups/residential_cleaning'
+            else:
+                template = 'follow_ups/builders_painting'
+
+            days = action.get('days_since_activity', '?')
+            cmd = [
+                sys.executable, str(BASE_DIR / 'tools' / 'draft_follow_up_email.py'),
+                '--deal-id', str(deal_id),
+                '--template', template,
+                '--opener', f"It's been a little while since we last spoke — just wanted to check in.",
+            ]
+            person = action.get('person_name', '')
+            if person:
+                cmd.extend(['--first-name', person.split()[0]])
+
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+                if result.returncode == 0:
+                    print(f"    → Draft created. Check Pipedrive deal #{deal_id}")
+                else:
+                    print(f"    → Error: {result.stderr[:200]}")
+                    return False
+            except Exception as e:
+                print(f"    → Error: {e}")
+                return False
         return True
 
     return False
@@ -264,11 +319,37 @@ def main():
     service = get_gmail_service()
     reply_text = find_briefing_reply(service, manifest)
 
+    log_file = TMP_DIR / 'action_loop.log'
+    log_lines = [f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] Action loop run"]
+
     if not reply_text:
-        print("No reply found. Nothing to do.")
+        # No email reply — auto-queue inquiries, skip chase/stale
+        print("No reply found. Auto-queuing inquiries, skipping chase/stale.")
+        log_lines.append("No email reply found — running in auto-queue mode")
+
+        queued = []
+        skipped = []
+        for action in actions:
+            if action['type'] == 'inquiry':
+                if not args.dry_run:
+                    queue_inquiry(action)
+                queued.append(action)
+                label = f"#{action['number']} [inquiry] {action.get('from', '')} — {action.get('subject', '')}"
+                print(f"  AUTO-QUEUED: {label}")
+                log_lines.append(f"  AUTO-QUEUED: {label}")
+            else:
+                skipped.append(action)
+                label = f"#{action['number']} [{action['type']}] {action.get('deal_title', '')}"
+                print(f"  SKIPPED (needs approval): {label}")
+                log_lines.append(f"  SKIPPED: {label}")
+
+        print(f"\nAuto-queued {len(queued)} inquiries, skipped {len(skipped)} chase/stale items")
+        log_lines.append(f"Summary: {len(queued)} queued, {len(skipped)} skipped")
+        log_file.write_text('\n'.join(log_lines) + '\n')
         return
 
     print(f"Reply found: {reply_text[:100]}...")
+    log_lines.append(f"Email reply found: {reply_text[:100]}...")
 
     # Parse commands
     go_numbers, skip_numbers = parse_commands(reply_text)
@@ -278,11 +359,14 @@ def main():
 
     if not go_numbers:
         print("No actionable commands found in reply.")
+        log_lines.append("No actionable commands in reply")
+        log_file.write_text('\n'.join(log_lines) + '\n')
         return
 
     print(f"GO: {sorted(go_numbers)}")
     if skip_numbers:
         print(f"SKIP: {sorted(skip_numbers)}")
+    log_lines.append(f"GO: {sorted(go_numbers)}, SKIP: {sorted(skip_numbers)}")
 
     # Execute approved actions
     executed = []
@@ -291,8 +375,11 @@ def main():
             success = execute_action(action, dry_run=args.dry_run)
             if success:
                 executed.append(action)
+                log_lines.append(f"  EXECUTED: #{action['number']} [{action['type']}]")
 
     print(f"\nExecuted {len(executed)}/{len(go_numbers)} actions")
+    log_lines.append(f"Summary: {len(executed)}/{len(go_numbers)} executed")
+    log_file.write_text('\n'.join(log_lines) + '\n')
 
     # Send confirmation
     if executed and not args.dry_run:
