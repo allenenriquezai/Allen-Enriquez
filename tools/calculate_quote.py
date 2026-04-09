@@ -44,6 +44,11 @@ Scope string format (comma-separated, order doesn't matter):
     Xlm gutters             → EXT-03 fascia/eaves/gutters
     Xlm eaves               → EXT-03 fascia/eaves/gutters
     Xsqm deck               → EXT-04 timber deck
+    Xhrs cleaning            → HOUR general cleaning
+    Xhrs glass cleaning      → GLASS-WINDOW glass & window cleaning
+    Xsqm clean stage 1       → BUILD-01 construction clean stage 1
+    Xsqm clean stage 2       → BUILD-02 construction clean stage 2
+    Xsqm clean stage 3       → BUILD-03 construction clean stage 3
 """
 
 import argparse
@@ -93,6 +98,12 @@ def parse_scope(scope_str):
         (r'(\d+(?:\.\d+)?)\s+garage\s+doors?',                       'EXT-05'),
         (r'(\d+(?:\.\d+)?)\s*sqm\s+deck',                            'EXT-04'),
         (r'(\d+(?:\.\d+)?)\s*lm\s+(?:fascia|gutters?|eaves?)',       'EXT-03'),
+        # Cleaning — specific before general
+        (r'(\d+(?:\.\d+)?)\s*(?:hrs?|hours?)\s+(?:glass|window)\s+clean(?:ing)?', 'GLASS-WINDOW'),
+        (r'(\d+(?:\.\d+)?)\s*(?:hrs?|hours?)\s+(?:general\s+)?clean(?:ing)?', 'HOUR'),
+        (r'(\d+(?:\.\d+)?)\s*sqm\s+(?:construction\s+)?clean\s+stage\s*1', 'BUILD-01'),
+        (r'(\d+(?:\.\d+)?)\s*sqm\s+(?:construction\s+)?clean\s+stage\s*2', 'BUILD-02'),
+        (r'(\d+(?:\.\d+)?)\s*sqm\s+(?:construction\s+)?clean\s+stage\s*3', 'BUILD-03'),
     ]
 
     for pattern, key in patterns:
@@ -196,6 +207,11 @@ def generate_job_description(parsed_items, job_type, flags):
         'EXT-04': 'Sand and repaint timber deck',
         'EXT-05': 'Paint garage door(s)',
         'EXT-06': 'Paint roof (tile/metal)',
+        'HOUR': 'General cleaning at hourly rate',
+        'GLASS-WINDOW': 'Glass and window cleaning',
+        'BUILD-01': 'Construction clean — Stage 1 (post-frame rough clean)',
+        'BUILD-02': 'Construction clean — Stage 2 (pre-paint detail clean)',
+        'BUILD-03': 'Construction clean — Stage 3 (final/PCI handover clean)',
     }
 
     keys_present = {k for k, _ in parsed_items}

@@ -4,6 +4,15 @@ Changes to the system, why they were made, and how they score on design criteria
 
 ---
 
+## 2026-04-10 — CRM Kanban: Phone 2 field + display/edit toggle + clickable links
+**Problem:** Multiple phone numbers crammed into one Phone field. Modal contact fields were always-editable inputs with no clickable links — couldn't tap to dial or open website directly.
+**Change:** Added Phone 2 column to personal_crm.py (SECONDARY_COLS + parse_row). Rewrote modal contact section in index.html with display/edit toggle: fields show as clickable links (tel:/mailto:/https://) by default, pencil icon on hover switches to editable input. Updated app.js openModal() + new toggleFieldEdit(). Card on board unchanged.
+**Why:** Allen needs quick-dial from the CRM during calling sessions. Display-first pattern reduces friction — most interactions are read/click, not edit.
+**Criteria:** Speed: + (one-tap dial/email/web) | Cost: = | Accuracy: = | Scale: =
+**Next:** Run `personal_crm.py clean` to propagate Phone 2 header. Verify end-to-end.
+
+---
+
 ## 2026-04-09 — Dashboard v2: Full rewrite + orchestrator chat
 
 **Problem:** Dashboard was mobile-only (cramped on web), habits were outdated (14 items, wrong categories), chat agent had minimal tools (no personal Gmail, no awareness of full system), Learn tab showed raw article links with no summaries, chat broke on multi-turn tool use conversations.
@@ -154,6 +163,34 @@ Changes to the system, why they were made, and how they score on design criteria
 **Criteria:** Speed: ++ (Brief/Learn instant from cache, Home tab shows CRM stats without tab switching) | Cost: + (fewer API calls — Learn generates once not every load, Brief refreshes in background not blocking) | Accuracy: + (PH timezone correct, checklist header lookup correct, habits sync fixed) | Scale: =
 
 **Next:** Test Learn tab end-to-end (first generation + Next Lesson). `update-note` subcommand. Run `/os-gate` on dashboard changes.
+
+---
+
+## 2026-04-10 — Cleaning calculator + dead tool archive + GSD prune
+
+**Problem:** `calculate_quote.py` only handled painting — cleaning jobs (hourly, glass, construction stages) required manual quoting. 10 dead tools cluttered `tools/` (replaced by newer versions or never wired). 74 GSD skills globally, ~half never used.
+
+**Change:**
+- `tools/calculate_quote.py` — added 5 regex patterns (HOUR, GLASS-WINDOW, BUILD-01/02/03) to `parse_scope()`, updated docstring + `generate_job_description()` with cleaning descriptions
+- `git mv` 10 tools to `tools/archive/`: `clean_bbb.py`, `create_eps_paint_sheet_template.py`, `fill_quote_sheet.py`, `parse_job_descriptions.py`, `push_leads_to_sheet.py`, `qualify_cold_leads.py`, `read_drive_folder.py`, `setup_sheet.py`, `append_painting_companies.py`, `sync_sm8_catalog.py`
+- Deleted 37 GSD skills from `~/.claude/skills/` (74 → 37)
+- OS-gated 6 personal agents — all PASS, no changes needed
+
+**Why:** Cleaning rates already existed in `pricing.json` but weren't wired into the parser — low-effort, high-value. Archive over delete preserves git history and is recoverable. GSD prune followed 1 week of usage — removed skills never triggered (UI, security, milestone, workspace management, etc.).
+
+**Criteria:** Speed: + (cleaning quotes now automated, fewer tools to scan) | Cost: = | Accuracy: + (deterministic cleaning pricing, validated agents) | Scale: + (calculator now covers both business divisions)
+
+**Next:** OS-gate new skills. `--connected-only` flag on `process_cold_calls.py`. Dashboard approval UI.
+
+---
+
+## 2026-04-10 — CRM phone cleanup + Gmail draft scope
+
+**Problem:** ~58 rows had multiple phone numbers crammed into the Phone field with no Phone 2 column. 3 "Asked For Email" leads had no drafts sent. Gmail token lacked compose scope so couldn't create drafts.
+**Change:** Added `gmail.compose` to `tools/auth_personal.py` SCOPES, re-authed token. Added Phone 2 header to all 12 CRM tabs. Wrote Python script to extract first number → Phone, extras → Phone 2 via Sheets API batchUpdate (124 cells). Created 3 Gmail drafts via compose API.
+**Why:** Phone 2 column was in `personal_crm.py` TARGET_HEADERS but never propagated to the sheet. Draft scope needed because `gmail.send` can't create drafts — Allen wants to review before sending.
+**Criteria:** Speed: + (drafts ready to send in one click) | Cost: = | Accuracy: + (clean phone data, no multi-number confusion) | Scale: + (Phone 2 column now available for all future leads)
+**Next:** Automate phone cleanup in `personal_crm.py cleanup` command. Update Date Emailed for sent leads.
 
 ---
 

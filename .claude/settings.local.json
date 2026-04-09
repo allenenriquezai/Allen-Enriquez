@@ -15,7 +15,10 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5001/)",
       "Bash(kill %1)",
       "Bash(python3 tools/personal_crm.py report)",
-      "Bash(python3 tools/personal_crm.py evening-brief)"
+      "Bash(python3 tools/personal_crm.py evening-brief)",
+      "Bash(python3 -c ':*)",
+      "Bash(mv projects/personal/token_personal.pickle projects/personal/token_personal.pickle.bak)",
+      "Bash(python3 tools/auth_personal.py)"
     ]
   },
   "hooks": {
