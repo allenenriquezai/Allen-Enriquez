@@ -206,35 +206,70 @@ def fetch_page_text(url, max_chars=3000):
     except Exception:
         return ''
 
-    # Remove noise: scripts, styles, nav, header, footer, aside, cookie banners
-    cleaned = re.sub(r'<script[^>]*>.*?</script>', ' ', html, flags=re.DOTALL)
-    cleaned = re.sub(r'<style[^>]*>.*?</style>', ' ', cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r'<nav[^>]*>.*?</nav>', ' ', cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r'<header[^>]*>.*?</header>', ' ', cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r'<footer[^>]*>.*?</footer>', ' ', cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r'<aside[^>]*>.*?</aside>', ' ', cleaned, flags=re.DOTALL)
+    # Remove noise: scripts, styles, nav, header, footer, aside, forms, cookie banners
+    cleaned = html
+    for tag in ['script', 'style', 'nav', 'header', 'footer', 'aside', 'form', 'noscript']:
+        cleaned = re.sub(rf'<{tag}[^>]*>.*?</{tag}>', ' ', cleaned, flags=re.DOTALL)
 
-    # Strategy 1: Extract text from <article> or <main> if present
+    def strip_tags(s):
+        return re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', s)).strip()
+
+    # Strategy 1: <article> or <main> container
     article_match = re.search(r'<article[^>]*>(.*?)</article>', cleaned, re.DOTALL)
     main_match = re.search(r'<main[^>]*>(.*?)</main>', cleaned, re.DOTALL)
     content_html = article_match.group(1) if article_match else (
         main_match.group(1) if main_match else None)
 
-    # Strategy 2: Extract <p> tag content (where article text lives)
+    # Strategy 2: content divs with common class names
+    if not content_html or len(strip_tags(content_html)) < 200:
+        content_patterns = [
+            r'<div[^>]*class="[^"]*(?:article-body|post-content|entry-content|blog-content|cms-richtext|rich-text|content-body|main-content)[^"]*"[^>]*>(.*?)</div>',
+            r'<section[^>]*class="[^"]*(?:article|post|entry|content)[^"]*"[^>]*>(.*?)</section>',
+        ]
+        for pat in content_patterns:
+            m = re.search(pat, cleaned, re.DOTALL)
+            if m and len(strip_tags(m.group(1))) >= 200:
+                content_html = m.group(1)
+                break
+
+    # Strategy 3: Extract <p> tags from best source
     source = content_html if content_html else cleaned
     paragraphs = re.findall(r'<p[^>]*>(.*?)</p>', source, re.DOTALL)
     if paragraphs:
-        p_text = ' '.join(
-            re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', p)).strip()
-            for p in paragraphs
-        )
+        p_text = ' '.join(strip_tags(p) for p in paragraphs if len(strip_tags(p)) > 20)
         if len(p_text) >= 200:
             return p_text[:max_chars]
 
+    # Strategy 4: if we have a content container, use all its text
+    if content_html:
+        text = strip_tags(content_html)
+        if len(text) >= 200:
+            return text[:max_chars]
+
+    # Strategy 5: <li> items (some articles use lists heavily)
+    list_items = re.findall(r'<li[^>]*>(.*?)</li>', source, re.DOTALL)
+    if list_items:
+        li_text = ' '.join(strip_tags(li) for li in list_items if len(strip_tags(li)) > 15)
+        if len(li_text) >= 200:
+            return li_text[:max_chars]
+
     # Fallback: full text extraction from cleaned HTML
-    text = re.sub(r'<[^>]+>', ' ', cleaned)
-    text = re.sub(r'\s+', ' ', text).strip()
+    text = strip_tags(cleaned)
     return text[:max_chars]
+
+
+REFUSAL_MARKERS = [
+    'i cannot complete this task',
+    'i cannot provide an accurate summary',
+    'i cannot provide a summary',
+    'i cannot summarize',
+    'the article text provided is incomplete',
+    'the article text provided contains only',
+    'the text provided appears to be',
+    'i\'m unable to provide',
+    'i don\'t have enough content',
+    'no actual content',
+]
 
 
 def call_claude(prompt, max_tokens=1200):
@@ -262,7 +297,13 @@ def call_claude(prompt, max_tokens=1200):
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
             resp = json.loads(r.read().decode())
-        return resp['content'][0]['text']
+        text = resp['content'][0]['text']
+        # Reject refusal responses — Claude couldn't summarize the content
+        lower = text.lower()
+        if any(marker in lower for marker in REFUSAL_MARKERS):
+            print(f"    Claude refused (bad input) — skipping")
+            return None
+        return text
     except Exception as e:
         print(f"    Claude API error: {e}")
         return None
@@ -301,17 +342,18 @@ def fetch_mini_course():
                 summary = None
                 if source_text:
                     prompt = (
-                        f"You are a teacher writing a mini-lesson for someone learning "
-                        f"about AI for the first time. Topic: \"{lesson['title']}\"\n\n"
+                        f"You are a teacher writing a mini-lesson for someone who knows "
+                        f"nothing about tech or AI. Topic: \"{lesson['title']}\"\n\n"
+                        f"Write like you are talking to a 10 year old. Use the simplest "
+                        f"words you can. Short sentences. No big words.\n\n"
                         f"Write a lesson that teaches this topic from scratch:\n"
                         f"1. Start with a real-world analogy that makes the concept click.\n"
-                        f"2. Explain how it works in 2-3 short paragraphs. Use simple words "
-                        f"(3rd grade reading level). Every paragraph should teach something "
-                        f"new, not just describe the topic.\n"
+                        f"2. Explain how it works in 2-3 short paragraphs. Every paragraph "
+                        f"should teach something new.\n"
                         f"3. Give 3 key takeaways as bullet points (use •).\n"
                         f"4. End with one \"Try This:\" action the reader can do today.\n\n"
                         f"Rules:\n"
-                        f"- No jargon without explaining it in the same sentence\n"
+                        f"- No jargon. If you must use a technical term, explain it right away.\n"
                         f"- Do NOT use markdown headers. Just paragraphs then bullets.\n"
                         f"- Keep the total under 300 words.\n\n"
                         f"SOURCE MATERIAL:\n{source_text[:4000]}"

@@ -22,7 +22,7 @@ Straightforward, neutral, problem-focused. No fluff, no jargon.
 
 ## Agent Registry
 
-Subagents in `.claude/agents/`. All run on Haiku.
+Agent prompts in `projects/eps/agents/`. Loaded on demand by skills — NOT in `.claude/agents/`.
 
 | Agent | Handles |
 |---|---|
@@ -32,6 +32,8 @@ Subagents in `.claude/agents/`. All run on Haiku.
 | `eps-qa-agent` | QA gate before anything goes to a client |
 | `eps-call-notes` | Post-call: fetch transcript → format notes → post to deal |
 | `eps-cold-calls` | Cold lead batch processor: format notes → post to person |
+
+To use: spawn a general-purpose Agent with "Read your instructions from `projects/eps/agents/{agent}.md` and follow them. Task: {TASK}"
 
 ## QA Gate
 Nothing goes to a client until QA passes.

@@ -29,10 +29,38 @@ CRM_SHEET_ID = '1G5ATV3g22TVXdaBHfRTkbXthuvnRQuDbx-eI7bUNNz8'
 TMP_DIR = Path(__file__).parent.parent.parent / '.tmp'
 LEARN_STATE_FILE = TMP_DIR / 'learning_state.json'
 
-# --- Response cache (stale-while-revalidate) ---
+# --- Response cache (stale-while-revalidate + disk persistence) ---
 _brief_cache: dict[str, dict] = {}
 BRIEF_CACHE_TTL = 300  # 5 min — return fresh within this window
 _refreshing: set[str] = set()  # sections currently being refreshed
+DISK_CACHE_DIR = TMP_DIR / 'brief_cache'
+
+
+def _disk_cache_path(section: str) -> Path:
+    return DISK_CACHE_DIR / f'{section}.json'
+
+
+def _load_disk_cache(section: str):
+    """Load cached data from disk. Returns dict or None."""
+    path = _disk_cache_path(section)
+    if path.exists():
+        try:
+            entry = json.loads(path.read_text())
+            return entry
+        except (json.JSONDecodeError, IOError):
+            pass
+    return None
+
+
+def _save_disk_cache(section: str, data: dict, ts: float):
+    """Persist cache entry to disk for cold-start recovery."""
+    DISK_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        _disk_cache_path(section).write_text(
+            json.dumps({'data': data, 'ts': ts}, default=str)
+        )
+    except IOError:
+        pass
 
 
 def _cached(section: str):
@@ -40,6 +68,11 @@ def _cached(section: str):
     entry = _brief_cache.get(section)
     if entry:
         return entry['data']
+    # Cold start: try disk
+    disk = _load_disk_cache(section)
+    if disk:
+        _brief_cache[section] = disk
+        return disk['data']
     return None
 
 
@@ -52,7 +85,9 @@ def _is_stale(section: str) -> bool:
 
 
 def _set_cache(section: str, data: dict):
-    _brief_cache[section] = {'data': data, 'ts': time.time()}
+    ts = time.time()
+    _brief_cache[section] = {'data': data, 'ts': ts}
+    _save_disk_cache(section, data, ts)
 
 
 def _refresh_in_background(section: str, fetch_fn):
@@ -453,11 +488,13 @@ def _generate_lesson(lesson_index):
             page_text = fetch_page_text(a['url'], max_chars=3000)
             if page_text:
                 prompt = (
-                    f'Summarize this article about "{a["title"]}" for a busy professional.\n'
+                    f'Summarize this article about "{a["title"]}" for someone with zero tech background.\n'
+                    f'Write like you are explaining to a 10 year old. Use the simplest words possible.\n'
+                    f'No jargon. No big words. If you must use a technical term, explain it in the same sentence.\n\n'
                     f'Return EXACTLY this format:\n\n'
                     f'BULLETS:\n- [3-4 key takeaway bullet points]\n\n'
-                    f'ACTION:\n- [1-2 actionable items the reader can do today]\n\n'
-                    f'Keep each bullet under 20 words. Simple English. Be specific.\n\n'
+                    f'ACTION:\n- [1-2 things the reader can try today]\n\n'
+                    f'Keep each bullet under 20 words. Be specific, not vague.\n\n'
                     f'ARTICLE TEXT:\n{page_text}'
                 )
                 summary = call_claude(prompt, max_tokens=400)
@@ -594,11 +631,13 @@ def learn_summarize():
             return jsonify({'ok': True, 'summary': None, 'reason': 'Could not fetch page'})
 
         prompt = (
-            f'Summarize this article about "{title}" for a busy professional.\n'
+            f'Summarize this article about "{title}" for someone with zero tech background.\n'
+            f'Write like you are explaining to a 10 year old. Use the simplest words possible.\n'
+            f'No jargon. No big words. If you must use a technical term, explain it in the same sentence.\n\n'
             f'Return EXACTLY this format:\n\n'
             f'BULLETS:\n- [3-4 key takeaway bullet points]\n\n'
-            f'ACTION:\n- [1-2 actionable items the reader can do today]\n\n'
-            f'Keep each bullet under 20 words. Simple English. Be specific.\n\n'
+            f'ACTION:\n- [1-2 things the reader can try today]\n\n'
+            f'Keep each bullet under 20 words. Be specific, not vague.\n\n'
             f'ARTICLE TEXT:\n{page_text}'
         )
 

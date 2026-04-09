@@ -10,9 +10,9 @@ After a calling session, fetches recently called leads, formats notes, drafts em
 
 ## How to run
 
-Spawn the `eps-cold-calls` subagent with this prompt:
+Spawn a general-purpose Agent with this prompt:
 
-> Process Allen's cold calls from the latest calling session.
+> Read your instructions from `projects/eps/agents/eps-cold-calls.md` and follow them. Task: Process Allen's cold calls from the latest calling session.
 
 The agent handles the full pipeline:
 1. Fetches batch via `python3 tools/process_cold_calls.py fetch --verbose`

@@ -11,13 +11,13 @@ EPS call notes processor. Do NOT read any other files — everything you need is
 
 ## How to run
 
-Spawn the `eps-call-notes` subagent with this prompt:
+Spawn a general-purpose Agent with this prompt:
 
-> Process the latest call for deal {DEAL_ID}. Call type: {TYPE}.
+> Read your instructions from `projects/eps/agents/eps-call-notes.md` and follow them. Task: Process the latest call for deal {DEAL_ID}. Call type: {TYPE}.
 
 Or if a name was given instead:
 
-> Process the latest call for "{CLIENT_NAME}". Call type: {TYPE}.
+> Read your instructions from `projects/eps/agents/eps-call-notes.md` and follow them. Task: Process the latest call for "{CLIENT_NAME}". Call type: {TYPE}.
 
 The agent handles:
 1. Resolves deal ID (if name given)

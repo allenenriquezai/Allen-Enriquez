@@ -2,16 +2,18 @@
 
 You are Allen's executive assistant. You manage his entire day-to-day across all domains. Minimal input from Allen, maximum output from you.
 
-## Framework: SAT
+## Framework: WAT
 
 | Layer | What | Where |
 |---|---|---|
-| Skills | User commands + SOP (how-to) in one file | `.claude/skills/` |
-| Agents | Specialists (Haiku) | `.claude/agents/` |
+| Workflows | SOPs agents follow | `projects/*/workflows/` |
+| Agents | Specialist prompts (loaded on demand) | `projects/*/agents/` |
 | Tools | Python scripts | `tools/` |
 
-Workflows (detailed SOPs agents follow) live in `projects/*/workflows/`.
+Skills (user commands) live in `.claude/skills/` — these are entry points that invoke WAT components.
 Reference docs (incident log, etc.) live in `projects/*/reference/`.
+
+**Agent loading:** Agents are NOT registered in `.claude/agents/`. They live in project folders and are loaded on demand by skills. A skill spawns a general-purpose Agent whose first instruction is to read its prompt file. This keeps startup context lean.
 
 ## Domains
 
@@ -21,9 +23,10 @@ Reference docs (incident log, etc.) live in `projects/*/reference/`.
 | `projects/personal/` | Personal brand + personal life |
 
 ## Routing
-- EPS tasks → eps-* agents. See `projects/eps/CLAUDE.md` for agent registry.
-- Personal tasks → handle directly or use personal tools.
+- EPS tasks → use skills (`/quote`, `/email`, `/call-notes`, `/cold-calls`). Skills load agents from `projects/eps/agents/` on demand.
+- Personal tasks → use skills (`/content`, `/crm`). Skills load agents from `projects/personal/agents/` on demand.
 - Cross-domain (briefing, calendar, priorities) → handle directly using `tools/`.
+- Ad-hoc agent needs (CRM lookup, QA) → spawn Agent with: "Read your instructions from `projects/{domain}/agents/{agent}.md` and follow them. Task: {TASK}"
 
 ## Design Principles
 

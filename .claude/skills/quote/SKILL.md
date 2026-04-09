@@ -13,15 +13,14 @@ EPS quote creation. Do NOT read any other files — everything you need is here.
 
 ## How to run
 
-Spawn the `eps-quote-agent` subagent with this prompt:
+Spawn a general-purpose Agent with this prompt:
 
-> Create a quote for {CLIENT/DEAL}. Service type: {TYPE}. {SCOPE DETAILS}. {RATE DETAILS}.
-
-The agent follows `projects/eps/workflows/create-quote.md` through all stages:
-1. Intake → job description → line items → QA → Google Doc → Pipedrive
+> Read your instructions from `projects/eps/agents/eps-quote-agent.md` and follow them. Task: Create a quote for {CLIENT/DEAL}. Service type: {TYPE}. {SCOPE DETAILS}. {RATE DETAILS}.
 
 ## After quote is created
-The agent returns the Google Doc URL and total. Then spawn `eps-email-agent` to draft the quote email (Stage 5).
+The agent returns the Google Doc URL and total. Then spawn another Agent:
+
+> Read your instructions from `projects/eps/agents/eps-email-agent.md` and follow them. Task: Draft the quote email for deal {DEAL_ID}. {EMAIL DETAILS}.
 
 ## Rules
 - Do NOT read agent files, workflow files, or memory — the agent reads what it needs

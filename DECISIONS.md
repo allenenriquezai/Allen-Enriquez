@@ -16,7 +16,7 @@ Consolidated from all entries. Remove when done.
 **Dashboard**
 - [ ] Visual polish pass ("make it look like a real app")
 - [ ] Approval UI (GO/SKIP in Brief tab) — deferred to web & mobile app session
-- [ ] Test Learn tab end-to-end (first generation + Next Lesson)
+- [x] Test Learn tab end-to-end (first generation + Next Lesson)
 - [ ] Version static assets for cache busting
 - [ ] Consider upgrading chat model (Haiku → Sonnet)
 
@@ -31,6 +31,37 @@ Consolidated from all entries. Remove when done.
 - [ ] Generate and QA Day 1 content scripts
 - [ ] Phase 2: AI-assisted video editing
 - [ ] Evaluate GSD skill usage — prune unused
+
+---
+
+## 2026-04-10 — WAT framework: on-demand agent loading + context audit
+
+**Problem:** 12 agents in `.claude/agents/` auto-loaded ~40KB (~10K tokens) into every session. Not scalable — adding more agents makes every session heavier.
+
+**Change:**
+- Moved all agents to `projects/*/agents/` (loaded on demand by skills, not at startup)
+- Updated 5 skills to spawn general-purpose Agents that read prompt files
+- Deleted 3 heavy skills (pdf/xlsx/docx ~20KB) and 7 stale memory files
+- Created `/os-audit` skill to detect context bloat with thresholds
+- CLAUDE.md: SAT → WAT framework
+
+**Why:** Claude Code auto-loads everything in `.claude/agents/` and `.claude/skills/` into every session's system prompt. Moving agents out eliminates the scaling problem — 30 agents would cost 0 tokens at startup instead of ~100KB. On-demand loading via skills means agents only load in sessions that need them.
+
+**Criteria:** Speed: + | Cost: ++ | Accuracy: = | Scale: ++
+
+**Next:** Test all skills end-to-end to confirm on-demand pattern works. Trim remaining large skills (find-skills 4.9KB, webapp-testing 3KB).
+
+---
+
+## 2026-04-10 — Learn tab fixes + Brief disk cache + kid-level language
+
+**Problem:** Learn tab showed Claude refusal messages as summaries (scraper fed bad content). Work Brief slow on every cold start (10+ Pipedrive API calls, in-memory cache lost on restart). Learning language too technical.
+
+**Change:** Added refusal detection in `call_claude()`. Improved scraper with 5 extraction strategies. Added disk-based cache persistence for all briefs. Updated all learning prompts to 10-year-old reading level.
+
+**Why:** Refusal detection is cheaper than re-prompting (root cause is bad scrape). Disk cache gives instant cold-start loads while background refresh keeps data fresh. Kid-level language per Allen's explicit request.
+
+**Criteria:** Speed: ++ | Cost: = | Accuracy: + | Scale: =
 
 ---
 

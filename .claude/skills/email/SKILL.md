@@ -36,9 +36,9 @@ Inputs needed:
 
 ## How to run
 
-Spawn the `eps-email-agent` subagent with this prompt:
+Spawn a general-purpose Agent with this prompt:
 
-> Draft a {quote/follow-up} email for deal {DEAL_ID}. Template: {KEY}. First name: {NAME}. Email: {EMAIL}. Opener: "{OPENER}". Situation: "{SITUATION}". {Concerns if residential}. {Bonus if any}. Doc URL: {URL if quote email}.
+> Read your instructions from `projects/eps/agents/eps-email-agent.md` and follow them. Task: Draft a {quote/follow-up} email for deal {DEAL_ID}. Template: {KEY}. First name: {NAME}. Email: {EMAIL}. Opener: "{OPENER}". Situation: "{SITUATION}". {Concerns if residential}. {Bonus if any}. Doc URL: {URL if quote email}.
 
 The agent:
 1. Drafts email (no send)
