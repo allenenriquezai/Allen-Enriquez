@@ -7,6 +7,7 @@ a batch JSON for the eps-cold-calls agent to format.
 
 Usage:
     python3 tools/process_cold_calls.py fetch                    # fetch all
+    python3 tools/process_cold_calls.py fetch --connected-only   # only leads Allen spoke to
     python3 tools/process_cold_calls.py fetch --dry-run --limit 5
     python3 tools/process_cold_calls.py post --lead-id UUID      # post formatted note
 
@@ -52,6 +53,16 @@ ACTIVITY_MAP = {
 
 # Activity types that need email drafts
 EMAIL_TYPES = {'Cold - Asked For Email', 'Cold - Warm Interest'}
+
+# Activity types where Allen actually spoke to someone
+CONNECTED_TYPES = {
+    'Cold - Not Interested / Not Qualified',
+    'Cold - Asked For Email',
+    'Cold - Call Back',
+    'Cold - Late Follow Up',
+    'Cold - Warm Interest',
+    'Cold - Converted To Deal',
+}
 
 
 # --- Env & API helpers (same pattern as qualify_cold_leads.py) ---
@@ -262,6 +273,12 @@ def cmd_fetch(args, env):
             org = get_org(org_id, api_key=api_key, domain=domain)
             org_name = org.get('name', '')
 
+        # Skip non-connected leads if --connected-only
+        if args.connected_only and activity_type not in CONNECTED_TYPES:
+            if args.verbose:
+                print(f"  Skipped: not connected ({activity_type})")
+            continue
+
         needs_email = activity_type in EMAIL_TYPES
 
         entry = {
@@ -363,6 +380,7 @@ def main():
     fetch_p = subparsers.add_parser('fetch', help='Fetch recently called leads')
     fetch_p.add_argument('--dry-run', action='store_true', help='Preview only')
     fetch_p.add_argument('--limit', type=int, default=0, help='Max leads (0 = all)')
+    fetch_p.add_argument('--connected-only', action='store_true', help='Only include leads where Allen spoke to someone')
     fetch_p.add_argument('--verbose', action='store_true', help='Detailed output')
 
     # post

@@ -9,6 +9,7 @@ Subcommands:
     cleanup        Post-calling CRM normalisation (automated at 12:30 AM via launchd)
     draft          Draft outreach email for a specific lead
     review         Print terminal summary of CRM priorities
+    update-note    Update any field for a specific lead (used by follow-up agent)
 
 Usage:
     python3 tools/personal_crm.py clean --dry-run
@@ -19,6 +20,7 @@ Usage:
     python3 tools/personal_crm.py cleanup
     python3 tools/personal_crm.py draft --row 3 --tab "Painting Companies"
     python3 tools/personal_crm.py review
+    python3 tools/personal_crm.py update-note --tab "Paint | Emails Sent" --row 5 --field "Date Emailed" --value "2026-04-10"
 
 Requires:
     projects/personal/token_personal.pickle: Google OAuth token with Sheets + Gmail + Calendar
@@ -1600,6 +1602,44 @@ def cmd_draft(args):
 
 
 # ============================================================
+# update-note — update a field for a specific lead
+# ============================================================
+
+def cmd_update_note(args):
+    service = get_sheets_service()
+    tab = args.tab
+    row_num = args.row
+    field = args.field
+    value = args.value
+
+    # Read headers to find column
+    result = service.spreadsheets().values().get(
+        spreadsheetId=SPREADSHEET_ID, range=f"'{tab}'!1:1"
+    ).execute()
+    headers = result.get('values', [[]])[0]
+    col_map = {h: i for i, h in enumerate(headers)}
+
+    if field not in col_map:
+        print(f"ERROR: Field '{field}' not found in {tab}. Available: {', '.join(headers)}")
+        sys.exit(1)
+
+    col_index = col_map[field]
+    col_letter = chr(ord('A') + col_index) if col_index < 26 else \
+        chr(ord('A') + col_index // 26 - 1) + chr(ord('A') + col_index % 26)
+    cell = f"'{tab}'!{col_letter}{row_num}"
+
+    if args.dry_run:
+        print(f"[DRY RUN] Would set {cell} = {value}")
+        return
+
+    service.spreadsheets().values().update(
+        spreadsheetId=SPREADSHEET_ID, range=cell,
+        valueInputOption='RAW', body={'values': [[value]]}
+    ).execute()
+    print(f"Updated {field} at {tab} row {row_num} → {value}")
+
+
+# ============================================================
 # dedupe-phone — remove duplicate phone numbers, merge rows
 # ============================================================
 
@@ -1797,6 +1837,13 @@ def main():
     p_reorg = sub.add_parser('reorganize', help='One-time migration to status-based tabs')
     p_reorg.add_argument('--dry-run', action='store_true', help='Preview tab assignments only')
 
+    p_update = sub.add_parser('update-note', help='Update a field for a specific lead')
+    p_update.add_argument('--tab', required=True, help='Tab name')
+    p_update.add_argument('--row', type=int, required=True, help='Sheet row number')
+    p_update.add_argument('--field', default='Notes', help='Column name to update (default: Notes)')
+    p_update.add_argument('--value', required=True, help='New value')
+    p_update.add_argument('--dry-run', action='store_true', help='Preview only')
+
     args = parser.parse_args()
 
     if args.command == 'clean':
@@ -1813,6 +1860,8 @@ def main():
         cmd_dedupe_phone(args)
     elif args.command == 'reorganize':
         cmd_reorganize(args)
+    elif args.command == 'update-note':
+        cmd_update_note(args)
     else:
         parser.print_help()
 

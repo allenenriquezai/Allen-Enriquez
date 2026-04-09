@@ -19,13 +19,13 @@ BASE_DIR = Path(__file__).parent.parent
 LIMITS = {
     'agents': 200,
     'workflows': 250,
-    'skills': 100,
+    'skills': 200,
 }
 
 SOFT_LIMITS = {
     'agents': 150,
     'workflows': 200,
-    'skills': 80,
+    'skills': 100,
 }
 
 REQUIRED_FRONTMATTER = {

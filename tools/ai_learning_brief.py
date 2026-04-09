@@ -196,7 +196,7 @@ def search_articles(query, max_results=5):
 
 
 def fetch_page_text(url, max_chars=3000):
-    """Fetch a web page and extract readable text (best-effort)."""
+    """Fetch a web page and extract readable article text (best-effort)."""
     req = urllib.request.Request(url, headers={
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
     })
@@ -205,10 +205,34 @@ def fetch_page_text(url, max_chars=3000):
             html = r.read().decode('utf-8', errors='ignore')
     except Exception:
         return ''
-    # Strip tags, collapse whitespace
-    text = re.sub(r'<script[^>]*>.*?</script>', ' ', html, flags=re.DOTALL)
-    text = re.sub(r'<style[^>]*>.*?</style>', ' ', text, flags=re.DOTALL)
-    text = re.sub(r'<[^>]+>', ' ', text)
+
+    # Remove noise: scripts, styles, nav, header, footer, aside, cookie banners
+    cleaned = re.sub(r'<script[^>]*>.*?</script>', ' ', html, flags=re.DOTALL)
+    cleaned = re.sub(r'<style[^>]*>.*?</style>', ' ', cleaned, flags=re.DOTALL)
+    cleaned = re.sub(r'<nav[^>]*>.*?</nav>', ' ', cleaned, flags=re.DOTALL)
+    cleaned = re.sub(r'<header[^>]*>.*?</header>', ' ', cleaned, flags=re.DOTALL)
+    cleaned = re.sub(r'<footer[^>]*>.*?</footer>', ' ', cleaned, flags=re.DOTALL)
+    cleaned = re.sub(r'<aside[^>]*>.*?</aside>', ' ', cleaned, flags=re.DOTALL)
+
+    # Strategy 1: Extract text from <article> or <main> if present
+    article_match = re.search(r'<article[^>]*>(.*?)</article>', cleaned, re.DOTALL)
+    main_match = re.search(r'<main[^>]*>(.*?)</main>', cleaned, re.DOTALL)
+    content_html = article_match.group(1) if article_match else (
+        main_match.group(1) if main_match else None)
+
+    # Strategy 2: Extract <p> tag content (where article text lives)
+    source = content_html if content_html else cleaned
+    paragraphs = re.findall(r'<p[^>]*>(.*?)</p>', source, re.DOTALL)
+    if paragraphs:
+        p_text = ' '.join(
+            re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', p)).strip()
+            for p in paragraphs
+        )
+        if len(p_text) >= 200:
+            return p_text[:max_chars]
+
+    # Fallback: full text extraction from cleaned HTML
+    text = re.sub(r'<[^>]+>', ' ', cleaned)
     text = re.sub(r'\s+', ' ', text).strip()
     return text[:max_chars]
 
