@@ -65,31 +65,35 @@ def _populate_defaults(service, sheet_id):
     """Populate Checklist Config with default items."""
     config_data = [
         ['Category', 'Item', 'Type', 'Order', 'Active'],
-        # Personal (morning)
-        ['Personal', 'Gratitude', 'check', '1', 'TRUE'],
-        ['Personal', 'Stretch', 'check', '2', 'TRUE'],
-        ['Personal', 'Learn AI Automation', 'check', '3', 'TRUE'],
-        ['Personal', 'Read Pages', 'count', '4', 'TRUE'],
-        ['Personal', 'Cardio', 'check', '5', 'TRUE'],
+        # Personal Morning
+        ['Personal Morning', 'Gratitude', 'check', '1', 'TRUE'],
+        ['Personal Morning', 'Goal Review', 'check', '2', 'TRUE'],
+        ['Personal Morning', 'Learn AI & Automation 1', 'check', '3', 'TRUE'],
+        ['Personal Morning', 'Read (Pages)', 'count', '4', 'TRUE'],
+        ['Personal Morning', 'Cardio', 'check', '5', 'TRUE'],
+        ['Personal Morning', 'US Outreach', 'check', '6', 'TRUE'],
+        # EPS
+        ['EPS', 'Check Sent Quotes', 'check', '1', 'TRUE'],
+        ['EPS', 'Check Follow Ups', 'check', '2', 'TRUE'],
+        ['EPS', 'Sales Calls', 'check', '3', 'TRUE'],
+        ['EPS', 'Discovery Calls', 'check', '4', 'TRUE'],
+        ['EPS', 'Cold Calls / Outreach', 'check', '5', 'TRUE'],
         # Workout
         ['Workout', 'Pullups', 'count', '1', 'TRUE'],
         ['Workout', 'Dips', 'count', '2', 'TRUE'],
         ['Workout', 'Shoulder Press', 'count', '3', 'TRUE'],
         ['Workout', 'Pushups', 'count', '4', 'TRUE'],
         ['Workout', 'Squats', 'count', '5', 'TRUE'],
-        # EPS
-        ['EPS', 'Practice Scripts', 'check', '1', 'TRUE'],
-        ['EPS', 'Check Sent Quotes', 'check', '2', 'TRUE'],
-        ['EPS', 'Check Follow Ups', 'check', '3', 'TRUE'],
-        ['EPS', 'Sales Calls', 'count', '4', 'TRUE'],
-        ['EPS', 'Discovery Calls', 'count', '5', 'TRUE'],
-        ['EPS', 'Cold Calls', 'count', '6', 'TRUE'],
-        # Family & Home (evening)
-        ['Family & Home', 'Bathe & Brush Marcus', 'check', '1', 'TRUE'],
-        ['Family & Home', 'Wife Time', 'check', '2', 'TRUE'],
-        ['Family & Home', 'Clean Up Office', 'check', '3', 'TRUE'],
-        ['Family & Home', 'Clean Up Living Room', 'check', '4', 'TRUE'],
-        ['Family & Home', 'Clean Up Room', 'check', '5', 'TRUE'],
+        # Family & Home
+        ['Family & Home', 'Wife Time', 'check', '1', 'TRUE'],
+        ['Family & Home', 'Bathe & Brush Marcus Aurelius', 'check', '2', 'TRUE'],
+        ['Family & Home', 'Clean Office', 'check', '3', 'TRUE'],
+        ['Family & Home', 'Clean Living Room', 'check', '4', 'TRUE'],
+        ['Family & Home', 'Clean Bedroom', 'check', '5', 'TRUE'],
+        # Personal Closing
+        ['Personal Closing', 'Learn AI & Automation 2', 'check', '1', 'TRUE'],
+        ['Personal Closing', 'Build Systems', 'check', '2', 'TRUE'],
+        ['Personal Closing', 'Cold Outreach', 'check', '3', 'TRUE'],
     ]
 
     log_headers = [['Date', 'Item', 'Value', 'Timestamp']]
@@ -150,7 +154,7 @@ def index():
     pct = round(done / total * 100) if total else 0
 
     # Category order
-    cat_order = ['Personal', 'Workout', 'EPS', 'Family & Home']
+    cat_order = ['Personal Morning', 'EPS', 'Workout', 'Family & Home', 'Personal Closing']
     categories = []
     for cat in cat_order:
         if cat not in config:

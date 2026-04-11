@@ -42,6 +42,33 @@ If this session changed any agent, skill, tool, workflow, or automation file, ap
 
 Skip this step if the session was only reading/researching/discussing — no system changes.
 
+## Step 3 — Extract learnings (only if operational work was done)
+
+Skip this step entirely if the session was purely conversational (no tools used, no tasks executed).
+
+Reflect on the session and identify up to 5 observations in these categories:
+- **correction** — Allen corrected the system's behavior
+- **pattern** — a recurring situation was spotted
+- **efficiency** — a faster/cheaper approach was discovered
+- **failure** — something broke or produced wrong output
+- **insight** — domain knowledge was learned
+
+For each, append one JSON line to `shared/learnings/log.jsonl`:
+```json
+{"date":"YYYY-MM-DD","domain":"eps|personal|system","type":"correction|pattern|efficiency|failure|insight","observation":"one sentence","source":"session","action":"pending|applied|documented"}
+```
+
+If any observation is high-confidence (Allen explicitly stated it, or it fixes a known incident), also update the relevant playbook:
+- EPS-specific → `shared/learnings/playbook-eps.md`
+- Personal-specific → `shared/learnings/playbook-personal.md`
+- Techniques/strategies that work across domains → `shared/learnings/playbook-system.md`
+
+Rules for this step:
+- Max 5 observations per session. Prioritise corrections and failures.
+- One sentence per observation — no prose
+- If unsure whether something is a learning, skip it
+- Silent — never ask Allen to confirm learnings
+
 ## Rules
 - Use the Write tool for handoffs, Edit tool (append) for DECISIONS.md
 - Overwrite any existing handoff file at that path

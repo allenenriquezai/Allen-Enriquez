@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.enriquezOS.estimateone-scraper</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>cd /Users/allenenriquez/Desktop/Allen\ Enriquez &amp;&amp; /usr/bin/python3 tools/estimateone_scraper.py --all &amp;&amp; /usr/bin/python3 tools/e1_to_sheet.py</string>
+    </array>
+
+    <!-- Daily at 6:00 AM AEST (20:00 UTC previous day) -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>6</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/estimateone-scraper.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/estimateone-scraper-error.log</string>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+</dict>
+</plist>

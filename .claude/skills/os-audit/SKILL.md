@@ -35,6 +35,7 @@ wc -c CLAUDE.md projects/*/CLAUDE.md 2>/dev/null
 | Memory file count | ≤20 | 21-30 | 31+ |
 | Total memory size | ≤30KB | 30-50KB | 50KB+ |
 | Any CLAUDE.md file | ≤5KB | 5-8KB | 8KB+ |
+| Any playbook file | ≤2KB | 2-3KB | 3KB+ |
 
 ## Output format
 

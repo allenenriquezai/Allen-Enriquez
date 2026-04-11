@@ -44,7 +44,7 @@ function renderWeekOverview(weekly, spend, cmd) {
     if (streakEl && weekly.ok) streakEl.textContent = `${weekly.streak}d`;
 
     if (spendEl && spend.ok && spend.this_week) {
-        spendEl.textContent = `$${spend.this_week.total.toFixed(0)}`;
+        spendEl.textContent = `₱${Math.round(spend.this_week.total).toLocaleString()}`;
     }
 
     // Today's habits card
@@ -59,7 +59,7 @@ function renderWeekOverview(weekly, spend, cmd) {
     // Today's spend card
     if (cmd.ok && cmd.spend) {
         const spCardEl = document.getElementById('cmd-spend-value');
-        if (spCardEl) spCardEl.textContent = `$${cmd.spend.today}`;
+        if (spCardEl) spCardEl.textContent = `₱${Math.round(cmd.spend.today).toLocaleString()}`;
     }
 
     // Personal outreach

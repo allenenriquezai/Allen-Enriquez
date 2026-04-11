@@ -18,7 +18,8 @@
       "Bash(python3 tools/personal_crm.py evening-brief)",
       "Bash(python3 -c ':*)",
       "Bash(mv projects/personal/token_personal.pickle projects/personal/token_personal.pickle.bak)",
-      "Bash(python3 tools/auth_personal.py)"
+      "Bash(python3 tools/auth_personal.py)",
+      "Bash(python3 tools/gate_check.py --help)"
     ]
   },
   "hooks": {

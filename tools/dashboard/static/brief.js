@@ -137,41 +137,41 @@ function renderEps(container, data) {
     let html = '';
 
     // Stats bar
-    html += `<div class="grid grid-cols-3 gap-2 mb-4">
-        <div class="bg-gray-900 rounded-lg p-3 text-center">
-            <div class="text-xs text-gray-500">Pipeline</div>
-            <div class="text-sm font-semibold text-white">${s.pipeline_deals} deals</div>
-            <div class="text-xs text-gray-500">$${(s.pipeline_value/1000).toFixed(0)}k</div>
+    html += `<div class="grid grid-cols-3 gap-3 mb-5">
+        <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+            <div class="text-xs text-gray-500 mb-1">Pipeline</div>
+            <div class="text-lg font-bold text-white">${s.pipeline_deals} deals</div>
+            <div class="text-sm text-gray-400">$${(s.pipeline_value/1000).toFixed(0)}k</div>
         </div>
-        <div class="bg-gray-900 rounded-lg p-3 text-center">
-            <div class="text-xs text-gray-500">Won (week)</div>
-            <div class="text-sm font-semibold text-green-400">${s.won_week}</div>
-            <div class="text-xs text-gray-500">$${(s.won_value_week/1000).toFixed(0)}k</div>
+        <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+            <div class="text-xs text-gray-500 mb-1">Won (week)</div>
+            <div class="text-lg font-bold text-green-400">${s.won_week}</div>
+            <div class="text-sm text-gray-400">$${(s.won_value_week/1000).toFixed(0)}k</div>
         </div>
-        <div class="bg-gray-900 rounded-lg p-3 text-center">
-            <div class="text-xs text-gray-500">Calls (yday)</div>
-            <div class="text-sm font-semibold text-blue-400">${s.yesterday_total_calls}</div>
-            <div class="text-xs text-gray-500">${s.yesterday_cold_calls} cold</div>
+        <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+            <div class="text-xs text-gray-500 mb-1">Calls (yday)</div>
+            <div class="text-lg font-bold text-blue-400">${s.yesterday_total_calls}</div>
+            <div class="text-sm text-gray-400">${s.yesterday_cold_calls} cold</div>
         </div>
     </div>`;
 
     // Activities
-    html += `<div class="mb-4">
-        <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Today's Activities (${totalAct})</div>`;
+    html += `<div class="mb-5">
+        <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">Today's Activities (${totalAct})</div>`;
 
     if (totalAct === 0) {
-        html += '<div class="text-sm text-gray-600 py-2">No activities scheduled</div>';
+        html += '<div class="text-base text-gray-600 py-3">No activities scheduled</div>';
     } else {
         if (t1 > 0) {
-            html += '<div class="text-xs text-amber-400 font-semibold mb-1">PRIORITY</div>';
+            html += '<div class="text-xs text-amber-400 font-semibold mb-2">PRIORITY</div>';
             act.tier1.forEach(a => { html += renderActivity(a); });
         }
         if (t2 > 0) {
-            html += '<div class="text-xs text-gray-400 font-semibold mt-2 mb-1">OPERATIONAL</div>';
+            html += '<div class="text-xs text-gray-400 font-semibold mt-3 mb-2">OPERATIONAL</div>';
             act.tier2.forEach(a => { html += renderActivity(a); });
         }
         if (to > 0) {
-            html += '<div class="text-xs text-gray-500 font-semibold mt-2 mb-1">OTHER</div>';
+            html += '<div class="text-xs text-gray-500 font-semibold mt-3 mb-2">OTHER</div>';
             act.other.forEach(a => { html += renderActivity(a); });
         }
     }
@@ -179,45 +179,45 @@ function renderEps(container, data) {
 
     // Allen's Plate
     if (data.allens_plate.length > 0) {
-        html += `<div class="mb-4">
-            <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Allen's Plate (${data.allens_plate.length})</div>`;
+        html += `<div class="mb-5">
+            <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">Allen's Plate (${data.allens_plate.length})</div>`;
         data.allens_plate.forEach(item => { html += renderActionItem(item); });
         html += '</div>';
     }
 
     // AI Can Handle
     if (data.ai_can_handle.length > 0) {
-        html += `<div class="mb-4">
-            <div class="text-xs text-blue-400 uppercase tracking-wider mb-2">AI Can Handle (${data.ai_can_handle.length})</div>`;
+        html += `<div class="mb-5">
+            <div class="text-sm text-blue-400 font-semibold uppercase tracking-wider mb-3">AI Can Handle (${data.ai_can_handle.length})</div>`;
         data.ai_can_handle.forEach(item => { html += renderActionItem(item, true); });
         html += '</div>';
     }
 
     // Stale
     if (data.stale_deals.length > 0) {
-        html += `<div class="mb-4">
-            <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Stale Deals (${data.stale_deals.length})</div>`;
+        html += `<div class="mb-5">
+            <div class="text-sm text-gray-400 font-semibold uppercase tracking-wider mb-3">Stale Deals (${data.stale_deals.length})</div>`;
         data.stale_deals.forEach(d => {
-            html += `<div class="bg-gray-900 rounded-lg p-2.5 mb-1.5 text-sm">
-                <span class="text-gray-300">${d.deal_title}</span>
-                <span class="text-gray-600 text-xs ml-1">${d.pipeline} / ${d.stage} &middot; ${d.days_since_activity}d</span>
+            html += `<div class="bg-gray-900 rounded-xl px-4 py-3 mb-1.5 border border-gray-800">
+                <span class="text-base text-gray-200">${d.deal_title}</span>
+                <span class="text-gray-500 text-sm ml-2">${d.pipeline} / ${d.stage} &middot; ${d.days_since_activity}d</span>
             </div>`;
         });
         html += '</div>';
     }
 
-    html += `<div class="text-xs text-gray-600 text-center mt-4">Updated ${data.updated}</div>`;
+    html += `<div class="text-sm text-gray-600 text-center mt-5">Updated ${data.updated}</div>`;
     container.innerHTML = html;
 }
 
 function renderActivity(a) {
-    const overdueTag = a.overdue ? '<span class="text-red-400 text-xs ml-1">OVERDUE</span>' : '';
+    const overdueTag = a.overdue ? '<span class="text-red-400 text-xs ml-1 font-semibold">OVERDUE</span>' : '';
     const doneClass = a.done ? 'opacity-50 line-through' : '';
-    const time = a.due_time ? `<span class="text-gray-500 text-xs mr-1">${a.due_time}</span>` : '';
-    const deal = a.deal_title ? `<span class="text-gray-500 text-xs">&middot; ${a.deal_title}</span>` : '';
-    return `<div class="bg-gray-900 rounded-lg px-3 py-2 mb-1 ${doneClass}">
-        ${time}<span class="text-sm font-medium text-gray-300">${a.label}</span> ${deal}${overdueTag}
-        ${a.subject ? `<div class="text-xs text-gray-500 mt-0.5">${a.subject}</div>` : ''}
+    const time = a.due_time ? `<span class="text-gray-500 text-sm mr-2">${a.due_time}</span>` : '';
+    const deal = a.deal_title ? `<span class="text-gray-500 text-sm">&middot; ${a.deal_title}</span>` : '';
+    return `<div class="bg-gray-900 rounded-xl px-4 py-3 mb-1.5 border border-gray-800 ${doneClass}">
+        ${time}<span class="text-base font-medium text-gray-200">${a.label}</span> ${deal}${overdueTag}
+        ${a.subject ? `<div class="text-sm text-gray-500 mt-1">${a.subject}</div>` : ''}
     </div>`;
 }
 
@@ -231,13 +231,13 @@ function renderActionItem(item, isAi) {
                    item.recommended_action === 'urgent' ? 'Follow up NOW' : item.recommended_action;
     const border = isAi ? 'border-l-2 border-blue-500' : '';
 
-    return `<div class="bg-gray-900 rounded-lg p-2.5 mb-1.5 ${border}">
-        <div class="text-sm">
+    return `<div class="bg-gray-900 rounded-xl px-4 py-3 mb-2 border border-gray-800 ${border}">
+        <div class="text-base">
             <span class="${priorityColor} font-semibold text-xs mr-1">${item.priority}</span>
-            <span class="text-gray-300">${item.deal_title}${person}</span>
+            <span class="text-gray-200">${item.deal_title}${person}</span>
         </div>
-        <div class="text-xs text-gray-500 mt-0.5">${item.pipeline} / ${item.stage}${value} &middot; ${item.days_since_activity}d ago</div>
-        <div class="text-xs text-blue-400 mt-0.5">${action}</div>
+        <div class="text-sm text-gray-500 mt-1">${item.pipeline} / ${item.stage}${value} &middot; ${item.days_since_activity}d ago</div>
+        <div class="text-sm text-blue-400 mt-1">${action}</div>
     </div>`;
 }
 
@@ -247,54 +247,54 @@ function renderPersonal(container, data) {
     let html = '';
 
     // Stats bar
-    html += `<div class="grid grid-cols-4 gap-2 mb-4">
-        <div class="bg-gray-900 rounded-lg p-3 text-center">
-            <div class="text-xs text-gray-500">Total</div>
-            <div class="text-sm font-semibold text-white">${s.total_leads}</div>
+    html += `<div class="grid grid-cols-4 gap-3 mb-5">
+        <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+            <div class="text-xs text-gray-500 mb-1">Total</div>
+            <div class="text-lg font-bold text-white">${s.total_leads}</div>
         </div>
-        <div class="bg-gray-900 rounded-lg p-3 text-center">
-            <div class="text-xs text-gray-500">Hot</div>
-            <div class="text-sm font-semibold text-green-400">${s.hot}</div>
+        <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+            <div class="text-xs text-gray-500 mb-1">Hot</div>
+            <div class="text-lg font-bold text-green-400">${s.hot}</div>
         </div>
-        <div class="bg-gray-900 rounded-lg p-3 text-center">
-            <div class="text-xs text-gray-500">Callbacks</div>
-            <div class="text-sm font-semibold text-amber-400">${s.callbacks_due}</div>
+        <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+            <div class="text-xs text-gray-500 mb-1">Callbacks</div>
+            <div class="text-lg font-bold text-amber-400">${s.callbacks_due}</div>
         </div>
-        <div class="bg-gray-900 rounded-lg p-3 text-center">
-            <div class="text-xs text-gray-500">Draft</div>
-            <div class="text-sm font-semibold text-blue-400">${s.emails_to_draft}</div>
+        <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+            <div class="text-xs text-gray-500 mb-1">Draft</div>
+            <div class="text-lg font-bold text-blue-400">${s.emails_to_draft}</div>
         </div>
     </div>`;
 
     // Hot Leads (Priority)
     if (data.hot_leads && data.hot_leads.length > 0) {
-        html += `<div class="mb-4">
-            <div class="text-xs text-green-400 uppercase tracking-wider font-semibold mb-2">Hot Leads (${data.hot_leads.length})</div>`;
+        html += `<div class="mb-5">
+            <div class="text-sm text-green-400 uppercase tracking-wider font-semibold mb-3">Hot Leads (${data.hot_leads.length})</div>`;
         data.hot_leads.forEach(l => { html += renderLeadItem(l, 'green'); });
         html += '</div>';
     }
 
     // Callbacks Due
     if (data.callbacks_due && data.callbacks_due.length > 0) {
-        html += `<div class="mb-4">
-            <div class="text-xs text-amber-400 uppercase tracking-wider font-semibold mb-2">Callbacks Due (${data.callbacks_due.length})</div>`;
+        html += `<div class="mb-5">
+            <div class="text-sm text-amber-400 uppercase tracking-wider font-semibold mb-3">Callbacks Due (${data.callbacks_due.length})</div>`;
         data.callbacks_due.forEach(l => { html += renderLeadItem(l, 'amber'); });
         html += '</div>';
     }
 
     // Emails to Draft
     if (data.emails_to_draft && data.emails_to_draft.length > 0) {
-        html += `<div class="mb-4">
-            <div class="text-xs text-blue-400 uppercase tracking-wider font-semibold mb-2">Emails Ready to Draft (${data.emails_to_draft.length})</div>`;
+        html += `<div class="mb-5">
+            <div class="text-sm text-blue-400 uppercase tracking-wider font-semibold mb-3">Emails Ready to Draft (${data.emails_to_draft.length})</div>`;
         data.emails_to_draft.forEach(l => {
-            html += `<div class="bg-gray-900 rounded-lg p-2.5 mb-1.5 border-l-2 border-blue-500">
-                <div class="text-sm">
-                    <span class="text-gray-300">${l.business_name}</span>
-                    ${l.decision_maker ? `<span class="text-gray-500 text-xs ml-1">(${l.decision_maker})</span>` : ''}
+            html += `<div class="bg-gray-900 rounded-xl px-4 py-3 mb-2 border border-gray-800 border-l-2 border-l-blue-500">
+                <div class="text-base">
+                    <span class="text-gray-200">${l.business_name}</span>
+                    ${l.decision_maker ? `<span class="text-gray-500 text-sm ml-1">(${l.decision_maker})</span>` : ''}
                 </div>
-                <div class="text-xs text-gray-500 mt-0.5">${l.group} &middot; Called ${l.date_called || '?'}</div>
-                ${l.email ? `<div class="text-xs text-blue-400 mt-0.5">${l.email}</div>` : '<div class="text-xs text-red-400 mt-0.5">No email on file</div>'}
-                ${l.notes ? `<div class="text-xs text-gray-600 mt-0.5 truncate">${l.notes}</div>` : ''}
+                <div class="text-sm text-gray-500 mt-1">${l.group} &middot; Called ${l.date_called || '?'}</div>
+                ${l.email ? `<div class="text-sm text-blue-400 mt-1">${l.email}</div>` : '<div class="text-sm text-red-400 mt-1">No email on file</div>'}
+                ${l.notes ? `<div class="text-sm text-gray-600 mt-1 truncate">${l.notes}</div>` : ''}
             </div>`;
         });
         html += '</div>';
@@ -302,38 +302,38 @@ function renderPersonal(container, data) {
 
     // Follow Ups
     if (data.follow_ups && data.follow_ups.length > 0) {
-        html += `<div class="mb-4">
-            <div class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">Follow Ups (${data.follow_ups.length})</div>`;
+        html += `<div class="mb-5">
+            <div class="text-sm text-gray-400 uppercase tracking-wider font-semibold mb-3">Follow Ups (${data.follow_ups.length})</div>`;
         data.follow_ups.forEach(l => { html += renderLeadItem(l, 'gray'); });
         html += '</div>';
     }
 
     // Retry (No Answer 1-2)
     if (data.no_answers && data.no_answers.length > 0) {
-        html += `<div class="mb-4">
-            <div class="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">Retry Queue (${data.no_answers.length})</div>`;
+        html += `<div class="mb-5">
+            <div class="text-sm text-gray-500 uppercase tracking-wider font-semibold mb-3">Retry Queue (${data.no_answers.length})</div>`;
         data.no_answers.forEach(l => { html += renderLeadItem(l, 'gray'); });
         html += '</div>';
     }
 
-    html += `<div class="text-xs text-gray-600 text-center mt-4">Updated ${data.updated}</div>`;
+    html += `<div class="text-sm text-gray-600 text-center mt-5">Updated ${data.updated}</div>`;
     container.innerHTML = html;
 }
 
 function renderLeadItem(l, color) {
     const colors = { URGENT: 'text-red-400', HIGH: 'text-orange-400', MEDIUM: 'text-yellow-400', LOW: 'text-gray-400' };
     const priorityColor = colors[l.priority] || 'text-gray-400';
-    const overdueTag = l.overdue ? '<span class="text-red-400 text-xs ml-1">OVERDUE</span>' : '';
-    const followUp = l.follow_up_date ? `<span class="text-xs text-gray-500">F/U: ${l.follow_up_date}</span>` : '';
-    return `<div class="bg-gray-900 rounded-lg p-2.5 mb-1.5">
-        <div class="text-sm">
+    const overdueTag = l.overdue ? '<span class="text-red-400 text-xs ml-1 font-semibold">OVERDUE</span>' : '';
+    const followUp = l.follow_up_date ? `<span class="text-sm text-gray-500">F/U: ${l.follow_up_date}</span>` : '';
+    return `<div class="bg-gray-900 rounded-xl px-4 py-3 mb-2 border border-gray-800">
+        <div class="text-base">
             <span class="${priorityColor} font-semibold text-xs mr-1">${l.priority}</span>
-            <span class="text-gray-300">${l.business_name}</span>
-            ${l.decision_maker ? `<span class="text-gray-500 text-xs ml-1">(${l.decision_maker})</span>` : ''}
+            <span class="text-gray-200">${l.business_name}</span>
+            ${l.decision_maker ? `<span class="text-gray-500 text-sm ml-1">(${l.decision_maker})</span>` : ''}
             ${overdueTag}
         </div>
-        <div class="text-xs text-gray-500 mt-0.5">${l.group} &middot; ${l.call_outcome} &middot; ${l.date_called || 'Not called'} ${followUp ? '&middot; ' + followUp : ''}</div>
-        ${l.notes ? `<div class="text-xs text-gray-600 mt-0.5 truncate">${l.notes}</div>` : ''}
+        <div class="text-sm text-gray-500 mt-1">${l.group} &middot; ${l.call_outcome} &middot; ${l.date_called || 'Not called'} ${followUp ? '&middot; ' + followUp : ''}</div>
+        ${l.notes ? `<div class="text-sm text-gray-600 mt-1 truncate">${l.notes}</div>` : ''}
     </div>`;
 }
 

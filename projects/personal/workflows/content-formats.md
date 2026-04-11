@@ -14,17 +14,19 @@ The content agent reads this to know format-specific rules for each content type
 
 ### Script format
 ```
-[HOOK] (0-3 sec)
-<one sentence — pattern interrupt or bold claim>
+[HOOK + PROOF] (0-5 sec)
+<bold claim with built-in credibility — one sentence>
+Example: "I manage 83 deals by myself. Here's how."
 
-[PROBLEM] (3-15 sec)
-<why this matters — relatable pain>
+[PROMISE] (5-10 sec)
+<what they'll get from this reel>
 
-[SOLUTION] (15-45 sec)
-<what to do — 2-3 steps max>
+[CONTENT] (10-45 sec)
+<deliver the value — 2-3 steps max, show don't tell>
+<mini-tutorial: quick screen recording with text overlays>
 
 [CTA] (45-60 sec)
-<follow for more / comment X / save this>
+<full tutorial on YouTube / follow for more>
 
 ---
 CAPTION: <short text for post caption, 1-2 sentences + hashtags>
@@ -37,6 +39,7 @@ TEXT OVERLAYS: <key words/numbers to show on screen>
 - Captions must work without audio (many watch on mute).
 - Text overlays: max 5 words per overlay, 3-4 overlays per reel.
 - No intro. No "hey guys". Start with the hook immediately.
+- Reels are mini-tutorials of the day's YouTube — compressed, fast, edited.
 - Batch film: do 4-5 reels in one session, change shirt between takes.
 
 ---
@@ -44,50 +47,69 @@ TEXT OVERLAYS: <key words/numbers to show on screen>
 ## YouTube (Long-form video)
 
 **Platform:** YouTube
-**Length:** 5-10 minutes
+**Length:** 7-12 minutes
 **Word limit:** 1500 words (script)
 **Orientation:** Horizontal (16:9)
-**Structure:** Hook → Stakes → Framework → Proof → CTA
+**Structure:** Hook → Proof → Promise → Plan → Content (retain) → Proof Stack → Reward → CTA
 
 ### Script format
 ```
-[HOOK] (0-30 sec)
-<bold promise or result — why keep watching>
+--- HOOK PHASE ---
 
-[STAKES] (30-90 sec)
-<what they lose by not knowing this>
+[HOOK] (0-5 sec)
+<pattern interrupt — bold claim, surprising number, or pain point>
 
-[FRAMEWORK] (90-360 sec)
-Step 1: <simple idea>
-  - Example: <concrete illustration>
-Step 2: <simple idea>
-  - Example: <concrete illustration>
-Step 3: <simple idea>
-  - Example: <concrete illustration>
+[PROOF] (5-20 sec)
+<your credibility — specific result, not a title or bio>
 
-[PROOF] (360-480 sec)
-<real results — screen share, numbers, before/after>
+[PROMISE] (20-40 sec)
+<what they'll walk away with — specific and measurable>
 
-[CTA] (480-600 sec)
-<subscribe + mention specific next video>
+[PLAN] (40-60 sec)
+<how the video is structured — "3 parts" or "5 steps", set time expectations>
+
+--- RETAIN PHASE ---
+
+[CONTENT] (60 sec - 7 min)
+Chapter 1: <one idea>
+  - Teach: <explain simply>
+  - Show: <screen share or demo>
+  - Result: <what this achieved — specific number>
+Chapter 2: <one idea>
+  - Teach / Show / Result
+Chapter 3: <one idea>
+  - Teach / Show / Result
+
+[PROOF STACK] (7-8 min)
+<stack all results together — before/after comparison, total numbers>
+
+--- REWARD PHASE ---
+
+[REWARD] (8-9 min)
+<the big takeaway — one sentence they'll remember and repeat>
+
+[CTA] (9-10 min)
+<subscribe + "Watch this next" with specific video mention>
 
 ---
 TITLE: <under 60 chars, curiosity-driven>
 DESCRIPTION: <3 lines — what they'll learn, who it's for, subscribe link>
 CHAPTERS:
-  0:00 — <hook summary>
-  0:30 — <stakes summary>
-  1:30 — <step 1>
+  0:00 — <hook>
+  0:05 — <proof + promise>
+  0:40 — <plan>
+  1:00 — <chapter 1>
   ...
 THUMBNAIL IDEA: <visual concept for thumbnail>
 ```
 
 ### Rules
-- One topic expanded. Go deep, not wide.
-- Every step needs a real example or screen share.
+- One idea expanded. Deep, not wide.
+- Every chapter needs: teach, show, result.
+- Proof is woven INTO the content, then stacked at the end.
 - Chapter markers required for every section.
 - Thumbnail + title decide if someone clicks. Script decides if they stay.
-- First 30 seconds must deliver a promise worth 10 minutes of their time.
+- First 60 seconds must hook, prove credibility, promise value, and set expectations.
 - Record screen shares separately — insert during editing.
 
 ---
@@ -127,6 +149,41 @@ Follows existing `content-calendar.md` SOP. No changes.
 
 ---
 
+## Carousel (Static image set)
+
+**Platforms:** Instagram, Facebook, LinkedIn
+**Slides:** 5-10 (7 is sweet spot)
+**Dimensions:** 1080x1080px (square)
+**Orientation:** Square (1:1)
+**Structure:** Hook slide → Value slides (1 idea each) → CTA slide
+
+### Styles
+- **Dark mode** (Hormozi style): Black background, white bold text. High contrast. Authoritative.
+- **Light mode** (Nate Herk style): White background, black bold text. Clean. Approachable.
+
+### Slide rules
+- **Slide 1 (Hook):** Topic as bold claim. All caps. Handle at bottom. Must stop the scroll.
+- **Slides 2-N-1 (Value):** One idea per slide. Max 15 words. Bold text, centered. Slide counter at top.
+- **Slide N (CTA):** Call to action — save, share, follow. Handle at bottom.
+- Swipe indicator dots at bottom of every slide.
+- No images, no gradients, no icons. Text only. Let the words do the work.
+
+### Copy rules (Hormozi voice)
+- 3rd grade reading level. If a kid can't read it, rewrite it.
+- Max 10 words per sentence.
+- No jargon. No filler. Bold claims backed by simple logic.
+- Each slide must make sense on its own (people screenshot individual slides).
+
+### Production
+```
+python3 tools/generate_carousel.py --topic "Your hook here" --slides 7 --style dark --handle "@allenenriquez"
+```
+- Generates PNGs to `.tmp/carousels/<topic-slug>/`
+- Also outputs `copy.txt` — edit this, then re-run with `--copy-file` to regenerate with custom text.
+- Use `--style light` for Nate Herk style.
+
+---
+
 ## Cross-Platform Repurposing
 
 One idea can become multiple pieces:
@@ -145,19 +202,72 @@ One idea can become multiple pieces:
 
 ---
 
-## Editing Notes
+## Editing Rules (Hormozi Style)
 
-Allen edits (or AI-assisted editing in Phase 2).
+AI-assisted editing via `tools/edit_video.py` and the video editor agent.
 
-### Reel editing
-- Auto-captions (CapCut or similar). Large, readable font.
-- Quick cuts between sentences. Remove pauses.
-- Background music: low, energetic, not distracting.
-- Text overlay for key numbers.
+### Reel Editing Rules (Hormozi Style)
 
-### YouTube editing
-- Jump cuts for pacing. Remove filler words.
-- Screen share inserts for proof/demo sections.
-- Chapter markers in description.
-- End screen: subscribe + next video card.
-- Thumbnail: face + text + high contrast colors.
+**Tool:** `python3 tools/edit_video.py edit --input raw.mp4 --type reel`
+**Agent:** `projects/personal/agents/personal-video-editor.md`
+
+**Silence removal:**
+- Cut all pauses > 0.4s, filler words, breaths. Zero dead air.
+- auto-editor with -30dB threshold, 0.4s minimum duration.
+
+**Captions (always on for reels):**
+- Font: Anton (Google Fonts) or Montserrat Bold. Uppercase.
+- White text, yellow stroke/highlight on keywords.
+- Word-by-word highlighting — active word changes color.
+- Max 15 chars per line, 2 lines max, 4-6 words per display.
+- Centered in lower third. Min 2s display time. Pop-in animation.
+
+**Punch-in zoom ("Hormozi Pulse"):**
+- Slow zoom 100% → 120% over 3-5s on key points.
+- Hard cut back to 100% to reset. Use on bold claims and numbers.
+
+**Transitions:** Hard cuts between sentences (default). White flash (0.2-0.3s) between major sections.
+
+**SFX:** Whoosh on section transitions. Pop/click on text appearances. Background music at -20dB.
+
+**Color grading:** Saturation 1.3x, contrast 1.1x, slight brightness boost. Clean and punchy, not cinematic.
+
+**Pacing:** Aggressive cuts. 1 idea per 10 seconds. No pauses. No "umm".
+
+### YouTube Editing Rules (Hormozi Style)
+
+**Tool:** `python3 tools/edit_video.py edit --input raw.mp4 --type youtube`
+**Agent:** `projects/personal/agents/personal-video-editor.md`
+
+**Silence removal:**
+- Same threshold as reels but preserve natural breathing room between sections.
+- Cut filler words and long pauses, keep brief pauses for emphasis.
+
+**Captions:** Optional for YouTube (most watch with audio). Enable for accessibility.
+
+**Punch-in zoom:**
+- Same technique as reels. Apply on key points, bold claims, numbers.
+- 3-5 zoom sections per video. Don't overuse.
+
+**B-roll — Doodle explainers (Hormozi book style):**
+- Simple whiteboard-style concept diagrams — stick figures, hand-drawn boxes, arrows, minimal color.
+- Style reference: $100M Offers book illustrations.
+- Generated via Excalidraw diagram skill. Agent identifies "concept explanation" moments in transcript → generates matching doodle → inserts as overlay.
+- These replace stock footage — every B-roll insert should TEACH, not decorate.
+- Also supports: screenshots, screen recordings at marked timestamps.
+- Insert B-roll every 15-30s to break up talking head.
+
+**Text overlays (long-form):**
+- Numbered frameworks on screen ("Step 1", "Step 2").
+- Key concept reinforcement as bold text overlay.
+- Chapter markers via text overlays + jump cuts.
+
+**Transitions:** Hard cuts default. White flash between major sections. Crossfade for chapter breaks.
+
+**SFX:** Whoosh on transitions. Pop on text. Background music at -20dB, rises during B-roll.
+
+**Color grading:** Same as reels — saturation 1.3x, contrast 1.1x, brightness boost.
+
+**Pacing:** Medium. 1 idea per 60-90s. Breathe between sections. Let ideas land.
+
+**Chapter markers:** Required for every section. Add to YouTube description.

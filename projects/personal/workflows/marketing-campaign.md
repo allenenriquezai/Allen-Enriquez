@@ -1,4 +1,4 @@
-# 30-Day Content Campaign — Marketing SOP
+# 14-Day Content Campaign — Marketing SOP
 
 The content manager agent reads this to plan and track the campaign.
 
@@ -6,137 +6,103 @@ The content manager agent reads this to plan and track the campaign.
 
 ## Campaign Overview
 
-**Duration:** 30 days starting 2026-04-10
+**Duration:** 14 days starting 2026-04-14
 **Cadence:**
-- 2 reels/day (morning + evening post)
-- 1 YouTube video/day (midday post)
-- 2-3 Facebook group posts/week
+- 1 YouTube video/day (long-form, 7-12 min)
+- 1 reel/day (teaser for that day's YouTube)
 
-**Target audience:** Filipino VAs and aspiring VAs, small business owners
-**Style:** Hormozi (see `projects/personal/reference/hormozi-style-guide.md`)
+**Target audience:** Filipino VAs, professionals (realtors, architects, business owners), aspiring AI learners
+**Style:** Hormozi density + Nate Herk honesty (see `projects/personal/reference/hormozi-style-guide.md`)
 **Language:** 3rd grade English. Simple. Direct.
 
----
+**Positioning:** "I'm not an AI expert. But I run two real businesses on AI agents. I'll show you everything — what works, what broke, and how to do it yourself. If you don't have time to learn it, I'll build it for you."
 
-## Content Pillars (rotate daily)
-
-| Day | Pillar | Focus |
-|---|---|---|
-| Mon | AI Results | Proof — metrics, before/after, case studies |
-| Tue | How AI Works | Education — Claude Code basics, prompts, agents |
-| Wed | Pain Points | Empathy — slow quotes, missed leads, admin overload |
-| Thu | Behind the Scenes | Transparency — building the OS, live coding |
-| Fri | Contrarian | Attention — challenge common beliefs |
-| Sat | AI Results | More proof — different angle |
-| Sun | Quick Tips | Actionable — one thing they can do today |
-
-Each day: 2 reels from that pillar + 1 YouTube deep-dive on the pillar topic.
+**Offer (neutral, woven naturally):** Everything is free on the channel. If you're a VA, a professional, or a business owner and you don't have time to build it yourself — DM me. I'll build a custom automation for your business. No setup fees. Try it until you see the value.
 
 ---
 
-## Daily Production Rhythm
+## Channel Identity
 
-### Morning (script prep)
-1. Allen asks: "What do I need to film today?" or runs `/content`
-2. Content manager reads tracker → surfaces today's assignments
-3. Content manager delegates to content agent for script generation
-4. Content agent generates 2 reel scripts + 1 YouTube script
-5. Allen reviews and approves (with edits if needed)
+Allen is building in public. He already has working AI agent systems running a painting company:
+- Lead researcher — scans CRM, gives reports on each prospect
+- CRM manager — tracks all deals, flags stale ones, tells Allen who to follow up
+- Proposal builder — takes measurements, calculates rates, generates PDF quotes
+- Email drafter — writes follow-up emails in Allen's voice
+- Cold call processor — handles post-call admin automatically
+- Morning briefer — tells Allen exactly what to do each day
 
-### Midday (film + post)
-1. Allen films 2 reels + 1 YouTube video
-2. Allen edits or auto-edits (CapCut)
-3. Post YouTube video (midday for best reach)
+He's honest about still learning. He has a sales assistant. He's not pretending to be a solo genius. The content shows real systems with real numbers, and he's transparent about what's still in progress.
 
-### Evening (post + engage)
-1. Post reel #1 (morning) and reel #2 (evening) — stagger
-2. Post in Facebook groups (if scheduled for today)
-3. Reply to comments and DMs
-
-### End of day
-1. Mark filmed/posted in tracker
-2. Review engagement on today's content
+The vision: a company in the US is building toward the first billion-dollar company with 2 employees. That's where this is heading. AI agents don't replace people — they make small teams unstoppable.
 
 ---
 
 ## Batch Filming Strategy
 
-For sustainability, batch film:
-- **Sunday session:** Film all Monday-Wednesday content (6 reels + 3 YouTube)
-- **Wednesday session:** Film all Thursday-Saturday content (6 reels + 3 YouTube)
-- **Sunday content** can be filmed ad-hoc or in Wednesday batch
+4 filming sessions across 2 weeks:
+- **Session 1 (before Day 1):** Film Days 1-4 (intro + sales pipeline)
+- **Session 2 (before Day 5):** Film Days 5-7 (daily operations)
+- **Session 3 (before Day 8):** Film Days 8-11 (education + teaching)
+- **Session 4 (before Day 12):** Film Days 12-14 (vision + offer)
 
-### Batch filming tips
-- Change shirt between takes for different "days"
-- Film all reels first (quick, high energy), then YouTube (longer, slower)
-- Record screen shares separately for YouTube proof sections
+### Filming tips
+- Change shirt between takes
+- Film reels first (quick, high energy), then YouTube (longer)
+- Record screen shares separately — insert during editing
 - Keep raw footage organized by day number
+- Each YouTube: film face-to-camera sections first, then screen recordings
 
 ---
 
-## 30-Day Topic Map
+## 14-Day Topic Map
 
-### Week 1: Foundation (introduce Allen + the OS)
-| Day | YouTube | Reel 1 | Reel 2 |
-|---|---|---|---|
-| 1 | What is an AI Operating System? | I built an AI assistant. Here's what it does. | Stop doing admin. Let AI do it. |
-| 2 | Claude Code for Beginners — Setup in 5 Minutes | What is Claude Code? 30 sec explainer. | One command that saves me 2 hours. |
-| 3 | Why Your Business is Slow (It's Not What You Think) | The real reason you lose leads. | How fast do you reply to leads? |
-| 4 | Building My AI Assistant — Live Walkthrough | Watch me build an agent in real time. | Behind the scenes: how my OS works. |
-| 5 | You Don't Need More Leads. You Need Better Follow-Up. | Most businesses waste the leads they already have. | The 5-minute follow-up rule. |
-| 6 | How I Cut Quote Time from 45 Min to 5 Min | Before and after: my quoting process. | One automation that changed everything. |
-| 7 | 3 Things You Can Automate Today (Free) | Easiest automation to start with. | You don't need to code for this. |
+Each video is a dense, standalone lesson. Allen's real AI systems are the PROOF inside the lesson, not the entire topic. Every video should leave the viewer thinking "I need to watch the next one."
 
-### Week 2: Education (teach Claude Code + AI basics)
-| Day | YouTube | Reel 1 | Reel 2 |
-|---|---|---|---|
-| 8 | What Are AI Agents? (Simple Explanation) | AI agents explained in 30 seconds. | Why agents are better than chatbots. |
-| 9 | How to Write Prompts That Actually Work | The #1 prompt mistake beginners make. | Good prompt vs bad prompt. |
-| 10 | Automate Your Email Follow-Ups (Step by Step) | Stop forgetting to follow up. | This email writes itself. |
-| 11 | How I Organize My Entire Business in One Folder | My file structure. Simple. | Everything in one place. |
-| 12 | AI Won't Replace You. But Someone Using AI Will. | The real threat isn't AI. | Adapt or get left behind. |
-| 13 | How to Build Your First Automation (No Code) | Step 1 of building your own OS. | Start here if you're new. |
-| 14 | Weekly Review: What Worked, What Didn't | Honest update on my content journey. | 7 days in. Here's what I learned. |
+### Days 1-4: THE PROOF (show the system, earn trust)
 
-### Week 3: Proof (show results + case studies)
-| Day | YouTube | Reel 1 | Reel 2 |
+| Day | YouTube Title | What It Covers | Reel |
 |---|---|---|---|
-| 15 | Case Study: How AI Manages 83 Deals Automatically | 83 deals. One system. Zero dropped. | Before AI: chaos. After: control. |
-| 16 | Teaching My AI to Write Emails | This AI writes better emails than I do. | How to train your AI on your voice. |
-| 17 | The $40K Job I Almost Lost (And How AI Saved It) | Speed wins. Always. | 3 days to send a quote = lost job. |
-| 18 | Building a Content Machine with AI | How I make 3 videos a day. | My content workflow. |
-| 19 | Why VAs Should Learn AI (Before It's Too Late) | AI + VA = unstoppable. | The VAs getting paid more all know this. |
-| 20 | How My AI Handles Cold Outreach | My AI researches, writes, and sends. | Cold email that actually works. |
-| 21 | Mid-Campaign Check: 21 Days of Daily Content | What 21 days of daily posting taught me. | Consistency beats perfection. |
+| 1 | I Run Two Businesses with AI Agents. No Team. Here's How. | Introduction. Who Allen is. The vision (2-employee billion-dollar company). What AI agents are (not chatbots). Tour of the actual system — dashboard, CRM, agents. The numbers: $1.6M pipeline, 83 deals, 90% less admin. What this channel will teach. | Mini-tutorial: Quick screen tour of the dashboard + CRM. Show the 83 deals, the pipeline value. 60-sec system overview with text overlays on the key numbers. |
+| 2 | The AI Sales Pipeline: From Lead to Close, Zero Admin | Full sales workflow walkthrough. Lead comes in → AI researches it → AI generates the quote → AI follows up → deal tracked automatically. Not one feature — the ENTIRE pipeline in one dense video. Before/after for each step. | Mini-tutorial: Compressed version of the pipeline — show each step (lead → research → quote → follow-up) in 10 seconds each with quick cuts and text overlays. |
+| 3 | How I Handle 83 Deals and Never Lose One | Deep dive into CRM management. How the CRM manager agent works. Stale deal detection. Priority ranking (discoveries > follow-ups > VIP). Auto-drafted emails. The morning report. Real screenshots of the system in action. | Mini-tutorial: Show the CRM manager flagging a stale deal, then the auto-drafted email. Quick before/after: "forgot deals" → "zero dropped." |
+| 4 | 5 AI Agents That Save Me 20 Hours a Week | Hormozi-style listicle. Fast, dense, proof-heavy. Each agent gets 2 minutes: (1) Lead researcher, (2) Proposal builder, (3) Email drafter, (4) Cold call processor, (5) Morning briefer. Real output shown for each. Time saved per agent. | Mini-tutorial: Rapid-fire 10 seconds per agent — name, what it does, time saved. Text overlay for each. Fast cuts. |
 
-### Week 4: Scale (vision + offer)
-| Day | YouTube | Reel 1 | Reel 2 |
+### Days 5-7: HOW IT WORKS (go deeper, start teaching)
+
+| Day | YouTube Title | What It Covers | Reel |
 |---|---|---|---|
-| 22 | How to Build AI Systems for Other Businesses | The business model: AI setup as a service. | Get paid to set up AI. |
-| 23 | What I'd Automate First in Any Business | The 3 automations every business needs. | Start with follow-ups. Always. |
-| 24 | Free vs Paid AI Tools — What's Actually Worth It | You don't need expensive tools. | Free tools that do 90% of the work. |
-| 25 | How to Pitch AI to a Business Owner | They don't care about AI. They care about time. | Sell the outcome, not the tool. |
-| 26 | My Full Tech Stack (Everything I Use) | The tools behind my OS. | Simple stack. Big results. |
-| 27 | What's Next: Scaling to 100 Businesses | The plan for the next 90 days. | From 1 to 100. |
-| 28 | Building in Public: Lessons from 28 Days | What I'd do differently. | The hardest part of daily content. |
-| 29 | Q&A: Your AI Questions Answered | Top questions from comments. | You asked, I answered. |
-| 30 | Day 30: The Offer (Free AI Setup for Your Business) | I'll set it up for you. Free. | 30 days later. Here's what happened. |
+| 5 | My AI Plans My Entire Day (Morning Briefing Walkthrough) | Deep dive into the morning briefing system. What it checks (CRM, calendar, stale deals, pending tasks). How it prioritizes. What the output looks like. How Allen acts on it. Framework: how to think about daily planning with AI. | Mini-tutorial: Show the actual morning briefing output. Walk through the top 3 priorities it flagged today. Quick explanation of how it decides what's urgent. |
+| 6 | How My AI Does Cold Outreach (Research → Personalize → Send) | The cold outreach pipeline end-to-end. Lead scraping. Prospect research. Personalized messaging. Post-call processing. Real examples of AI-researched leads vs manual research. Time comparison. | Mini-tutorial: Show one lead being researched — raw data in, personalized outreach out. Side-by-side: manual research (20 min) vs AI research (30 sec). |
+| 7 | The $50/Month Stack That Runs Everything | Full tool breakdown. What's free, what's paid. Claude Code, Pipedrive, Google Workspace, ServiceM8. No affiliate links. No BS. Total cost breakdown. Why expensive tools aren't better. What Allen would cut if he had to save money. | Mini-tutorial: Quick scroll through each tool with price overlay. Total at the end: "$47/month." Compare to hiring someone: "$47 vs $2,000+." |
+
+### Days 8-11: TEACH THEM (education, frameworks, hands-on)
+
+| Day | YouTube Title | What It Covers | Reel |
+|---|---|---|---|
+| 8 | What AI Agents Actually Are (Not What You Think) | Demystify agents. Not chatbots. Not magic. An agent = instructions + tools + data. Show a real agent prompt. Explain how it reads instructions, calls tools, makes decisions. Compare: chatbot vs agent vs full workflow. Simple analogy: agent = a new employee with a manual. | Mini-tutorial: Side-by-side demo — ask ChatGPT a question (chatbot) vs run an agent that actually does the work. Show the difference in 60 seconds. |
+| 9 | The 3 Things Every Business Should Automate First | Framework video. (1) Follow-ups — because speed wins deals. (2) Document generation — because it's repetitive. (3) Daily planning — because context switching kills productivity. For each: the problem, why it matters, how Allen solved it, how THEY can start. | Mini-tutorial: Show each of the 3 automations running — follow-up email sent, quote PDF generated, morning briefing delivered. 20 seconds each. Quick value. |
+| 10 | 5 AI Mistakes I Made (So You Don't Have To) | Honest, vulnerable. (1) Tried to automate everything at once. (2) Didn't QA outputs early enough. (3) Built before understanding the workflow. (4) Over-complicated the first version. (5) Didn't track what actually saved time. Each mistake = lesson learned. | Mini-tutorial: Pick the worst mistake (no QA) — show an AI output with an error, then show QA catching it. The fix in 60 seconds. |
+| 11 | How My AI Makes These Videos (Meta Content Engine) | Show the content generation system. How Allen's AI writes scripts, plans topics, tracks what's posted. The irony: the video they're watching was partially written by AI. Honest about what AI does vs what Allen does (AI drafts, Allen performs). | Mini-tutorial: Screen record running the content command — show script output appearing in real time. "This reel's script was written in 30 seconds." |
+
+### Days 12-14: THE VISION + OFFER (bigger picture, open the door)
+
+| Day | YouTube Title | What It Covers | Reel |
+|---|---|---|---|
+| 12 | Why VAs Who Learn AI Will Get Paid 3x More | Speak directly to the VA audience. AI + VA = unstoppable combination. VAs who can set up automations are worth 3x more. Examples of what an AI-skilled VA can do. This isn't about replacing VAs — it's about making them irreplaceable. | Mini-tutorial: Show a VA task (research a lead) done manually vs with AI. Time comparison: 20 min vs 30 sec. "This is why AI-skilled VAs charge more." |
+| 13 | The 2-Employee Billion-Dollar Company (And Why It Matters to You) | The big vision. Reference the company building toward a billion with 2 people. What this means for small businesses. For VAs. For professionals. The world is shifting — small teams with AI will beat big teams without it. Not hype — Allen's real results as proof. | Mini-tutorial: Quick montage of all the systems shown across 13 days — rapid cuts, each one 3 seconds. End with the total: "13 agents. 1 person. $1.6M." |
+| 14 | Everything I Teach Is Free. Here's What Else I Can Do. | Recap the journey. What was covered in 14 days. The offer: everything on this channel is free. Learn it yourself. If you're a VA, a realtor, a business owner and you don't have time — Allen will build a custom automation for your business. No setup fees. Try it first. DM to start. | Mini-tutorial: Show Allen setting up one automation for a hypothetical business — pick the simplest one (follow-up emails). "I built this in 2 hours. DM me if you want yours." |
 
 ---
 
 ## Posting Schedule
 
-| Platform | Time (AEST) | Content |
+| Platform | Time (PH time) | Content |
 |---|---|---|
 | YouTube | 12:00 PM | Long-form video |
-| Instagram | 8:00 AM | Reel #1 |
-| Instagram | 6:00 PM | Reel #2 |
-| TikTok | 8:30 AM | Reel #1 (cross-post) |
-| TikTok | 6:30 PM | Reel #2 (cross-post) |
-| Facebook | 8:00 AM | Reel #1 (cross-post) |
-| Facebook | 6:00 PM | Reel #2 (cross-post) |
-| YouTube Shorts | 9:00 AM | Reel #1 (cross-post) |
-| YouTube Shorts | 7:00 PM | Reel #2 (cross-post) |
+| Facebook | 8:00 AM | Reel (cross-post) |
+| Instagram | 8:00 AM | Reel (cross-post) |
+| TikTok | 8:30 AM | Reel (cross-post) |
+| YouTube Shorts | 9:00 AM | Reel (cross-post) |
 
 Facebook group posts: Tuesday + Thursday + Saturday (value posts, no reels).
 
@@ -144,9 +110,8 @@ Facebook group posts: Tuesday + Thursday + Saturday (value posts, no reels).
 
 ## Metrics to Track
 
-- Views per reel (by platform)
-- YouTube watch time and subscriber growth
-- Comments and DMs received
-- Facebook group engagement (replies to posts)
-- Leads generated (people who DM or ask about the offer)
+- YouTube: watch time, subscriber growth, click-through rate
+- Reels: views, shares, saves (by platform)
+- DMs received (people asking about the offer)
+- Comments and engagement quality
 - Content produced vs planned (tracker report)

@@ -38,30 +38,66 @@ The hook must land in the first 3 seconds (video) or first line (text).
 
 ## Script Structures
 
+### The Hormozi Intro (first 30-60 sec of EVERY video)
+
+Every video — YouTube and reel — opens with this sequence:
+
+```
+1. HOOK (0-5 sec): Stop the scroll. Bold claim, surprising number, or pain point.
+2. PROOF (5-15 sec): Why should they listen to YOU? Lead with a specific result.
+   "I manage $1.6M in deals by myself." Not "I'm an AI expert."
+3. PROMISE (15-25 sec): What will they GET from watching? Be specific.
+   "I'll show you the exact 3-step system." Not "I'll talk about automation."
+4. PLAN (25-35 sec): How will this be delivered? Set expectations.
+   "3 steps. Each one takes 2 minutes. Let's go."
+```
+
+This intro answers the viewer's three questions in order:
+- "Why should I stop scrolling?" (Hook)
+- "Why should I listen to this guy?" (Proof)
+- "What's in it for me?" (Promise)
+- "Is this worth my time?" (Plan)
+
 ### Reel (30-60 seconds)
 ```
-Hook (0-3 sec): [Pattern interrupt or bold claim — one sentence]
-Problem (3-15 sec): [Why this matters — relatable pain, simple words]
-Solution (15-45 sec): [What to do — 2-3 steps max, show don't tell]
-CTA (45-60 sec): [Follow for more / Comment X / Save this]
+Hook + Proof (0-5 sec): [Bold claim + credibility in one sentence]
+Promise (5-10 sec): [What they'll learn in this reel]
+Content (10-45 sec): [Deliver the value — 2-3 steps max, show don't tell]
+CTA (45-60 sec): [Full tutorial on YouTube / Follow for more]
 ```
 - One idea only. Never two.
 - Under 150 words total.
 - Fast pacing. No pauses. No "umm".
 - Text overlays for key words/numbers.
 
-### YouTube (5-10 minutes)
+### YouTube (7-12 minutes)
+
+The full Hormozi framework: Hook, Retain, Reward.
+
 ```
-Hook (0-30 sec): [Bold promise or result — why they should keep watching]
-Stakes (30-90 sec): [What they lose by not knowing this]
-Framework (90-360 sec): [3-5 steps. Each step = one simple idea. Examples for each.]
-Proof (360-480 sec): [Real results. Screen shares. Numbers.]
-CTA (480-600 sec): [Subscribe + "Watch this next" with specific video mention]
+--- HOOK PHASE (0-60 sec) ---
+Hook (0-5 sec): [Pattern interrupt — bold claim or surprising number]
+Proof (5-20 sec): [Your credibility — specific results, not titles]
+Promise (20-40 sec): [What they'll walk away with — be specific]
+Plan (40-60 sec): [How the video is structured — "3 parts" or "5 steps"]
+
+--- RETAIN PHASE (60 sec - 8 min) ---
+Content (60 sec - 7 min): [Deliver the value in chapters/steps]
+  - Each chapter: teach one thing, show one example, give one result
+  - Use open loops: "I'll show you the one that saved the most time at the end"
+  - Stories between chapters to maintain engagement
+  - Screen shares / demos as proof within each chapter
+Proof (7-8 min): [Stack all the results — before/after, numbers, screenshots]
+
+--- REWARD PHASE (8-10 min) ---
+Reward (8-9 min): [The big takeaway — one sentence they remember]
+CTA (9-10 min): [Subscribe + "Watch this next" with specific video mention]
 ```
 - One idea expanded. Deep, not wide.
 - Chapter markers for each section.
 - Under 1500 words for the script.
-- B-roll or screen share during Framework section.
+- B-roll or screen share during content section.
+- Proof is woven INTO the content, then stacked at the end.
 
 ### Facebook Group Post (50-100 words)
 ```

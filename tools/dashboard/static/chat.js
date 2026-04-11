@@ -108,7 +108,7 @@ function clearChat() {
     localStorage.removeItem('enriquez_os_chat');
     renderHistory();
     // Clear server-side conversation memory too
-    fetch('/api/claude/clear', { method: 'POST', headers: { 'Content-Type': 'application/json' } }).catch(() => {});
+    fetch('/api/claude/clear', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).catch(() => {});
 }
 
 // --- Floating chat panel toggle ---

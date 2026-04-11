@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-lg md:max-w-none md:px-12 lg:px-20 mx-auto px-4 py-4 pb-24">
+<div class="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 md:px-8 py-4 pb-24">
 
     <!-- ============================== -->
     <!-- TAB: Home (Weekly Overview)    -->
     <!-- ============================== -->
     <div id="page-home" class="page-content">
-        <div class="flex items-center justify-between mb-5">
-            <h1 class="text-xl font-bold">Enriquez OS</h1>
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold">Enriquez OS</h1>
             <span class="text-sm text-gray-400" id="home-date"></span>
         </div>
 
@@ -21,26 +21,22 @@
         </div>
 
         <!-- Personal stats -->
-        <div class="grid grid-cols-3 gap-3 mb-3">
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                <div class="text-xs text-gray-300 uppercase tracking-wider mb-1">Avg</div>
-                <div id="stat-avg" class="text-xl font-bold text-green-400">--%</div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Avg</div>
+                <div id="stat-avg" class="text-2xl font-bold text-green-400">--%</div>
             </div>
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                <div class="text-xs text-gray-300 uppercase tracking-wider mb-1">Spent</div>
-                <div id="stat-spend" class="text-xl font-bold text-amber-400">$0</div>
-            </div>
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                <div class="text-xs text-gray-300 uppercase tracking-wider mb-1">Streak</div>
-                <div id="stat-streak" class="text-xl font-bold text-purple-400">0d</div>
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Streak</div>
+                <div id="stat-streak" class="text-2xl font-bold text-purple-400">0d</div>
             </div>
         </div>
 
         <!-- Quick cards -->
-        <div class="grid grid-cols-2 gap-3 mb-5">
+        <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 cursor-pointer hover:border-gray-700 transition"
                  onclick="switchTab('habits')">
-                <div class="text-xs text-gray-300 uppercase tracking-wider mb-1">Today's Habits</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Today's Habits</div>
                 <div id="cmd-habits-value" class="text-xl font-semibold text-white">{{ done }}/{{ total }} ({{ pct }}%)</div>
                 <div class="mt-2 h-1.5 bg-gray-800 rounded-full overflow-hidden">
                     <div id="cmd-habits-bar" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: {{ pct }}%"></div>
@@ -48,16 +44,16 @@
             </div>
             <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 cursor-pointer hover:border-gray-700 transition"
                  onclick="switchTab('spend')">
-                <div class="text-xs text-gray-300 uppercase tracking-wider mb-1">Spend Today</div>
-                <div id="cmd-spend-value" class="text-xl font-semibold text-amber-400">$0</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Spend Today</div>
+                <div id="cmd-spend-value" class="text-xl font-semibold text-amber-400">₱0</div>
             </div>
         </div>
 
         <!-- Cold Outreach — Personal -->
-        <div class="mb-5">
-            <div class="text-xs text-gray-300 uppercase tracking-wider mb-2">Personal Outreach</div>
+        <div class="mb-6">
+            <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">Personal Outreach</div>
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
                     <div class="text-xs text-gray-500 mb-2">Today</div>
                     <div class="flex items-baseline gap-3">
                         <div class="text-center flex-1">
@@ -74,7 +70,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
                     <div class="text-xs text-gray-500 mb-2">This Week</div>
                     <div class="flex items-baseline gap-3">
                         <div class="text-center flex-1">
@@ -95,10 +91,10 @@
         </div>
 
         <!-- Cold Outreach — EPS -->
-        <div class="mb-5">
-            <div class="text-xs text-gray-300 uppercase tracking-wider mb-2">EPS Outreach</div>
+        <div class="mb-6">
+            <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">EPS Outreach</div>
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
                     <div class="text-xs text-gray-500 mb-2">Today</div>
                     <div class="flex items-baseline gap-3">
                         <div class="text-center flex-1">
@@ -115,7 +111,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
                     <div class="text-xs text-gray-500 mb-2">This Week</div>
                     <div class="flex items-baseline gap-3">
                         <div class="text-center flex-1">
@@ -236,15 +232,15 @@
     <!-- TAB: Brief                     -->
     <!-- ============================== -->
     <div id="page-brief" class="page-content hidden">
-        <div class="flex items-center justify-between mb-3">
-            <h1 class="text-xl font-bold">Work Brief</h1>
-            <button onclick="refreshBrief()" id="brief-refresh-btn" class="text-xs text-gray-400 hover:text-gray-200 transition">Refresh</button>
+        <div class="flex items-center justify-between mb-4">
+            <h1 class="text-2xl font-bold">Work Brief</h1>
+            <button onclick="refreshBrief()" id="brief-refresh-btn" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
         </div>
 
         <!-- Sub-nav pills -->
-        <div class="flex gap-1.5 mb-4">
-            <button class="brief-pill px-3 py-1.5 rounded-lg text-xs font-medium transition bg-blue-600 text-white" data-section="eps" onclick="switchBrief('eps')">EPS</button>
-            <button class="brief-pill px-3 py-1.5 rounded-lg text-xs font-medium transition bg-gray-800 text-gray-400" data-section="personal" onclick="switchBrief('personal')">Personal</button>
+        <div class="flex gap-2 mb-5">
+            <button class="brief-pill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white" data-section="eps" onclick="switchBrief('eps')">EPS</button>
+            <button class="brief-pill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400" data-section="personal" onclick="switchBrief('personal')">Personal</button>
         </div>
 
         <!-- Brief content sections -->
@@ -357,7 +353,7 @@
         <input type="hidden" id="spend-category" value="Takeout">
 
         <div>
-            <label class="text-xs text-gray-400 uppercase tracking-wider">Amount ($)</label>
+            <label class="text-xs text-gray-400 uppercase tracking-wider">Amount (₱)</label>
             <input id="spend-amount" type="number" inputmode="decimal" step="0.01" placeholder="0.00"
                    class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-2xl text-center text-white font-semibold focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
                    onkeydown="if(event.key==='Enter')saveSpend()">
@@ -378,7 +374,7 @@
 
 <!-- Bottom Tab Bar -->
 <nav class="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-40 pb-[env(safe-area-inset-bottom)]">
-    <div class="max-w-lg md:max-w-2xl mx-auto flex">
+    <div class="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto flex">
         <button onclick="switchTab('home')" data-tab="home"
                 class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-green-400">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

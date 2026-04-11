@@ -49,38 +49,22 @@ def command_center():
         today = today_ph()
         result = {}
 
-        # --- Checklist completion ---
+        # --- Checklist completion (from SQLite — same source as Habits tab) ---
         try:
-            config_res = service.spreadsheets().values().get(
-                spreadsheetId=_dashboard_sheet_id,
-                range="'Checklist Config'"
-            ).execute()
-            config_all = config_res.get('values', [])
-            if config_all:
-                headers = config_all[0]
-                col = {h: i for i, h in enumerate(headers)}
-                active_idx = col.get('Active', 99)
-                active_items = [
-                    r for r in config_all[1:]
-                    if (r[active_idx] if active_idx < len(r) else 'TRUE').upper() == 'TRUE'
-                ]
-            else:
-                active_items = []
-            total_items = len(active_items)
+            import db
+            config = db.load_config()
+            total_items = sum(len(items) for items in config.values())
+            completions = db.load_log(today)
 
-            log_res = service.spreadsheets().values().get(
-                spreadsheetId=_dashboard_sheet_id,
-                range="'Checklist Log'"
-            ).execute()
-            log_rows = log_res.get('values', [])[1:]
-            today_done = set()
-            for row in log_rows:
-                if len(row) >= 3 and row[0] == today:
-                    val = row[2] if len(row) > 2 else ''
-                    if val and val != '0' and val.upper() != 'FALSE':
-                        today_done.add(row[1])
+            done_count = 0
+            for items in config.values():
+                for item in items:
+                    val = completions.get(item['name'], '')
+                    if item['type'] == 'check' and val.upper() in ('TRUE', '1', 'YES'):
+                        done_count += 1
+                    elif item['type'] == 'count' and val and val != '0':
+                        done_count += 1
 
-            done_count = len(today_done)
             pct = round((done_count / total_items * 100)) if total_items else 0
             result['checklist'] = {
                 'done': done_count,
@@ -125,7 +109,7 @@ def command_center():
             now = now_ph()
             today_label = f"{now.day} {now.strftime('%B')}"
             # Build set of date labels for this week (Mon–Sun)
-            week_start = now - timedelta(days=now.weekday())
+            week_start = now - timedelta(days=(now.weekday() + 1) % 7)
             week_labels = set()
             for d in range(7):
                 dt = week_start + timedelta(days=d)
@@ -188,7 +172,7 @@ def command_center():
             creds = get_pipedrive_creds()
             now = now_ph()
             today_str = now.strftime('%Y-%m-%d')
-            week_start_str = (now - timedelta(days=now.weekday())).strftime('%Y-%m-%d')
+            week_start_str = (now - timedelta(days=(now.weekday() + 1) % 7)).strftime('%Y-%m-%d')
 
             activities = fetch_activities(
                 api_key=creds['api_key'], domain=creds['domain'],
@@ -230,57 +214,32 @@ def command_center():
         return jsonify({'ok': False, 'error': str(e)}), 500
 
 
-SYSTEM_PROMPT = """You are Allen's executive assistant and orchestrator — the Enriquez OS.
-You manage Allen's day-to-day across two domains: EPS (day job — painting & cleaning company, Brisbane AU) and Personal (AI automation consultancy, personal life).
+SYSTEM_PROMPT = """You are Allen's executive assistant — Enriquez OS.
+Two domains: EPS (painting & cleaning company, Brisbane AU) and Personal (AI consultancy).
 
-PROJECT ROOT: /Users/allenenriquez/Desktop/Allen Enriquez/
-
-## Your Tools (Direct)
-- Pipedrive CRM: search deals, get details, post notes, send EPS emails (sales@epsolution.com.au)
-- Personal Gmail: read/send from allenenriquez006@gmail.com
-- Personal CRM: Google Sheets with leads, callbacks, follow-ups
-- Habit checklist: read today's completion status
-- Shell commands: run any tool, script, or command on Allen's machine
-- File reader: read any project file
-
-## Tools You Can Run via Shell (tools/*.py)
-- morning_briefing.py — daily briefing (pipeline + emails + action items)
-- ai_learning_brief.py — AI curriculum + article digest
-- calculate_quote.py — pricing engine for EPS quotes
-- qa_quote.py — QA checker for quotes
-- fetch_call_transcript.py — get JustCall transcript for a deal
-- process_cold_calls.py — batch format/post cold lead notes
-- draft_follow_up_email.py — template-based follow-up drafts
-- personal_crm.py — full CRM operations (report, draft, cleanup)
-- research_prospect.py — research a prospect before a call
-- generate_content.py — content engine for personal brand
-- send_personal_email.py — CLI for personal Gmail
-- send_email_gmail.py — CLI for EPS Gmail
-- crm_monitor.py — Pipedrive pipeline monitor
-- deal_context.py — pull full deal context from Pipedrive
-- create_sm8_deposit.py / push_sm8_job.py — ServiceM8 operations
-
-## Workflows (SOPs in projects/*/workflows/)
-- EPS: create-quote.md, calculate-line-items.md, measure-floor-plan.md
-- Personal: crm-daily-review.md, content-calendar.md, follow-up-sequence.md
-
-## Agents (specialists in .claude/agents/)
-EPS: eps-quote-agent, eps-email-agent, eps-crm-agent, eps-qa-agent, eps-call-notes, eps-cold-calls
-Personal: personal-content-agent, personal-followup-agent, personal-research-agent
+Project root: /Users/allenenriquez/Desktop/Allen Enriquez/
 
 ## Rules
-- Be concise — this is a mobile chat interface. Short answers.
-- When sending ANY email, show the draft and ask for confirmation first.
-- Simple English. 3rd-5th grade reading level for client-facing content.
-- For EPS client work, use sales@epsolution.com.au. For personal brand, use allenenriquez006@gmail.com.
-- If a task is complex, break it into steps and tell Allen the plan before executing.
+- **Bias to action.** Do the thing first, report after. Don't ask clarifying questions unless truly ambiguous.
+- Be concise — mobile chat. Short answers. 1-2 sentences max when reporting results.
+- If Allen says "send an email to X saying Y" — draft it, show it in 2 lines, and ask "Send?" That's it. Don't ask for subject line, formatting preferences, or tone. Pick sensible defaults.
+- If Allen gives you enough info to act, ACT. Fill in reasonable defaults for anything missing (subject lines, greetings, sign-offs).
+- Show email drafts before sending, but keep the preview SHORT — just the key content, not a full formatted display.
+- Simple English. 3rd-5th grade reading level for client copy.
+- EPS email: sales@epsolution.com.au. Personal: allenenriquez006@gmail.com.
 - Never fabricate data — always fetch from tools.
+- For shell tools, working dir is project root. Key scripts in tools/*.py.
+- When using tools, chain them without stopping to narrate each step. Get the data, do the thing, report the result.
 """
 
 # Conversation memory per session (resets on server restart)
 _conversations: dict[str, list] = {}
 
 MAX_TOOL_ROUNDS = 10
+MAX_HISTORY_MESSAGES = 20  # Keep last N messages to avoid token bloat
+MAX_TOOL_RESULT_CHARS = 3000  # Truncate individual tool results
+RETRY_ATTEMPTS = 2
+RETRY_DELAY = 3  # seconds
 
 
 def _sanitize_history(messages):
@@ -342,6 +301,66 @@ def _sanitize_history(messages):
         break
 
 
+def _trim_history(messages):
+    """Keep only the last MAX_HISTORY_MESSAGES messages to control token usage.
+
+    Preserves tool_use/tool_result pairing — never splits a pair.
+    """
+    if len(messages) <= MAX_HISTORY_MESSAGES:
+        return
+
+    # Find a safe cut point — don't split tool_use/tool_result pairs
+    cut = len(messages) - MAX_HISTORY_MESSAGES
+    # Walk forward from the cut point to avoid orphaning tool results
+    while cut < len(messages):
+        msg = messages[cut]
+        content = msg.get('content', [])
+        # If this is a tool_result message, we need the assistant message before it
+        if (isinstance(content, list)
+                and any(isinstance(b, dict) and b.get('type') == 'tool_result' for b in content)):
+            cut -= 1  # include the preceding assistant tool_use message
+            break
+        # If this is an assistant message with tool_use, include the next tool_result too
+        if msg.get('role') == 'assistant' and isinstance(content, list):
+            has_tool = any(
+                (getattr(b, 'type', None) == 'tool_use' if hasattr(b, 'type') else
+                 isinstance(b, dict) and b.get('type') == 'tool_use')
+                for b in content
+            )
+            if has_tool:
+                cut -= 1  # back up so the pair stays together
+                break
+        break
+
+    if cut > 0:
+        del messages[:cut]
+
+
+def _truncate_result(result_str):
+    """Truncate tool result strings to MAX_TOOL_RESULT_CHARS."""
+    if len(result_str) <= MAX_TOOL_RESULT_CHARS:
+        return result_str
+    return result_str[:MAX_TOOL_RESULT_CHARS] + '...(truncated)'
+
+
+def _call_claude(client, tools, messages):
+    """Call Claude API with retry on 429 rate limit errors."""
+    for attempt in range(RETRY_ATTEMPTS + 1):
+        try:
+            return client.messages.create(
+                model='claude-haiku-4-5-20251001',
+                max_tokens=2048,
+                system=SYSTEM_PROMPT,
+                tools=tools,
+                messages=messages,
+            )
+        except anthropic.RateLimitError:
+            if attempt < RETRY_ATTEMPTS:
+                time.sleep(RETRY_DELAY * (attempt + 1))
+            else:
+                raise
+
+
 @command_bp.route('/api/claude/message', methods=['POST'])
 def claude_message():
     """Send a message to Claude, with agentic tool-use loop."""
@@ -362,19 +381,16 @@ def claude_message():
         # Fix any orphaned tool_use blocks before adding new user message
         _sanitize_history(messages)
 
+        # Trim old messages to stay under token limits
+        _trim_history(messages)
+
         messages.append({'role': 'user', 'content': message})
 
         # Agentic loop — call Claude, execute tools, repeat
         for _ in range(MAX_TOOL_ROUNDS):
-            response = client.messages.create(
-                model='claude-haiku-4-5-20251001',
-                max_tokens=2048,
-                system=SYSTEM_PROMPT,
-                tools=tools,
-                messages=messages,
-            )
+            response = _call_claude(client, tools, messages)
 
-            # Check if response contains tool_use blocks (don't rely solely on stop_reason)
+            # Check if response contains tool_use blocks
             tool_use_blocks = [b for b in response.content if b.type == 'tool_use']
 
             if tool_use_blocks:
@@ -386,7 +402,7 @@ def claude_message():
                     tool_results.append({
                         'type': 'tool_result',
                         'tool_use_id': block.id,
-                        'content': json.dumps(result),
+                        'content': _truncate_result(json.dumps(result)),
                     })
                 messages.append({'role': 'user', 'content': tool_results})
             else:
@@ -401,6 +417,8 @@ def claude_message():
         # Hit max rounds — return whatever text we have
         return jsonify({'ok': True, 'response': 'Reached maximum tool rounds. Please try a simpler request.'})
 
+    except anthropic.RateLimitError:
+        return jsonify({'ok': False, 'error': 'Rate limited — too many requests. Try again in a minute.'}), 429
     except anthropic.APIError as e:
         return jsonify({'ok': False, 'error': f'Claude API error: {e.message}'}), 502
     except Exception as e:

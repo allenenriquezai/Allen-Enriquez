@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.enriquezOS.jibble-clockin</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>cd /Users/allenenriquez/Desktop/Allen\ Enriquez &amp;&amp; bash tools/jibble.sh clock-in</string>
+    </array>
+
+    <!-- Daily at 6:30 AM PH time (local) -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>6</integer>
+        <key>Minute</key>
+        <integer>30</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/jibble-clockin.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/jibble-clockin-error.log</string>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+</dict>
+</plist>

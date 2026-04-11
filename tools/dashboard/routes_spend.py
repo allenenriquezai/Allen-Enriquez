@@ -85,8 +85,8 @@ def spend_summary():
     try:
         today = now_ph().date()
 
-        # This week (Mon-Sun)
-        week_start = today - timedelta(days=today.weekday())
+        # This week (Sun-Sat)
+        week_start = today - timedelta(days=(today.weekday() + 1) % 7)
         week_end = week_start + timedelta(days=6)
 
         # Last week

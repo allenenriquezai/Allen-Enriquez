@@ -23,11 +23,11 @@ function renderSpend() {
 
     const t = spendData.totals;
     totalsEl.innerHTML = `
-        <span class="text-amber-400">Takeout: $${t.takeout.toFixed(0)}</span>
+        <span class="text-amber-400">Takeout: ₱${Math.round(t.takeout).toLocaleString()}</span>
         <span class="text-gray-600 mx-2">|</span>
-        <span class="text-blue-400">General: $${t.general.toFixed(0)}</span>
+        <span class="text-blue-400">General: ₱${Math.round(t.general).toLocaleString()}</span>
         <span class="text-gray-600 mx-2">|</span>
-        <span class="text-white font-medium">Total: $${t.total.toFixed(0)}</span>
+        <span class="text-white font-medium">Total: ₱${Math.round(t.total).toLocaleString()}</span>
     `;
 
     if (spendData.entries.length === 0) {
@@ -43,7 +43,7 @@ function renderSpend() {
                         ? 'bg-amber-900/50 text-amber-400'
                         : 'bg-blue-900/50 text-blue-400'
                 }">${e.category}</span>
-                <span class="text-sm text-gray-300">$${parseFloat(e.amount).toFixed(2)}</span>
+                <span class="text-sm text-gray-300">₱${Math.round(parseFloat(e.amount)).toLocaleString()}</span>
                 ${e.description ? `<span class="text-xs text-gray-500">${e.description}</span>` : ''}
             </div>
             <button onclick="deleteSpend(${i})" class="text-gray-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100">
@@ -97,7 +97,7 @@ async function saveSpend() {
         const data = await res.json();
 
         if (data.ok) {
-            showToast(`$${parseFloat(amount).toFixed(0)} ${category} logged`, 'success');
+            showToast(`₱${Math.round(parseFloat(amount)).toLocaleString()} ${category} logged`, 'success');
             closeSpendModal();
             loadSpend();
         } else {

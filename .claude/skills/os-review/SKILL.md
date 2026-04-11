@@ -53,6 +53,13 @@ Cross-reference everything. Look for:
 - Memory entries that are no longer relevant
 - Dead tools (not referenced anywhere)
 
+**Learning health:**
+- Read `shared/learnings/log.jsonl` — count observations by type since last review
+- Check for repeat corrections (same correction 2+ times = system failed to learn — flag as critical)
+- Distill any pending observations into playbook rules (`shared/learnings/playbook-*.md`)
+- Update `shared/learnings/metrics.json` with weekly stats
+- Check playbook sizes (flag if >3KB)
+
 ## Step 5 — Output
 
 Produce a findings report in this exact format:
