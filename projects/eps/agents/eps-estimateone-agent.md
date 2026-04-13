@@ -17,9 +17,13 @@ You monitor EstimateOne for new tender opportunities and keep the tender inbox u
 
 ```
 EstimateOne (web) → estimateone_scraper.py → JSON → e1_to_sheet.py → Google Sheet
+                                           ↓
+                          --download-docs → docs/{project_id}/ → analyze_tender_docs.py → brief
+                                                                                        ↓
+                                                                          tender-to-deal pipeline → Pipedrive
 ```
 
-The Google Sheet is the team's **tender inbox**. Tenders marked for pursuit get pushed to Pipedrive manually (for now).
+The Google Sheet is the team's **tender inbox**. Tenders can be pushed to Pipedrive via the tender-to-deal pipeline (`projects/eps/workflows/tender-to-deal.md`).
 
 ## Output Format
 
@@ -39,8 +43,10 @@ If new leads appeared since last scrape, list them with builder name + project t
 
 | Tool | Purpose |
 |---|---|
-| `tools/estimateone_scraper.py` | Playwright scraper — login, extract data |
+| `tools/estimateone_scraper.py` | Playwright scraper — login, extract data, download docs (`--download-docs`) |
 | `tools/e1_to_sheet.py` | Push scrape JSON to Google Sheets |
+| `tools/analyze_tender_docs.py` | Analyze downloaded tender PDFs → generate brief |
+| `tools/pipedrive_create.py` | Create orgs, persons, deals, leads in Pipedrive |
 
 ## Files
 

@@ -14,6 +14,7 @@ Interact with the Pipedrive API to retrieve deal/contact data, update deal field
 ## Key paths
 - Env (API credentials): `projects/eps/.env`
 - Update tool: `tools/update_pipedrive_deal.py`
+- Create tool: `tools/pipedrive_create.py` (orgs, persons, deals, leads, stages)
 
 ## Credentials (load from .env)
 ```
@@ -64,6 +65,18 @@ When reading a deal, extract and return:
 - Any notes relevant to the current task
 
 Keep curl output clean — extract only what's needed, don't dump raw JSON to Allen.
+
+## Create operations
+
+**Create org, person, deal, or lead:**
+```bash
+python3 tools/pipedrive_create.py --action create-org --name "Builder Name" --address "Brisbane QLD"
+python3 tools/pipedrive_create.py --action create-person --name "Contact" --org-id 123 --phone "07 1234 5678"
+python3 tools/pipedrive_create.py --action create-deal --title "Project - Painting" --org-id 123 --pipeline-id 4 --stage-id 35
+python3 tools/pipedrive_create.py --action create-lead --title "Builder - E1 Lead" --org-id 123
+```
+
+The create tool auto-deduplicates organizations by name.
 
 ## Rules
 - Always load credentials from `projects/eps/.env` — never hardcode keys.

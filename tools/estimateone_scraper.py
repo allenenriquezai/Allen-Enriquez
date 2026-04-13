@@ -111,7 +111,7 @@ def login(page, ctx):
     print("Logging in...")
     page.goto(f"{BASE_URL}/login", wait_until="domcontentloaded", timeout=20000)
     throttle()
-    page.wait_for_selector("input[type='email'], input[name='email']", timeout=10000)
+    page.wait_for_selector("input[type='email'], input[name='email']", timeout=20000)
     page.fill("input[type='email'], input[name='email']", E1_EMAIL)
     throttle(0.5)
     page.fill("input[type='password'], input[name='password']", E1_PASSWORD)
@@ -749,6 +749,292 @@ def scrape_directory(page, max_pages=20):
     return all_builders
 
 
+# --- Document download ---
+
+DOCS_DIR = OUT_DIR / "docs"
+
+
+def classify_document(filename):
+    """Classify a document by filename."""
+    name_lower = filename.lower()
+    if any(w in name_lower for w in ("plan", "drawing", "floor", "elevation",
+                                      "section", "layout", "architectural")):
+        return "plan"
+    if any(w in name_lower for w in ("spec", "specification", "schedule",
+                                      "scope", "painting spec", "cleaning spec")):
+        return "spec"
+    return "other"
+
+
+def scrape_tender_detail(page, project_id, project_name=""):
+    """Navigate to a tender/lead detail page and extract documents list.
+
+    Tries multiple strategies to find the detail page:
+    1. Click project name link from the current page (if on leads/find-tenders)
+    2. Direct URL: {BASE_URL}/tenders/{id}
+    3. Direct URL: {BASE_URL}/projects/{id}
+    """
+    clean_id = project_id.replace("#", "").strip()
+    print(f"  Opening detail for #{clean_id} ({project_name})...")
+
+    # Strategy 1: Try clicking project link on current page
+    detail_found = False
+    link = page.query_selector(f"a:has-text('{project_name}')") if project_name else None
+    if not link:
+        # Try finding by project ID text
+        link = page.query_selector(f"a:has-text('#{clean_id}')")
+    if not link:
+        # Broader search — any link containing the ID
+        links = page.query_selector_all("a[href]")
+        for l in links:
+            href = l.get_attribute("href") or ""
+            if clean_id in href:
+                link = l
+                break
+
+    if link and link.is_visible():
+        href = link.get_attribute("href") or ""
+        link.click()
+        page.wait_for_load_state("domcontentloaded", timeout=15000)
+        throttle()
+        detail_found = True
+        screenshot(page, f"tender_detail_{clean_id}")
+
+    # Strategy 2: Direct URL attempts
+    if not detail_found:
+        for url_pattern in [f"/tenders/{clean_id}", f"/projects/{clean_id}",
+                            f"/tender/{clean_id}", f"/project/{clean_id}"]:
+            try:
+                page.goto(f"{BASE_URL}{url_pattern}", wait_until="domcontentloaded", timeout=15000)
+                throttle()
+                # Check if we landed on an error page
+                if "not found" not in page.inner_text("body").lower()[:500]:
+                    detail_found = True
+                    screenshot(page, f"tender_detail_{clean_id}")
+                    break
+            except PlaywrightTimeout:
+                continue
+
+    if not detail_found:
+        print(f"    Could not find detail page for #{clean_id}")
+        return {"project_id": clean_id, "detail_url": "", "documents": [],
+                "express_interest_required": False, "error": "detail page not found"}
+
+    detail_url = page.url
+    print(f"    Detail page: {detail_url}")
+
+    # Check for Express Interest gate
+    express_btn = page.query_selector(
+        "button:has-text('Express Interest'), a:has-text('Express Interest')"
+    )
+    express_required = bool(express_btn and express_btn.is_visible())
+
+    # Look for document/download section
+    documents = []
+    # Try common selectors for document lists
+    doc_selectors = [
+        "a[href*='download']",
+        "a[href*='.pdf']",
+        "a[href*='/documents/']",
+        "a[href*='/files/']",
+        "[class*='document'] a",
+        "[class*='file'] a",
+        "table a[href]",  # docs might be in a table
+    ]
+
+    seen_urls = set()
+    for sel in doc_selectors:
+        links = page.query_selector_all(sel)
+        for link in links:
+            href = link.get_attribute("href") or ""
+            text = link.inner_text().strip()
+            if not href or href in seen_urls:
+                continue
+            # Skip navigation links
+            if any(skip in href for skip in ("/login", "/leads", "/find-tenders",
+                                              "/directory", "/noticeboard", "/watchlist",
+                                              "javascript:", "#")):
+                continue
+            seen_urls.add(href)
+            doc_type = classify_document(text or href)
+            documents.append({
+                "name": text or href.split("/")[-1],
+                "download_url": href if href.startswith("http") else f"{BASE_URL}{href}",
+                "type": doc_type,
+            })
+
+    # Also look for a "Documents" tab/section and click it
+    docs_tab = page.query_selector(
+        "a:has-text('Documents'), button:has-text('Documents'), "
+        "[role='tab']:has-text('Documents'), a:has-text('Docs')"
+    )
+    if docs_tab and docs_tab.is_visible():
+        docs_tab.click()
+        page.wait_for_load_state("domcontentloaded", timeout=10000)
+        throttle()
+        screenshot(page, f"tender_docs_tab_{clean_id}")
+
+        # Re-scan for document links after clicking docs tab
+        for sel in doc_selectors:
+            links = page.query_selector_all(sel)
+            for link in links:
+                href = link.get_attribute("href") or ""
+                text = link.inner_text().strip()
+                if not href or href in seen_urls:
+                    continue
+                if any(skip in href for skip in ("/login", "/leads", "/find-tenders",
+                                                  "javascript:", "#")):
+                    continue
+                seen_urls.add(href)
+                doc_type = classify_document(text or href)
+                documents.append({
+                    "name": text or href.split("/")[-1],
+                    "download_url": href if href.startswith("http") else f"{BASE_URL}{href}",
+                    "type": doc_type,
+                })
+
+    # Extract contact info if visible
+    contact = {}
+    body_text = page.inner_text("body")[:3000]
+    email_match = re.search(r"[\w.+-]+@[\w-]+\.[\w.]+", body_text)
+    if email_match:
+        contact["email"] = email_match.group(0)
+    phone_match = re.search(r"(?:0[2-9]|(?:\+?61\s?))[0-9\s\-]{7,12}", body_text)
+    if phone_match:
+        contact["phone"] = phone_match.group(0).strip()
+
+    print(f"    Documents found: {len(documents)}")
+    if express_required:
+        print(f"    Express Interest required (not clicked)")
+
+    return {
+        "project_id": clean_id,
+        "detail_url": detail_url,
+        "documents": documents,
+        "contact": contact,
+        "express_interest_required": express_required,
+    }
+
+
+def download_tender_documents(page, project_id, documents, output_dir=None):
+    """Download document files from a tender detail page.
+
+    Uses Playwright's download event handling.
+    Saves to: projects/eps/.tmp/estimateone/docs/{project_id}/
+    """
+    clean_id = project_id.replace("#", "").strip()
+    docs_dir = output_dir or (DOCS_DIR / clean_id)
+    docs_dir.mkdir(parents=True, exist_ok=True)
+
+    downloaded = []
+    for doc in documents:
+        url = doc.get("download_url", "")
+        name = doc.get("name", "unknown")
+        if not url:
+            continue
+
+        print(f"    Downloading: {name}")
+        try:
+            # Try clicking the link and catching the download event
+            link = page.query_selector(f"a[href='{url}'], a[href*='{url.split('/')[-1]}']")
+            if link:
+                with page.expect_download(timeout=30000) as download_info:
+                    link.click()
+                dl = download_info.value
+                filename = dl.suggested_filename or f"{name}.pdf"
+                local_path = docs_dir / filename
+                dl.save_as(str(local_path))
+            else:
+                # Direct download via page navigation
+                with page.expect_download(timeout=30000) as download_info:
+                    page.goto(url, wait_until="domcontentloaded", timeout=20000)
+                dl = download_info.value
+                filename = dl.suggested_filename or f"{name}.pdf"
+                local_path = docs_dir / filename
+                dl.save_as(str(local_path))
+
+            doc["local_path"] = str(local_path)
+            doc["downloaded"] = True
+            downloaded.append(doc)
+            print(f"      Saved: {local_path}")
+            throttle()
+
+        except (PlaywrightTimeout, Exception) as e:
+            print(f"      Failed: {e}")
+            doc["downloaded"] = False
+            doc["error"] = str(e)
+            downloaded.append(doc)
+
+    print(f"    Downloaded {sum(1 for d in downloaded if d.get('downloaded'))} / {len(documents)} docs")
+    return downloaded
+
+
+def process_tender_docs(page, tenders, project_ids=None, auto_express=False):
+    """Process a list of tenders — navigate to detail page and download docs.
+
+    Args:
+        tenders: list of tender dicts from scrape (must have project_id and project fields)
+        project_ids: optional list of specific IDs to process (skip others)
+        auto_express: if True, click Express Interest on gated tenders
+    """
+    if project_ids:
+        clean_ids = {pid.replace("#", "").strip() for pid in project_ids}
+        tenders = [t for t in tenders if t.get("project_id", "").replace("#", "").strip() in clean_ids]
+
+    print(f"\nProcessing {len(tenders)} tenders for doc download...")
+    results = []
+
+    for tender in tenders:
+        pid = tender.get("project_id", "").replace("#", "").strip()
+        pname = tender.get("project", tender.get("title", ""))
+
+        if not pid:
+            continue
+
+        # Check if docs already downloaded
+        existing_dir = DOCS_DIR / pid
+        if existing_dir.exists() and any(existing_dir.iterdir()):
+            print(f"  #{pid}: docs already downloaded, skipping")
+            tender["documents"] = [
+                {"name": f.name, "local_path": str(f), "type": classify_document(f.name),
+                 "downloaded": True}
+                for f in existing_dir.iterdir() if f.is_file()
+            ]
+            results.append(tender)
+            continue
+
+        detail = scrape_tender_detail(page, pid, pname)
+
+        if detail.get("express_interest_required") and not auto_express:
+            print(f"  #{pid}: Express Interest required — skipping (use --auto-express-interest)")
+            tender["documents"] = []
+            tender["express_interest_required"] = True
+            results.append(tender)
+            # Navigate back
+            page.go_back()
+            throttle()
+            continue
+
+        if detail.get("documents"):
+            docs = download_tender_documents(page, pid, detail["documents"])
+            tender["documents"] = docs
+        else:
+            tender["documents"] = []
+
+        tender["detail_url"] = detail.get("detail_url", "")
+        if detail.get("contact"):
+            tender["contact"] = detail["contact"]
+
+        results.append(tender)
+
+        # Navigate back to list
+        page.go_back()
+        page.wait_for_load_state("domcontentloaded", timeout=10000)
+        throttle()
+
+    return results
+
+
 def scrape_noticeboard(page):
     """Scrape /noticeboard."""
     print("Scraping noticeboard...")
@@ -804,6 +1090,34 @@ def run_scraper(args):
             if args.noticeboard or args.all:
                 results["sections"]["noticeboard"] = scrape_noticeboard(page)
 
+            # Download docs from tender detail pages
+            if args.download_docs:
+                project_ids = [p.strip() for p in args.project_ids.split(",") if p.strip()] if args.project_ids else None
+
+                # If no sections were scraped this run, load from latest
+                if not results["sections"] and project_ids:
+                    latest = OUT_DIR / "e1_latest.json"
+                    if latest.exists():
+                        prev = json.loads(latest.read_text())
+                        results["sections"] = prev.get("sections", {})
+                        print(f"Loaded sections from previous scrape for doc download")
+
+                # Process leads first (they have doc access)
+                if "leads" in results["sections"]:
+                    results["sections"]["leads"] = process_tender_docs(
+                        page, results["sections"]["leads"],
+                        project_ids=project_ids,
+                        auto_express=args.auto_express_interest,
+                    )
+
+                # Then open tenders (may need Express Interest)
+                if "open_tenders" in results["sections"]:
+                    results["sections"]["open_tenders"] = process_tender_docs(
+                        page, results["sections"]["open_tenders"],
+                        project_ids=project_ids,
+                        auto_express=args.auto_express_interest,
+                    )
+
             save_output(results, f"e1_scrape_{timestamp}.json")
             save_output(results, "e1_latest.json")
 
@@ -831,10 +1145,17 @@ def main():
     parser.add_argument("--headless", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--max-pages", type=int, default=20)
     parser.add_argument("--output", type=str, default="projects/eps/.tmp/estimateone")
+    parser.add_argument("--download-docs", action="store_true",
+                        help="Download documents from tender detail pages")
+    parser.add_argument("--project-ids", type=str, default="",
+                        help="Comma-separated project IDs to download docs for")
+    parser.add_argument("--auto-express-interest", action="store_true",
+                        help="Auto-click Express Interest on gated tenders")
     args = parser.parse_args()
 
-    if not (args.all or args.open or args.awarded or args.leads or args.watchlist or args.directory or args.noticeboard):
-        print("Specify: --all, --open, --awarded, --leads, --watchlist, or --noticeboard")
+    if not (args.all or args.open or args.awarded or args.leads or args.watchlist
+            or args.directory or args.noticeboard or args.download_docs):
+        print("Specify: --all, --open, --awarded, --leads, --watchlist, --noticeboard, or --download-docs")
         sys.exit(1)
 
     run_scraper(args)

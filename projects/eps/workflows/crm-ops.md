@@ -14,13 +14,15 @@ Load from `projects/eps/.env`:
 
 Base URL: `https://${PIPEDRIVE_COMPANY_DOMAIN}/v1`
 
-### Only operate on EPS pipelines
+### EPS pipelines
 | Pipeline | Account |
 |---|---|
 | 1 | EPS Clean |
 | 2 | EPS Paint |
+| 3 | Tenders - Clean |
+| 4 | Tenders - Paint |
 
-Never touch other pipelines.
+Never touch pipelines outside this list.
 
 ### Stage IDs
 | Pipeline | Stage name | Stage ID |
@@ -39,6 +41,23 @@ Never touch other pipelines.
 | 2 EPS Paint | NEGOTIATION / FOLLOW UP | 17 |
 | 2 EPS Paint | LATE FOLLOW UP | 12 |
 | 2 EPS Paint | DEPOSIT PROCESS | 48 |
+
+### Tender Pipeline Stage IDs
+
+| Pipeline | Stage name | Stage ID |
+|---|---|---|
+| 3 Tenders - Clean | QUOTE IN PROGRESS | 31 |
+| 3 Tenders - Clean | QUOTE SENT | 57 |
+| 3 Tenders - Clean | FOLLOW UP | 58 |
+| 3 Tenders - Clean | CONTACT MADE | 32 |
+| 3 Tenders - Clean | NEGOTIATION / FOLLOW UP | 33 |
+| 3 Tenders - Clean | LATE FOLLOW UP | 34 |
+| 4 Tenders - Paint | QUOTE IN PROGRESS | 35 |
+| 4 Tenders - Paint | QUOTE SENT | 59 |
+| 4 Tenders - Paint | FOLLOW UP | 60 |
+| 4 Tenders - Paint | CONTACT MADE | 36 |
+| 4 Tenders - Paint | NEGOTIATION / FOLLOW UP | 37 |
+| 4 Tenders - Paint | LATE FOLLOW UP | 38 |
 
 ### Custom field keys
 | Field | Key |
@@ -108,6 +127,16 @@ curl -s -X POST "https://${PIPEDRIVE_COMPANY_DOMAIN}/api/v1/notes?api_token=${PI
 ```bash
 python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field doc|folder --url "URL"
 ```
+
+### Create organization, person, deal, or lead
+```bash
+python3 tools/pipedrive_create.py --action create-org --name "Builder Name" --address "Brisbane QLD"
+python3 tools/pipedrive_create.py --action create-person --name "Contact" --org-id ORG_ID --phone "PHONE"
+python3 tools/pipedrive_create.py --action create-deal --title "Project - Painting" --org-id ORG_ID --pipeline-id 4 --stage-id STAGE_ID
+python3 tools/pipedrive_create.py --action create-lead --title "Builder - Cold Call" --org-id ORG_ID
+```
+
+Organization creation auto-deduplicates by normalized name.
 
 ---
 

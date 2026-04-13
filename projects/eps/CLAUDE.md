@@ -35,6 +35,7 @@ Agent prompts in `projects/eps/agents/`. Loaded on demand by skills — NOT in `
 | `eps-cold-calls` | Cold lead batch processor: format notes → post to person |
 | `eps-site-visit` | Site visit scheduling (SM8 job link + 3 calendars + booking) |
 | `eps-estimateone-agent` | EstimateOne scraper: tenders, builders, awarded projects → Google Sheet |
+| `eps-tender-agent` | Convert E1 tenders to Pipedrive deals with quotes. Full pipeline: docs → analysis → CRM → quote |
 
 To use: spawn a general-purpose Agent with "Read your instructions from `projects/eps/agents/{agent}.md` and follow them. Task: {TASK}"
 
@@ -61,5 +62,7 @@ Pipedrive mailbox is read-only. Gmail auto-syncs to Pipedrive deals.
 - `send_email_gmail.py` — send emails via EPS Gmail
 - `calculate_quote.py` — pricing engine
 - `qa_quote.py` — quote QA checker
-- `estimateone_scraper.py` — Playwright scraper for EstimateOne tenders + builders
+- `estimateone_scraper.py` — Playwright scraper for EstimateOne tenders + builders + doc download
+- `analyze_tender_docs.py` — analyze tender PDFs → structured brief
+- `pipedrive_create.py` — create orgs, persons, deals, leads, stages in Pipedrive
 - `e1_to_sheet.py` — push E1 scrape data to Google Sheets tender inbox
