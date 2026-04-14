@@ -58,6 +58,13 @@ Accuracy never drops below 95% — if a faster/cheaper approach risks bad data, 
 - Read only files needed for the current task.
 - **End of session:** Before the conversation ends or when Allen says "done" / "that's it" / wraps up, automatically run `/wrap` — save handoff + decision log. Don't wait to be asked.
 
+## Tracking Changes
+- Every time Allen gives feedback or makes a decision on ANYTHING — content, tools, agents, workflows, quotes, CRM, automations — log the change and reasoning in the relevant file.
+- Always save outputs (scripts, copy, templates) as their own files — never only embedded in code.
+- Add a change log section to files that go through iterations.
+- When Allen corrects a fact or preference, update ALL relevant files — agent prompts, content files, memory, templates.
+- The goal: any future session picks up exactly where Allen left off with his decisions baked in.
+
 ## Self-Improvement
 - Correction from Allen → save to memory + update source (template/skill/preference)
 - Failure → log to `projects/eps/reference/incident-log.md`

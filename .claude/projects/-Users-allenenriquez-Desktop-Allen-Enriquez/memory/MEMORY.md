@@ -19,6 +19,8 @@
 - [EPS Workflow Preferences](feedback_eps_workflow.md) — Ask rates upfront. Aggregate measurements. Mob fee optional.
 - [No Registered Agents](feedback_no_registered_agents.md) — Never put agents in .claude/agents/. Load on demand from projects/*/agents/.
 - [Stress Test Ideas](feedback_stress_test_ideas.md) — Don't agree to be agreeable. Challenge assumptions, poke holes, flag risks.
+- [SM8 Source of Truth](feedback_sm8_source_of_truth.md) — SM8 for service dates/details, not Pipedrive. Pipedrive won dates bulk-marked and inaccurate.
+- [Person Record First](feedback_person_record_first.md) — Emails and activities always on the person record, not project. Person is source of truth.
 
 ## Projects (active)
 - [Enriquez OS — Direction](project_enriquez_os_direction.md) — Same repo for now. Split only when handing off.
@@ -29,3 +31,5 @@
 - [EPS Agent Architecture](project_eps_agent_architecture.md) — Phase 2 built: specialist subagents.
 - [AI Executive Assistant — Vision](project_ai_executive_assistant.md) — Full AI delegate for EPS + personal life.
 - [EA Phase 2 Design](project_ea_phase2.md) — Two-bucket triage: Allen-only vs AI-handleable.
+- [EPS Re-engagement Campaign](project_eps_reengage_campaign.md) — Batch outreach to previous clients + lost deals. SM8 data, Google Sheet tracker, Pipedrive project boards.
+- [SM8 Job Context](project_eps_sm8_context.md) — SM8 jobs only exist for site-visited deals. Job cart/E1 deals skip SM8. Recurring clients = multiple jobs.

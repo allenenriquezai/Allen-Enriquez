@@ -1,3 +1,45 @@
+## 2026-04-14 — SM8 ↔ Pipedrive auto-linking + dashboard SM8 intelligence
+**Problem:** Dashboard showed "no SM8 job linked" for deals like Ronda Jones even though SM8 had the job (EPSP1937) with site visit data and photos. Root cause: Pipedrive custom field was empty, crm_sync only looked at that field, data_loader silently filtered out empty sm8_status, and EOD flagged it. Dashboard had no SM8 activity history — someone looking at a deal card had no idea what happened.
+**Change:** `tools/crm_sync.py` — address-based fallback SM8 matching (with street-level specificity guard), auto-link job # back to Pipedrive, flag SITE VISIT same as DEPOSIT, cache SM8 activities/staff/files to SQLite with enriched notes (Job Check Out, Booking labels + travel/time). `tools/eps-dashboard/data_loader.py` — removed WHERE filter, added logging. `tools/eps-dashboard/app.py` — extended deal detail API, added project detail API. `tools/eps-dashboard/static/app.js` — light mode, bigger text, SM8 activity timeline, project detail modal, note dedup. `style.css` + `base.html` + `index.html` — light mode.
+**Why:** Allen needs dashboard to give complete picture without checking SM8. Address fallback chosen over manual linking — catches all unlinked deals automatically. Generic address guard (must have street number or street word) prevents false positives. Light mode + bigger text per Allen's request.
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: +
+**Next:** SM8 v2 API for Room Scan/SMS/photos. Verify cron order (crm_sync before eod_ops). Could add SM8 job description to deal modal.
+
+## 2026-04-14 — Carousel tool rewrite (Dan Martell style)
+**Problem:** Carousel generator produced dark background slides with Impact font — didn't match Allen's preference (white bg, Hormozi/Dan Martell style, large clean text). Tool had no auto-scaling, text overflowed on longer copy.
+**Change:** Full rewrite of `tools/generate_carousel.py` — white bg, Helvetica Bold, brand blue (#02B3E9) accents, 4:5 ratio (1080x1350), auto-scale font when text overflows, vertically centered layout. Created `projects/personal/reference/carousel-references/style-reference.md`. Saved `feedback_carousel_style.md` to memory.
+**Why:** Allen wants automated carousels matching Dan Martell's clean style — no Canva. Helvetica Bold chosen over Impact (too condensed). Auto-scaling prevents manual font tweaking. 4:5 ratio is optimal feed format.
+**Criteria:** Speed: + | Cost: + | Accuracy: + | Scale: +
+**Next:** Could add profile photo/avatar support for quote-style carousels. Content agent should enforce 15-word max per slide body.
+
+## 2026-04-14 — Caveman token-efficiency plugin installed
+**Problem:** Output tokens expensive and slow. No compression on Claude Code responses.
+**Change:** `~/.claude/settings.json` — added SessionStart hook (caveman-activate.js) and UserPromptSubmit hook (caveman-mode-tracker.js). Downloaded 4 hook files to `~/.claude/hooks/`. Installed Node.js via Homebrew.
+**Why:** Caveman reduces output tokens ~65-75% while keeping technical accuracy. Fits cost + speed principles. Manual install chosen because Node wasn't available — install script requires it. Existing GSD statusline preserved to avoid conflict.
+**Criteria:** Speed: + | Cost: + | Accuracy: = | Scale: =
+**Next:** Merge caveman badge into GSD statusline. Test all 3 intensity levels.
+
+## 2026-04-14 — Dashboard stage accuracy + Pipedrive notes in deal modal
+**Problem:** Dashboard stage columns didn't match Pipedrive pipelines — tender stages (FOLLOW UP, CONTACT MADE) mixed into deal view, and tenders showed deal-only stages (NEW, SITE VISIT). Deal detail modal had no notes — team couldn't see call notes or deal history without opening Pipedrive.
+**Change:** `tools/eps-dashboard/static/app.js` — split stage orders per pipeline type (DEAL_STAGE_ORDER, TENDER_STAGE_ORDER), route tender pipelines correctly, show all columns even when empty, render last 3 Pipedrive notes in deal modal. `tools/eps-dashboard/pipedrive_client.py` — added `fetch_deal_notes()`. `tools/eps-dashboard/app.py` — notes in `/api/deal/<id>` response.
+**Why:** Team needs accurate pipeline view without Pipedrive access. Notes give deal context at a glance — limited to 3 to avoid clutter (Allen's call).
+**Criteria:** Speed: = | Cost: = | Accuracy: + | Scale: =
+**Next:** Named Cloudflare tunnel for permanent URL. Consider caching notes in SQLite to reduce API calls.
+
+## 2026-04-14 — CRM Sync hardening + SQLite cache + recurring visits + dashboard detail
+**Problem:** CRM Sync crashed on transient API errors. Wrong address field key. SM8 job lookup failed due to `#` prefix. No persistent state. No recurring client visit history. Dashboard had no detail view or SM8 status. Team couldn't access dashboard remotely.
+**Change:** `tools/crm_sync.py` — retry logic, correct field keys, `#` strip, SQLite cache (deals + sync_log + recurring_visits tables), SM8 status change → Pipedrive notes, recurring client sync (7 clients mapped by company_uuid, 41 visits stored). `tools/eps-dashboard/` — deal detail modal, SM8 badges, `/api/deal/<id>` endpoint. Cloudflared quick tunnel for remote access.
+**Why:** System needs to already know deal state — no live lookups. Recurring clients need visit history (last visit, notes, issues) without searching SM8 every time. Team is distributed across countries.
+**Criteria:** Speed: + | Cost: + | Accuracy: + | Scale: +
+**Next:** Wire recurring visits into dashboard project detail. Fix Studio Pilates UUID. Proper domain for dashboard. Populate Win-Back pipeline.
+
+## 2026-04-13 — Google Docs tool + content strategy lock
+**Problem:** No way to create Google Docs programmatically on personal account. Content scripts were too long, too generic, and not automation-focused.
+**Change:** Built `tools/create_gdoc.py` (create + move to Drive folder). Reworked video scripts to v2.4 — short reels (45-60s hooks) + long reels (2-4 min walkthroughs). Show Claude Code by name. 1 reel/day schedule.
+**Why:** Allen needs to edit scripts collaboratively in Google Docs, not in local .md files. Short/long reel split mirrors Sabrina Ramonov's proven format. Claude Code as filter attracts buyers, not hobbyists.
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: +
+**Next:** Film first 4 shorts Wednesday. Screen record systems Sunday. Long reels week 2.
+
 # Enriquez OS — Decision Log
 
 System design decisions, why they were made, and how they score on design criteria.
@@ -6,6 +48,30 @@ System design decisions, why they were made, and how they score on design criter
 - Log architectural/design decisions only — not routine tasks or data updates
 - Keep "Change" to 2-3 conceptual bullets — `git log` has the file-by-file detail
 - Archive entries older than 2 weeks to `DECISIONS-archive.md`
+
+---
+
+## 2026-04-13 — EPS department restructure + 4 new operations tools
+**Problem:** No cross-system sync (Pipedrive ↔ SM8), no automated re-engagement, no EOD ops scan, no tender campaign automation. Agents had duplicate pipeline ID tables and inconsistent patterns. No department structure — flat list of 9 agents.
+**Change:**
+- Built 4 tools: `eod_ops_manager.py` (deal/project context files + questions queue), `crm_sync.py` (Pipedrive ↔ SM8 reconciliation), `reengage_campaign.py` (client + lost deal re-engagement), `tender_batch.py` (daily E1 → CRM pipeline)
+- Merged E1 agent into tender agent (9 → 8 agents), cleaned all agents (dedup, frontmatter, model fixes)
+- Reorganized into 4 lifecycle departments: Lead Gen → Sales → Operations → Retention
+**Why:** Tools over agents for automated work — zero context burn, zero token cost. Agents reserved for interactive work only. Single source of truth for pipeline IDs (crm-ops.md) eliminates 3-way duplication. Tender agent switched from Sonnet → Haiku (4x cheaper, only orchestrates tools).
+**Criteria:** Speed: + | Cost: + (all tools $0, tender agent 4x cheaper) | Accuracy: + (SM8 source of truth, EOD scan catches mismatches) | Scale: + (per-deal context files, batch processing)
+**Next:** Set up launchd plists for daily/weekly automation. Build EPS Ops Dashboard for team visibility.
+
+---
+
+## 2026-04-13 — Re-engagement campaign system
+**Problem:** 58 previous clients with "REENGAGE" activities sitting untouched. No system to process them — all manual. Re-engagement project boards (Board 3 Clean, Board 5 Paint) existed but nobody was moving through stages. No connection between Pipedrive activities, SM8 service history, and outreach.
+**Change:**
+- Built cross-referenced client list (Pipedrive activities × Projects boards × SM8 jobs) → Google Sheet tracker with 44 qualified clients
+- Sent batch 1 (7 personalized emails) with SM8-verified service details, created follow-up call activities, moved projects to "Added to Sequence"
+- Planned `tools/reengage_campaign.py` — automated batch tool that replaces manual process at $0 token cost
+**Why:** Manual approach cost ~$3-5/batch in Claude tokens. Automated script does same thing for $0. Chose tool + morning briefing integration (Option C) over new agent — complexity doesn't justify an agent yet. Will also cover lost deals win-back in same tool.
+**Criteria:** Speed: + | Cost: + | Accuracy: + (SM8 as source of truth) | Scale: + (batch processing)
+**Next:** Build reengage_campaign.py, add lost deals mode, create reengagement workflow doc, hook into morning briefing
 
 ---
 
@@ -41,6 +107,24 @@ Consolidated from all entries. Remove when done.
 
 - [ ] Build `/outreach` skill as entry point for outreach agent
 - [ ] Test outreach agent with a real prospect
+
+---
+
+## 2026-04-13 — Carousel tool upgrade + change tracking rule
+**Problem:** Carousel generator had no header/body separation (all text same size). Scripts were only embedded in Python code, lost between sessions. Allen's decisions weren't being tracked across systems.
+**Change:** Added `||` separator to `generate_carousel.py` for header/body split. Added "Tracking Changes" section to main `CLAUDE.md` — all decisions logged in relevant files with change logs. Saved scripts as standalone files.
+**Why:** Allen needs every session to pick up exactly where the last one left off. Embedding scripts in code meant they got lost. The carousel needed visual hierarchy to match Hormozi style (bold header, lighter body).
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: +
+**Next:** Consider adding profile picture + name to carousel title slides. PDF generator could become a reusable tool.
+
+---
+
+## 2026-04-13 — Level 4 definition locked + video script structure
+**Problem:** Level 4 (Agentic) was described as "reads your pipeline, writes your emails" — too basic, sounds like Level 3 with a chatbot. Video script was missing INTRO and WHAT THIS IS ABOUT sections.
+**Change:** Level 4 now = "AI agents handle marketing, lead gen, sales, and delivery end to end. They learn from unlimited data and do the actual work." Updated carousel, script, and brand agent. Added INTRO + WHAT THIS IS ABOUT to Video 1 script. Timeline corrected: Level 1→4 in less than a month.
+**Why:** Allen's vision for Level 4 is the Medvi model — full departments running on AI, not just task automation. The script needed the full flow (Hook → Intro → What this is about → Content → Stats → CTA) to match what Allen actually recorded.
+**Criteria:** Speed: = | Cost: = | Accuracy: + | Scale: =
+**Next:** Allen films voiceover, then re-sync visuals + captions to final audio.
 
 ---
 
@@ -376,6 +460,64 @@ Consolidated from all entries. Remove when done.
 **Criteria:** Speed: + (one command runs full pipeline) | Cost: + ($0, all local) | Accuracy: = (needs real-footage testing to tune) | Scale: + (handles any length, batch-ready)
 
 **Next:** Test on real footage. Tune silence threshold and zoom detection. Consider `/edit-video` skill entry point.
+
+---
+
+## 2026-04-11 — Brand direction locked: audience vs customer split, ICP, positioning
+
+**Problem:** Brand agent and intel docs had placeholder ICP data. No clear distinction between who Allen serves with content vs who pays. Channel identity undefined. Service offering vague.
+
+**Change:**
+- Rewrote ICP sections in `personal-brand-agent.md` — audience (VAs, broad PH) vs customers (service businesses, creators with budget, professionals)
+- Populated `reference/intel/icp-language.md` and `market-validation.md` with research-backed competitor data, pricing benchmarks, delivery models
+- Defined channel identity: personal brand (not build-in-public, not tutorial channel)
+
+**Why:** Allen was unclear on who to target and what to sell. Ran two parallel research agents (ICP validation + competitive landscape). Research showed VAs can't pay ($0-20/mo budget) but are the biggest audience. Service businesses (trades, AU/US/UK) are the real revenue. Content creators are secondary. Competitors (Nate Herk, Nick Saraev, Sabrina Ramonov) are all developers — Allen's edge is being a non-technical operator.
+
+**Criteria:** Speed: + (intel docs now pre-populated, agents read them automatically) | Cost: = | Accuracy: + (research-backed, not guesses) | Scale: + (all content/outreach agents now aligned to same direction)
+
+**Next:** Create content scripts aligned with new direction. Reach out to first 3 free-build clients. Solve delivery model (whose Claude account?).
+
+---
+
+## 2026-04-13 — Video generation pipeline (Pillow + FFmpeg)
+**Problem:** Allen needed animated visuals for his "4 Levels of AI" video — UI mockups of ChatGPT, Gmail, n8n, Claude Code with transitions and captions. No budget for video editing tools.
+
+**Change:** Built frame-by-frame video generation using Pillow (image rendering) + FFmpeg (video encoding) + Whisper (audio transcription). Created animated scenes for all 4 levels, Hormozi-style word-by-word captions, and used real Claude Code screenshots as Level 4 base. All scripts in `projects/personal/.tmp/video_test/`.
+
+**Why:** CapCut/DaVinci/Fiverr all cost money or time. Pillow + FFmpeg were already installed on Allen's Mac. Gives full programmatic control — can re-render with different timing when Allen provides final voiceover. AI video generators (Kling, Pika) can't do precise UI mockups. Trade-off: lower visual polish than After Effects, but zero cost and instant iteration.
+
+**Criteria:** Speed: + (renders in seconds, instant iteration) | Cost: + (zero — all local, free tools) | Accuracy: = (UI mockups decent but not pixel-perfect) | Scale: + (reusable pipeline for future videos)
+
+**Next:** Allen edits voiceover, drops final audio. Re-sync visuals to final timestamps. Improve Claude Code UI fidelity.
+
+---
+
+## 2026-04-14 — EPS launchd automation + Sales & Operations Dashboard
+
+**Problem:** 5 EPS tools (tender_batch, eod_ops_manager, crm_sync, reengage_campaign) built but required manual execution. No shared visibility into deal/tender/project status for the team.
+
+**Change:** Created 4 launchd plists (tender-batch 6AM, eod-ops 5PM chained, reengage Mon 7AM, eps-dashboard persistent). Built full EPS Dashboard as separate Flask app (`tools/eps-dashboard/`) with 6 tabs: Overview, Deals, Projects, Re-engagement, Sent Tenders, E1 Inbox. Kanban views per pipeline/board with all stages always visible. Live Pipedrive data + EOD intelligence overlay.
+
+**Why:** Team needs shared visibility without logging into Pipedrive. Separate app from personal dashboard because team will use it. Kanban over table view because it mirrors Pipedrive's mental model. Live API + EOD overlay because Pipedrive API is free but EOD analysis adds intelligence (flags, next actions, questions).
+
+**Criteria:** Speed: + (auto-runs, instant page loads) | Cost: = (zero — local Flask, free Pipedrive API, no Claude tokens) | Accuracy: + (live data, fixed pipeline_id filter bug) | Scale: + (team access, auto-start via launchd)
+
+**Next:** Populate Win-Back pipeline with lost deals. Update reengage_campaign.py to target new pipelines. Polish dashboard UI.
+
+---
+
+## 2026-04-14 — Re-engagement + Win-Back Pipedrive pipelines
+
+**Problem:** Re-engagement was on Pipedrive Projects boards — wrong structure for sales follow-up. Won clients and lost deals mixed together with no qualifying step.
+
+**Change:** Created two new Pipedrive pipelines: Re-engagement (ID: 9, 7 stages for won clients: referral → repeat → Google review) and Win-Back (ID: 10, 5 stages for lost deals with qualifying gate). Migrated 28 projects to Re-engagement deals. Removed old project boards.
+
+**Why:** Deals pipeline is the right structure for re-engagement (stages, activity tracking, values). Separate pipelines for won vs lost because different workflows — won clients are warm (skip qualifying), lost deals need qualifying first. Win-Back INTERESTED moves to main pipeline — no duplication. One re-engagement pipeline (not split Clean/Paint) because service type doesn't matter at outreach stage.
+
+**Criteria:** Speed: + (clear workflow, no confusion) | Cost: = (no API cost) | Accuracy: + (right entities in right pipelines) | Scale: + (auto-population planned via reengage tool)
+
+**Next:** Auto-populate Win-Back from reengage_campaign.py. Add value + recency tags for quick qualifying.
 
 ---
 
