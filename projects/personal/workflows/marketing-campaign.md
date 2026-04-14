@@ -1,4 +1,4 @@
-# 14-Day Content Campaign — Marketing SOP
+# Content Campaign — Marketing SOP
 
 The content manager agent reads this to plan and track the campaign.
 
@@ -6,112 +6,357 @@ The content manager agent reads this to plan and track the campaign.
 
 ## Campaign Overview
 
-**Duration:** 14 days starting 2026-04-14
-**Cadence:**
-- 1 YouTube video/day (long-form, 7-12 min)
-- 1 reel/day (teaser for that day's YouTube)
+**Start date:** 2026-04-13 (Monday)
+**Language:** English (global reach, simple enough for non-native speakers)
+**Style:** Hormozi density + Sabrina Ramonov simplicity (see `projects/personal/reference/hormozi-style-guide.md`)
+**Reading level:** 3rd grade English. Simple. Direct.
 
-**Target audience:** Filipino VAs, professionals (realtors, architects, business owners), aspiring AI learners
-**Style:** Hormozi density + Nate Herk honesty (see `projects/personal/reference/hormozi-style-guide.md`)
-**Language:** 3rd grade English. Simple. Direct.
+**Niche:** AI-powered sales systems. One niche. One year. How to use AI to sell more, follow up faster, never lose a deal, and spend zero time on admin.
 
-**Positioning:** "I'm not an AI expert. But I run two real businesses on AI agents. I'll show you everything — what works, what broke, and how to do it yourself. If you don't have time to learn it, I'll build it for you."
+**Channel identity:** Personal brand — sales guy who's learning AI, automating everything, and sharing the whole journey. Lifestyle + motivation + automation mixed in. Allen is a practitioner learning in public — not an expert lecturing.
 
-**Offer (neutral, woven naturally):** Everything is free on the channel. If you're a VA, a professional, or a business owner and you don't have time to build it yourself — DM me. I'll build a custom automation for your business. No setup fees. Try it until you see the value.
+**Content approach:** Go deep on real AI topics — agents, prompts, automation workflows, Claude Code, CRM systems, tools — but explain everything the way a sales guy would explain it to another sales guy. Deep topics, simple language.
 
----
+**Core insight:** You don't need to be good at sales. You need systems that make you fast and consistent. Allen isn't a natural closer or a tech expert — he wins through speed, consistency, and AI systems that never drop the ball. The deals close because the system works, not because Allen is a great salesman.
 
-## Channel Identity
+**Core message:** "I'm not a sales expert. I'm not a tech expert. But I closed $114K in one month because I built systems that made me faster than everyone else."
 
-Allen is building in public. He already has working AI agent systems running a painting company:
-- Lead researcher — scans CRM, gives reports on each prospect
-- CRM manager — tracks all deals, flags stale ones, tells Allen who to follow up
-- Proposal builder — takes measurements, calculates rates, generates PDF quotes
-- Email drafter — writes follow-up emails in Allen's voice
-- Cold call processor — handles post-call admin automatically
-- Morning briefer — tells Allen exactly what to do each day
-
-He's honest about still learning. He has a sales assistant. He's not pretending to be a solo genius. The content shows real systems with real numbers, and he's transparent about what's still in progress.
-
-The vision: a company in the US is building toward the first billion-dollar company with 2 employees. That's where this is heading. AI agents don't replace people — they make small teams unstoppable.
+**Positioning:** Allen is an operator teaching normal people. Different lane from Nate Herk, Nick Saraev, Sabrina Ramonov — they're developers/engineers for technical audiences. Allen is proof you don't need to be technical OR a natural closer to build AI systems that sell for you.
 
 ---
 
-## Batch Filming Strategy
+## Strategy: Hybrid Volume Sprint
 
-4 filming sessions across 2 weeks:
-- **Session 1 (before Day 1):** Film Days 1-4 (intro + sales pipeline)
-- **Session 2 (before Day 5):** Film Days 5-7 (daily operations)
-- **Session 3 (before Day 8):** Film Days 8-11 (education + teaching)
-- **Session 4 (before Day 12):** Film Days 12-14 (vision + offer)
+Based on Hormozi SPCL framework + Sabrina Ramonov volume sprint methodology.
 
-### Filming tips
-- Change shirt between takes
-- Film reels first (quick, high energy), then YouTube (longer)
-- Record screen shares separately — insert during editing
-- Keep raw footage organized by day number
-- Each YouTube: film face-to-camera sections first, then screen recordings
+### The Model
+
+Short-form is the engine. YouTube is the depth play. Outreach runs in parallel.
+
+- **Daily:** 3 short-form videos (30-45 sec), cross-posted to TikTok, Facebook Reels, Instagram Reels, YouTube Shorts
+- **Weekly (from week 3):** 1 YouTube long-form (7-12 min) based on whatever topic hit hardest in short-form that week
+- **Parallel:** Facebook group value posts (Tue/Thu/Sat) + DM outreach (separate from content)
+
+### Why This Order
+
+1. Short-form is fastest to make, fastest to learn from, lowest stakes
+2. Volume teaches you what works before you invest in long-form production
+3. TikTok gives the best data on what hooks resonate
+4. YouTube is where depth and trust are built — but only after you know what topics hit
+5. You find your voice by doing, not planning — learn in public, share micro-learnings
+6. Allen has 6 months of real AI building experience AND is still actively learning — content comes from both teaching what he knows and sharing what he's discovering
+
+### Phases
+
+**Phase 1 — Volume Sprint (Weeks 1-2)**
+- 3 short-form videos/day, every day
+- Film on phone. No fancy editing. No CapCut. TikTok native app or just camera + upload.
+- Copy hooks from viral AI/automation videos (first 10 seconds exactly, then your own content)
+- Cross-post same video to all 4 platforms
+- Track what gets views, saves, comments
+- No YouTube long-form yet — find your voice first
+- Outreach starts in parallel (FB groups, DMs)
+
+**Phase 2 — Add YouTube (end of week 1 or when demand is clear)**
+- Continue 3 short-form/day
+- Add 1 YouTube video/week
+- Topic = whichever short-form got the most comments asking for a breakdown
+- Don't wait if demand is clear by day 5 — film it on day 6
+- Use Hormozi framework: Hook > Proof > Promise > Plan > Content (Teach/Show/Result per chapter) > Proof Stack > Reward > CTA
+- Short-form clips from the YouTube video become bonus content
+
+**Phase 3 — Optimize (Month 2+)**
+- Marketing manager reviews weekly performance data
+- Double down on what's working, kill what isn't
+- Test Facebook ads on best-performing organic content
+- Build content buffer from proven topics
+- Refine the content system based on real data
 
 ---
 
-## 14-Day Topic Map
+## SPCL Framework (Hormozi)
 
-Each video is a dense, standalone lesson. Allen's real AI systems are the PROOF inside the lesson, not the entire topic. Every video should leave the viewer thinking "I need to watch the next one."
+Every piece of content should include all four elements:
 
-### Days 1-4: THE PROOF (show the system, earn trust)
+| Element | What it is | How Allen does it |
+|---|---|---|
+| **Status** | Control scarce resources people want | "I manage $100K/month in sales using AI agents" — Allen has something people want |
+| **Power** | Say-do correspondence — give advice, they follow it, good thing happens | Every video must give ONE actionable thing they can try. They try it. It works. Allen gains influence. |
+| **Credibility** | Third-party proof, observable results | Screen recordings, real outputs, real numbers — hard to fake |
+| **Likeness** | They see themselves in you | Filipino, not a tech guy, sales background, self-taught — relatable to VAs and business owners |
 
-| Day | YouTube Title | What It Covers | Reel |
-|---|---|---|---|
-| 1 | I Run Two Businesses with AI Agents. No Team. Here's How. | Introduction. Who Allen is. The vision (2-employee billion-dollar company). What AI agents are (not chatbots). Tour of the actual system — dashboard, CRM, agents. The numbers: $1.6M pipeline, 83 deals, 90% less admin. What this channel will teach. | Mini-tutorial: Quick screen tour of the dashboard + CRM. Show the 83 deals, the pipeline value. 60-sec system overview with text overlays on the key numbers. |
-| 2 | The AI Sales Pipeline: From Lead to Close, Zero Admin | Full sales workflow walkthrough. Lead comes in → AI researches it → AI generates the quote → AI follows up → deal tracked automatically. Not one feature — the ENTIRE pipeline in one dense video. Before/after for each step. | Mini-tutorial: Compressed version of the pipeline — show each step (lead → research → quote → follow-up) in 10 seconds each with quick cuts and text overlays. |
-| 3 | How I Handle 83 Deals and Never Lose One | Deep dive into CRM management. How the CRM manager agent works. Stale deal detection. Priority ranking (discoveries > follow-ups > VIP). Auto-drafted emails. The morning report. Real screenshots of the system in action. | Mini-tutorial: Show the CRM manager flagging a stale deal, then the auto-drafted email. Quick before/after: "forgot deals" → "zero dropped." |
-| 4 | 5 AI Agents That Save Me 20 Hours a Week | Hormozi-style listicle. Fast, dense, proof-heavy. Each agent gets 2 minutes: (1) Lead researcher, (2) Proposal builder, (3) Email drafter, (4) Cold call processor, (5) Morning briefer. Real output shown for each. Time saved per agent. | Mini-tutorial: Rapid-fire 10 seconds per agent — name, what it does, time saved. Text overlay for each. Fast cuts. |
+**Power is the #1 priority.** If a video only shows results but gives nothing actionable, it fails the SPCL test. Every video needs a "now you try this" moment.
 
-### Days 5-7: HOW IT WORKS (go deeper, start teaching)
+---
 
-| Day | YouTube Title | What It Covers | Reel |
-|---|---|---|---|
-| 5 | My AI Plans My Entire Day (Morning Briefing Walkthrough) | Deep dive into the morning briefing system. What it checks (CRM, calendar, stale deals, pending tasks). How it prioritizes. What the output looks like. How Allen acts on it. Framework: how to think about daily planning with AI. | Mini-tutorial: Show the actual morning briefing output. Walk through the top 3 priorities it flagged today. Quick explanation of how it decides what's urgent. |
-| 6 | How My AI Does Cold Outreach (Research → Personalize → Send) | The cold outreach pipeline end-to-end. Lead scraping. Prospect research. Personalized messaging. Post-call processing. Real examples of AI-researched leads vs manual research. Time comparison. | Mini-tutorial: Show one lead being researched — raw data in, personalized outreach out. Side-by-side: manual research (20 min) vs AI research (30 sec). |
-| 7 | The $50/Month Stack That Runs Everything | Full tool breakdown. What's free, what's paid. Claude Code, Pipedrive, Google Workspace, ServiceM8. No affiliate links. No BS. Total cost breakdown. Why expensive tools aren't better. What Allen would cut if he had to save money. | Mini-tutorial: Quick scroll through each tool with price overlay. Total at the end: "$47/month." Compare to hiring someone: "$47 vs $2,000+." |
+## Short-Form Video Structure (30-45 sec)
 
-### Days 8-11: TEACH THEM (education, frameworks, hands-on)
+```
+[HOOK] (0-3 sec)
+Copy from a viral video in your niche. Exact title, exact framing.
+Bold claim, surprising number, or pain point.
 
-| Day | YouTube Title | What It Covers | Reel |
-|---|---|---|---|
-| 8 | What AI Agents Actually Are (Not What You Think) | Demystify agents. Not chatbots. Not magic. An agent = instructions + tools + data. Show a real agent prompt. Explain how it reads instructions, calls tools, makes decisions. Compare: chatbot vs agent vs full workflow. Simple analogy: agent = a new employee with a manual. | Mini-tutorial: Side-by-side demo — ask ChatGPT a question (chatbot) vs run an agent that actually does the work. Show the difference in 60 seconds. |
-| 9 | The 3 Things Every Business Should Automate First | Framework video. (1) Follow-ups — because speed wins deals. (2) Document generation — because it's repetitive. (3) Daily planning — because context switching kills productivity. For each: the problem, why it matters, how Allen solved it, how THEY can start. | Mini-tutorial: Show each of the 3 automations running — follow-up email sent, quote PDF generated, morning briefing delivered. 20 seconds each. Quick value. |
-| 10 | 5 AI Mistakes I Made (So You Don't Have To) | Honest, vulnerable. (1) Tried to automate everything at once. (2) Didn't QA outputs early enough. (3) Built before understanding the workflow. (4) Over-complicated the first version. (5) Didn't track what actually saved time. Each mistake = lesson learned. | Mini-tutorial: Pick the worst mistake (no QA) — show an AI output with an error, then show QA catching it. The fix in 60 seconds. |
-| 11 | How My AI Makes These Videos (Meta Content Engine) | Show the content generation system. How Allen's AI writes scripts, plans topics, tracks what's posted. The irony: the video they're watching was partially written by AI. Honest about what AI does vs what Allen does (AI drafts, Allen performs). | Mini-tutorial: Screen record running the content command — show script output appearing in real time. "This reel's script was written in 30 seconds." |
+[CONTENT] (3-35 sec)
+Problem → What Allen did → Result → What YOU can do right now.
+One idea only. Show, don't just tell.
 
-### Days 12-14: THE VISION + OFFER (bigger picture, open the door)
+[CTA] (35-45 sec)
+Soft: "Everything on this channel is free. If you can't set this up yourself, let me know — I'll help you set it up for free."
+Or just: "Follow for more" / "Full tutorial coming on YouTube"
+```
 
-| Day | YouTube Title | What It Covers | Reel |
-|---|---|---|---|
-| 12 | Why VAs Who Learn AI Will Get Paid 3x More | Speak directly to the VA audience. AI + VA = unstoppable combination. VAs who can set up automations are worth 3x more. Examples of what an AI-skilled VA can do. This isn't about replacing VAs — it's about making them irreplaceable. | Mini-tutorial: Show a VA task (research a lead) done manually vs with AI. Time comparison: 20 min vs 30 sec. "This is why AI-skilled VAs charge more." |
-| 13 | The 2-Employee Billion-Dollar Company (And Why It Matters to You) | The big vision. Reference the company building toward a billion with 2 people. What this means for small businesses. For VAs. For professionals. The world is shifting — small teams with AI will beat big teams without it. Not hype — Allen's real results as proof. | Mini-tutorial: Quick montage of all the systems shown across 13 days — rapid cuts, each one 3 seconds. End with the total: "13 agents. 1 person. $1.6M." |
-| 14 | Everything I Teach Is Free. Here's What Else I Can Do. | Recap the journey. What was covered in 14 days. The offer: everything on this channel is free. Learn it yourself. If you're a VA, a realtor, a business owner and you don't have time — Allen will build a custom automation for your business. No setup fees. Try it first. DM to start. | Mini-tutorial: Show Allen setting up one automation for a hypothetical business — pick the simplest one (follow-up emails). "I built this in 2 hours. DM me if you want yours." |
+### How to Find Hooks
+
+1. Open TikTok. Search your topic (e.g., "AI automation", "ChatGPT business", "AI agents").
+2. Find 3 viral videos (100K+ views) that you could reasonably film.
+3. Copy the first 10 seconds exactly — title, framing, what they say.
+4. After 10 seconds, deliver YOUR content with YOUR results.
+5. Don't be clever. Don't change the hook. Copy it exactly.
+
+### Short-Form Rules
+- 30-45 seconds max when starting out
+- Film on phone. Talking head is fine.
+- No fancy editing required. Cut dead air, add text overlays for key numbers.
+- One idea per video. Never two.
+- Include at least one specific number or result (Status + Credibility)
+- Include one thing they can try (Power)
+- Be yourself — don't perform, just explain like you're talking to a friend (Likeness)
+
+---
+
+## YouTube Long-Form Structure (Week 3+)
+
+Hormozi framework: Hook > Retain > Reward
+
+```
+--- HOOK PHASE (0-60 sec) ---
+
+[HOOK] (0-5 sec)
+Pattern interrupt — bold claim, surprising number, or pain point.
+
+[PROOF] (5-20 sec)
+Your credibility — specific result, not a title or bio.
+"I manage $100K/month in sales with AI agents. I'm not a developer."
+
+[PROMISE] (20-40 sec)
+What they'll walk away with — specific and measurable.
+"By the end, you'll have one automation running that saves you 2 hours a week."
+
+[PLAN] (40-60 sec)
+How the video is structured — "3 parts" or "5 steps", set time expectations.
+
+--- RETAIN PHASE (1-8 min) ---
+
+[CONTENT] — Structured as chapters. Each chapter:
+- Teach: explain one thing simply
+- Show: screen share or demo (Credibility)
+- Result: what this achieved — specific number (Status)
+- Try this: what they can do right now (Power)
+
+[PROOF STACK] (7-8 min)
+Stack all results together — before/after comparison, total numbers.
+
+--- REWARD PHASE (8-10 min) ---
+
+[REWARD] (8-9 min)
+The big takeaway — one sentence they'll remember and repeat.
+
+[CTA] (9-10 min)
+Soft sell: "Everything on this channel is free. You can do all of this yourself. If you don't have the time, you don't know how to set it up, you try but you really don't know — let me know and I'll help you set it up for free."
+Then: "Subscribe + watch this next [specific video]"
+```
+
+### YouTube Rules
+- Only make a YouTube video about a topic that already proved it resonates in short-form
+- Every chapter needs Teach + Show + Result + Try This
+- Allen's results are the proof INSIDE the tutorial, not the topic itself
+- One topic expanded deep. Not multiple topics surface-level.
+- Screen recordings and demos required — show real outputs
+- Chapter markers for every section
+
+---
+
+## Audience vs Customers
+
+**Audience (free content — global, broad):**
+- Service business owners drowning in admin (primary)
+- Professionals wanting to work smarter (realtors, coaches, recruiters)
+- Filipino VAs wanting to upskill with AI (large segment, high engagement)
+- Content creators wanting systems
+- Anyone curious about AI automation
+
+**Customers (paid service — self-select from audience):**
+- Service businesses (trades, real estate, coaching) — sales automation, CRM, follow-ups
+- Content creators with budget — content systems, auto-posting
+- Professionals who'd rather pay than DIY
+
+Content speaks to everyone. Customers emerge naturally. Allen never hard-sells in content.
+
+**Outreach is separate.** FB group engagement, DMs, qualifying conversations happen through the sales department — not in content. Content and outreach work in parallel but don't mix.
+
+**Soft CTA in content:** "Everything's free. Do it yourself. If you can't, let me know, I'll help you set it up for free." This is generous, not pushy.
+
+---
+
+## Marketing Manager — Research Loop
+
+The content manager is also the marketing manager. Expanded role: plan, track, AND research.
+
+**Research responsibilities:**
+1. **Hook research** — What hooks are going viral in the AI/automation niche right now? Check TikTok, Instagram, YouTube. Steal hooks shamelessly.
+2. **Content research** — What topics, formats, angles are performing? Study competitors and adjacent creators.
+3. **Audience research** — What are people asking in Facebook groups, Reddit, YouTube comments, TikTok comments? What problems keep coming up? What language do they use?
+4. **Ad research** — What ad formats, creatives, and copy work for similar offers? CPL benchmarks. Which platforms convert best?
+5. **Performance feedback** — After each week, review what worked. Views, watch time, engagement, DMs. Feed learnings into next week's content.
+
+**Research cadence:**
+- Daily: check TikTok for viral hooks in niche (takes 10 min)
+- Weekly: performance review, competitor scan, audience pain point refresh
+- Biweekly: ad landscape review, format trend analysis
+
+**Rule:** Research happens BEFORE planning. Never plan a content batch without checking what's currently working.
+
+---
+
+## Content Pillars (Rotate Daily)
+
+One topic per day. Rotate across the week. Don't post the same pillar two days in a row.
+
+| Pillar | Focus | SPCL emphasis |
+|---|---|---|
+| AI automation results | Before/after, metrics, case studies | Status + Credibility |
+| How-to tutorials | Step-by-step, one automation, beginner-friendly | Power (try this now) |
+| Business pain points | Relatable problems — slow quotes, missed leads, admin overload | Likeness |
+| Behind the scenes | Building automations, real process, what broke | Likeness + Credibility |
+| Contrarian takes | Challenge common beliefs about AI/business | Status + Power |
+| Quick wins | One thing they can do today for free in 5 minutes | Power (pure value) |
+
+---
+
+## Topic Backlog (Pull from as needed)
+
+These are topic ideas, not a rigid schedule. Pull from this list based on what hooks are working in short-form.
+
+**Proof + Value topics (Status + Power):**
+- I manage $100K/month in sales using AI — here's the one automation that started it all
+- How I went from 45-minute quotes to 5 minutes (and how you can automate YOUR quoting)
+- I used to lose deals because I forgot to follow up — here's the free tool that fixed it
+- My AI plans my entire day — here's how to build your own daily briefing in 10 minutes
+
+**Deep AI tutorials (Power — go deep, explain simply):**
+- What AI agents actually are — explained for non-tech people
+- The difference between ChatGPT and AI agents (and why it matters for your business)
+- How prompts actually work — the one concept that changed everything for me
+- How to set up Claude Code from zero (I'm not a developer and I did it)
+- The 3 things every business should automate first
+- How to automate follow-up emails with AI (step by step, free tools)
+- Your first AI automation in 5 minutes (free, no code)
+- How CRM + AI agents work together (real example from my sales pipeline)
+- I built an AI agent that writes emails in my voice — here's how
+
+**Learn in public topics (Likeness + Credibility):**
+- I just discovered this AI feature and it blew my mind
+- This AI automation broke and here's what I learned fixing it
+- I tried automating [X] today — here's what happened
+- 5 AI mistakes I made so you don't have to
+- What 6 months of building AI systems actually looks like (honest)
+
+**Relatable topics (Likeness):**
+- Why VAs who learn AI will get paid 3x more
+- My entire AI stack costs $50 a month
+- I'm not a tech guy — here's why that doesn't matter
+- You don't need more leads. You need to stop losing the ones you have.
+- Stop doing follow-ups manually. Here's what I do instead.
+
+**Vision topics:**
+- Small teams with AI will beat big teams without it
+- Everything I learned in 6 months of building AI systems
+- How my AI helps me create this content (meta)
+- AI won't replace you. But someone using AI will.
 
 ---
 
 ## Posting Schedule
 
-| Platform | Time (PH time) | Content |
-|---|---|---|
-| YouTube | 12:00 PM | Long-form video |
-| Facebook | 8:00 AM | Reel (cross-post) |
-| Instagram | 8:00 AM | Reel (cross-post) |
-| TikTok | 8:30 AM | Reel (cross-post) |
-| YouTube Shorts | 9:00 AM | Reel (cross-post) |
+### Posting Times (Optimized for Global Audience from PH)
 
-Facebook group posts: Tuesday + Thursday + Saturday (value posts, no reels).
+3 videos per day. Each video goes to all 4 platforms + carousel.
+
+| Slot | PH Time | US East | US West | UK | AU East | Why this time |
+|---|---|---|---|---|---|---|
+| Video 1 | 7:00 AM | 7:00 PM prev | 4:00 PM prev | 12:00 AM | 9:00 AM | US evening scroll + AU morning |
+| Video 2 | 2:00 PM | 2:00 AM | 11:00 PM prev | 7:00 AM | 4:00 PM | AU afternoon + UK morning |
+| Video 3 | 8:00 PM | 8:00 AM | 5:00 AM | 1:00 PM | 10:00 PM | US morning + UK afternoon (BEST global slot) |
+
+### Daily Cross-Post Schedule
+
+For EACH of the 3 videos:
+
+| Platform | When | Format |
+|---|---|---|
+| TikTok | At scheduled time | Original upload |
+| Facebook Reels | Same time | Cross-post |
+| Instagram Reels | Same time | Cross-post |
+| YouTube Shorts | +1 hour | Cross-post |
+| LinkedIn | +1 hour | Cross-post (video or text post with key insight) |
+| Instagram Carousel | +2 hours | Repurpose key points as slides |
+| Facebook Carousel | +2 hours | Cross-post from Instagram |
+
+**Total daily output:** 3 videos x 7 platforms = 21 posts from 3 videos.
+**YouTube (long-form):** 12:00 PM Saturday (from week 3).
+**Facebook group value posts:** Tuesday + Thursday + Saturday (text posts, no reels, pure value).
+
+### Carousel Repurposing (Free Extra Content)
+
+Every short-form video can become a carousel. Same idea, different format — catches people who prefer reading over watching.
+
+**Process:**
+1. Take the key points from a reel script (hook, 2-3 value points, CTA)
+2. Generate carousel slides: `python3 tools/generate_carousel.py --topic "Hook text" --slides 5-7 --style dark --handle "@allenenriquez"`
+3. Post to Instagram and Facebook
+4. Or just create them manually in TikTok/Instagram — bold text slides, 5-7 slides, dark background
+
+**Carousel rules:**
+- Slide 1: Hook (same as reel hook). Bold text. Stop the scroll.
+- Slides 2-5: One point per slide. Max 15 words. Big text.
+- Last slide: CTA — "Follow for more" or soft sell.
+- Same content as the reel, just in a reading format.
+- Takes ~5 minutes per carousel if using the generator tool.
 
 ---
 
 ## Metrics to Track
 
-- YouTube: watch time, subscriber growth, click-through rate
-- Reels: views, shares, saves (by platform)
-- DMs received (people asking about the offer)
-- Comments and engagement quality
-- Content produced vs planned (tracker report)
+**Weekly (short-form):**
+- Views per video (by platform)
+- Best performing video of the week (topic + hook)
+- Saves and shares (signal for depth interest)
+- Comments (content ideas from audience questions)
+- DMs received (organic interest)
+
+**Weekly (from week 3 — YouTube):**
+- Watch time and retention curve
+- Click-through rate on thumbnails
+- Subscriber growth
+- Comments quality
+
+**Monthly:**
+- Total followers across platforms
+- Content produced vs planned
+- Outreach DMs sent + reply rate
+- Leads generated (people asking about services)
+
+---
+
+## Rules
+
+- Copy viral hooks. Don't be clever. Don't change them.
+- One idea per video. Never two.
+- Every video needs something actionable (Power).
+- Simple English. 3rd grade. Short sentences.
+- No jargon. No banned words (see brand agent).
+- Never mention EPS by name. Use "a company I work for" or "my day job."
+- Never claim to be an expert or developer. Allen is learning and sharing.
+- All results claimed must be real and verified.
+- The pitch is never the pitch. Content does the selling.
+- Outreach and content are separate channels. Don't mix them.

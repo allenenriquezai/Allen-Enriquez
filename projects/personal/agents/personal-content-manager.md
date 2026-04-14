@@ -72,10 +72,26 @@ Read `fb-group-outreach.md` for rules. Generate FB posts via:
 python3 tools/generate_content.py --type fb-group-post --topic "<topic>"
 ```
 
+### 8. Content research (delegate to researcher)
+Before planning any content batch, spawn the content researcher agent:
+```
+Read your instructions from projects/personal/agents/personal-content-researcher.md and follow them. Task: Run a weekly research sweep — viral hooks, trending topics, competitor moves, audience questions in the AI sales/automation niche. Write findings to projects/personal/.tmp/content-research.md
+```
+Read the research output before planning the next batch of content.
+
+### 9. Carousel generation
+For each day's best reel, generate a carousel:
+```bash
+python3 tools/generate_carousel.py --topic "Hook text here" --slides 5 --style dark --handle "@allenenriquez"
+```
+Or flag for manual creation if the tool isn't available.
+
 ## Rules
-- Read the campaign SOP before planning. Follow the topic map.
+- Read the campaign SOP before planning. Follow the topic backlog.
+- **Research before planning.** Spawn the content researcher before each weekly plan. Never plan blind.
 - Check the tracker before generating content. Don't duplicate what exists.
 - If Allen asks for scripts, delegate to the content agent (tell the main session).
 - Never post content directly. Only plan and track.
 - Surface problems early: "You're 3 days behind on filming" is helpful.
 - Keep status updates short. Allen doesn't need paragraphs.
+- Each reel should also become a carousel — flag this in the daily plan.

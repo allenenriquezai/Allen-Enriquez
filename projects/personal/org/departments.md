@@ -61,13 +61,14 @@ Tiers scale down over time as accuracy proves out (Tier 2 → Tier 1, etc.).
 
 | Agent | Role | Status | File |
 |---|---|---|---|
-| `content-manager` | Orchestrator — plans calendar, assigns work, tracks production | Active | `agents/personal-content-manager.md` |
+| `content-manager` | Orchestrator — plans calendar, assigns work, tracks production, manages research | Active | `agents/personal-content-manager.md` |
+| `content-researcher` | Researches viral hooks, trending topics, competitors, audience questions | Active | `agents/personal-content-researcher.md` |
 | `content-writer` | Writes scripts, posts, captions in Allen's voice | Active | `agents/personal-content-agent.md` |
 | `video-editor` | Edit instructions, cuts, b-roll notes | Future | `agents/video-editor.md` |
 | `visual-generator` | Thumbnails, carousels, visual assets | Future | `agents/visual-generator.md` |
 
 **Workflows:** `content-calendar.md`, `content-formats.md`, `marketing-campaign.md`
-**Rule:** Content Manager reads `reference/intel/` before planning any content cycle.
+**Rule:** Content Manager spawns content researcher BEFORE planning any content cycle. Research → Plan → Create → Post.
 
 ---
 
@@ -104,20 +105,68 @@ Tiers scale down over time as accuracy proves out (Tier 2 → Tier 1, etc.).
 
 ## EPS Operations (Separate Domain)
 
-> **Note:** EPS is a SEPARATE domain with its own tone, workflows, and agents. Not connected to personal brand. Lives in `projects/eps/`.
+> EPS is a SEPARATE domain with its own tone, workflows, and agents. Lives in `projects/eps/`.
 
-**Mission:** Deliver client work — quotes, emails, job management for EPS Painting & Cleaning.
+Organized by stage of the sales → operations lifecycle. Each department owns a stage.
 
-| Agent | Role | Status | File |
-|---|---|---|---|
-| `eps-quote-agent` | Quote creation pipeline | Active | `projects/eps/agents/eps-quote-agent.md` |
-| `eps-email-agent` | Client email drafting and sending | Active | `projects/eps/agents/eps-email-agent.md` |
-| `eps-crm-agent` | Pipedrive CRM specialist | Active | `projects/eps/agents/eps-crm-agent.md` |
-| `eps-qa-agent` | QA gate — reviews quotes and emails | Active | `projects/eps/agents/eps-qa-agent.md` |
-| `eps-call-notes` | Call transcript processor | Active | `projects/eps/agents/eps-call-notes.md` |
-| `eps-cold-calls` | Cold lead batch processor | Active | `projects/eps/agents/eps-cold-calls.md` |
+### Dept 1: Lead Generation
+**Mission:** Find new opportunities. Tenders, cold outreach, inbound leads.
 
-**Workflows:** `create-quote.md`, `calculate-line-items.md`, `measure-floor-plan.md`, `cold-call-templates.md`
+| Agent/Tool | Role | Type |
+|---|---|---|
+| `eps-tender-agent` | Full E1 pipeline: scrape → docs → analyze → CRM → quote | Agent |
+| `eps-cold-calls` | Cold lead batch processor — format notes → post to Pipedrive | Agent |
+| `tender_batch.py` | Daily automated scrape + filter + analyze + CRM | Tool (6AM) |
+| `estimateone_scraper.py` | Playwright scraper for E1 tenders + builders | Tool |
+| `crm_monitor.py` | Pipeline health scan — stale deals, overdue follow-ups | Tool (EOD) |
+
+**Workflows:** `tender-to-deal.md`, `cold-call-templates.md`
+
+### Dept 2: Sales
+**Mission:** Convert leads to won deals. Qualify, quote, follow up, close.
+
+| Agent/Tool | Role | Type |
+|---|---|---|
+| `eps-crm-agent` | Pipedrive read/write — deals, contacts, notes, stages | Agent |
+| `eps-quote-agent` | Quote creation — intake → line items → Google Doc | Agent |
+| `eps-email-agent` | Client email drafting + sending via Gmail | Agent |
+| `eps-qa-agent` | QA gate — two-stage review before anything goes to client | Agent |
+| `eps-call-notes` | Post-call transcript → formatted notes → posted to deal | Agent |
+| `eps-site-visit` | SM8 job link + calendar check + booking | Agent |
+
+**Workflows:** `create-quote.md`, `calculate-line-items.md`, `measure-floor-plan.md`, `follow-up-email.md`, `deposit-process.md`, `crm-ops.md`, `qa.md`, `note-formatting.md`, `discovery-call-fields.md`
+
+### Dept 3: Operations
+**Mission:** Deliver the work. Scheduling, project tracking, data sync.
+
+| Agent/Tool | Role | Type |
+|---|---|---|
+| `eps-site-visit` | Schedule site visits on SM8 | Agent (shared with Sales) |
+| `crm_sync.py` | EOD Pipedrive ↔ ServiceM8 reconciliation | Tool (EOD) |
+| `push_sm8_job.py` | Migrate quote data → SM8 job card | Tool |
+| `schedule_sm8_visit.py` | SM8 + 3-calendar availability + booking | Tool |
+
+**Workflows:** `deposit-process.md`, `crm-ops.md`
+
+### Dept 4: Retention
+**Mission:** Re-engage past clients. Reviews, repeat business, win-back lost deals.
+
+| Agent/Tool | Role | Type |
+|---|---|---|
+| `reengage_campaign.py` | Weekly scan — clients + lost deals, draft emails | Tool (weekly) |
+| `eps-email-agent` | Send re-engagement emails (shared with Sales) | Agent |
+
+**Workflows:** `reengagement.md`
+
+### Cross-Department (always active)
+| Tool | Role | Schedule |
+|---|---|---|
+| `eod_ops_manager.py` | Scan ALL deals + projects → context files + questions | EOD |
+| `crm_monitor.py` | Pipeline health — follow-ups, stale deals, KPIs | EOD |
+| `crm_sync.py` | Pipedrive ↔ SM8 data reconciliation | EOD |
+| `morning_briefing.py` | Daily briefing — actions needed, re-engagement status | 7AM |
+
+**Context files:** `projects/eps/.tmp/deals/{id}.json` and `projects/eps/.tmp/projects/{id}.json` — one per deal/project, updated every EOD. Any agent can read these for instant context without hitting the API.
 
 ---
 
