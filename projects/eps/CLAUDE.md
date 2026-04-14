@@ -21,52 +21,20 @@ Straightforward, neutral, problem-focused. No fluff, no jargon.
 - Keep messages short and scannable
 - Never write in long paragraphs for comms
 
-## Agent Registry
-
-Agent prompts in `projects/eps/agents/`. Loaded on demand by skills — NOT in `.claude/agents/`.
-
-| Agent | Handles |
-|---|---|
-| `eps-quote-agent` | Quote creation (intake → line items → Google Doc) |
-| `eps-email-agent` | Draft + send any EPS client email |
-| `eps-crm-agent` | Pipedrive reads, writes, deal lookups |
-| `eps-qa-agent` | QA gate before anything goes to a client |
-| `eps-call-notes` | Post-call: fetch transcript → format notes → post to deal |
-| `eps-cold-calls` | Cold lead batch processor: format notes → post to person |
-| `eps-site-visit` | Site visit scheduling (SM8 job link + 3 calendars + booking) |
-| `eps-tender-agent` | Full tender pipeline: scrape E1 → download docs → analyze → CRM → quote → send |
-
-To use: spawn a general-purpose Agent with "Read your instructions from `projects/eps/agents/{agent}.md` and follow them. Task: {TASK}"
+## Agents
+Prompts in `projects/eps/agents/`. Loaded on demand by skills — NOT in `.claude/agents/`.
+To use: spawn Agent with "Read your instructions from `projects/eps/agents/{agent}.md` and follow them. Task: {TASK}"
 
 ## QA Gate
-Nothing goes to a client until QA passes.
-
-Quote pipeline QA is two-stage:
-1. **Pre-doc** (`qa_quote.py --data-only`) — validates job description + line item math
-2. **Pre-send** — draft email first (no `--send`), then QA checks quote doc + email together
+Nothing client-facing without QA. Quote pipeline: draft email (no send) → QA checks doc + email together.
 
 ## Email
-Sent via Gmail API (`tools/send_email_gmail.py`) from `sales@epsolution.com.au`.
-Pipedrive mailbox is read-only. Gmail auto-syncs to Pipedrive deals.
+Gmail API (`tools/send_email_gmail.py`) from `sales@epsolution.com.au`. Auto-syncs to Pipedrive.
 
-## System Integrity
-- Agents MUST fetch data from tools — fabricating data is a critical failure
-- Agent files: target 150 lines, hard limit 200. If over, split.
-- All `tools/*.py` references in agents must resolve to real files
-- Incidents logged in `projects/eps/reference/incident-log.md`
+## Integrity
+- Agents MUST fetch data from tools — fabricating = critical failure
+- Agent files: target 150 lines, hard limit 200
+- Incidents → `projects/eps/reference/incident-log.md`
 
-## Key Tools
-- `fetch_call_transcript.py` — fetch JustCall transcript for a Pipedrive deal
-- `process_cold_calls.py` — batch fetch/post for cold outreach leads
-- `send_email_gmail.py` — send emails via EPS Gmail
-- `calculate_quote.py` — pricing engine
-- `qa_quote.py` — quote QA checker
-- `estimateone_scraper.py` — Playwright scraper for EstimateOne tenders + builders + doc download
-- `analyze_tender_docs.py` — analyze tender PDFs → structured brief
-- `pipedrive_create.py` — create orgs, persons, deals, leads, stages in Pipedrive
-- `e1_to_sheet.py` — push E1 scrape data to Google Sheets tender inbox
-- `tender_batch.py` — daily tender campaign automation (scrape → analyze → CRM → sheet)
-- `eod_ops_manager.py` — EOD scan: all deals + projects → context files + questions queue
-- `crm_sync.py` — EOD Pipedrive ↔ ServiceM8 reconciliation (address, notes, contact, status)
-- `reengage_campaign.py` — weekly re-engagement scan (repeat clients + lost deal win-back)
-- `generate_eps_system_map.py` — generate EPS Operations PDF (system map, agents, pipelines)
+## Tools
+All in `tools/`. Run `ls tools/*.py` to see current list.

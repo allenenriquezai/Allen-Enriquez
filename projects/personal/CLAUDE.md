@@ -33,20 +33,9 @@ Build in public. Show how Allen automates his real job (EPS) using AI. Teach peo
 ## Content Approach
 One small automation per video. Never show the full OS at once. Make each piece digestible — "here's how I automated follow-up emails" not "here's my entire AI system." Build the full picture over time as viewers follow along. Hook them with simple wins first.
 
-## Department Structure
-
-Full org chart: `projects/personal/org/departments.md`
-
-5 departments: Intelligence Unit, Content Production, Sales, Delivery + Brand Manager (universal QA gate above all).
-
-**Key locations:**
-- Intelligence docs: `reference/intel/` (7 living docs — all agents read these before work)
-- Delivery client files: `.tmp/clients/{client-name}/`
-- Agent prompts: `agents/`
-
-**Brand Manager** is the universal QA gate with 3 tiers (auto-approve, spot-check, full review). All output passes through it.
-
-**Rule:** All content and outreach agents MUST read `reference/intel/` before planning or writing. Intel feeds everything.
+## Structure
+5 departments — see `projects/personal/org/departments.md` for full org chart.
+All content/outreach agents MUST read `reference/intel/` before work. Intel feeds everything.
 
 ## Environment
 Credentials: `projects/personal/.env`

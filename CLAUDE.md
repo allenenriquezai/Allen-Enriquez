@@ -58,34 +58,11 @@ Accuracy never drops below 95% — if a faster/cheaper approach risks bad data, 
 - Read only files needed for the current task.
 - **End of session:** Before the conversation ends or when Allen says "done" / "that's it" / wraps up, automatically run `/wrap` — save handoff + decision log. Don't wait to be asked.
 
-## Tracking Changes
-- Every time Allen gives feedback or makes a decision on ANYTHING — content, tools, agents, workflows, quotes, CRM, automations — log the change and reasoning in the relevant file.
-- Always save outputs (scripts, copy, templates) as their own files — never only embedded in code.
-- Add a change log section to files that go through iterations.
-- When Allen corrects a fact or preference, update ALL relevant files — agent prompts, content files, memory, templates.
-- The goal: any future session picks up exactly where Allen left off with his decisions baked in.
-
-## Self-Improvement
-- Correction from Allen → save to memory + update source (template/skill/preference)
-- Failure → log to `projects/eps/reference/incident-log.md`
-- Pattern spotted → auto-fix if small, suggest if structural
-- New code/agent/tool → run `/os-gate` before deploying
-- Check `tools/` before building anything new
-- Update skills when better methods are found
-- Session learnings → `shared/learnings/log.jsonl` → distilled to playbooks → promoted to CLAUDE.md/memory/skills
-
-## Decision Log
-After any session that modifies the system (agents, skills, tools, workflows, automation), write a decision log entry to `DECISIONS.md` at project root. The `/wrap` skill handles this automatically.
-
-Format per entry:
-```
-## YYYY-MM-DD — [Short title]
-**Problem:** What was wrong or missing
-**Change:** What was done (files changed)
-**Why:** Reasoning — what alternatives were considered and why this was chosen
-**Criteria:** Speed: [+/-/=] | Cost: [+/-/=] | Accuracy: [+/-/=] | Scale: [+/-/=]
-**Next:** What could improve from here
-```
+## Change Tracking
+- Feedback/decisions → update relevant files + memory. Save outputs as own files.
+- Corrections → save to memory + update source. Failures → `projects/eps/reference/incident-log.md`.
+- New code/agent/tool → run `/os-gate`. Check `tools/` before building new.
+- Session end → `/wrap` handles handoff + decision log to `DECISIONS.md`.
 
 ## Build Mode (GSD + Superpowers)
 
