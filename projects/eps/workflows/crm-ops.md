@@ -59,6 +59,39 @@ Never touch pipelines outside this list.
 | 4 Tenders - Paint | NEGOTIATION / FOLLOW UP | 37 |
 | 4 Tenders - Paint | LATE FOLLOW UP | 38 |
 
+### Projects Boards & Phases
+
+| Board | Name | Phase ID | Phase Name |
+|---|---|---|---|
+| 1 | EPS Clean Projects | 35 | Recurring Active |
+| 1 | EPS Clean Projects | 36 | New |
+| 1 | EPS Clean Projects | 3 | Pending Booking |
+| 1 | EPS Clean Projects | 4 | Booked |
+| 1 | EPS Clean Projects | 5 | Fixups |
+| 1 | EPS Clean Projects | 1 | Completed |
+| 1 | EPS Clean Projects | 27 | Variations |
+| 1 | EPS Clean Projects | 6 | Final Invoice |
+| 2 | EPS Paint Projects | 37 | New |
+| 2 | EPS Paint Projects | 8 | Pending Booking |
+| 2 | EPS Paint Projects | 9 | Booked |
+| 2 | EPS Paint Projects | 10 | Fix Ups |
+| 2 | EPS Paint Projects | 11 | Completed |
+| 2 | EPS Paint Projects | 12 | Variations |
+| 2 | EPS Paint Projects | 25 | Final Invoice |
+| 2 | EPS Paint Projects | 26 | Forward to Google Review |
+| 3 | Clean Re-engagement | 13 | New / For Review |
+| 3 | Clean Re-engagement | 14 | Added to Sequence |
+| 3 | Clean Re-engagement | 15 | Contact Made / Responded |
+| 3 | Clean Re-engagement | 16 | Google Review Done |
+| 3 | Clean Re-engagement | 17 | Interested / Cross-sell |
+| 3 | Clean Re-engagement | 28 | Not Interested |
+| 5 | Paint Re-engagement | 29 | New / For Review |
+| 5 | Paint Re-engagement | 30 | Added to Sequence |
+| 5 | Paint Re-engagement | 31 | Contact Made / Responded |
+| 5 | Paint Re-engagement | 32 | Google Review Done |
+| 5 | Paint Re-engagement | 33 | Interested / Cross-sell |
+| 5 | Paint Re-engagement | 34 | Not Interested |
+
 ### Custom field keys
 | Field | Key |
 |---|---|

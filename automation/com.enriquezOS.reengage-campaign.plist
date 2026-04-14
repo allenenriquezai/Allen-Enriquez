@@ -3,29 +3,31 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.enriquezOS.estimateone-scraper</string>
+    <string>com.enriquezOS.reengage-campaign</string>
 
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>cd /Users/allenenriquez/Desktop/Allen\ Enriquez &amp;&amp; /usr/bin/python3 tools/estimateone_scraper.py --all &amp;&amp; /usr/bin/python3 tools/e1_to_sheet.py</string>
+        <string>cd /Users/allenenriquez/Desktop/Allen\ Enriquez &amp;&amp; /usr/bin/python3 tools/reengage_campaign.py --mode all</string>
     </array>
 
-    <!-- Daily at 6:00 AM AEST (20:00 UTC previous day) -->
+    <!-- Weekly Monday at 7:00 AM AEST -->
     <key>StartCalendarInterval</key>
     <dict>
+        <key>Weekday</key>
+        <integer>1</integer>
         <key>Hour</key>
-        <integer>6</integer>
+        <integer>7</integer>
         <key>Minute</key>
         <integer>0</integer>
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/estimateone-scraper.log</string>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/reengage-campaign.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/estimateone-scraper-error.log</string>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/reengage-campaign-error.log</string>
 
     <key>WorkingDirectory</key>
     <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>

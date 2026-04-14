@@ -21,6 +21,24 @@ log() {
     echo "$msg" >> "$LOG_FILE"
 }
 
+ensure_jibble_running() {
+    # Jibble crashes on first open — open, wait, check, reopen if needed
+    local max_attempts=3
+    for i in $(seq 1 $max_attempts); do
+        log "Opening Jibble (attempt $i/$max_attempts)..."
+        open -a "Jibble - Time Tracking"
+        sleep 5
+        if pgrep -x "Jibble - Time Tracking" > /dev/null 2>&1; then
+            log "Jibble is running"
+            return 0
+        fi
+        log "Jibble not running after attempt $i — retrying..."
+        sleep 2
+    done
+    log "ERROR: Jibble failed to stay open after $max_attempts attempts"
+    return 1
+}
+
 get_status() {
     # Returns "in" or "out" based on UI state
     osascript -e '
@@ -213,10 +231,12 @@ verify_status() {
 
 case "$ACTION" in
     status)
+        ensure_jibble_running
         status=$(get_status)
         log "Current status: clocked $status"
         ;;
     clock-in)
+        ensure_jibble_running
         status=$(get_status)
         log "Current status: clocked $status"
         if [ "$status" = "in" ]; then
@@ -228,6 +248,7 @@ case "$ACTION" in
         verify_status "in"
         ;;
     clock-out)
+        ensure_jibble_running
         status=$(get_status)
         log "Current status: clocked $status"
         if [ "$status" = "out" ]; then

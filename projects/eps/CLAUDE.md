@@ -34,8 +34,7 @@ Agent prompts in `projects/eps/agents/`. Loaded on demand by skills — NOT in `
 | `eps-call-notes` | Post-call: fetch transcript → format notes → post to deal |
 | `eps-cold-calls` | Cold lead batch processor: format notes → post to person |
 | `eps-site-visit` | Site visit scheduling (SM8 job link + 3 calendars + booking) |
-| `eps-estimateone-agent` | EstimateOne scraper: tenders, builders, awarded projects → Google Sheet |
-| `eps-tender-agent` | Convert E1 tenders to Pipedrive deals with quotes. Full pipeline: docs → analysis → CRM → quote |
+| `eps-tender-agent` | Full tender pipeline: scrape E1 → download docs → analyze → CRM → quote → send |
 
 To use: spawn a general-purpose Agent with "Read your instructions from `projects/eps/agents/{agent}.md` and follow them. Task: {TASK}"
 
@@ -66,3 +65,8 @@ Pipedrive mailbox is read-only. Gmail auto-syncs to Pipedrive deals.
 - `analyze_tender_docs.py` — analyze tender PDFs → structured brief
 - `pipedrive_create.py` — create orgs, persons, deals, leads, stages in Pipedrive
 - `e1_to_sheet.py` — push E1 scrape data to Google Sheets tender inbox
+- `tender_batch.py` — daily tender campaign automation (scrape → analyze → CRM → sheet)
+- `eod_ops_manager.py` — EOD scan: all deals + projects → context files + questions queue
+- `crm_sync.py` — EOD Pipedrive ↔ ServiceM8 reconciliation (address, notes, contact, status)
+- `reengage_campaign.py` — weekly re-engagement scan (repeat clients + lost deal win-back)
+- `generate_eps_system_map.py` — generate EPS Operations PDF (system map, agents, pipelines)

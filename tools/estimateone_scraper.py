@@ -1,7 +1,7 @@
 """
 estimateone_scraper.py — Scrape EstimateOne for tenders and leads.
 
-Uses Playwright (Chromium) to log in and extract data from app.estimateone.com.
+Uses Playwright (Chromium) to log in and extract data from app.estimateone.com (login: /auth/login).
 Outputs structured JSON to projects/eps/.tmp/estimateone/.
 
 Scrape targets:
@@ -104,12 +104,12 @@ def login(page, ctx):
     if load_cookies(ctx):
         page.goto(f"{BASE_URL}/find-tenders", wait_until="domcontentloaded", timeout=20000)
         throttle()
-        if "/login" not in page.url:
+        if "/auth/login" not in page.url and "/login" not in page.url:
             print("Resumed E1 session from cookies")
             return
 
     print("Logging in...")
-    page.goto(f"{BASE_URL}/login", wait_until="domcontentloaded", timeout=20000)
+    page.goto(f"{BASE_URL}/auth/login", wait_until="domcontentloaded", timeout=20000)
     throttle()
     page.wait_for_selector("input[type='email'], input[name='email']", timeout=20000)
     page.fill("input[type='email'], input[name='email']", E1_EMAIL)
@@ -126,7 +126,7 @@ def login(page, ctx):
         page.keyboard.press("Enter")
 
     try:
-        page.wait_for_url(lambda u: "/login" not in u, timeout=20000)
+        page.wait_for_url(lambda u: "/auth/login" not in u and "/login" not in u, timeout=20000)
     except PlaywrightTimeout:
         screenshot(page, "login_failed")
         print("ERROR: Login failed")
@@ -289,8 +289,103 @@ def parse_tender_text(raw_text):
 
 # --- Page scrapers ---
 
-def scrape_find_tenders(page, tab="Open", max_pages=20):
-    """Scrape find-tenders page for Open or Awarded tenders."""
+def apply_trade_filter(page, trades):
+    """Apply trade filter on find-tenders page.
+
+    Clicks the Trades filter dropdown, selects specified trades (e.g. Painting,
+    Building Cleaning), and waits for results to reload.
+
+    Args:
+        trades: list of trade names to filter by (e.g. ["Painting", "Building Cleaning"])
+    """
+    if not trades:
+        return
+
+    print(f"  Applying trade filter: {', '.join(trades)}")
+
+    # Strategy 1: Click the "Trades" filter button/dropdown
+    filter_btn = None
+    for sel in [
+        "button:has-text('Trades')",
+        "a:has-text('Trades')",
+        "[class*='filter']:has-text('Trades')",
+        "div:has-text('Trades') >> visible=true",
+    ]:
+        try:
+            el = page.query_selector(sel)
+            if el and el.is_visible():
+                filter_btn = el
+                break
+        except Exception:
+            continue
+
+    if not filter_btn:
+        print("    WARNING: Could not find Trades filter button — scraping unfiltered")
+        screenshot(page, "trade_filter_not_found")
+        return
+
+    filter_btn.click()
+    throttle()
+    screenshot(page, "trade_filter_opened")
+
+    # Select each trade from the dropdown/checkbox list
+    selected = 0
+    for trade in trades:
+        for sel in [
+            f"label:has-text('{trade}')",
+            f"span:has-text('{trade}')",
+            f"li:has-text('{trade}')",
+            f"div:has-text('{trade}') >> visible=true",
+            f"input[value='{trade}']",
+            f"[class*='option']:has-text('{trade}')",
+        ]:
+            try:
+                el = page.query_selector(sel)
+                if el and el.is_visible():
+                    el.click()
+                    selected += 1
+                    throttle(0.3)
+                    break
+            except Exception:
+                continue
+
+    if selected == 0:
+        print("    WARNING: Could not select any trades — try --no-headless to debug")
+        screenshot(page, "trade_filter_no_selection")
+        return
+
+    # Apply / close the filter (some UIs need a confirm click)
+    for sel in [
+        "button:has-text('Apply')",
+        "button:has-text('Done')",
+        "button:has-text('OK')",
+    ]:
+        try:
+            btn = page.query_selector(sel)
+            if btn and btn.is_visible():
+                btn.click()
+                break
+        except Exception:
+            continue
+
+    # Wait for results to reload
+    try:
+        page.wait_for_load_state("networkidle", timeout=10000)
+    except PlaywrightTimeout:
+        page.wait_for_load_state("domcontentloaded", timeout=5000)
+    throttle()
+
+    print(f"    Trade filter applied: {selected}/{len(trades)} trades selected")
+    screenshot(page, "trade_filter_applied")
+
+
+def scrape_find_tenders(page, tab="Open", max_pages=20, filter_trades=None):
+    """Scrape find-tenders page for Open or Awarded tenders.
+
+    Args:
+        filter_trades: optional list of trade names to filter by
+                       (e.g. ["Painting", "Building Cleaning"])
+    """
     print(f"Scraping find-tenders [{tab}]...")
     page.goto(f"{BASE_URL}/find-tenders", wait_until="domcontentloaded", timeout=20000)
     throttle()
@@ -301,6 +396,10 @@ def scrape_find_tenders(page, tab="Open", max_pages=20):
         tab_el.click()
         page.wait_for_load_state("domcontentloaded", timeout=10000)
         throttle()
+
+    # Apply trade filter if specified
+    if filter_trades:
+        apply_trade_filter(page, filter_trades)
 
     screenshot(page, f"find_tenders_{tab.lower()}")
 
@@ -893,6 +992,39 @@ def scrape_tender_detail(page, project_id, project_name=""):
                     "type": doc_type,
                 })
 
+    # Extract trades from the Trades tab
+    trades = []
+    trades_tab = page.query_selector(
+        "a:has-text('Trades'), button:has-text('Trades'), "
+        "[role='tab']:has-text('Trades')"
+    )
+    if trades_tab and trades_tab.is_visible():
+        trades_tab.click()
+        page.wait_for_load_state("domcontentloaded", timeout=10000)
+        throttle()
+        screenshot(page, f"tender_trades_tab_{clean_id}")
+
+        # Look for trade names — E1 shows them as a list with checkmarks for "your trades"
+        trades_text = page.inner_text("body")[:5000]
+        # Common EPS-relevant trade names
+        trade_keywords = [
+            "Painting", "Building Cleaning", "Cleaning", "Rendering",
+            "Protective Coatings", "Waterproofing", "Floor Coverings",
+        ]
+        for kw in trade_keywords:
+            if kw.lower() in trades_text.lower():
+                trades.append(kw)
+
+        # Also try to extract all listed trades
+        trade_els = page.query_selector_all("[class*='trade'], [class*='Trade']")
+        for el in trade_els:
+            t = el.inner_text().strip()
+            if t and t not in trades and len(t) < 50:
+                trades.append(t)
+
+    if trades:
+        print(f"    Trades found: {', '.join(trades)}")
+
     # Extract contact info if visible
     contact = {}
     body_text = page.inner_text("body")[:3000]
@@ -911,6 +1043,7 @@ def scrape_tender_detail(page, project_id, project_name=""):
         "project_id": clean_id,
         "detail_url": detail_url,
         "documents": documents,
+        "trades": trades,
         "contact": contact,
         "express_interest_required": express_required,
     }
@@ -967,6 +1100,139 @@ def download_tender_documents(page, project_id, documents, output_dir=None):
 
     print(f"    Downloaded {sum(1 for d in downloaded if d.get('downloaded'))} / {len(documents)} docs")
     return downloaded
+
+
+def dismiss_modal(page):
+    """Dismiss any open Magnific Popup modal (E1 uses mfp-wrap for download modals)."""
+    try:
+        close_btn = page.query_selector(".mfp-close, .mfp-wrap button.mfp-close, button:has-text('Close')")
+        if close_btn and close_btn.is_visible():
+            close_btn.click(force=True)
+            time.sleep(0.5)
+            return
+        # Fallback: click the overlay background
+        overlay = page.query_selector(".mfp-bg, .mfp-wrap")
+        if overlay and overlay.is_visible():
+            page.keyboard.press("Escape")
+            time.sleep(0.5)
+    except Exception:
+        # Last resort
+        try:
+            page.keyboard.press("Escape")
+            time.sleep(0.5)
+        except Exception:
+            pass
+
+
+def download_lead_packages(page, leads):
+    """Download packages directly from the /leads page.
+
+    E1's leads page uses React accordions. Each lead is a <section id="project-id-XXXXX">.
+    Expanding shows builder rows with "Download Package" buttons (aria-label="Download Package").
+    Clicking download opens a Magnific Popup modal — must dismiss before next download.
+
+    Saves to: projects/eps/.tmp/estimateone/docs/{project_id}/
+    """
+    print(f"\nDownloading packages for {len(leads)} leads...")
+    page.goto(f"{BASE_URL}/leads", wait_until="domcontentloaded", timeout=20000)
+    time.sleep(4)  # JS-heavy page
+
+    # E1 uses section#project-id-XXXXX for each lead
+    # Extract all project IDs from the page
+    sections = page.query_selector_all("section[id^='project-id-']")
+    print(f"  Lead sections found: {len(sections)}")
+
+    # Build a map of project_id → lead for results
+    lead_map = {}
+    for lead in leads:
+        pid = lead.get("project_id", "").replace("#", "").strip()
+        if pid:
+            lead_map[pid] = lead
+
+    for section in sections:
+        section_id = section.get_attribute("id") or ""
+        pid = section_id.replace("project-id-", "")
+        if not pid:
+            continue
+
+        matched_lead = lead_map.get(pid)
+        pname = matched_lead.get("project", f"Project #{pid}") if matched_lead else f"Project #{pid}"
+
+        # Check if already downloaded
+        docs_dir = DOCS_DIR / pid
+        if docs_dir.exists() and any(docs_dir.iterdir()):
+            print(f"  #{pid}: already downloaded, skipping")
+            if matched_lead:
+                matched_lead["documents"] = [
+                    {"name": f.name, "local_path": str(f), "type": classify_document(f.name),
+                     "downloaded": True}
+                    for f in docs_dir.iterdir() if f.is_file()
+                ]
+            continue
+
+        # Click the accordion header to expand (scoped to this section)
+        toggle = section.query_selector("[class*=accordionToggle], [class*=accordionHeader]")
+        if toggle:
+            toggle.click(force=True)
+            time.sleep(2)
+
+        # Find download buttons WITHIN this section only
+        download_btns = section.query_selector_all("button[aria-label='Download Package']")
+        if not download_btns:
+            print(f"  #{pid} ({pname}): no download buttons")
+            if matched_lead:
+                matched_lead["documents"] = []
+            continue
+
+        docs_dir.mkdir(parents=True, exist_ok=True)
+        downloaded = []
+
+        for btn in download_btns:
+            rfq_id = btn.get_attribute("data-rfq-id") or ""
+            stage_id = btn.get_attribute("data-stage-id") or ""
+
+            print(f"  #{pid}: downloading package (rfq={rfq_id})")
+
+            try:
+                with page.expect_download(timeout=30000) as download_info:
+                    btn.click(force=True)
+                dl = download_info.value
+                filename = dl.suggested_filename or f"package_{rfq_id}.zip"
+                local_path = docs_dir / filename
+                dl.save_as(str(local_path))
+                print(f"    Saved: {filename}")
+                downloaded.append({
+                    "name": filename,
+                    "local_path": str(local_path),
+                    "rfq_id": rfq_id,
+                    "stage_id": stage_id,
+                    "downloaded": True,
+                })
+            except (PlaywrightTimeout, Exception) as e:
+                print(f"    Download failed: {e}")
+                downloaded.append({
+                    "name": f"package_{rfq_id}",
+                    "rfq_id": rfq_id,
+                    "downloaded": False,
+                    "error": str(e)[:200],
+                })
+
+            # Dismiss any modal that appeared
+            dismiss_modal(page)
+            throttle()
+
+        if matched_lead:
+            matched_lead["documents"] = downloaded
+
+        ok = sum(1 for d in downloaded if d.get("downloaded"))
+        print(f"  #{pid}: {ok}/{len(downloaded)} packages downloaded")
+
+        # Collapse before next
+        if toggle:
+            toggle.click(force=True)
+            time.sleep(1)
+
+    return leads
 
 
 def process_tender_docs(page, tenders, project_ids=None, auto_express=False):
@@ -1072,8 +1338,11 @@ def run_scraper(args):
             login(page, ctx)
             results = {"scraped_at": timestamp, "sections": {}}
 
+            # Parse trade filter
+            filter_trades = [t.strip() for t in args.filter_trades.split(",") if t.strip()] if args.filter_trades else None
+
             if args.open or args.all:
-                results["sections"]["open_tenders"] = scrape_find_tenders(page, "Open", args.max_pages)
+                results["sections"]["open_tenders"] = scrape_find_tenders(page, "Open", args.max_pages, filter_trades=filter_trades)
 
             if args.awarded or args.all:
                 results["sections"]["awarded"] = scrape_find_tenders(page, "Awarded", args.max_pages)
@@ -1102,12 +1371,10 @@ def run_scraper(args):
                         results["sections"] = prev.get("sections", {})
                         print(f"Loaded sections from previous scrape for doc download")
 
-                # Process leads first (they have doc access)
+                # Process leads — use accordion-based download (no detail page nav)
                 if "leads" in results["sections"]:
-                    results["sections"]["leads"] = process_tender_docs(
+                    results["sections"]["leads"] = download_lead_packages(
                         page, results["sections"]["leads"],
-                        project_ids=project_ids,
-                        auto_express=args.auto_express_interest,
                     )
 
                 # Then open tenders (may need Express Interest)
@@ -1151,6 +1418,8 @@ def main():
                         help="Comma-separated project IDs to download docs for")
     parser.add_argument("--auto-express-interest", action="store_true",
                         help="Auto-click Express Interest on gated tenders")
+    parser.add_argument("--filter-trades", type=str, default="",
+                        help="Comma-separated trade names to filter open tenders (e.g. 'Painting,Building Cleaning')")
     args = parser.parse_args()
 
     if not (args.all or args.open or args.awarded or args.leads or args.watchlist

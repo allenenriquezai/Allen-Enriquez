@@ -29,5 +29,19 @@ venv/
 # GSD planning artifacts
 .planning/
 
+# TLS certs (local dev only)
+*.pem
+
+# Media files (not code)
+*.mov
+*.mp4
+*.png
+*.jpg
+*.jpeg
+
+# SQLite temp files
+*.db-shm
+*.db-wal
+
 # macOS
 .DS_Store
