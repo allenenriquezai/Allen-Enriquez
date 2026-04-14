@@ -3,7 +3,7 @@ name: quote
 description: Create an EPS quote end-to-end. Triggers on "create a quote", "price up this job", "write a quote for", or /quote.
 ---
 
-EPS quote creation. Do NOT read any other files — everything you need is here.
+EPS quote creation. The main session handles this directly.
 
 ## Inputs needed (ask upfront if missing)
 1. **Client name or deal ID**
@@ -13,16 +13,11 @@ EPS quote creation. Do NOT read any other files — everything you need is here.
 
 ## How to run
 
-Spawn a general-purpose Agent with this prompt:
-
-> Read your instructions from `projects/eps/agents/eps-quote-agent.md` and follow them. Task: Create a quote for {CLIENT/DEAL}. Service type: {TYPE}. {SCOPE DETAILS}. {RATE DETAILS}.
-
-## After quote is created
-The agent returns the Google Doc URL and total. Then spawn another Agent:
-
-> Read your instructions from `projects/eps/agents/eps-email-agent.md` and follow them. Task: Draft the quote email for deal {DEAL_ID}. {EMAIL DETAILS}.
+1. Read `projects/eps/CONTEXT.md` for workspace rules
+2. Read `projects/eps/workflows/sales/create-quote.md` and follow it exactly
+3. The workflow covers the full pipeline: intake → measure → line items → doc → email → QA → send
 
 ## Rules
-- Do NOT read agent files, workflow files, or memory — the agent reads what it needs
-- Ask ALL clarifying questions in one message upfront before spawning the agent
+- Ask ALL clarifying questions in one message upfront before starting
 - Confirm rates before starting — this affects pricing
+- Follow the workflow step by step — every rule, every stage

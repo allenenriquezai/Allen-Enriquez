@@ -3,31 +3,25 @@ name: content
 description: Marketing content engine — plan, write, track, and QA content for Allen's personal brand. Triggers on "generate content", "write posts", "content calendar", "what to film", "30 day challenge", "marketing status", or /content.
 ---
 
-Personal brand content engine. Do NOT read any other files — everything you need is here.
+Personal brand content engine. The main session handles this directly.
 
 ## Routing
 
-Decide which agent to spawn based on what Allen is asking:
+Pick the right workflow based on Allen's request:
 
-### Planning / tracking → `projects/personal/agents/personal-content-manager.md`
-Triggers: "plan", "status", "what to film", "today", "report", "30 day", "campaign", "schedule", "tracker"
+| Allen says | Read |
+|---|---|
+| "plan", "status", "what to film", "today", "report", "campaign", "schedule" | `projects/personal/workflows/content/content-calendar.md` |
+| "write", "generate", "script", "draft", "reel", "youtube", "post", "linkedin" | `projects/personal/workflows/content/content-creation.md` |
+| "research", "hooks", "trending", "competitors" | `projects/personal/workflows/content/content-research.md` |
 
-### Writing → `projects/personal/agents/personal-content-agent.md`
-Triggers: "write", "generate", "script", "draft", "reel", "youtube", "post", "linkedin", "newsletter"
+## How to run
 
-### Style research → `projects/personal/agents/personal-style-researcher.md`
-Triggers: "research", "study", "analyze", "style guide", "hormozi"
-
-### QA review → `projects/personal/agents/personal-marketing-qa.md`
-Triggers: "QA", "review", "check", "before posting"
-
-### Default → `projects/personal/agents/personal-content-manager.md`
-
-For whichever agent is selected, spawn a general-purpose Agent with:
-
-> Read your instructions from `{agent path}` and follow them. Task: {ALLEN'S REQUEST}
+1. Read `projects/personal/CONTEXT.md` for brand rules, voice, and quality gate
+2. Read the matching workflow from the table above
+3. Follow it
 
 ## Rules
-- Do NOT read agent files, memory, or workflow docs — the agents handle that
 - Do NOT post anything — only draft and show for approval
-- If Allen asks to regenerate, re-run the same agent with the same request
+- Always check `projects/personal/CONTEXT.md` voice rules before writing any content
+- If Allen asks to regenerate, re-run the same workflow

@@ -1,3 +1,24 @@
+## 2026-04-14 — Quoting process hard rules + fill_quote_template fix
+**Problem:** Quote creation had multiple process failures: mob fees added without asking, job descriptions rewritten instead of copied from templates, line items lumped together instead of per component/apartment/level, docs left unfilled, wrong pipeline used, totals changed during reformatting.
+**Change:** Updated `eps-quote-agent.md` (added General hard rules + Job Description hard rule), `create-quote.md` workflow (added Hard Rules section + job description rule), `fill_quote_template.py` (changed `\n\n` join to `\n` for compact spacing), `feedback_quoting_process.md` memory (consolidated 7 rules). Added doc naming convention rule.
+**Why:** Allen corrected the quoting process 5+ times in one session. Rules needed to be enforced in the actual agent/workflow files, not just memory. Templates exist for job descriptions — never invent. Rates exist in pricing.json — never make up prices.
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: +
+**Next:** Consider automating doc naming in `create_quote_folder.py` to match the convention instead of using deal ID format.
+
+## 2026-04-14 — Reel video pipeline: doodle illustrations + Hormozi captions
+**Problem:** "4 Levels of AI" reel had no visual illustrations during teaching sections. Previous version used detailed UI mockups that were too small for phone screens. Needed animated visuals synced to voiceover, Hormozi-style captions, and Allen's face preserved on hook/CTA.
+**Change:** `projects/personal/.tmp/video_test/full_video_v4.py` — complete renderer with doodle illustration primitives (person, arrows, sparkles, boxes, check/error icons), 4 level drawing functions synced to real transcription timestamps, real Make/Zapier/n8n logos, Hormozi caption system. `full_video_v5.py` — compositor that loads Allen's face from MOV for hook/CTA, doodle frames for L1-L4, 90pt bold captions with yellow highlight box, MEDVi screenshot overlay with blurred face. Whisper transcription for word-level timing.
+**Why:** Pillow + FFmpeg over Remotion — zero cost, Python-native, no rewrite needed. Doodle style over UI mockups — bolder on phone. Yellow marker box over colored text — Hormozi standard. Face on hook/CTA — personal connection. Compressed center layout — where eyes go on phone.
+**Criteria:** Speed: + | Cost: + (zero) | Accuracy: + | Scale: = (manual per reel, template potential later)
+**Next:** Build reusable reel template. Auto-editing pipeline (auto-editor + faster-whisper). First content batch recording.
+
+## 2026-04-14 — E1 tender pipeline: vision analysis + smart filtering + Pipedrive attachment
+**Problem:** E1 scraper downloaded entire project packages (131 files) but couldn't analyze image-based floor plans. Large specs (1.1M chars) truncated blindly, losing all painting-relevant sections. No way to attach docs or measurements to Pipedrive deals.
+**Change:** `tools/analyze_tender_docs.py` — full rewrite with smart file filtering (RELEVANT/SKIP keywords), Claude Vision via pdf2image+Haiku for floor plans, keyword section extraction for specs, finishes schedule classification. `tools/attach_plans_and_notes.py` — new tool for Pipedrive file attachment (curl multipart), measurement notes (painting: ceilings/walls/skirting/doors; cleaning: ceiling area), builder contact/org creation and linking.
+**Why:** Noticeboard tenders have 100+ files per project — need automated filtering. Image-based architectural PDFs can't be text-parsed. Keyword extraction beats truncation for massive specs. Builder contacts need to exist in CRM for follow-up workflow.
+**Criteria:** Speed: + | Cost: + | Accuracy: + | Scale: +
+**Next:** Reformat deal notes (hard to read). Create quotes from measurement data. Build Noticeboard Open download flow.
+
 ## 2026-04-14 — SM8 ↔ Pipedrive auto-linking + dashboard SM8 intelligence
 **Problem:** Dashboard showed "no SM8 job linked" for deals like Ronda Jones even though SM8 had the job (EPSP1937) with site visit data and photos. Root cause: Pipedrive custom field was empty, crm_sync only looked at that field, data_loader silently filtered out empty sm8_status, and EOD flagged it. Dashboard had no SM8 activity history — someone looking at a deal card had no idea what happened.
 **Change:** `tools/crm_sync.py` — address-based fallback SM8 matching (with street-level specificity guard), auto-link job # back to Pipedrive, flag SITE VISIT same as DEPOSIT, cache SM8 activities/staff/files to SQLite with enriched notes (Job Check Out, Booking labels + travel/time). `tools/eps-dashboard/data_loader.py` — removed WHERE filter, added logging. `tools/eps-dashboard/app.py` — extended deal detail API, added project detail API. `tools/eps-dashboard/static/app.js` — light mode, bigger text, SM8 activity timeline, project detail modal, note dedup. `style.css` + `base.html` + `index.html` — light mode.
