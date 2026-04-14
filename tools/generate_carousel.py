@@ -1,76 +1,72 @@
 #!/usr/bin/env python3
 """
 Carousel image generator for Allen's personal brand.
-Generates slide PNGs using Hormozi-style copy (3rd grade, bold claims, short sentences).
+Hormozi-style: white background, bold black text, brand blue accent, clean layout.
 
 Usage:
-    python3 tools/generate_carousel.py --topic "AI won't replace you" --slides 7 --style dark --handle "@allenenriquez"
-    python3 tools/generate_carousel.py --topic "Stop chasing leads" --slides 5 --style light
+    python3 tools/generate_carousel.py --topic "4 Levels of AI" --slides 6 --handle "@allenenriquez"
+    python3 tools/generate_carousel.py --topic "Stop chasing leads" --slides 5 --copy-file copy.txt
 
 Output: .tmp/carousels/<topic-slug>/slide_01.png, slide_02.png, ...
+
+Copy file format (one section per slide, separated by --- Slide N ---):
+    Use || to split header from body text on any slide.
 """
 
 from __future__ import annotations
 
 import argparse
-import os
 import re
-import textwrap
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 # --- Config ---
 
 WIDTH = 1080
-HEIGHT = 1080
+HEIGHT = 1350  # 4:5 ratio — optimal for IG/FB feed
 
-STYLES = {
-    "dark": {"bg": (0, 0, 0), "text": (255, 255, 255), "accent": (200, 200, 200)},
-    "light": {"bg": (255, 255, 255), "text": (0, 0, 0), "accent": (80, 80, 80)},
-}
+BRAND_BLUE = (2, 179, 233)  # #02B3E9
 
-# macOS system fonts — fallback chain
-FONT_PATHS = [
+# Colors
+BG = (255, 255, 255)
+TEXT_PRIMARY = (15, 15, 15)       # near-black
+TEXT_SECONDARY = (80, 80, 80)     # dark gray for body
+TEXT_MUTED = (160, 160, 160)      # light gray for counters/handle
+ACCENT = BRAND_BLUE
+ACCENT_BAR_HEIGHT = 8
+
+# Layout
+PADDING_X = 100
+PADDING_TOP = 120
+PADDING_BOTTOM = 120
+MAX_TEXT_WIDTH = WIDTH - PADDING_X * 2
+
+# Font paths — clean bold sans-serif (Dan Martell / Hormozi style)
+# Helvetica Bold for both header and body — clean, large, readable
+FONT_HEADER_PATHS = [
+    "/System/Library/Fonts/Helvetica.ttc",
+    "/System/Library/Fonts/HelveticaNeue.ttc",
+    "/Library/Fonts/Arial.ttf",
+]
+FONT_BODY_PATHS = [
     "/System/Library/Fonts/Helvetica.ttc",
     "/System/Library/Fonts/HelveticaNeue.ttc",
     "/Library/Fonts/Arial.ttf",
 ]
 
-# --- Slide copy templates ---
-# Hook patterns from Hormozi style guide
-HOOK_PATTERNS = [
-    "Most {audience} get this wrong.",
-    "Stop doing this. Seriously.",
-    "{number} things that actually work.",
-    "I tried this. Here's what happened.",
-    "Everyone says {common}. They're wrong.",
-    "This one change made all the difference.",
-]
 
-CTA_TEMPLATES = [
-    "Save this. Share it.\nFollow for more.",
-    "Tag someone who needs this.",
-    "Follow for daily tips\nthat actually work.",
-    "Save this post.\nCome back when you're ready.",
-    "Share this with someone\nwho's stuck.",
-]
-
-
-def get_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
-    """Load a system font at the given size."""
-    for path in FONT_PATHS:
+def load_font(paths: list[str], size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
+    """Load first available font from path list."""
+    for path in paths:
         try:
-            # .ttc files have multiple faces — index 0 is regular, 1 is bold (usually)
             index = 1 if bold and path.endswith(".ttc") else 0
             return ImageFont.truetype(path, size, index=index)
         except (OSError, IndexError):
             continue
-    # absolute fallback
     return ImageFont.load_default()
 
 
 def slugify(text: str) -> str:
-    """Convert topic to filesystem-safe slug."""
     text = text.lower().strip()
     text = re.sub(r"[^\w\s-]", "", text)
     text = re.sub(r"[\s_]+", "-", text)
@@ -98,173 +94,270 @@ def wrap_text(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont
     return lines
 
 
-def draw_centered_text(
+def draw_text_block(
     draw: ImageDraw.ImageDraw,
     text: str,
     font: ImageFont.FreeTypeFont,
     color: tuple,
     max_width: int,
-    y_center: int,
-    line_spacing: int = 20,
+    y_start: int,
+    line_spacing: int = 16,
+    align: str = "left",
 ) -> int:
-    """Draw word-wrapped, horizontally centered text around a vertical center point. Returns bottom y."""
+    """Draw wrapped text starting at y_start. Returns y position after last line."""
     lines = wrap_text(draw, text, font, max_width)
     if not lines:
-        return y_center
+        return y_start
 
-    # Calculate total height
-    line_heights = []
-    for line in lines:
-        bbox = draw.textbbox((0, 0), line, font=font)
-        line_heights.append(bbox[3] - bbox[1])
-
-    total_height = sum(line_heights) + line_spacing * (len(lines) - 1)
-    y = y_center - total_height // 2
-
+    y = y_start
     for i, line in enumerate(lines):
         bbox = draw.textbbox((0, 0), line, font=font)
-        w = bbox[2] - bbox[0]
-        x = (WIDTH - w) // 2
+        line_w = bbox[2] - bbox[0]
+        line_h = bbox[3] - bbox[1]
+
+        if align == "center":
+            x = (WIDTH - line_w) // 2
+        else:
+            x = PADDING_X
+
         draw.text((x, y), line, fill=color, font=font)
-        y += line_heights[i] + line_spacing
+        y += line_h + line_spacing
 
     return y
 
 
-def render_slide(
-    text: str,
-    style: dict,
-    slide_num: int,
-    total: int,
-    handle: str = "",
-    is_title: bool = False,
-    is_cta: bool = False,
-) -> Image.Image:
-    """Render a single carousel slide as a PIL Image."""
-    img = Image.new("RGB", (WIDTH, HEIGHT), style["bg"])
-    draw = ImageDraw.Draw(img)
+def draw_accent_bar(draw: ImageDraw.ImageDraw, y: int, width: int = 80):
+    """Draw a short horizontal accent bar."""
+    x_start = PADDING_X
+    draw.rectangle(
+        [x_start, y, x_start + width, y + ACCENT_BAR_HEIGHT],
+        fill=ACCENT,
+    )
 
-    padding = 80
-    max_text_width = WIDTH - padding * 2
 
-    if is_title:
-        # Title slide — big bold text + handle at bottom
-        title_font = get_font(72, bold=True)
-        draw_centered_text(draw, text, title_font, style["text"], max_text_width, HEIGHT // 2 - 40)
+def draw_handle(draw: ImageDraw.ImageDraw, handle: str):
+    """Draw handle text at bottom of slide."""
+    font = load_font(FONT_BODY_PATHS, 28, bold=True)
+    bbox = draw.textbbox((0, 0), handle, font=font)
+    hw = bbox[2] - bbox[0]
+    draw.text(
+        ((WIDTH - hw) // 2, HEIGHT - PADDING_BOTTOM + 20),
+        handle,
+        fill=TEXT_MUTED,
+        font=font,
+    )
 
-        if handle:
-            handle_font = get_font(32)
-            bbox = draw.textbbox((0, 0), handle, font=handle_font)
-            hw = bbox[2] - bbox[0]
-            draw.text(((WIDTH - hw) // 2, HEIGHT - 140), handle, fill=style["accent"], font=handle_font)
 
-    elif is_cta:
-        # CTA slide — medium bold text
-        cta_font = get_font(56, bold=True)
-        draw_centered_text(draw, text, cta_font, style["text"], max_text_width, HEIGHT // 2)
+def draw_slide_counter(draw: ImageDraw.ImageDraw, current: int, total: int):
+    """Draw slide counter at top-right."""
+    font = load_font(FONT_BODY_PATHS, 26)
+    text = f"{current}/{total}"
+    bbox = draw.textbbox((0, 0), text, font=font)
+    tw = bbox[2] - bbox[0]
+    draw.text(
+        (WIDTH - PADDING_X - tw, PADDING_TOP - 50),
+        text,
+        fill=TEXT_MUTED,
+        font=font,
+    )
 
-        if handle:
-            handle_font = get_font(32)
-            bbox = draw.textbbox((0, 0), handle, font=handle_font)
-            hw = bbox[2] - bbox[0]
-            draw.text(((WIDTH - hw) // 2, HEIGHT - 140), handle, fill=style["accent"], font=handle_font)
 
-    else:
-        # Content slide — slide number + text
-        num_font = get_font(28)
-        num_text = f"{slide_num - 1}/{total - 2}"
-        bbox = draw.textbbox((0, 0), num_text, font=num_font)
-        nw = bbox[2] - bbox[0]
-        draw.text(((WIDTH - nw) // 2, 60), num_text, fill=style["accent"], font=num_font)
-
-        body_font = get_font(60, bold=True)
-        draw_centered_text(draw, text, body_font, style["text"], max_text_width, HEIGHT // 2)
-
-    # Swipe indicator dots at bottom
-    dot_y = HEIGHT - 60
-    dot_spacing = 20
-    dot_r = 6
-    total_dot_width = total * dot_r * 2 + (total - 1) * dot_spacing
-    start_x = (WIDTH - total_dot_width) // 2
+def draw_swipe_dots(draw: ImageDraw.ImageDraw, current: int, total: int):
+    """Draw swipe indicator dots at very bottom."""
+    dot_y = HEIGHT - 40
+    dot_r = 5
+    dot_spacing = 16
+    total_w = total * dot_r * 2 + (total - 1) * dot_spacing
+    start_x = (WIDTH - total_w) // 2
 
     for i in range(total):
         cx = start_x + i * (dot_r * 2 + dot_spacing) + dot_r
-        if i == slide_num - 1:
-            draw.ellipse([cx - dot_r, dot_y - dot_r, cx + dot_r, dot_y + dot_r], fill=style["text"])
+        if i == current - 1:
+            draw.ellipse([cx - dot_r, dot_y - dot_r, cx + dot_r, dot_y + dot_r], fill=ACCENT)
         else:
-            draw.ellipse([cx - dot_r, dot_y - dot_r, cx + dot_r, dot_y + dot_r], fill=style["accent"])
+            draw.ellipse([cx - dot_r, dot_y - dot_r, cx + dot_r, dot_y + dot_r], fill=(220, 220, 220))
+
+
+# --- Slide renderers ---
+
+def measure_text_block(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, max_width: int, line_spacing: int = 16) -> int:
+    """Measure total height of a wrapped text block."""
+    lines = wrap_text(draw, text, font, max_width)
+    if not lines:
+        return 0
+    total = 0
+    for line in lines:
+        bbox = draw.textbbox((0, 0), line, font=font)
+        total += bbox[3] - bbox[1]
+    total += line_spacing * (len(lines) - 1)
+    return total
+
+
+def render_title_slide(text: str, slide_num: int, total: int, handle: str) -> Image.Image:
+    """Slide 1: hook/title. Big bold header, optional subtitle, accent bar. Vertically centered."""
+    img = Image.new("RGB", (WIDTH, HEIGHT), BG)
+    draw = ImageDraw.Draw(img)
+
+    if "||" in text:
+        header, subtitle = text.split("||", 1)
+        header = header.strip()
+        subtitle = subtitle.strip()
+    else:
+        header = text
+        subtitle = ""
+
+    # Accent bar at top
+    draw.rectangle([0, 0, WIDTH, 12], fill=ACCENT)
+
+    # Safe area: below accent bar, above handle/dots
+    safe_top = 60  # below accent bar
+    safe_bottom = HEIGHT - 160  # above handle + dots
+    safe_h = safe_bottom - safe_top
+
+    header_font = load_font(FONT_HEADER_PATHS, 110, bold=True)
+
+    if subtitle:
+        sub_font = load_font(FONT_BODY_PATHS, 56, bold=True)
+        # Measure total content block: header + bar + subtitle
+        header_h = measure_text_block(draw, header, header_font, MAX_TEXT_WIDTH, 16)
+        bar_gap = 30 + ACCENT_BAR_HEIGHT + 30
+        subtitle_h = measure_text_block(draw, subtitle, sub_font, MAX_TEXT_WIDTH, 14)
+        total_block = header_h + bar_gap + subtitle_h
+
+        # Center within safe area
+        block_y = safe_top + (safe_h - total_block) // 2
+        header_bottom = draw_text_block(draw, header, header_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, block_y, line_spacing=16, align="left")
+        draw_accent_bar(draw, header_bottom + 30)
+        draw_text_block(draw, subtitle, sub_font, TEXT_SECONDARY, MAX_TEXT_WIDTH, header_bottom + 30 + ACCENT_BAR_HEIGHT + 30, line_spacing=14, align="left")
+    else:
+        header_h = measure_text_block(draw, header, header_font, MAX_TEXT_WIDTH, 16)
+        header_y = safe_top + (safe_h - header_h) // 2
+        draw_text_block(draw, header, header_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, header_y, line_spacing=16, align="left")
+
+    if handle:
+        draw_handle(draw, handle)
+    draw_swipe_dots(draw, slide_num, total)
 
     return img
 
 
-def generate_copy(topic: str, num_slides: int) -> list[str]:
-    """Generate slide copy for a carousel. Returns list of strings, one per slide."""
-    slides = []
+def render_content_slide(text: str, slide_num: int, total: int, content_num: int, content_total: int, handle: str) -> Image.Image:
+    """Middle slides: header/body split, accent bar, slide counter. Auto-scales if text overflows."""
+    img = Image.new("RGB", (WIDTH, HEIGHT), BG)
+    draw = ImageDraw.Draw(img)
 
-    # Slide 1 — hook/title
-    slides.append(topic.upper())
+    safe_top = 100
+    safe_bottom = 100
+    max_usable_h = HEIGHT - safe_top - safe_bottom
 
-    # Middle slides — one idea per slide, max 15 words, simple language
-    # These are placeholder prompts — in production, an LLM agent would write these
-    # For now, generate simple structural placeholders the user fills in
-    content_count = num_slides - 2  # minus title and CTA
+    # Slide counter top-right
+    draw_slide_counter(draw, content_num, content_total)
 
-    prompts = [
-        f"[Slide {i+1}] Write your point here. Max 15 words. One idea only."
-        for i in range(content_count)
-    ]
+    if "||" in text:
+        header, body = text.split("||", 1)
+        header = header.strip()
+        body = body.strip()
 
-    slides.extend(prompts)
+        # Start at target sizes, scale down if needed (min 66/42 to stay readable)
+        h_size, b_size = 90, 54
+        while h_size >= 66:
+            header_font = load_font(FONT_HEADER_PATHS, h_size, bold=True)
+            body_font = load_font(FONT_BODY_PATHS, b_size, bold=True)
+            header_h = measure_text_block(draw, header, header_font, MAX_TEXT_WIDTH, 14)
+            bar_gap = 24 + ACCENT_BAR_HEIGHT + 28
+            body_h = measure_text_block(draw, body, body_font, MAX_TEXT_WIDTH, 18)
+            total_block = header_h + bar_gap + body_h
+            if total_block <= max_usable_h:
+                break
+            h_size -= 6
+            b_size -= 4
 
-    # Last slide — CTA
-    import random
-    slides.append(random.choice(CTA_TEMPLATES))
+        block_y = (HEIGHT - total_block) // 2
+        header_bottom = draw_text_block(draw, header, header_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, block_y, line_spacing=14, align="left")
+        draw_accent_bar(draw, header_bottom + 24)
+        draw_text_block(draw, body, body_font, TEXT_SECONDARY, MAX_TEXT_WIDTH, header_bottom + 24 + ACCENT_BAR_HEIGHT + 28, line_spacing=18, align="left")
+    else:
+        b_size = 76
+        while b_size >= 54:
+            body_font = load_font(FONT_HEADER_PATHS, b_size, bold=True)
+            total_h = measure_text_block(draw, text, body_font, MAX_TEXT_WIDTH, 16)
+            if total_h <= max_usable_h:
+                break
+            b_size -= 6
+        y_start = (HEIGHT - total_h) // 2
+        draw_text_block(draw, text, body_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, y_start, line_spacing=16, align="left")
 
-    return slides
+    draw_swipe_dots(draw, slide_num, total)
 
+    return img
+
+
+def render_cta_slide(text: str, slide_num: int, total: int, handle: str) -> Image.Image:
+    """Last slide: CTA with accent bar and handle."""
+    img = Image.new("RGB", (WIDTH, HEIGHT), BG)
+    draw = ImageDraw.Draw(img)
+
+    # Accent bar at top
+    draw.rectangle([0, 0, WIDTH, 12], fill=ACCENT)
+
+    # CTA text — centered in safe area (below bar, above handle/dots)
+    safe_top = 60
+    safe_bottom = HEIGHT - 160
+    safe_h = safe_bottom - safe_top
+
+    cta_font = load_font(FONT_HEADER_PATHS, 72, bold=True)
+    total_h = measure_text_block(draw, text, cta_font, MAX_TEXT_WIDTH, 16)
+    y_start = safe_top + (safe_h - total_h) // 2
+    draw_text_block(draw, text, cta_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, y_start, line_spacing=16, align="left")
+
+    if handle:
+        draw_handle(draw, handle)
+    draw_swipe_dots(draw, slide_num, total)
+
+    return img
+
+
+# --- Main generation ---
 
 def generate_carousel(
     topic: str,
     num_slides: int,
-    style_name: str = "dark",
-    handle: str = "",
+    handle: str = "@allenenriquez",
     copy: list[str] | None = None,
 ) -> Path:
     """Generate all carousel slides and save to .tmp/carousels/<slug>/."""
-    style = STYLES[style_name]
     slug = slugify(topic)
-
-    # Output dir
     base = Path(__file__).resolve().parent.parent / ".tmp" / "carousels" / slug
     base.mkdir(parents=True, exist_ok=True)
 
-    # Generate copy if not provided
     if copy is None:
-        copy = generate_copy(topic, num_slides)
+        # Placeholder copy — in production, agent provides real copy
+        copy = [topic.upper()]
+        for i in range(num_slides - 2):
+            copy.append(f"POINT {i+1} || Write your point here. Max 15 words. One idea only.")
+        copy.append("Follow for daily posts. I'm teaching everything for free.")
 
     if len(copy) != num_slides:
         raise ValueError(f"Expected {num_slides} slide texts, got {len(copy)}")
 
+    content_total = num_slides - 2  # exclude title + CTA for counter
+
     for i, text in enumerate(copy):
         slide_num = i + 1
-        is_title = (slide_num == 1)
-        is_cta = (slide_num == num_slides)
 
-        img = render_slide(
-            text=text,
-            style=style,
-            slide_num=slide_num,
-            total=num_slides,
-            handle=handle,
-            is_title=is_title,
-            is_cta=is_cta,
-        )
+        if slide_num == 1:
+            img = render_title_slide(text, slide_num, num_slides, handle)
+        elif slide_num == num_slides:
+            img = render_cta_slide(text, slide_num, num_slides, handle)
+        else:
+            content_num = slide_num - 1  # 1-based content counter
+            img = render_content_slide(text, slide_num, num_slides, content_num, content_total, handle)
 
         path = base / f"slide_{slide_num:02d}.png"
         img.save(path, "PNG")
         print(f"  [{slide_num}/{num_slides}] {path}")
 
-    # Also write copy to a text file for easy editing
+    # Save copy for reference
     copy_path = base / "copy.txt"
     with open(copy_path, "w") as f:
         for i, text in enumerate(copy):
@@ -275,15 +368,14 @@ def generate_carousel(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate carousel slide PNGs")
+    parser = argparse.ArgumentParser(description="Generate Hormozi-style carousel PNGs")
     parser.add_argument("--topic", required=True, help="Carousel topic / hook text")
     parser.add_argument("--slides", type=int, default=7, help="Number of slides (default: 7)")
-    parser.add_argument("--style", choices=["dark", "light"], default="dark", help="dark or light (default: dark)")
-    parser.add_argument("--handle", default="", help="Social handle shown on title/CTA slides")
+    parser.add_argument("--handle", default="@allenenriquez", help="Social handle (default: @allenenriquez)")
     parser.add_argument(
         "--copy-file",
         default=None,
-        help="Path to a text file with slide copy (one section per slide, separated by '--- Slide N ---')",
+        help="Path to a text file with slide copy (separated by '--- Slide N ---')",
     )
 
     args = parser.parse_args()
@@ -291,28 +383,24 @@ def main():
     if args.slides < 3:
         parser.error("Need at least 3 slides (title + 1 content + CTA)")
 
-    # Load custom copy if provided
     copy = None
     if args.copy_file:
         with open(args.copy_file) as f:
             raw = f.read()
-        # Parse sections split by --- Slide N ---
         sections = re.split(r"---\s*Slide\s*\d+\s*---\n?", raw)
         copy = [s.strip() for s in sections if s.strip()]
 
     print(f"\nGenerating {args.slides}-slide carousel: \"{args.topic}\"")
-    print(f"Style: {args.style} | Handle: {args.handle or '(none)'}\n")
+    print(f"Handle: {args.handle}\n")
 
     output = generate_carousel(
         topic=args.topic,
         num_slides=args.slides,
-        style_name=args.style,
         handle=args.handle,
         copy=copy,
     )
 
     print(f"\nDone. Files in: {output}/")
-    print("Edit copy.txt, then re-run with --copy-file to regenerate with your text.")
 
 
 if __name__ == "__main__":

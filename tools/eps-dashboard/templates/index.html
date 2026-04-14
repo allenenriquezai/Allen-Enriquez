@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- LOGIN -->
+<div id="page-login" class="hidden min-h-screen flex items-center justify-center">
+    <div class="bg-surface-2 border border-gray-200 rounded-2xl p-8 w-full max-w-sm">
+        <h1 class="text-xl font-bold mb-1">EPS Dashboard</h1>
+        <p class="text-gray-400 text-sm mb-6">Enter your access token</p>
+        <input id="login-input" type="password" placeholder="Token"
+            class="w-full bg-surface-3 border border-gray-300 rounded-xl px-4 py-3 text-sm mb-4 focus:outline-none focus:border-blue-500">
+        <button onclick="doLogin()"
+            class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium transition">
+            Sign In
+        </button>
+        <p id="login-error" class="text-red-400 text-xs mt-3 hidden">Invalid token</p>
+    </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app-shell" class="hidden min-h-screen flex flex-col">
+    <!-- Top Nav -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200">
+        <div class="max-w-full mx-auto px-6 flex items-center justify-between h-14">
+            <div class="flex items-center gap-1">
+                <span class="text-sm font-bold tracking-tight">EPS</span>
+                <span class="text-sm text-gray-400 font-medium">Dashboard</span>
+            </div>
+            <div class="flex items-center gap-1 bg-surface-2 rounded-xl p-1">
+                <button onclick="switchTab('overview')" data-tab="overview"
+                    class="tab-btn px-4 py-1.5 rounded-lg text-xs font-medium transition">Overview</button>
+                <button onclick="switchTab('deals')" data-tab="deals"
+                    class="tab-btn px-4 py-1.5 rounded-lg text-xs font-medium transition">Deals</button>
+                <button onclick="switchTab('projects')" data-tab="projects"
+                    class="tab-btn px-4 py-1.5 rounded-lg text-xs font-medium transition">Projects (Clients)</button>
+                <button onclick="switchTab('reengage')" data-tab="reengage"
+                    class="tab-btn px-4 py-1.5 rounded-lg text-xs font-medium transition">Re-engagement</button>
+                <button onclick="switchTab('tenders')" data-tab="tenders"
+                    class="tab-btn px-4 py-1.5 rounded-lg text-xs font-medium transition">Sent Tenders</button>
+                <button onclick="switchTab('e1inbox')" data-tab="e1inbox"
+                    class="tab-btn px-4 py-1.5 rounded-lg text-xs font-medium transition">E1 Inbox</button>
+            </div>
+            <div class="flex items-center gap-3">
+                <span id="last-fetch" class="text-xs text-gray-400"></span>
+                <button onclick="refreshData()" id="refresh-btn"
+                    class="px-3 py-1.5 bg-surface-2 hover:bg-surface-3 border border-gray-200 rounded-lg text-xs text-gray-400 hover:text-gray-700 transition">
+                    Refresh
+                </button>
+                <button onclick="refreshAnalysis()" id="analysis-btn"
+                    class="px-3 py-1.5 bg-surface-2 hover:bg-surface-3 border border-gray-200 rounded-lg text-xs text-gray-400 hover:text-gray-700 transition"
+                    title="Run full EOD analysis">
+                    Re-analyze
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- OVERVIEW TAB -->
+    <div id="page-overview" class="page-content px-6 py-6 max-w-5xl mx-auto w-full">
+        <div id="stats-row" class="grid grid-cols-5 gap-4 mb-6"></div>
+        <div id="overview-alerts" class="space-y-2"></div>
+    </div>
+
+    <!-- DEALS TAB -->
+    <div id="page-deals" class="page-content hidden flex-1 overflow-y-auto">
+        <div class="px-6 pt-4">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-semibold text-blue-400 uppercase tracking-wider">EPS Clean</span>
+                <span id="deals-clean-count" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="deals-clean-kanban" class="kanban-board overflow-x-auto pb-4"></div>
+
+            <div class="flex items-center gap-2 mb-2 mt-4">
+                <span class="text-xs font-semibold text-orange-400 uppercase tracking-wider">EPS Paint</span>
+                <span id="deals-paint-count" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="deals-paint-kanban" class="kanban-board overflow-x-auto pb-6"></div>
+        </div>
+    </div>
+
+    <!-- SENT TENDERS TAB (Pipedrive tender pipeline deals) -->
+    <div id="page-tenders" class="page-content hidden flex-1 overflow-y-auto">
+        <div class="px-6 pt-4">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider">Tenders — Clean</span>
+                <span id="tenders-clean-count" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="tenders-clean-kanban" class="kanban-board overflow-x-auto pb-4"></div>
+
+            <div class="flex items-center gap-2 mb-2 mt-4">
+                <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider">Tenders — Paint</span>
+                <span id="tenders-paint-count" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="tenders-paint-kanban" class="kanban-board overflow-x-auto pb-6"></div>
+        </div>
+    </div>
+
+    <!-- WIN-BACK TAB -->
+    <div id="page-winback" class="page-content hidden flex-1 overflow-y-auto">
+        <div class="px-6 pt-4">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-semibold text-orange-400 uppercase tracking-wider">Win-Back Pipeline</span>
+                <span id="winback-count" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="winback-kanban" class="kanban-board overflow-x-auto pb-6"></div>
+        </div>
+    </div>
+
+    <!-- E1 INBOX TAB (raw EstimateOne data) -->
+    <div id="page-e1inbox" class="page-content hidden flex-1 overflow-y-auto">
+        <div class="px-6 pt-4">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold text-cyan-400 uppercase tracking-wider">Active Leads</span>
+                <span id="e1-scraped" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="e1-leads-kanban" class="kanban-board overflow-x-auto pb-4"></div>
+
+            <div class="flex items-center gap-2 mb-2 mt-4">
+                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Open Tenders</span>
+            </div>
+            <div id="e1-open-kanban" class="kanban-board overflow-x-auto pb-6"></div>
+        </div>
+    </div>
+
+    <!-- PROJECTS TAB (active jobs only) -->
+    <div id="page-projects" class="page-content hidden flex-1 overflow-y-auto">
+        <div class="px-6 pt-4">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-semibold text-blue-400 uppercase tracking-wider">Clean Projects</span>
+                <span id="proj-clean-count" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="proj-clean-kanban" class="kanban-board overflow-x-auto pb-4"></div>
+
+            <div class="flex items-center gap-2 mb-2 mt-4">
+                <span class="text-xs font-semibold text-orange-400 uppercase tracking-wider">Paint Projects</span>
+                <span id="proj-paint-count" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="proj-paint-kanban" class="kanban-board overflow-x-auto pb-6"></div>
+        </div>
+    </div>
+
+    <!-- RE-ENGAGEMENT TAB -->
+    <div id="page-reengage" class="page-content hidden flex-1 overflow-y-auto">
+        <div class="px-6 pt-4">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-semibold text-teal-400 uppercase tracking-wider">Re-engagement Pipeline</span>
+                <span id="reengage-count" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="reengage-kanban" class="kanban-board overflow-x-auto pb-6"></div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

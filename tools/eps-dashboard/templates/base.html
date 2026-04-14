@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPS Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        surface: { 1: '#f8f9fb', 2: '#ffffff', 3: '#f0f1f3' },
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-surface-1 text-gray-800 min-h-screen">
+    {% block content %}{% endblock %}
+    <div id="modal-root"></div>
+    <script>
+        const _origFetch = window.fetch;
+        window.fetch = function(url, opts = {}) {
+            const token = localStorage.getItem('eps_dashboard_token');
+            if (token) {
+                opts.headers = opts.headers || {};
+                if (opts.headers instanceof Headers) {
+                    opts.headers.set('X-Token', token);
+                } else {
+                    opts.headers['X-Token'] = token;
+                }
+            }
+            return _origFetch(url, opts).then(res => {
+                if (res.status === 401 && !url.includes('/api/auth/verify')) {
+                    localStorage.removeItem('eps_dashboard_token');
+                    window.location.href = '/login';
+                }
+                return res;
+            });
+        };
+    </script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

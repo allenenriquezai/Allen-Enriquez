@@ -1,0 +1,56 @@
+/* EPS Dashboard — Light Mode */
+
+/* Smooth tab transitions */
+.page-content { animation: fadeIn 0.15s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Active tab pill */
+.tab-btn.active { background: rgb(37 99 235); color: white; }
+.tab-btn:not(.active) { color: rgb(107 114 128); }
+.tab-btn:not(.active):hover { color: rgb(55 65 81); }
+
+/* Filter pills */
+.pipeline-btn.active, .board-btn.active { background: rgb(37 99 235); color: white; }
+.pipeline-btn:not(.active), .board-btn:not(.active) { color: rgb(107 114 128); }
+
+/* Card hover */
+.kanban-card { transition: border-color 0.15s, box-shadow 0.15s; }
+.kanban-card:hover { border-color: rgb(209 213 219); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+/* Kanban board */
+.kanban-board { display: flex; gap: 12px; }
+.kanban-col { min-width: 260px; max-width: 280px; flex-shrink: 0; display: flex; flex-direction: column; }
+.kanban-col-header { position: sticky; top: 0; z-index: 1; padding: 8px 12px; border-radius: 10px 10px 0 0; }
+.kanban-col-body { flex: 1; overflow-y: auto; max-height: calc(100vh - 160px); padding: 4px; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgb(209 213 219); border-radius: 3px; }
+
+/* Flag badges */
+.flag-badge { font-size: 0.65rem; padding: 1px 6px; border-radius: 9999px; }
+
+/* Refresh spinner */
+.spin { animation: spin 1s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Stage pill */
+.stage-pill { font-size: 0.65rem; padding: 2px 8px; border-radius: 9999px; white-space: nowrap; }
+
+/* Deal detail modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 50; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.1s ease; }
+.modal-panel { background: #ffffff; border: 1px solid rgb(229 231 235); border-radius: 12px; width: 90%; max-width: 560px; max-height: 80vh; overflow-y: auto; padding: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+.modal-panel h2 { font-size: 1.1rem; font-weight: 600; color: rgb(17 24 39); margin-bottom: 4px; }
+.modal-section { margin-top: 16px; }
+.modal-section h3 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: rgb(107 114 128); margin-bottom: 8px; }
+.modal-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.8rem; border-bottom: 1px solid rgb(243 244 246); }
+.modal-row .label { color: rgb(107 114 128); }
+.modal-row .value { color: rgb(31 41 55); text-align: right; max-width: 60%; }
+.sync-entry { font-size: 0.75rem; padding: 6px 0; border-bottom: 1px solid rgb(243 244 246); color: rgb(107 114 128); }
+.sync-entry .change { color: rgb(37 99 235); }
+
+/* Activity entries */
+.activity-entry { margin-bottom: 6px; padding: 8px 10px; background: rgb(249 250 251); border-radius: 6px; }
+.activity-entry.site-visit { border-left: 3px solid rgb(37 99 235); }
+.activity-entry.note { border-left: 3px solid rgb(229 231 235); }
