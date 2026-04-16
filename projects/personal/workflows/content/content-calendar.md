@@ -105,8 +105,9 @@ Read `projects/personal/.tmp/content-research.md` before planning each week. If 
 
 | Phase | When | Focus |
 |---|---|---|
-| Volume Sprint | Weeks 1-2 | 3 short-form/day. Find your voice. No YouTube yet. |
-| Add YouTube | Week 3+ | Continue 3/day + 1 YouTube/week. Topic = best short-form. |
+| Volume Sprint | Week 1 | 1-2 short-form/day. Hook + value. Find voice. Build engagement data. |
+| Mini Tutorials | Week 2+ | 2 short-form/day. Screen recordings. Teach real systems step-by-step. |
+| Add YouTube | Week 3+ | Continue 2/day + 1 YouTube long-form/week. Topic = best short-form. |
 | Optimize | Month 2+ | Review performance. Double down on winners. Test FB ads. |
 
 ## Topic Backlog

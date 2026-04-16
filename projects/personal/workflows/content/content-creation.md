@@ -156,6 +156,11 @@ Change the hook for each platform. Don't transcribe video for text -- rewrite it
 - Never claim to be an expert or developer. Allen is learning and sharing.
 - All results claimed must be real and verified.
 - No selling in content. Content does the selling.
+- **EVERY piece must teach AI sales automation.** The niche is AI-powered sales systems. Not generic sales tips. Not generic AI tips. Content must show how AI automates a specific sales task. If the viewer can't connect it to AI + sales, it's off-brand.
+- **Content must come from Allen's real systems.** Before writing, check what tools exist in `tools/`, what automations run in `automation/`, and what workflows Allen actually uses. Teach from real systems, not hypotheticals. Why: Allen's unfair advantage is he actually uses this stuff daily — content must reflect that.
+- **Only claim what Allen has lived.** Allen has ONE automated business — his own. No "I see businesses doing X" or citing market stats as if they're personal experience. Every claim must trace back to something Allen built, broke, fixed, or learned firsthand. Why: Allen has zero clients yet. Audience will smell borrowed authority instantly.
+- **Follow the SOP structure exactly.** Don't freestyle scripts. Use the format templates above (Hook+Proof → Promise → Content → CTA). Why: freestyled scripts drift into "look at me" flexing instead of delivering teachable value.
+- **60 seconds is a guideline, not a cap.** If the hook is strong and the content delivers real value, 90-120 sec is fine. Completion rate matters more than raw length. Don't pad to fill time, don't cut value to hit 60 sec.
 
 ## Metrics to Reference (anonymized from day job)
 

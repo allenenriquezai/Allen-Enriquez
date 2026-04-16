@@ -11,7 +11,7 @@ Sales manager at EPS Painting & Cleaning (Brisbane, AU). Employee, not owner. Wo
 - Best month: $114K (Feb 2026) — closed without a single face-to-face meeting
 - Built full AI agent system: quotes, follow-ups, emails, CRM, scheduling
 - Quotes went from ~45 min to ~5 min
-- Manages 80+ active deals solo with AI
+- Manages 80+ active deals with AI (sales team: Allen + Dexter)
 - No sales meetings in 3 months — systems handle the process
 
 **Who Allen is:** NOT a sales expert or natural closer. Wins through SYSTEMS, SPEED, and CONSISTENCY. Self-taught everything. Sales background, not engineering. 6 months of AI building — went from ChatGPT copy-paste to agentic workflows in under a month.
@@ -158,12 +158,61 @@ Before any content or client-facing output ships:
 - `project-management.md` — track milestones and deadlines
 - `delivery-qa.md` — test before client handoff
 
+## Design Principles
+
+**Take action.** Build it, ship it, QA it, iterate. Every session moves something forward.
+
+| # | Principle | Target |
+|---|---|---|
+| 1 | **Less Allen Input** | System runs itself. Allen approves, not initiates. Fewer questions, more action. |
+| 2 | **Accuracy** | 95-100%. No fabricated data. QA gates before client output. Fail loud, never silent. |
+| 3 | **Speed** | Fewer steps, faster execution, less waiting. |
+| 4 | **Cost** | As close to $0 as possible. Local over API. Batch over real-time. |
+| 5 | **Scalability** | Works for 1 quote or 50. No hardcoded limits. |
+
+Priority order when trade-offs arise: Less Input > Accuracy > Speed > Cost > Scalability.
+
+## Behavior
+
+- **Push Allen.** Surface content buffer, outreach pace, pending replies, stale intel at session start.
+- Figure out what Allen means. Don't ask unnecessary questions.
+- Pass data via `.tmp/` — never paste large content into context.
+- Check `.tmp/pending_inquiries.json` at session start — surface if items exist.
+- Confirm scope before running paid APIs.
+- Read only files needed for the current task.
+- **End of session:** when Allen says "done" / "that's it" / wraps up → automatically run `/wrap`.
+
+## Change Tracking
+
+- Decisions → `DECISIONS.md` + update relevant files
+- New code/tool → run `/os-gate`. Check `tools/` before building new.
+- Session end → `/wrap` handles handoff + decision log
+
 ## Environment
 
 - Credentials: `projects/personal/.env`
 - Temp files: `projects/personal/.tmp/`
 - Intel docs: `projects/personal/reference/intel/` (7 living docs)
 - Style guide: `projects/personal/reference/hormozi-style-guide.md`
+
+## Brand Context — Load Before Any Non-Delivery Task
+
+**BLOCKING.** Before writing content, planning calendars, doing research, outreach, or anything that touches Allen's brand, voice, or audience — load these files first. No exceptions.
+
+| # | File | What it gives you |
+|---|---|---|
+| 1 | `memory/project_content_profile.md` | Allen's real story, team, results, what's true vs aspirational |
+| 2 | `memory/user_allen_sales_identity.md` | How Allen sees himself — systems > skill, not an expert |
+| 3 | `reference/hormozi-style-guide.md` | Voice rules, hook patterns, script structures, word banks |
+| 4 | `memory/project_content_models.md` | Who to study — Sabrina, Liam Ottley, Justyn |
+| 5 | `reference/intel/icp-language.md` | Target market pain points, language, objections |
+| 6 | `reference/intel/competitor-moves.md` | Gaps to exploit, what's working, trends |
+| 7 | `workflows/content/content-creation.md` | SOP structure, format rules, quality checklist |
+| 8 | `.tmp/content-research.md` | Current trending hooks, topics, recommended angles |
+
+**When this applies:** Content creation, content calendar planning, content research, ICP research, competitor research, market analysis, performance analysis, outreach, follow-ups, ManyChat setup — everything except delivery (client-intake, project-build, delivery-qa, project-management).
+
+**Why:** Allen should never have to teach a session what it already has access to. These files contain his real story, his team, his positioning, his voice. Getting any of this wrong breaks trust with the audience.
 
 ## Correction Loop
 
