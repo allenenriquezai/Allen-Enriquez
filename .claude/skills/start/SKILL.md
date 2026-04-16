@@ -49,6 +49,25 @@ Check for any conversations needing response (from outreach log where status = "
 PENDING REPLIES: X conversations need your response
 ```
 
+### Outcome Tracking
+Check `.tmp/outcome_summary.json` if it exists. Show:
+```
+Outcomes: X tracked | Y results back | Z pending
+```
+If `by_action` has reply_rate or win_rate data, append the top-line rates:
+```
+  Reply rate: X% (30d) | Win rate: X% (30d)
+```
+If no summary file: `Outcomes: Not tracking yet`
+
+### Workflow Flags
+Check `.tmp/workflow_flags.json` if it exists. Show pending entries (status = "pending"):
+```
+Workflow updates: N suggested
+  - [DOMAIN] pattern description → target_file
+```
+If no flags or no pending: skip this section entirely
+
 ## Step 4: Print Status
 
 Format the full dashboard:
@@ -61,6 +80,8 @@ Personal: [one-line from handoff] (date)
 Intel: [freshness status]
 Content buffer: [buffer status]
 Outreach: [pace status]
+Outcomes: [tracking status]
+[Workflow flags if any]
 [Pending replies if any]
 [Pending inquiries if any]
 ────────────────────────────────────────────
@@ -71,6 +92,7 @@ Outreach: [pace status]
 If there are pending replies: "You have X replies waiting. Want to handle those first?"
 If content buffer is low (< 1 week): "Content buffer is low. Want to block time to batch record?"
 If intel is stale: "Intel docs are stale. Want me to run a sweep?"
+If workflow flags exist (pending): "You have X workflow updates from outcome data. Review?"
 Otherwise: "What are we working on?"
 
 ## Rules
