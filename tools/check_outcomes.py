@@ -273,6 +273,14 @@ CHECKERS = {
 
 # --- Summary + Pattern Detection ---
 
+INTEL_DIR = BASE_DIR / 'projects' / 'personal' / 'reference' / 'intel'
+
+# Min data points before a pattern is flagged
+MIN_PATTERN_DATA = 5
+# Min ratio difference to flag (e.g., 1.5 = 50% better)
+MIN_PATTERN_RATIO = 1.5
+
+
 def build_summary(entries):
     """Build outcome_summary.json for the /start dashboard."""
     now = datetime.now()
@@ -340,6 +348,368 @@ def print_summary(summary):
     print(f"{'=' * 50}\n")
 
 
+# --- Pattern Detection ---
+
+def detect_patterns(entries, dry_run=False):
+    """Analyze resolved outcomes for patterns. Returns list of detected patterns."""
+    now = datetime.now()
+    thirty_days_ago = (now - timedelta(days=30)).strftime('%Y-%m-%d')
+
+    resolved = [
+        e for e in entries
+        if e.get('result') is not None and e.get('ts', '')[:10] >= thirty_days_ago
+    ]
+
+    if len(resolved) < MIN_PATTERN_DATA:
+        return []
+
+    patterns = []
+    patterns.extend(_detect_template_patterns(resolved))
+    patterns.extend(_detect_tag_patterns(resolved))
+    patterns.extend(_detect_domain_patterns(resolved))
+
+    if not dry_run:
+        _update_intel_docs(patterns)
+        _update_workflow_flags(patterns)
+
+    return patterns
+
+
+def _detect_template_patterns(entries):
+    """Compare reply/win rates across templates within same action type."""
+    patterns = []
+
+    # Group by (action, template)
+    by_template = defaultdict(list)
+    for e in entries:
+        tmpl = e.get('template', '').strip()
+        if tmpl:
+            by_template[(e['action'], tmpl)].append(e)
+
+    # Group by action for overall average
+    by_action = defaultdict(list)
+    for e in entries:
+        by_action[e['action']].append(e)
+
+    for (action, template), group in by_template.items():
+        if len(group) < MIN_PATTERN_DATA:
+            continue
+
+        rate, rate_type = _calc_rate(group, action)
+        if rate is None:
+            continue
+
+        avg_rate, _ = _calc_rate(by_action[action], action)
+        if avg_rate is None or avg_rate == 0:
+            continue
+
+        ratio = rate / avg_rate if avg_rate > 0 else 0
+
+        if ratio >= MIN_PATTERN_RATIO:
+            patterns.append({
+                'type': 'template_winner',
+                'action': action,
+                'template': template,
+                'rate': rate,
+                'rate_type': rate_type,
+                'avg_rate': avg_rate,
+                'ratio': round(ratio, 1),
+                'n': len(group),
+                'description': f"Template '{template}' gets {ratio:.1f}x {rate_type} ({rate:.0%} vs {avg_rate:.0%} avg, n={len(group)})",
+            })
+        elif ratio <= (1 / MIN_PATTERN_RATIO) and len(group) >= MIN_PATTERN_DATA:
+            patterns.append({
+                'type': 'template_loser',
+                'action': action,
+                'template': template,
+                'rate': rate,
+                'rate_type': rate_type,
+                'avg_rate': avg_rate,
+                'ratio': round(ratio, 1),
+                'n': len(group),
+                'description': f"Template '{template}' underperforms — {rate:.0%} {rate_type} vs {avg_rate:.0%} avg (n={len(group)})",
+            })
+
+    return patterns
+
+
+def _detect_tag_patterns(entries):
+    """Compare rates across tags (e.g., follow-up vs cold-outreach)."""
+    patterns = []
+
+    # Explode tags
+    by_tag = defaultdict(list)
+    for e in entries:
+        for tag in e.get('tags', []):
+            by_tag[(e['action'], tag)].append(e)
+
+    by_action = defaultdict(list)
+    for e in entries:
+        by_action[e['action']].append(e)
+
+    for (action, tag), group in by_tag.items():
+        if len(group) < MIN_PATTERN_DATA:
+            continue
+
+        rate, rate_type = _calc_rate(group, action)
+        if rate is None:
+            continue
+
+        avg_rate, _ = _calc_rate(by_action[action], action)
+        if avg_rate is None or avg_rate == 0:
+            continue
+
+        ratio = rate / avg_rate if avg_rate > 0 else 0
+
+        if ratio >= MIN_PATTERN_RATIO:
+            patterns.append({
+                'type': 'tag_winner',
+                'action': action,
+                'tag': tag,
+                'rate': rate,
+                'rate_type': rate_type,
+                'avg_rate': avg_rate,
+                'ratio': round(ratio, 1),
+                'n': len(group),
+                'description': f"Tag '{tag}' gets {ratio:.1f}x {rate_type} ({rate:.0%} vs {avg_rate:.0%} avg, n={len(group)})",
+            })
+
+    return patterns
+
+
+def _detect_domain_patterns(entries):
+    """Compare rates across EPS vs personal domain."""
+    patterns = []
+
+    by_domain = defaultdict(list)
+    for e in entries:
+        by_domain[e.get('domain', 'eps')].append(e)
+
+    if len(by_domain) < 2:
+        return patterns
+
+    for action in set(e['action'] for e in entries):
+        domain_rates = {}
+        for domain, group in by_domain.items():
+            action_group = [e for e in group if e['action'] == action]
+            if len(action_group) < MIN_PATTERN_DATA:
+                continue
+            rate, rate_type = _calc_rate(action_group, action)
+            if rate is not None:
+                domain_rates[domain] = (rate, rate_type, len(action_group))
+
+        if len(domain_rates) == 2:
+            domains = list(domain_rates.keys())
+            r0, rt, n0 = domain_rates[domains[0]]
+            r1, _, n1 = domain_rates[domains[1]]
+            if r1 > 0 and r0 / r1 >= MIN_PATTERN_RATIO:
+                patterns.append({
+                    'type': 'domain_diff',
+                    'action': action,
+                    'rate_type': rt,
+                    'description': f"{action} {rt}: {domains[0]} ({r0:.0%}, n={n0}) vs {domains[1]} ({r1:.0%}, n={n1})",
+                })
+
+    return patterns
+
+
+def _calc_rate(entries, action):
+    """Calculate the relevant rate for an action type."""
+    if action in ('email_sent', 'reengage_sent', 'outreach_dm'):
+        replied = sum(1 for e in entries if e.get('result') == 'replied')
+        total = len(entries)
+        return (replied / total if total > 0 else None, 'reply_rate')
+    elif action in ('quote_sent',):
+        won = sum(1 for e in entries if e.get('result') == 'won')
+        total = len(entries)
+        return (won / total if total > 0 else None, 'win_rate')
+    elif action in ('content_posted',):
+        # Content doesn't have a binary rate — skip for now
+        return (None, None)
+    return (None, None)
+
+
+# --- Intel Doc Auto-Append ---
+
+def _update_intel_docs(patterns):
+    """Append pattern findings to relevant intel docs."""
+    today = datetime.now().strftime('%Y-%m-%d')
+
+    for p in patterns:
+        action = p.get('action', '')
+        ptype = p.get('type', '')
+
+        if action in ('email_sent', 'reengage_sent', 'outreach_dm'):
+            _append_to_intel('outreach-whats-working.md', p, today)
+        elif action == 'quote_sent':
+            _append_to_intel('performance-scorecard.md', p, today)
+        elif action == 'content_posted':
+            _append_to_intel('content-whats-working.md', p, today)
+
+
+def _append_to_intel(filename, pattern, today):
+    """Append a pattern finding to an intel doc."""
+    filepath = INTEL_DIR / filename
+    if not filepath.exists():
+        return
+
+    content = filepath.read_text()
+
+    # Build the entry line
+    desc = pattern['description']
+    entry = f"| {today} | {desc} | outcome_tracker |\n"
+
+    # Determine target section based on pattern type and action
+    target_section = _get_target_section(filename, pattern)
+    if not target_section:
+        return
+
+    # Check for duplicate (same description already in file)
+    if desc in content:
+        return
+
+    # Find the section and append after the table header or placeholder
+    lines = content.split('\n')
+    new_lines = []
+    inserted = False
+
+    for i, line in enumerate(lines):
+        new_lines.append(line)
+        if not inserted and target_section.lower() in line.lower():
+            # Find the end of the table header (look for |---|)
+            for j in range(i + 1, min(i + 5, len(lines))):
+                if '|---|' in lines[j] or '(populate' in lines[j].lower():
+                    # Insert after separator row, or replace placeholder
+                    if '(populate' in lines[j].lower():
+                        # Replace placeholder with actual data
+                        new_lines.append(f"| Date | Finding | Source |")
+                        new_lines.append(f"|---|---|---|")
+                        new_lines.append(entry.rstrip())
+                        # Skip the placeholder line
+                        lines[j] = ''
+                    break
+            else:
+                # No table found — append as bullet
+                new_lines.append(f"- **{today}**: {desc} (outcome_tracker)")
+            inserted = True
+
+    if inserted:
+        result = '\n'.join(new_lines)
+        # Update the last_updated header
+        result = _update_last_updated(result, today)
+        filepath.write_text(result)
+
+
+def _get_target_section(filename, pattern):
+    """Map pattern to the correct section in an intel doc."""
+    ptype = pattern.get('type', '')
+    action = pattern.get('action', '')
+
+    if filename == 'outreach-whats-working.md':
+        if 'template' in ptype:
+            return 'DM Templates'
+        if 'tag' in ptype:
+            return 'Best Openers'
+        return 'DM Templates'
+
+    elif filename == 'performance-scorecard.md':
+        return 'Sales Pipeline'
+
+    elif filename == 'content-whats-working.md':
+        if 'winner' in ptype:
+            return 'Best Performing Hooks'
+        if 'loser' in ptype:
+            return 'Hooks That Flopped'
+        return 'Best Performing Hooks'
+
+    return None
+
+
+def _update_last_updated(content, today):
+    """Update the > Last updated: line in an intel doc."""
+    lines = content.split('\n')
+    for i, line in enumerate(lines):
+        if line.startswith('> Last updated:'):
+            lines[i] = f'> Last updated: {today}'
+        elif line.startswith('> Updated by:'):
+            lines[i] = f'> Updated by: outcome_tracker (automated)'
+    return '\n'.join(lines)
+
+
+# --- Workflow Flags ---
+
+def _update_workflow_flags(patterns):
+    """Write strong patterns as workflow update suggestions."""
+    import hashlib
+
+    existing = []
+    if FLAGS_FILE.exists():
+        existing = json.loads(FLAGS_FILE.read_text())
+
+    existing_hashes = {f.get('pattern_hash') for f in existing}
+    today = datetime.now().strftime('%Y-%m-%d')
+
+    for p in patterns:
+        # Only flag winners with enough data
+        if 'winner' not in p.get('type', '') and 'diff' not in p.get('type', ''):
+            continue
+        if p.get('n', 0) < MIN_PATTERN_DATA:
+            continue
+
+        # Generate hash to avoid duplicates
+        hash_input = f"{p['action']}:{p.get('template', '')}:{p.get('tag', '')}:{p['description']}"
+        pattern_hash = hashlib.md5(hash_input.encode()).hexdigest()[:8]
+
+        if pattern_hash in existing_hashes:
+            continue
+
+        target_file = _suggest_target_file(p)
+
+        existing.append({
+            'id': f"wf_{today.replace('-', '')}_{pattern_hash[:4]}",
+            'created': today,
+            'domain': p.get('domain', 'eps'),
+            'pattern': p['description'],
+            'suggestion': _suggest_action(p),
+            'target_file': target_file,
+            'data_points': p.get('n', 0),
+            'status': 'pending',
+            'pattern_hash': pattern_hash,
+        })
+
+    FLAGS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(FLAGS_FILE, 'w') as f:
+        json.dump(existing, f, indent=2)
+
+
+def _suggest_target_file(pattern):
+    """Suggest which workflow file should be updated."""
+    action = pattern.get('action', '')
+    if action in ('email_sent', 'reengage_sent'):
+        return 'projects/eps/workflows/sales/follow-up-email.md'
+    elif action == 'outreach_dm':
+        return 'projects/personal/workflows/sales/outreach.md'
+    elif action == 'quote_sent':
+        return 'projects/eps/workflows/sales/create-quote.md'
+    elif action == 'content_posted':
+        return 'projects/personal/workflows/content/content-creation.md'
+    elif action == 'cold_call':
+        return 'projects/eps/workflows/lead-gen/cold-calling.md'
+    return ''
+
+
+def _suggest_action(pattern):
+    """Generate a human-readable suggestion for what to change."""
+    ptype = pattern.get('type', '')
+    if ptype == 'template_winner':
+        return f"Default to template '{pattern.get('template', '')}' — it outperforms alternatives"
+    elif ptype == 'tag_winner':
+        return f"Prioritize '{pattern.get('tag', '')}' approach — higher conversion"
+    elif ptype == 'domain_diff':
+        return f"Review {pattern.get('action', '')} approach — domains performing differently"
+    return f"Review based on pattern: {pattern.get('description', '')}"
+
+
 # --- Main ---
 
 def main():
@@ -394,18 +764,23 @@ def main():
 
     if not args.dry_run:
         save_log(entries)
-        summary = build_summary(entries)
-    else:
-        summary = build_summary(entries)
+
+    summary = build_summary(entries)
+
+    # Pattern detection — runs on all resolved entries
+    patterns = detect_patterns(entries, dry_run=args.dry_run)
 
     if args.do_print:
         print(f"\n  Checked: {checked} | Results found: {results_found}")
         print_summary(summary)
-
-    # Always write summary (even on dry-run, it's read-only stats)
-    SUMMARY_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(SUMMARY_FILE, 'w') as f:
-        json.dump(summary, f, indent=2)
+        if patterns:
+            print(f"  PATTERNS DETECTED: {len(patterns)}")
+            for p in patterns:
+                print(f"    → {p['description']}")
+            print()
+        else:
+            print(f"  Patterns: none yet (need {MIN_PATTERN_DATA}+ data points per group)")
+            print()
 
 
 if __name__ == '__main__':
