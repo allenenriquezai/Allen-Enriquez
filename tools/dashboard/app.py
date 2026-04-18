@@ -337,6 +337,9 @@ from routes_notes import notes_bp
 from routes_today import today_bp
 from routes_systems import systems_bp
 from routes_files import files_bp
+from routes_outreach_hub import outreach_hub_bp
+from routes_content import content_bp
+from routes_outcomes import outcomes_bp
 from config import now_ph, today_ph
 
 app.register_blueprint(spend_bp)
@@ -348,6 +351,9 @@ app.register_blueprint(notes_bp)
 app.register_blueprint(today_bp)
 app.register_blueprint(systems_bp)
 app.register_blueprint(files_bp)
+app.register_blueprint(outreach_hub_bp)
+app.register_blueprint(content_bp)
+app.register_blueprint(outcomes_bp)
 
 
 # ============================================================

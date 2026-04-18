@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Enriquez OS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // AE brand — extend Tailwind with palette + font families
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ae: {
+                blue:      '#02B3E9',
+                'blue-dim':'#0a1e2e',
+                dark:      '#0A1628',
+                surface:   '#13334A',
+                teal:      '#1A4D5C',
+                border:    '#25373C',
+                muted:     '#96A0A5',
+                warn:      '#FF9B28',
+              },
+            },
+            fontFamily: {
+              mono: ['"Roboto Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+              sans: ['Montserrat', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Roboto+Mono:wght@400;500;600;700&display=swap">
     <link rel="manifest" href="/static/manifest.json">
     <meta name="theme-color" content="#030712">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -42,16 +70,19 @@
             window.location.href = '/login';
         }
     </script>
-    <script src="/static/app.js?v=9"></script>
-    <script src="/static/spend.js?v=9"></script>
-    <script src="/static/command.js?v=9"></script>
-    <script src="/static/brief.js?v=9"></script>
-    <script src="/static/ops.js?v=9"></script>
-    <script src="/static/library.js?v=9"></script>
-    <script src="/static/today.js?v=9"></script>
-    <script src="/static/systems.js?v=9"></script>
-    <script src="/static/files.js?v=9"></script>
-    <script src="/static/chat.js?v=9"></script>
+    <script src="/static/app.js?v=12"></script>
+    <script src="/static/spend.js?v=12"></script>
+    <script src="/static/command.js?v=12"></script>
+    <script src="/static/brief.js?v=12"></script>
+    <script src="/static/ops.js?v=12"></script>
+    <script src="/static/library.js?v=12"></script>
+    <script src="/static/today.js?v=12"></script>
+    <script src="/static/systems.js?v=12"></script>
+    <script src="/static/files.js?v=12"></script>
+    <script src="/static/chat.js?v=12"></script>
+    <script src="/static/outreach_hub.js?v=12"></script>
+    <script src="/static/outcomes.js?v=12"></script>
+    <script src="/static/content_bank.js?v=12"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/static/sw.js');

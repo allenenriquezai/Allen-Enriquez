@@ -140,3 +140,138 @@ html { font-size: 17px; }
     50% { opacity: 0.8; }
 }
 .loading-pulse { animation: subtle-pulse 1.5s ease-in-out infinite; }
+
+/* ======================================================= */
+/* AE brand visual system                                  */
+/* Roboto Mono (UI labels, stats, buttons, nav)            */
+/* Montserrat (body, descriptions)                         */
+/* Primary blue #02B3E9, dark navy base, blue glow         */
+/* ======================================================= */
+
+:root {
+    --ae-blue: #02B3E9;
+    --ae-blue-glow: rgba(2, 179, 233, 0.35);
+    --ae-blue-soft: rgba(2, 179, 233, 0.12);
+    --ae-dark-blue: #0A1628;
+    --ae-med-blue: #13334A;
+    --ae-teal: #1A4D5C;
+    --ae-dark-grey: #25373C;
+    --ae-light-grey: #96A0A5;
+    --ae-orange: #FF9B28;
+}
+
+body {
+    font-family: 'Montserrat', 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 300;
+    background: #030712;
+    background-image:
+        radial-gradient(ellipse 80% 60% at 50% -10%, var(--ae-blue-soft) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(2, 179, 233, 0.05) 0%, transparent 60%);
+    background-attachment: fixed;
+}
+
+/* Roboto Mono for stats, labels, numbers, nav, buttons */
+h1, h2, h3, h4, .font-mono-ui,
+.text-xs, .text-[10px], .text-[11px],
+button, .subpill, .tab-btn,
+[class*="uppercase"], [class*="tracking-wider"] {
+    font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-weight: 500;
+}
+
+/* Logo mark */
+.ae-logo {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+    font-style: italic;
+    color: #fff;
+    text-shadow: 0 0 12px var(--ae-blue-glow), 0 0 2px var(--ae-blue);
+    letter-spacing: -0.02em;
+}
+
+/* Primary button — filled blue with glow */
+.btn-ae-primary {
+    background: var(--ae-blue);
+    color: #fff;
+    border-radius: 9999px;
+    padding: 0.55rem 1.25rem;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    box-shadow: 0 0 18px var(--ae-blue-glow);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.btn-ae-primary:hover { box-shadow: 0 0 24px var(--ae-blue-glow); }
+.btn-ae-primary:active { transform: scale(0.97); }
+
+/* Secondary button — outline + glow */
+.btn-ae-outline {
+    background: transparent;
+    color: #fff;
+    border: 1px solid var(--ae-blue);
+    border-radius: 9999px;
+    padding: 0.55rem 1.25rem;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    box-shadow: 0 0 12px var(--ae-blue-soft), inset 0 0 12px var(--ae-blue-soft);
+    transition: background 0.15s, box-shadow 0.15s;
+}
+.btn-ae-outline:hover {
+    background: var(--ae-blue-soft);
+    box-shadow: 0 0 18px var(--ae-blue-glow), inset 0 0 18px var(--ae-blue-soft);
+}
+
+/* Card surface */
+.card-ae {
+    background: linear-gradient(180deg, #0f1e33 0%, #0a1628 100%);
+    border: 1px solid var(--ae-dark-grey);
+    border-radius: 14px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset;
+}
+
+/* Stat big-number (Roboto Mono 700) */
+.stat-ae {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+    color: var(--ae-blue);
+    letter-spacing: -0.02em;
+}
+
+/* Status chips */
+.chip-ok      { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+.chip-warn    { background: rgba(255,155,40,0.15); color: var(--ae-orange); border: 1px solid rgba(255,155,40,0.3); }
+.chip-bad     { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.chip-info    { background: var(--ae-blue-soft);   color: var(--ae-blue); border: 1px solid rgba(2,179,233,0.3); }
+.chip-muted   { background: rgba(150,160,165,0.12); color: var(--ae-light-grey); border: 1px solid rgba(150,160,165,0.25); }
+.chip-ok, .chip-warn, .chip-bad, .chip-info, .chip-muted {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.55rem;
+    border-radius: 9999px;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+/* Active nav / tab indicator */
+.nav-active {
+    color: var(--ae-blue);
+    position: relative;
+}
+.nav-active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 25%; right: 25%;
+    height: 2px;
+    background: var(--ae-blue);
+    box-shadow: 0 0 8px var(--ae-blue-glow);
+    border-radius: 2px;
+}
+
+/* Active sub-pill (override Tailwind bg-blue-600) */
+.subpill.bg-blue-600 { background: var(--ae-blue) !important; box-shadow: 0 0 14px var(--ae-blue-soft); }
+
+/* Chat FAB — brand blue */
+.chat-fab { background: var(--ae-blue); box-shadow: 0 4px 20px var(--ae-blue-glow); }

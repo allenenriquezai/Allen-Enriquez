@@ -299,73 +299,169 @@
                     onclick="switchSubpill('brand','systems')">Systems</button>
         </div>
 
-        <!-- Content pill (pipeline + buffer + published as sections) -->
-        <div id="subpill-brand-content" class="subpill-content">
-            <div class="flex gap-2 mb-3 overflow-x-auto">
-                <button class="content-tab px-3 py-1.5 rounded-lg text-xs font-medium transition bg-blue-600 text-white shrink-0"
-                        data-ctab="pipeline" onclick="switchContentTab('pipeline')">Pipeline</button>
-                <button class="content-tab px-3 py-1.5 rounded-lg text-xs font-medium transition bg-gray-800 text-gray-400 shrink-0"
-                        data-ctab="buffer" onclick="switchContentTab('buffer')">Buffer</button>
-                <button class="content-tab px-3 py-1.5 rounded-lg text-xs font-medium transition bg-gray-800 text-gray-400 shrink-0"
-                        data-ctab="published" onclick="switchContentTab('published')">Published</button>
+        <!-- Content Script Bank v1 -->
+        <div id="subpill-brand-content" class="subpill-content relative">
+            <!-- Stat row -->
+            <div class="grid grid-cols-5 gap-1.5 mb-3">
+                <div class="bg-gray-900 border border-gray-800 rounded-lg p-2 text-center">
+                    <div id="cb-stat-idea" class="text-lg font-bold text-gray-300">0</div>
+                    <div class="text-[9px] text-gray-500 uppercase">Idea</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-lg p-2 text-center">
+                    <div id="cb-stat-scripted" class="text-lg font-bold" style="color:#02B3E9">0</div>
+                    <div class="text-[9px] text-gray-500 uppercase">Scripted</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-lg p-2 text-center">
+                    <div id="cb-stat-recorded" class="text-lg font-bold text-amber-400">0</div>
+                    <div class="text-[9px] text-gray-500 uppercase">Recorded</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-lg p-2 text-center">
+                    <div id="cb-stat-edited" class="text-lg font-bold text-teal-400">0</div>
+                    <div class="text-[9px] text-gray-500 uppercase">Edited</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-lg p-2 text-center">
+                    <div id="cb-stat-posted" class="text-lg font-bold text-emerald-400">0</div>
+                    <div class="text-[9px] text-gray-500 uppercase">Posted</div>
+                </div>
             </div>
 
-            <div id="content-tab-pipeline" class="content-tab-content">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Upcoming Film Schedule</div>
-                <div id="content-pipeline" class="space-y-2">
-                    <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
-                </div>
+            <!-- Status filter chips -->
+            <div id="cb-status-chips" class="flex gap-1.5 mb-2 overflow-x-auto pb-1"></div>
+            <!-- Platform filter chips -->
+            <div id="cb-platform-chips" class="flex gap-1.5 mb-3 overflow-x-auto pb-1"></div>
+
+            <!-- Script bank list -->
+            <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">Script Bank</div>
+            <div id="cb-scripts" class="space-y-2 mb-5">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
             </div>
-            <div id="content-tab-buffer" class="content-tab-content hidden">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Scripts Ready / Recordings Done</div>
-                <div id="content-buffer" class="space-y-2">
-                    <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
-                </div>
+
+            <!-- Calendar (collapsible) -->
+            <div class="border-t border-gray-800 pt-3 mb-3">
+                <button onclick="toggleContentCalendar()" class="w-full flex items-center justify-between text-xs text-gray-400 uppercase tracking-wider mb-2">
+                    <span>Calendar — this week + next</span>
+                    <span id="cb-cal-toggle">+</span>
+                </button>
+                <div id="cb-calendar" class="hidden space-y-1.5"></div>
             </div>
-            <div id="content-tab-published" class="content-tab-content hidden">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Published</div>
-                <div id="content-published" class="space-y-2">
-                    <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
-                </div>
-                <div class="text-xs text-gray-500 italic text-center mt-4">Analytics coming soon</div>
+
+            <!-- Floating new-script button -->
+            <button id="cb-new-btn" onclick="openContentScriptModal()"
+                    class="fixed bottom-20 right-5 rounded-full shadow-lg text-white font-bold w-14 h-14 flex items-center justify-center text-2xl z-40"
+                    style="background-color:#02B3E9">+</button>
+
+            <!-- Modal -->
+            <div id="cb-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+                 onclick="if(event.target===this)closeContentScriptModal()">
+                <div class="bg-gray-900 border border-gray-800 rounded-t-2xl sm:rounded-2xl w-full sm:max-w-lg max-h-[90vh] overflow-y-auto p-5" id="cb-modal-inner"></div>
             </div>
         </div>
 
-        <!-- Outreach pill (Cold DM — PH outreach) -->
+        <!-- Outreach Hub v1 (PH outreach prospect list + pipeline) -->
         <div id="subpill-brand-outreach" class="subpill-content hidden">
-            <div class="grid grid-cols-3 gap-3 mb-4">
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                    <div class="text-[10px] text-gray-500 uppercase mb-1">Queue</div>
-                    <div id="ph-queue" class="text-xl font-bold text-blue-400">0</div>
+            <!-- Stat grid -->
+            <div class="grid grid-cols-4 gap-2 mb-4">
+                <div class="rounded-xl p-3 text-center border" style="background:#13334A;border-color:#25373C">
+                    <div class="text-[10px] uppercase tracking-wider mb-1" style="color:#9CA3AF;font-family:ui-monospace,Menlo,monospace">Queue</div>
+                    <div id="oh-stat-queue" class="text-xl font-bold" style="color:#02B3E9">0</div>
                 </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                    <div class="text-[10px] text-gray-500 uppercase mb-1">Sent</div>
-                    <div id="ph-sent" class="text-xl font-bold text-emerald-400">0</div>
-                    <div class="text-[10px] text-gray-500">today</div>
+                <div class="rounded-xl p-3 text-center border" style="background:#13334A;border-color:#25373C">
+                    <div class="text-[10px] uppercase tracking-wider mb-1" style="color:#9CA3AF;font-family:ui-monospace,Menlo,monospace">Sent today</div>
+                    <div id="oh-stat-sent" class="text-xl font-bold text-emerald-400">0</div>
                 </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                    <div class="text-[10px] text-gray-500 uppercase mb-1">Replies</div>
-                    <div id="ph-replies" class="text-xl font-bold text-amber-400">0</div>
-                    <div class="text-[10px] text-gray-500">pending</div>
+                <div class="rounded-xl p-3 text-center border" style="background:#13334A;border-color:#25373C">
+                    <div class="text-[10px] uppercase tracking-wider mb-1" style="color:#9CA3AF;font-family:ui-monospace,Menlo,monospace">Replies</div>
+                    <div id="oh-stat-replies" class="text-xl font-bold" style="color:#FF9B28">0</div>
+                </div>
+                <div class="rounded-xl p-3 text-center border" style="background:#13334A;border-color:#25373C">
+                    <div class="text-[10px] uppercase tracking-wider mb-1" style="color:#9CA3AF;font-family:ui-monospace,Menlo,monospace">Booked</div>
+                    <div id="oh-stat-booked" class="text-xl font-bold text-emerald-400">0</div>
                 </div>
             </div>
 
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
-                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Follow-Ups Due</div>
-                <div id="ph-followups-due" class="text-2xl font-bold text-amber-400">0</div>
+            <!-- Channel chips -->
+            <div id="oh-channel-chips" class="flex gap-2 mb-3 overflow-x-auto pb-1"></div>
+
+            <!-- Stage chips -->
+            <div id="oh-stage-chips" class="flex gap-2 mb-4 overflow-x-auto pb-1"></div>
+
+            <!-- Prospects list -->
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-xs uppercase tracking-wider" style="color:#02B3E9;font-family:ui-monospace,Menlo,monospace">Prospects</div>
+                    <div id="oh-prospects-count" class="text-[10px] text-gray-500"></div>
+                </div>
+                <div id="oh-prospects" class="space-y-2">
+                    <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+                </div>
             </div>
 
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Next Action</div>
-                <div id="ph-next-action" class="text-sm text-gray-200">Loading...</div>
-                <div class="text-[10px] text-gray-500 mt-2">Last queue: <span id="ph-last-run">--</span></div>
+            <!-- Pipeline (collapsible) -->
+            <div class="mb-5">
+                <button id="oh-pipeline-toggle" onclick="toggleOutreachPipeline()"
+                        class="w-full flex items-center justify-between mb-2 px-1">
+                    <div class="text-xs uppercase tracking-wider" style="color:#02B3E9;font-family:ui-monospace,Menlo,monospace">Pipeline</div>
+                    <span id="oh-pipeline-caret" class="text-xs text-gray-500">▼</span>
+                </button>
+                <div id="oh-pipeline" class="flex gap-2 overflow-x-auto pb-2">
+                    <div class="text-gray-400 italic text-center py-6 text-sm w-full">Loading...</div>
+                </div>
             </div>
+
+            <!-- Templates -->
+            <div>
+                <div class="text-xs uppercase tracking-wider mb-2" style="color:#02B3E9;font-family:ui-monospace,Menlo,monospace">Templates</div>
+                <div id="oh-templates" class="space-y-2">
+                    <div class="text-gray-400 italic text-center py-6 text-sm">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div id="oh-modal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="closeOutreachModal(event)">
+                <div class="rounded-t-2xl sm:rounded-2xl w-full sm:max-w-lg max-h-[90vh] overflow-y-auto border" style="background:#13334A;border-color:#25373C" onclick="event.stopPropagation()">
+                    <div id="oh-modal-body" class="p-5"></div>
+                </div>
+            </div>
+
+            <!-- Toast -->
+            <div id="oh-toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg text-sm" style="background:#02B3E9;color:#031019"></div>
         </div>
 
-        <!-- Outcomes placeholder -->
+        <!-- Outcomes — feedback loop surface -->
         <div id="subpill-brand-outcomes" class="subpill-content hidden">
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 text-center">
-                <div class="text-sm text-gray-400">Outcomes panel — Phase 2</div>
+            <!-- Hero stats -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div id="oc-reply-rate" class="bg-gray-900 border border-[#25373C] rounded-xl p-4"></div>
+                <div id="oc-win-rate" class="bg-gray-900 border border-[#25373C] rounded-xl p-4"></div>
+            </div>
+
+            <!-- By action -->
+            <div class="bg-gray-900 border border-[#25373C] rounded-xl p-3 mb-4">
+                <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-2 px-1">By Action</div>
+                <div id="oc-by-action"></div>
+            </div>
+
+            <!-- Top templates -->
+            <div class="bg-gray-900 border border-[#25373C] rounded-xl p-3 mb-4">
+                <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-2 px-1">Top Templates</div>
+                <div id="oc-top-templates"></div>
+            </div>
+
+            <!-- Pending flags -->
+            <div class="mb-4">
+                <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-2 px-1">Pattern Suggestions</div>
+                <div id="oc-flags"></div>
+            </div>
+
+            <!-- Recent outcomes (collapsible) -->
+            <div class="bg-gray-900 border border-[#25373C] rounded-xl p-3">
+                <button onclick="ocToggleEvents()" class="w-full flex items-center justify-between text-left">
+                    <div class="text-[10px] text-gray-500 uppercase tracking-wider">Recent Outcomes (last 20)</div>
+                    <span id="oc-events-caret" class="text-gray-500 text-sm">-</span>
+                </button>
+                <div id="oc-events-body" class="mt-2">
+                    <div id="oc-events"></div>
+                </div>
             </div>
         </div>
 

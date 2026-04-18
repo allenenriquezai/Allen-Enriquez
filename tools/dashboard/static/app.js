@@ -81,34 +81,69 @@ function switchSubpill(tab, pill) {
 
 // Map tab+pill -> data loader
 function runSubpillLoader(tab, pill) {
+    // Today tab (NEW default)
+    if (tab === 'today' && pill === 'queue') {
+        if (typeof loadTodayQueue === 'function') loadTodayQueue();
+    }
+    if (tab === 'today' && pill === 'goals') {
+        if (typeof loadTodayGoals === 'function') loadTodayGoals();
+    }
+    if (tab === 'today' && pill === 'journal') {
+        if (typeof loadTodayJournal === 'function') loadTodayJournal();
+    }
+
+    // Personal
     if (tab === 'personal' && pill === 'spend') {
         if (typeof loadSpend === 'function') loadSpend();
     }
     if (tab === 'personal' && pill === 'habits') {
         if (typeof loadCommandCenter === 'function') loadCommandCenter();
     }
-    if (tab === 'learn' && pill === 'briefs') {
-        if (typeof loadLearning === 'function') loadLearning();
+
+    // Brand (was Work/Content/Outreach)
+    if (tab === 'brand' && pill === 'content') {
+        if (typeof loadContentOps === 'function') loadContentOps();
+        if (typeof loadContentBank === 'function') loadContentBank();
     }
-    if (tab === 'learn' && pill === 'notes') {
-        if (typeof loadLibrary === 'function') loadLibrary('notes');
+    if (tab === 'brand' && pill === 'outreach') {
+        if (typeof loadOutreachHub === 'function') loadOutreachHub();
+        else if (typeof loadOutreachOps === 'function') loadOutreachOps();
     }
-    if (tab === 'learn' && pill === 'projects') {
-        if (typeof loadLibrary === 'function') loadLibrary('projects');
+    if (tab === 'brand' && pill === 'outcomes') {
+        if (typeof loadOutcomes === 'function') loadOutcomes();
     }
-    if (tab === 'work' && pill === 'eps') {
+    if (tab === 'brand' && pill === 'systems') {
+        if (typeof loadSystems === 'function') loadSystems();
+    }
+
+    // EPS (was Work > EPS)
+    if (tab === 'eps' && pill === 'brief') {
         if (typeof loadBrief === 'function') loadBrief('eps');
         if (typeof loadCommandCenter === 'function') loadCommandCenter();
     }
-    if (tab === 'work' && pill === 'brand') {
-        if (typeof loadBrief === 'function') loadBrief('personal');
-        if (typeof loadOpsAll === 'function') loadOpsAll();
+    if (tab === 'eps' && pill === 'calls') {
+        if (typeof loadBrief === 'function') loadBrief('eps');
+        if (typeof loadCommandCenter === 'function') loadCommandCenter();
     }
-    if (tab === 'content') {
-        if (typeof loadContentOps === 'function') loadContentOps();
+
+    // Vault (was Learn)
+    if (tab === 'vault' && pill === 'briefs') {
+        if (typeof loadLearning === 'function') loadLearning();
     }
-    if (tab === 'outreach') {
-        if (typeof loadOutreachOps === 'function') loadOutreachOps();
+    if (tab === 'vault' && pill === 'notes') {
+        if (typeof loadLibrary === 'function') loadLibrary('notes');
+    }
+    if (tab === 'vault' && pill === 'projects') {
+        if (typeof loadLibrary === 'function') loadLibrary('projects');
+    }
+    if (tab === 'vault' && pill === 'links') {
+        if (typeof loadLibrary === 'function') loadLibrary('links');
+    }
+    if (tab === 'vault' && pill === 'files') {
+        if (typeof loadFiles === 'function') loadFiles();
+    }
+    if (tab === 'vault' && pill === 'archive') {
+        // Phase 3 — placeholder
     }
 }
 
@@ -348,11 +383,12 @@ document.addEventListener('DOMContentLoaded', () => {
         personalDate.textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     }
 
-    // Load spend data
-    if (typeof loadSpend === 'function') loadSpend();
+    // Default tab is 'today' — fire its queue loader
+    runSubpillLoader(activeTab, activeSubpill[activeTab]);
 
-    // Default tab is 'personal' (Habits sub-pill); fire its loaders
+    // Also warm Personal habits (light call) since it's behind the default tab
     if (typeof loadCommandCenter === 'function') loadCommandCenter();
+    if (typeof loadSpend === 'function') loadSpend();
 });
 
 // --- Section Toggle ---
