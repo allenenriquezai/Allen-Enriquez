@@ -2,32 +2,8 @@
 // Sub-nav pills: EPS / Personal / AI Learning
 // Auto-refreshes every 60s
 
-let activeBrief = 'eps';
 let briefRefreshTimer = null;
 let briefCache = {};
-
-function switchBrief(section) {
-    activeBrief = section;
-
-    // Update pill styles
-    document.querySelectorAll('.brief-pill').forEach(pill => {
-        if (pill.dataset.section === section) {
-            pill.classList.remove('bg-gray-800', 'text-gray-400');
-            pill.classList.add('bg-blue-600', 'text-white');
-        } else {
-            pill.classList.remove('bg-blue-600', 'text-white');
-            pill.classList.add('bg-gray-800', 'text-gray-400');
-        }
-    });
-
-    // Hide all brief sections, show selected
-    document.querySelectorAll('.brief-section').forEach(s => s.classList.add('hidden'));
-    const el = document.getElementById(`brief-${section}`);
-    if (el) el.classList.remove('hidden');
-
-    // Load data if not cached
-    loadBrief(section);
-}
 
 function loadBrief(section) {
     const container = document.getElementById(`brief-${section}`);
@@ -69,11 +45,13 @@ function prefetchBriefs() {
 }
 
 function refreshBrief() {
-    // Force clear cache and re-fetch current section
+    // Force clear cache and re-fetch the section currently visible on the Work tab
     const btn = document.getElementById('brief-refresh-btn');
     if (btn) { btn.textContent = '...'; btn.disabled = true; }
-    briefCache[activeBrief] = null;
-    loadBrief(activeBrief);
+    const pill = (typeof activeSubpill !== 'undefined' && activeSubpill.work) || 'eps';
+    const section = pill === 'brand' ? 'personal' : 'eps';
+    briefCache[section] = null;
+    loadBrief(section);
     setTimeout(() => { if (btn) { btn.textContent = 'Refresh'; btn.disabled = false; } }, 1000);
 }
 
@@ -110,12 +88,19 @@ function refreshLearning() {
     setTimeout(() => { if (btn) { btn.textContent = 'Refresh'; btn.disabled = false; } }, 1000);
 }
 
+// Alias used by the Learn tab header refresh button
+function refreshLearn() {
+    refreshLearning();
+}
+
 function startBriefRefresh() {
     if (briefRefreshTimer) clearInterval(briefRefreshTimer);
     prefetchBriefs();
     briefRefreshTimer = setInterval(() => {
-        if (typeof activeTab !== 'undefined' && activeTab === 'brief') {
-            loadBrief(activeBrief);
+        if (typeof activeTab !== 'undefined' && activeTab === 'work') {
+            const pill = (typeof activeSubpill !== 'undefined' && activeSubpill.work) || 'eps';
+            const section = pill === 'brand' ? 'personal' : 'eps';
+            loadBrief(section);
         }
     }, 60000);
 }
@@ -127,79 +112,105 @@ function stopBriefRefresh() {
     }
 }
 
+// --- Format dollar values (smart K/M) ---
+function formatValue(val) {
+    if (val >= 1000000) return `$${(val / 1000000).toFixed(1)}M`;
+    if (val >= 1000) return `$${(val / 1000).toFixed(0)}K`;
+    return `$${val}`;
+}
+
 // --- EPS Render ---
 function renderEps(container, data) {
     const s = data.stats;
     const act = data.activities;
-    const t1 = act.tier1.length, t2 = act.tier2.length, to = act.other.length;
-    const totalAct = t1 + t2 + to;
+
+    // Merge into two lists: Your Focus vs AI Is Handling
+    const yourFocus = [];
+    const aiHandling = [];
+
+    // Exec activities (tier1) → Your Focus
+    act.tier1.forEach(a => yourFocus.push({ type: 'activity', data: a }));
+    // Action items needing Allen → Your Focus
+    data.allens_plate.forEach(item => yourFocus.push({ type: 'action', data: item }));
+
+    // Operational activities (tier2) + other → AI Is Handling
+    act.tier2.forEach(a => aiHandling.push({ type: 'activity', data: a }));
+    act.other.forEach(a => aiHandling.push({ type: 'activity', data: a }));
+    // Auto-chase follow-ups → AI Is Handling
+    data.ai_can_handle.forEach(item => aiHandling.push({ type: 'action', data: item }));
 
     let html = '';
 
-    // Stats bar
-    html += `<div class="grid grid-cols-3 gap-3 mb-5">
-        <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
+    // Hero stat cards — bigger numbers, colored tints
+    html += `<div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="bg-blue-950/50 rounded-xl p-4 text-center border border-gray-800/50">
             <div class="text-xs text-gray-500 mb-1">Pipeline</div>
-            <div class="text-lg font-bold text-white">${s.pipeline_deals} deals</div>
-            <div class="text-sm text-gray-400">$${(s.pipeline_value/1000).toFixed(0)}k</div>
+            <div class="text-2xl font-bold text-white">${s.pipeline_deals} deals</div>
+            <div class="text-sm text-gray-400">${formatValue(s.pipeline_value)}</div>
         </div>
-        <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
-            <div class="text-xs text-gray-500 mb-1">Won (week)</div>
-            <div class="text-lg font-bold text-green-400">${s.won_week}</div>
-            <div class="text-sm text-gray-400">$${(s.won_value_week/1000).toFixed(0)}k</div>
-        </div>
-        <div class="bg-gray-900 rounded-xl p-4 text-center border border-gray-800">
-            <div class="text-xs text-gray-500 mb-1">Calls (yday)</div>
-            <div class="text-lg font-bold text-blue-400">${s.yesterday_total_calls}</div>
-            <div class="text-sm text-gray-400">${s.yesterday_cold_calls} cold</div>
+        <div class="bg-purple-950/50 rounded-xl p-4 text-center border border-gray-800/50">
+            <div class="text-xs text-gray-500 mb-1">Calls</div>
+            <div class="text-2xl font-bold text-blue-400">${s.calls_this_week || 0}</div>
+            <div class="text-sm text-gray-400">this week</div>
         </div>
     </div>`;
 
-    // Activities
-    html += `<div class="mb-5">
-        <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">Today's Activities (${totalAct})</div>`;
+    // Progress bar + split count (gamification)
+    const totalTasks = yourFocus.length + aiHandling.length;
+    const doneTasks = [...act.tier1, ...act.tier2, ...act.other].filter(a => a.done).length;
+    const pctDone = totalTasks > 0 ? Math.round(doneTasks / totalTasks * 100) : 0;
+    const pctColor = pctDone >= 80 ? 'bg-green-500' : (pctDone >= 40 ? 'bg-amber-500' : 'bg-red-500');
+    const pctTextColor = pctDone >= 80 ? 'text-green-400' : (pctDone >= 40 ? 'text-amber-400' : 'text-red-400');
 
-    if (totalAct === 0) {
-        html += '<div class="text-base text-gray-600 py-3">No activities scheduled</div>';
+    html += `<div class="mb-4">
+        <div class="flex items-center justify-between mb-1.5">
+            <div class="flex gap-3 text-xs">
+                <span class="px-2 py-1 rounded-full bg-amber-500/10 text-amber-400">You: ${yourFocus.length}</span>
+                <span class="px-2 py-1 rounded-full bg-blue-500/10 text-blue-400">AI: ${aiHandling.length}</span>
+            </div>
+            <span id="eps-progress-pct" class="text-sm font-bold ${pctTextColor}">${pctDone}%</span>
+        </div>
+        <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <div id="eps-progress-bar" class="h-full ${pctColor} rounded-full transition-all duration-700 ease-out" style="width: ${pctDone}%"></div>
+        </div>
+    </div>`;
+
+    // Your Focus — amber dot header
+    html += `<div class="mb-5">
+        <div class="text-sm font-medium text-gray-300 mb-3"><span class="inline-block w-2 h-2 rounded-full bg-amber-500 mr-2"></span>Your Focus (${yourFocus.length})</div>`;
+    if (yourFocus.length === 0) {
+        html += '<div class="text-base text-gray-600 py-3">Nothing needs your attention</div>';
     } else {
-        if (t1 > 0) {
-            html += '<div class="text-xs text-amber-400 font-semibold mb-2">PRIORITY</div>';
-            act.tier1.forEach(a => { html += renderActivity(a); });
-        }
-        if (t2 > 0) {
-            html += '<div class="text-xs text-gray-400 font-semibold mt-3 mb-2">OPERATIONAL</div>';
-            act.tier2.forEach(a => { html += renderActivity(a); });
-        }
-        if (to > 0) {
-            html += '<div class="text-xs text-gray-500 font-semibold mt-3 mb-2">OTHER</div>';
-            act.other.forEach(a => { html += renderActivity(a); });
-        }
+        yourFocus.forEach(item => {
+            if (item.type === 'activity') html += renderActivity(item.data, 'focus');
+            else html += renderActionItem(item.data, false);
+        });
     }
     html += '</div>';
 
-    // Allen's Plate
-    if (data.allens_plate.length > 0) {
-        html += `<div class="mb-5">
-            <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">Allen's Plate (${data.allens_plate.length})</div>`;
-        data.allens_plate.forEach(item => { html += renderActionItem(item); });
-        html += '</div>';
+    // AI Is Handling — blue dot header
+    html += `<div class="mb-5">
+        <div class="text-sm font-medium text-gray-300 mb-3"><span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>AI Is Handling (${aiHandling.length})</div>`;
+    if (aiHandling.length === 0) {
+        html += '<div class="text-base text-gray-600 py-3">Nothing in the AI queue</div>';
+    } else {
+        aiHandling.forEach(item => {
+            if (item.type === 'activity') html += renderActivity(item.data, 'ai');
+            else html += renderActionItem(item.data, true);
+        });
     }
+    html += '</div>';
 
-    // AI Can Handle
-    if (data.ai_can_handle.length > 0) {
-        html += `<div class="mb-5">
-            <div class="text-sm text-blue-400 font-semibold uppercase tracking-wider mb-3">AI Can Handle (${data.ai_can_handle.length})</div>`;
-        data.ai_can_handle.forEach(item => { html += renderActionItem(item, true); });
-        html += '</div>';
-    }
-
-    // Stale
+    // Going Cold — gray dot header
     if (data.stale_deals.length > 0) {
         html += `<div class="mb-5">
-            <div class="text-sm text-gray-400 font-semibold uppercase tracking-wider mb-3">Stale Deals (${data.stale_deals.length})</div>`;
+            <div class="text-sm font-medium text-gray-300 mb-3"><span class="inline-block w-2 h-2 rounded-full bg-gray-500 mr-2"></span>Going Cold (${data.stale_deals.length})</div>`;
         data.stale_deals.forEach(d => {
-            html += `<div class="bg-gray-900 rounded-xl px-4 py-3 mb-1.5 border border-gray-800">
-                <span class="text-base text-gray-200">${d.deal_title}</span>
+            const dealLink = d.deal_id
+                ? `<span class="text-gray-200 cursor-pointer hover:text-blue-400 transition" onclick="event.stopPropagation();openDealPanel(${d.deal_id})">${d.deal_title}</span>`
+                : `<span class="text-gray-200">${d.deal_title}</span>`;
+            html += `<div class="bg-gray-900 rounded-xl px-3 py-2.5 mb-1 hover:bg-gray-800/50 transition">
+                ${dealLink}
                 <span class="text-gray-500 text-sm ml-2">${d.pipeline} / ${d.stage} &middot; ${d.days_since_activity}d</span>
             </div>`;
         });
@@ -210,14 +221,38 @@ function renderEps(container, data) {
     container.innerHTML = html;
 }
 
-function renderActivity(a) {
+function renderActivity(a, section) {
     const overdueTag = a.overdue ? '<span class="text-red-400 text-xs ml-1 font-semibold">OVERDUE</span>' : '';
     const doneClass = a.done ? 'opacity-50 line-through' : '';
     const time = a.due_time ? `<span class="text-gray-500 text-sm mr-2">${a.due_time}</span>` : '';
-    const deal = a.deal_title ? `<span class="text-gray-500 text-sm">&middot; ${a.deal_title}</span>` : '';
-    return `<div class="bg-gray-900 rounded-xl px-4 py-3 mb-1.5 border border-gray-800 ${doneClass}">
-        ${time}<span class="text-base font-medium text-gray-200">${a.label}</span> ${deal}${overdueTag}
-        ${a.subject ? `<div class="text-sm text-gray-500 mt-1">${a.subject}</div>` : ''}
+
+    // Clickable deal name
+    const dealLink = a.deal_title
+        ? (a.deal_id
+            ? `<span class="text-gray-400 text-sm cursor-pointer hover:text-blue-400 transition" onclick="event.stopPropagation();openDealPanel(${a.deal_id})">&middot; ${a.deal_title}</span>`
+            : `<span class="text-gray-500 text-sm">&middot; ${a.deal_title}</span>`)
+        : '';
+
+    // Section-based styling
+    const sectionBorder = section === 'focus' ? 'border-l-2 border-l-amber-500' : (section === 'ai' ? 'border-l-2 border-l-blue-500 opacity-80' : '');
+
+    // Checkbox
+    const actId = a.id || '';
+    const checkboxFilled = a.done
+        ? '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>'
+        : '';
+    const checkboxClasses = a.done
+        ? 'w-5 h-5 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center cursor-pointer shrink-0 transition'
+        : 'w-5 h-5 rounded-full border-2 border-gray-600 flex items-center justify-center cursor-pointer shrink-0 hover:border-green-500 transition';
+
+    return `<div class="bg-gray-900 rounded-xl px-3 py-2.5 mb-1 ${sectionBorder} ${doneClass} hover:bg-gray-800/50 transition">
+        <div class="flex items-start gap-2.5">
+            <div class="${checkboxClasses}" onclick="event.stopPropagation();toggleTaskDone(${actId ? actId : "''"}, this)">${checkboxFilled}</div>
+            <div class="flex-1 min-w-0">
+                ${time}<span class="text-base font-medium text-gray-200">${a.label}</span> ${dealLink}${overdueTag}
+                ${a.subject ? `<div class="text-sm text-gray-500 mt-1">${a.subject}</div>` : ''}
+            </div>
+        </div>
     </div>`;
 }
 
@@ -225,20 +260,207 @@ function renderActionItem(item, isAi) {
     const colors = { URGENT: 'text-red-400', HIGH: 'text-orange-400', MEDIUM: 'text-yellow-400', LOW: 'text-gray-400' };
     const priorityColor = colors[item.priority] || 'text-gray-400';
     const person = item.person_name ? ` (${item.person_name})` : '';
-    const value = item.value ? ` &middot; $${item.value.toLocaleString()}` : '';
+    const value = item.value ? ` &middot; ${formatValue(item.value)}` : '';
     const action = item.recommended_action === 'email' ? 'Send email' :
                    item.recommended_action === 'call_then_email' ? 'Call, then email' :
                    item.recommended_action === 'urgent' ? 'Follow up NOW' : item.recommended_action;
-    const border = isAi ? 'border-l-2 border-blue-500' : '';
 
-    return `<div class="bg-gray-900 rounded-xl px-4 py-3 mb-2 border border-gray-800 ${border}">
-        <div class="text-base">
-            <span class="${priorityColor} font-semibold text-xs mr-1">${item.priority}</span>
-            <span class="text-gray-200">${item.deal_title}${person}</span>
+    // Section-based styling
+    const sectionBorder = isAi ? 'border-l-2 border-l-blue-500 opacity-80' : 'border-l-2 border-l-amber-500';
+
+    // Clickable deal name
+    const dealTitleHtml = item.deal_id
+        ? `<span class="text-gray-200 cursor-pointer hover:text-blue-400 transition" onclick="event.stopPropagation();openDealPanel(${item.deal_id})">${item.deal_title}</span>`
+        : `<span class="text-gray-200">${item.deal_title}</span>`;
+
+    // Checkbox (visual only for action items — no activity_id)
+    const checkboxClasses = 'w-5 h-5 rounded-full border-2 border-gray-600 flex items-center justify-center cursor-pointer shrink-0 hover:border-green-500 transition';
+
+    return `<div class="bg-gray-900 rounded-xl px-3 py-2.5 mb-1 ${sectionBorder} hover:bg-gray-800/50 transition">
+        <div class="flex items-start gap-2.5">
+            <div class="${checkboxClasses}" onclick="event.stopPropagation();toggleTaskDone('', this)"></div>
+            <div class="flex-1 min-w-0">
+                <div class="text-base">
+                    <span class="${priorityColor} font-semibold text-xs mr-1">${item.priority}</span>
+                    ${dealTitleHtml}${person}
+                </div>
+                <div class="text-sm text-gray-500 mt-1">${item.pipeline} / ${item.stage}${value} &middot; ${item.days_since_activity}d ago</div>
+                <div class="text-sm text-blue-400 mt-1">${action}</div>
+            </div>
         </div>
-        <div class="text-sm text-gray-500 mt-1">${item.pipeline} / ${item.stage}${value} &middot; ${item.days_since_activity}d ago</div>
-        <div class="text-sm text-blue-400 mt-1">${action}</div>
     </div>`;
+}
+
+// --- Task checkbox toggle ---
+function toggleTaskDone(activityId, el) {
+    // Visual toggle
+    const row = el.closest('.bg-gray-900');
+    const isDone = el.classList.contains('bg-green-500');
+
+    if (isDone) {
+        // Undo visual
+        el.classList.remove('bg-green-500', 'border-green-500');
+        el.classList.add('border-gray-600');
+        el.innerHTML = '';
+        if (row) {
+            row.classList.remove('opacity-50', 'line-through');
+        }
+    } else {
+        // Mark done visual
+        el.classList.add('bg-green-500', 'border-green-500');
+        el.classList.remove('border-gray-600');
+        el.innerHTML = '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
+        if (row) {
+            row.classList.add('opacity-50', 'line-through');
+        }
+
+        // POST to backend if we have an activity ID
+        if (activityId && activityId !== '') {
+            fetch(`/api/activity/${activityId}/done`, { method: 'POST' })
+                .catch(() => {});
+        }
+    }
+
+    // Update progress bar
+    updateEpsProgress();
+}
+
+function updateEpsProgress() {
+    const container = document.getElementById('brief-eps');
+    if (!container) return;
+    const allCheckboxes = container.querySelectorAll('.rounded-full.border-2');
+    const total = allCheckboxes.length;
+    const done = container.querySelectorAll('.rounded-full.border-2.bg-green-500').length;
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+
+    const bar = document.getElementById('eps-progress-bar');
+    const label = document.getElementById('eps-progress-pct');
+    if (bar) {
+        bar.style.width = `${pct}%`;
+        bar.className = `h-full rounded-full transition-all duration-700 ease-out ${pct >= 80 ? 'bg-green-500' : (pct >= 40 ? 'bg-amber-500' : 'bg-red-500')}`;
+    }
+    if (label) {
+        label.textContent = `${pct}%`;
+        label.className = `text-sm font-bold ${pct >= 80 ? 'text-green-400' : (pct >= 40 ? 'text-amber-400' : 'text-red-400')}`;
+    }
+}
+
+// --- Deal context panel ---
+function openDealPanel(dealId) {
+    const panel = document.getElementById('deal-panel');
+    const title = document.getElementById('deal-panel-title');
+    const content = document.getElementById('deal-panel-content');
+
+    if (!panel) return;
+    panel.classList.remove('hidden');
+    title.textContent = 'Loading...';
+    content.innerHTML = '<div class="text-gray-500 text-center py-4 text-sm loading-pulse">Loading deal context...</div>';
+
+    fetch(`/api/deal/${dealId}/context`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.ok) {
+                content.innerHTML = `<div class="text-red-400 text-center py-4 text-sm">Error: ${data.error}</div>`;
+                return;
+            }
+            const d = data.deal;
+            title.textContent = d.title;
+
+            let html = '';
+
+            // Contact info bar
+            html += '<div class="bg-gray-800 rounded-xl p-3 mb-3">';
+            if (d.person_name) html += `<div class="text-sm text-gray-200 font-medium">${d.person_name}</div>`;
+            if (d.org_name) html += `<div class="text-xs text-gray-400">${d.org_name}</div>`;
+            const contactLinks = [];
+            if (d.person_phone) contactLinks.push(`<a href="tel:${d.person_phone}" class="text-blue-400 hover:text-blue-300 transition">${d.person_phone}</a>`);
+            if (d.person_email) contactLinks.push(`<a href="mailto:${d.person_email}" class="text-blue-400 hover:text-blue-300 transition text-xs">${d.person_email}</a>`);
+            if (contactLinks.length) html += `<div class="text-sm mt-1 flex flex-wrap gap-3">${contactLinks.join('')}</div>`;
+            html += '</div>';
+
+            // Deal info
+            html += `<div class="flex flex-wrap gap-2 mb-3 text-xs">
+                <span class="px-2 py-1 rounded-full bg-gray-800 text-gray-300">${d.pipeline}</span>
+                <span class="px-2 py-1 rounded-full bg-gray-800 text-gray-300">${d.stage}</span>
+                ${d.value ? `<span class="px-2 py-1 rounded-full bg-green-900/50 text-green-400">${formatValue(d.value)}</span>` : ''}
+            </div>`;
+
+            // Recent activities
+            if (data.activities && data.activities.length > 0) {
+                html += '<div class="mb-3"><div class="text-xs text-gray-500 mb-2">Recent Activities</div>';
+                data.activities.slice(0, 10).forEach(act => {
+                    const doneIcon = act.done
+                        ? '<span class="text-green-500 shrink-0">&#10003;</span>'
+                        : '<span class="text-gray-600 shrink-0">&#9675;</span>';
+                    html += `<div class="flex items-start gap-2 py-1.5 border-b border-gray-800/50 text-sm">
+                        ${doneIcon}
+                        <div class="flex-1 min-w-0">
+                            <span class="text-gray-300">${act.subject || act.type}</span>
+                            ${act.note ? `<div class="text-xs text-gray-500 mt-0.5 truncate">${act.note}</div>` : ''}
+                        </div>
+                        <span class="text-xs text-gray-600 shrink-0">${act.due_date}</span>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            // Notes
+            if (data.notes && data.notes.length > 0) {
+                html += '<div class="mb-3"><div class="text-xs text-gray-500 mb-2">Notes</div>';
+                data.notes.slice(0, 5).forEach(n => {
+                    html += `<div class="py-1.5 border-b border-gray-800/50 text-sm">
+                        <div class="text-gray-300">${n.content}</div>
+                        <div class="text-xs text-gray-600 mt-0.5">${n.add_time ? n.add_time.slice(0, 10) : ''}</div>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            // Add note input
+            html += `<div class="mt-3">
+                <div class="flex gap-2">
+                    <input id="deal-note-input" type="text" placeholder="Add a note..."
+                        class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none"
+                        onkeydown="if(event.key==='Enter'){event.preventDefault();addDealNote(${dealId})}">
+                    <button onclick="addDealNote(${dealId})"
+                        class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg transition shrink-0">Add</button>
+                </div>
+            </div>`;
+
+            content.innerHTML = html;
+        })
+        .catch(() => {
+            content.innerHTML = '<div class="text-red-400 text-center py-4 text-sm">Failed to load deal</div>';
+        });
+}
+
+function closeDealPanel() {
+    const panel = document.getElementById('deal-panel');
+    if (panel) panel.classList.add('hidden');
+}
+
+function addDealNote(dealId) {
+    const input = document.getElementById('deal-note-input');
+    if (!input) return;
+    const content = input.value.trim();
+    if (!content) return;
+
+    input.disabled = true;
+    fetch(`/api/deal/${dealId}/note`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            // Refresh the panel to show the new note
+            openDealPanel(dealId);
+        } else {
+            input.disabled = false;
+        }
+    })
+    .catch(() => { input.disabled = false; });
 }
 
 // --- Personal Render (mirrors EPS layout) ---

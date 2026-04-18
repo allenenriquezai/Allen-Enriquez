@@ -19,7 +19,7 @@
         }
     </script>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen">
+<body class="bg-gray-950 text-gray-100 h-screen flex flex-col overflow-hidden">
 
     <!-- Top Bar -->
     <header class="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between sticky top-0 z-40">
@@ -57,8 +57,88 @@
         </div>
     </header>
 
+    <!-- Call Stats Dashboard (collapsible) -->
+    <div id="stats-panel" class="bg-gray-900 border-b border-gray-800 overflow-hidden transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-start gap-6">
+                <!-- Goal ring -->
+                <div class="flex-shrink-0 flex flex-col items-center">
+                    <div class="relative w-24 h-24">
+                        <svg class="w-24 h-24 -rotate-90" viewBox="0 0 80 80">
+                            <circle cx="40" cy="40" r="34" fill="none" stroke="#1f2937" stroke-width="6"/>
+                            <circle id="k-goal-ring" cx="40" cy="40" r="34" fill="none" stroke="#3b82f6" stroke-width="6"
+                                    stroke-dasharray="213.6" stroke-dashoffset="213.6" stroke-linecap="round"
+                                    class="transition-all duration-700"/>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="k-goal-num" class="text-2xl font-bold text-white">--</span>
+                            <span class="text-[10px] text-gray-500">/ <span id="k-goal-target">100</span></span>
+                        </div>
+                    </div>
+                    <div class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Today</div>
+                </div>
+
+                <!-- Today metrics -->
+                <div class="flex-1 grid grid-cols-5 gap-3">
+                    <div class="text-center">
+                        <div id="k-convos" class="text-2xl font-bold text-emerald-400">0</div>
+                        <div class="text-[10px] text-gray-500 uppercase">Convos</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="k-no-answer" class="text-2xl font-bold text-gray-400">0</div>
+                        <div class="text-[10px] text-gray-500 uppercase">No Answer</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="k-hung-up" class="text-2xl font-bold text-red-400">0</div>
+                        <div class="text-[10px] text-gray-500 uppercase">Hung Up</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="k-warm" class="text-2xl font-bold text-amber-400">0</div>
+                        <div class="text-[10px] text-gray-500 uppercase">Warm</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="k-conv-rate" class="text-2xl font-bold text-cyan-400">0%</div>
+                        <div class="text-[10px] text-gray-500 uppercase">Conv Rate</div>
+                    </div>
+                </div>
+
+                <!-- Week + streak -->
+                <div class="flex-shrink-0 flex gap-4">
+                    <div class="text-center">
+                        <div id="k-week-total" class="text-2xl font-bold text-blue-400">0</div>
+                        <div class="text-[10px] text-gray-500 uppercase">This Week</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="k-streak" class="text-2xl font-bold text-purple-400">0d</div>
+                        <div class="text-[10px] text-gray-500 uppercase">Streak</div>
+                    </div>
+                </div>
+
+                <!-- 14-day trend mini -->
+                <div class="flex-shrink-0 w-48">
+                    <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">14-Day Trend</div>
+                    <div id="k-trend" class="flex items-end gap-px h-14">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nudges (horizontal) -->
+            <div id="k-nudges" class="flex gap-2 mt-3 overflow-x-auto">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toggle stats -->
+    <button onclick="toggleStats()" class="fixed bottom-4 right-4 z-50 bg-gray-800 border border-gray-700 text-gray-400 hover:text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg transition" title="Toggle stats">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+    </button>
+
     <!-- Kanban Board -->
-    <main class="flex gap-4 p-4 overflow-x-auto kanban-board" style="height: calc(100vh - 57px);">
+    <main class="flex gap-4 p-4 overflow-x-auto kanban-board flex-1 min-h-0" id="kanban-main">
         {% for stage in stage_order %}
         <div class="kanban-column flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-gray-800" style="width: calc((100vw - 10rem) / 9); min-width: 200px;">
             <!-- Column Header -->
@@ -135,7 +215,7 @@
     <!-- Detail Modal -->
     <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center"
          onclick="if(event.target===this)closeModal()">
-        <div class="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-lg mx-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+        <div class="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-lg mx-4 max-h-[85vh] flex flex-col shadow-2xl">
             <!-- Modal Header -->
             <div class="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
                 <h3 id="modal-title" class="text-lg font-semibold text-white"></h3>
@@ -146,7 +226,7 @@
                 </button>
             </div>
             <!-- Modal Body -->
-            <div class="px-5 py-4 space-y-4">
+            <div class="px-5 py-4 space-y-4 overflow-y-auto flex-1">
                 <!-- Contact Info — display as links, pencil to edit -->
                 <div class="grid grid-cols-2 gap-3">
                     <div class="linkable-field group/field" data-field="dm">
@@ -298,5 +378,84 @@
     </div>
 
     <script src="/static/app.js?v=2"></script>
+    <script>
+    // --- Call Stats Dashboard ---
+    function toggleStats() {
+        const panel = document.getElementById('stats-panel');
+        const main = document.getElementById('kanban-main');
+        panel.classList.toggle('hidden');
+        if (panel.classList.contains('hidden')) {
+            main.style.height = 'calc(100vh - 57px)';
+        } else {
+            main.style.height = '';
+        }
+    }
+
+    async function loadOutreachStats() {
+        try {
+            const res = await fetch('/api/outreach/detailed');
+            const data = await res.json();
+            if (!data.ok) return;
+
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+            const t = data.today;
+
+            // Goal ring
+            set('k-goal-num', t.total);
+            set('k-goal-target', data.goal);
+            const ring = document.getElementById('k-goal-ring');
+            if (ring) {
+                const pct = Math.min(t.total / data.goal, 1);
+                ring.style.strokeDashoffset = 213.6 * (1 - pct);
+                ring.style.stroke = pct >= 1 ? '#10b981' : pct >= 0.5 ? '#3b82f6' : '#ef4444';
+            }
+
+            // Today metrics
+            set('k-convos', t.convos);
+            set('k-no-answer', t.no_answer);
+            set('k-hung-up', t.hung_up);
+            set('k-warm', t.warm);
+            set('k-conv-rate', t.conv_rate + '%');
+
+            // Week + streak
+            set('k-week-total', data.week.total);
+            set('k-streak', data.streak + 'd');
+
+            // 14-day trend
+            const chartEl = document.getElementById('k-trend');
+            if (chartEl && data.trend) {
+                const max = Math.max(...data.trend.map(d => d.calls), 1);
+                chartEl.innerHTML = data.trend.map((d, i) => {
+                    const h = Math.max(d.calls / max * 100, 3);
+                    const isToday = i === data.trend.length - 1;
+                    const color = d.calls >= data.goal ? 'bg-emerald-500'
+                               : d.calls >= data.goal * 0.5 ? 'bg-blue-500'
+                               : d.calls > 0 ? 'bg-gray-600' : 'bg-gray-800';
+                    const ring = isToday ? 'ring-1 ring-white/40' : '';
+                    return `<div class="flex-1 ${color} ${ring} rounded-sm transition-all" style="height:${h}%" title="${d.date}: ${d.calls} calls"></div>`;
+                }).join('');
+            }
+
+            // Nudges
+            const nudgesEl = document.getElementById('k-nudges');
+            if (nudgesEl && data.nudges && data.nudges.length) {
+                const colors = {
+                    action: 'border-blue-800/50 text-blue-300',
+                    push: 'border-amber-800/50 text-amber-300',
+                    warning: 'border-red-800/50 text-red-300',
+                    insight: 'border-cyan-800/50 text-cyan-300',
+                    win: 'border-emerald-800/50 text-emerald-300',
+                };
+                nudgesEl.innerHTML = data.nudges.map(n =>
+                    `<div class="flex-shrink-0 bg-gray-800 border ${colors[n.type] || ''} rounded-lg px-3 py-2 text-[11px] max-w-xs">${n.text}</div>`
+                ).join('');
+            }
+        } catch (err) {
+            console.error('Stats load failed:', err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadOutreachStats);
+    </script>
 </body>
 </html>

@@ -1,24 +1,6 @@
 # Hormozi Content Style Guide
 
-Based on Alex Hormozi's content principles. Allen's agents reference this for voice, structure, and format.
-
----
-
-## Voice Rules
-
-- 3rd grade reading level. If a 9-year-old can't understand it, rewrite it.
-- Max 10 words per sentence. Break long thoughts into two sentences.
-- No jargon. No filler. No corporate speak. No fancy words.
-- Talk like you're explaining to a friend over coffee.
-- Confident but not arrogant. State facts, not opinions.
-- Direct. Say what you mean. Don't hedge.
-- Use "you" and "I". Never "one" or "we" (unless talking about a team).
-
-## Word Banks
-
-**Use these words:** simple, free, fast, easy, money, time, save, lose, stop, start, help, build, grow, fix, break, work, try, real, true, most, every, one, first
-
-**Never use:** leverage, utilize, synergy, optimize, paradigm, scalable, ecosystem, ideate, disrupt, holistic, pivot, bandwidth, deep-dive, circle back, low-hanging fruit, value-add, stakeholder
+Format structures and production rules. Voice rules and word banks live in `CONTEXT.md` (single source of truth).
 
 ---
 
@@ -143,39 +125,4 @@ CTA (9-10 min): [Subscribe + "Watch this next" with specific video mention]
 
 ---
 
-## Content Pillars (Allen's brand)
-
-1. **AI automation results** — proof that this works (metrics, before/after)
-2. **How AI works (simple)** — explain Claude Code, prompts, agents to beginners
-3. **Business owner pain points** — relatable problems (slow quotes, missed leads, admin overload)
-4. **Behind the scenes** — show the build process (screen recordings, live coding)
-5. **Contrarian takes** — challenge common beliefs (you don't need more leads, you need better follow-up)
-
-Rotate pillars across the week. Never post the same pillar two days in a row.
-
----
-
-## Audience Notes (Filipino market — initial test)
-
-- Many are VAs or aspiring VAs who want to earn in USD.
-- Value hard work, resourcefulness, family.
-- Respond well to practical, step-by-step content.
-- Use Filipino-accessible examples (not US-centric references).
-- Price sensitivity is high — emphasize "free" and "DIY" before paid.
-- English is a second language for most — keep it simple. Really simple.
-- Facebook is the primary platform in the Philippines. Instagram and TikTok are secondary.
-
----
-
-## Quality Checklist (run before every piece)
-
-- [ ] 3rd grade reading level?
-- [ ] Hook grabs attention in first line / 3 seconds?
-- [ ] One idea only?
-- [ ] Includes a specific number or result?
-- [ ] Ends with CTA or engagement question?
-- [ ] Under word limit for the format?
-- [ ] No jargon or banned words?
-- [ ] No client names or identifying details?
-- [ ] Culturally appropriate for target audience?
-- [ ] Would Allen actually say this out loud?
+> Content pillars, audience notes, and quality checklist live in `CONTEXT.md`.

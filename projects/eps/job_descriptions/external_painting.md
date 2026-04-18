@@ -93,7 +93,7 @@ C) REAR ELEVATION
 
 ---
 
-7. GENERAL EXCLUSIONS
+7. EXCLUSIONS
 * Asbestos handling or removal
 * Rendering, plastering, or major patch repairs
 * Structural rectification works

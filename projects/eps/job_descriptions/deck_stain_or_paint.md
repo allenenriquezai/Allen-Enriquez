@@ -55,7 +55,7 @@ JOB SUMMARY
 
 ---
 
-6. GENERAL EXCLUSIONS
+6. EXCLUSIONS
 * Structural timber repairs or board replacement
 * Re-fixing of loose boards, posts, or balustrade components (unless separately agreed)
 * Deep sanding or stripping of previously painted surfaces beyond standard preparation

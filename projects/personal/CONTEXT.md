@@ -6,6 +6,8 @@ Two areas: personal brand (AI automation educator + service provider) and person
 
 Sales manager at EPS Painting & Cleaning (Brisbane, AU). Employee, not owner. Works remotely from the Philippines. ~1 year at EPS.
 
+**Team:** Giovanni is director. Dexter is a sales rep (PH-based) who helps with quotes + customer service. NOT a solo operation.
+
 **Results (verified):**
 - $60-100K/month in new revenue (him + assistant)
 - Best month: $114K (Feb 2026) — closed without a single face-to-face meeting
@@ -14,7 +16,9 @@ Sales manager at EPS Painting & Cleaning (Brisbane, AU). Employee, not owner. Wo
 - Manages 80+ active deals with AI (sales team: Allen + Dexter)
 - No sales meetings in 3 months — systems handle the process
 
-**Who Allen is:** NOT a sales expert or natural closer. Wins through SYSTEMS, SPEED, and CONSISTENCY. Self-taught everything. Sales background, not engineering. 6 months of AI building — went from ChatGPT copy-paste to agentic workflows in under a month.
+**Who Allen is:** NOT a sales expert or natural closer. Wins through SYSTEMS, SPEED, and CONSISTENCY. Self-taught everything. Sales background, not engineering. Allen's self-assessment: "I'm not really good at sales. I'm not a tech expert. But I'm not afraid of following up. I'm not afraid of failing. I work hard. I'm very critical."
+
+**Automation timeline:** Few months with n8n (quote builder, speed-to-lead, basic CRM). Started Claude Code April 2026 — full agent system built in ~2 weeks. n8n is legacy/background. The story is Claude Code now. System is live and running, not "still building."
 
 **What's true vs aspirational:**
 - TRUE: revenue numbers, automation timeline, tools used, deal stories
@@ -25,6 +29,8 @@ Sales manager at EPS Painting & Cleaning (Brisbane, AU). Employee, not owner. Wo
 ## Niche
 
 AI-powered sales systems. One niche, one year. How to use AI to sell more, follow up faster, never lose a deal, spend zero time on admin.
+
+> **V2 (April 2026):** Widened to "AI for business/work people." V1 niche stays as proof lane (30%). Full strategy: `reference/content-strategy-v2.md`
 
 ## The Offer
 
@@ -74,64 +80,11 @@ Based on Alex Hormozi's content principles. Non-negotiable.
 
 **Hook patterns:** Bold claim, Pattern interrupt, Number hook, Story hook, Question hook, Contrarian, Result hook
 
-## Content Pillars
-
-Rotate across the week. Never post same pillar two days in a row.
-1. AI automation results (proof)
-2. How AI works (simple explanations)
-3. Business owner pain points (relatable problems)
-4. Behind the scenes (build process)
-5. Contrarian takes (challenge common beliefs)
-
-## Channels
-
-| Channel | Purpose | Format |
-|---|---|---|
-| YouTube | Long-form tutorials (7-12 min) | Full walkthroughs |
-| FB/IG/TikTok/YT Shorts | Reels (30-60 sec) | Mini-tutorials |
-| Facebook Groups | Value posts (50-100 words) | Help, no pitching |
-| LinkedIn | Insight posts (<200 words) | B2B angle |
-| IG/FB Carousels | Educational volume | Hormozi-style bold text |
-
 ## Positioning
 
 Allen IS: a sales guy learning AI and sharing everything. Proof that you don't need to be technical.
 Allen is NOT: an AI expert, a developer, someone selling courses, a build-in-public channel.
 **Core message:** "I'm not a tech guy. I'm a sales guy who got tired of doing the same tasks every day. So I built AI to do them for me."
-
-## Audience Notes (Filipino Market)
-
-- Many are VAs or aspiring VAs wanting USD income
-- Value hard work, resourcefulness, family
-- Respond to practical, step-by-step content
-- Use Filipino-accessible examples
-- Price sensitivity high — say "free" early and often
-- Facebook is primary platform
-- "Sideline" and "extra income" resonate
-- Be humble. Don't flex.
-
-## Quality Gate
-
-Before any content or client-facing output ships:
-- 3rd grade reading level?
-- Hook grabs in first line / 3 seconds?
-- One idea only?
-- Includes a specific number or result?
-- Ends with CTA or engagement question?
-- Under word limit for the format?
-- No jargon or banned words?
-- No client names or identifying details?
-- Would Allen actually say this out loud?
-- All claimed results verified or marked as estimates?
-
-## Reel Style Preferences
-
-- Thick captions (90pt+), yellow highlight
-- Blur third-party faces
-- "FREE" in caps
-- Face on hook and CTA frames
-- White background carousels, Hormozi-style. Never dark.
-- Brand color: #02B3E9 blue
 
 ## Workflows (by department)
 
@@ -188,29 +141,21 @@ Priority order when trade-offs arise: Less Input > Accuracy > Speed > Cost > Sca
 - New code/tool → run `/os-gate`. Check `tools/` before building new.
 - Session end → `/wrap` handles handoff + decision log
 
-## Environment
+## Brand Context — Tiered Loading
 
-- Credentials: `projects/personal/.env`
-- Temp files: `projects/personal/.tmp/`
-- Intel docs: `projects/personal/reference/intel/` (7 living docs)
-- Style guide: `projects/personal/reference/hormozi-style-guide.md`
+CONTEXT.md is the brand foundation. Always loaded. Additional files load by task type:
 
-## Brand Context — Load Before Any Non-Delivery Task
+| Task | Also load |
+|---|---|
+| Write content (scripts, posts) | `reference/hormozi-style-guide.md` + `workflows/content/content-creation.md` + `reference/intel/icp-language.md` |
+| Content calendar/planning | `workflows/content/content-creation.md` |
+| Research (ICP, competitor, market) | `reference/intel/icp-language.md` + `reference/intel/competitor-moves.md` |
+| Outreach / follow-up | `reference/intel/icp-language.md` |
+| Content research (hooks, trends) | `.tmp/content-research.md` + `reference/intel/icp-language.md` |
 
-**BLOCKING.** Before writing content, planning calendars, doing research, outreach, or anything that touches Allen's brand, voice, or audience — load these files first. No exceptions.
+Memory files (content_profile, sales_identity, content_models) are auto-loaded by Claude's memory system — do NOT manually read them.
 
-| # | File | What it gives you |
-|---|---|---|
-| 1 | `memory/project_content_profile.md` | Allen's real story, team, results, what's true vs aspirational |
-| 2 | `memory/user_allen_sales_identity.md` | How Allen sees himself — systems > skill, not an expert |
-| 3 | `reference/hormozi-style-guide.md` | Voice rules, hook patterns, script structures, word banks |
-| 4 | `memory/project_content_models.md` | Who to study — Sabrina, Liam Ottley, Justyn |
-| 5 | `reference/intel/icp-language.md` | Target market pain points, language, objections |
-| 6 | `reference/intel/competitor-moves.md` | Gaps to exploit, what's working, trends |
-| 7 | `workflows/content/content-creation.md` | SOP structure, format rules, quality checklist |
-| 8 | `.tmp/content-research.md` | Current trending hooks, topics, recommended angles |
-
-**When this applies:** Content creation, content calendar planning, content research, ICP research, competitor research, market analysis, performance analysis, outreach, follow-ups, ManyChat setup — everything except delivery (client-intake, project-build, delivery-qa, project-management).
+Any file can still be pulled mid-session if needed. Tiering controls upfront loading, not access.
 
 **Why:** Allen should never have to teach a session what it already has access to. These files contain his real story, his team, his positioning, his voice. Getting any of this wrong breaks trust with the audience.
 

@@ -38,7 +38,7 @@ JOB SUMMARY
 
 ---
 
-4. GENERAL EXCLUSIONS
+4. EXCLUSIONS
 * External Window Cleaning (unless otherwise agreed)
 * Carpet Steam Cleaning (unless separately quoted)
 * Pest Control

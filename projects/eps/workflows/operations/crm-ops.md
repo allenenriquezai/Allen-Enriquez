@@ -112,6 +112,7 @@ Never touch pipelines outside this list.
 | SM8 Job # | `052a8b8271d035ca4780f8ae06cd7b5370df544c` |
 | Quote Folder Link | `04ed807860923fac89bedf563b1c5409e1f9e862` |
 | Draft Quote Doc Link | `c031a16cda356f6371b724d40b4c8f7ddbb4e094` |
+| Business Division | `6f2701b7f1505b60653dd85450d8a5321f2f7a7e` (enum: 56=EPS Clean, 57=EPS Paint) |
 
 ### Notes are always pinned
 Always set `"pinned_to_deal_flag": 1` when posting notes.

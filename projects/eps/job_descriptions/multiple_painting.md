@@ -71,7 +71,7 @@ ROOF WORKS WHERE APPLICABLE
 
 ---
 
-6. GENERAL EXCLUSIONS
+6. EXCLUSIONS
 * Asbestos handling or removal
 * Major structural or substrate rectification works
 * Patching beyond minor surface preparation unless otherwise specified

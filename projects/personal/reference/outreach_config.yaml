@@ -1,0 +1,90 @@
+# PH Outreach System config.
+# Drives discovery, enrichment, message generation.
+
+spreadsheet_name: "PH Outreach"
+spreadsheet_id: "15NvyLkAWya3ZNxT-R1dSPTVN1z2CyKEzDTdfxHY38Do"
+
+limits:
+  email_per_day: 5
+  fb_dm_per_day: 10
+  # Week-by-week email warm-up ramp. Index 0 = week 1.
+  email_warmup_ramp: [3, 5, 8, 10, 15]
+  warmup_start_date: "2026-04-18"
+  followup_wait_days:
+    touch_1_to_2: 3
+    touch_2_to_3: 5
+    touch_3_to_cold: 7
+
+segments:
+  recruitment:
+    label: "Recruitment + VA agencies"
+    google_places_queries:
+      - "recruitment agency Manila"
+      - "recruitment agency Cebu"
+      - "recruitment agency Davao"
+      - "staffing agency Manila"
+      - "virtual assistant agency Philippines"
+    jobstreet_search_terms:
+      - "recruitment agency"
+      - "staffing"
+      - "executive search"
+    kalibrr_search_terms:
+      - "virtual assistant"
+      - "recruitment specialist"
+    pain_points:
+      - "Screening 200+ resumes per day manually"
+      - "Candidate ghosting after first round"
+      - "Slow response time losing placements to competitors"
+      - "Manual follow-up in Excel/email"
+    lead_magnet: "Free AI candidate screening + follow-up system setup"
+    offer_line: "I help PH recruitment agencies cut screening from 3 hours to 15 minutes with AI."
+
+  real_estate:
+    label: "Real estate brokerages"
+    google_places_queries:
+      - "real estate brokerage Metro Manila"
+      - "real estate broker Cebu"
+      - "real estate brokerage Makati"
+      - "real estate agency BGC"
+      - "property brokerage Quezon City"
+    jobstreet_search_terms:
+      - "real estate broker"
+      - "property specialist"
+    pain_points:
+      - "FB lead ads generate volume agents cant handle"
+      - "Leads rot in spreadsheets with no follow-up"
+      - "Agents cherry-pick leads, ignore the rest"
+      - "No centralized CRM"
+    lead_magnet: "Free AI lead response + CRM setup for brokerages"
+    offer_line: "I help PH brokerages turn every Lamudi/FB lead into a qualified buyer with AI."
+
+# FB groups Allen has joined. Prospect URLs captured from these land in
+# projects/personal/.tmp/fb_prospects_inbox.txt (one URL per line).
+# Tool reads + dedupes into Sheet on each discover run.
+fb_groups: []
+
+# External service keys (loaded from projects/personal/.env).
+# Required env vars:
+#   ANTHROPIC_API_KEY     (for Haiku personalisation, already exists)
+#   GOOGLE_PLACES_API_KEY (Phase 2 setup)
+#   SNOV_API_KEY          (Phase 3 setup)
+#   HUNTER_API_KEY        (Phase 3 setup, optional fallback)
+#   FB_GRAPH_TOKEN        (Phase 3 setup, optional)
+
+# Haiku settings for message generation.
+haiku:
+  model: "claude-haiku-4-5-20251001"
+  temperature: 0.7  # variation, avoid identical messages
+  max_tokens: 500
+
+# Guardrails — tool refuses to proceed if violated.
+guardrails:
+  max_fb_dm_per_day_absolute: 12
+  max_email_per_day_absolute: 20
+  opt_out_keywords:
+    - "stop"
+    - "unsubscribe"
+    - "not interested"
+    - "remove me"
+    - "dont contact"
+    - "don't contact"

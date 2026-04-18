@@ -33,7 +33,7 @@ JOB SUMMARY
 
 ---
 
-4. GENERAL EXCLUSIONS
+4. EXCLUSIONS
 * Damage from pre-existing deterioration (loose grout, cracked surfaces, spalling concrete)
 * Permanent staining beyond pressure cleaning capability (oil penetration, rust bleed)
 * Sealing or protective coating application (unless separately quoted)

@@ -133,3 +133,10 @@ html { font-size: 17px; }
     pointer-events: none;
 }
 .chat-backdrop.open { opacity: 1; pointer-events: auto; }
+
+/* Loading pulse for deal panel */
+@keyframes subtle-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+}
+.loading-pulse { animation: subtle-pulse 1.5s ease-in-out infinite; }

@@ -33,7 +33,7 @@ JOB SUMMARY
 
 ---
 
-4. GENERAL EXCLUSIONS
+4. EXCLUSIONS
 * Permanent staining, bleach damage, or dye transfer beyond extraction capability
 * Furniture removal (unless otherwise agreed)
 * Carpet repair, re-stretching, or delamination

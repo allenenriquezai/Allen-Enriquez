@@ -32,7 +32,7 @@ JOB SUMMARY
 
 ---
 
-4. GENERAL EXCLUSIONS
+4. EXCLUSIONS
 * Full room or full surface repaints (quoted separately)
 * Seamless blending guarantee — colour matching is attempted but cannot be guaranteed where original product details are unavailable or surfaces have faded over time
 * Major plaster or substrate repairs beyond minor surface preparation
@@ -55,3 +55,12 @@ JOB SUMMARY
 - Client situation (damage, wear, pre-sale touch-up, insurance repair)
 - Emotional drivers (selling, tenant changeover, presentation)
 - Location and extent of repairs, and any known paint product details
+
+## Add-Ons (include only when requested)
+
+### Liquid Nail Application
+When skirting boards need reattaching before painting, add one bullet to each relevant section:
+- **SCOPE OF WORK:** "Liquid nail application — reattach any loose or detached skirting boards using construction adhesive before painting."
+- **PAINTING METHOD:** "Liquid nails applied to any loose sections and pressed firmly into position before painting."
+- **INCLUSIONS:** "Construction adhesive (liquid nails) for skirting board reattachment."
+Keep it simple — one bullet per section, no over-explaining the method.

@@ -36,8 +36,9 @@ def load_eod_project(project_id):
 
 
 def _load_sm8_cache():
-    """Load SM8 status cache from SQLite. Returns {deal_id: sm8_status}.
+    """Load SM8 status + last activity from SQLite cache.
 
+    Returns {deal_id: {'sm8_status': str, 'last_sm8_activity': str}}.
     Includes ALL deals — even those with empty sm8_status — so the dashboard
     can distinguish 'no SM8 linked' from 'deal not in cache at all'.
     """
@@ -48,8 +49,19 @@ def _load_sm8_cache():
         rows = conn.execute(
             "SELECT deal_id, sm8_status FROM deals"
         ).fetchall()
+        # Get latest SM8 activity date per deal
+        activity_rows = conn.execute(
+            "SELECT deal_id, MAX(start_date) FROM sm8_activities GROUP BY deal_id"
+        ).fetchall()
         conn.close()
-        return {r[0]: r[1] for r in rows}
+        activity_map = {r[0]: r[1] for r in activity_rows if r[1]}
+        result = {}
+        for r in rows:
+            result[r[0]] = {
+                'sm8_status': r[1] or '',
+                'last_sm8_activity': (activity_map.get(r[0]) or '')[:10],
+            }
+        return result
     except Exception as e:
         import sys
         print(f"[data_loader] SM8 cache load failed: {e}", file=sys.stderr)
@@ -64,7 +76,9 @@ def merge_deals_with_eod(live_deals):
         deal['flags'] = eod.get('flags', [])
         deal['next_action'] = eod.get('next_action', '')
         deal['max_days_before_overdue'] = eod.get('max_days_before_overdue', 0)
-        deal['sm8_status'] = sm8_cache.get(deal['deal_id'], '')
+        cached = sm8_cache.get(deal['deal_id'], {})
+        deal['sm8_status'] = cached.get('sm8_status', '') if isinstance(cached, dict) else cached
+        deal['last_sm8_activity'] = cached.get('last_sm8_activity', '') if isinstance(cached, dict) else ''
     return live_deals
 
 

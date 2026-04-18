@@ -109,9 +109,12 @@ def run_qa(quote_data, subject, body, args):
     jd_text = '\n'.join(jd) if isinstance(jd, list) else str(jd)
     if len(jd_text.strip()) < 100:
         issues.append("Job description is too short or empty")
-    for section in ['JOB SUMMARY', 'SCOPE OF WORK', 'CLEANING METHOD', 'INCLUSIONS', 'EXCLUSIONS', 'GUARANTEES']:
+    for section in ['JOB SUMMARY', 'SCOPE OF WORK', 'INCLUSIONS', 'EXCLUSIONS']:
         if section not in jd_text.upper():
             issues.append(f"Job description missing required section: {section}")
+    # Accept either CLEANING METHOD or PAINTING METHOD
+    if 'CLEANING METHOD' not in jd_text.upper() and 'PAINTING METHOD' not in jd_text.upper():
+        issues.append("Job description missing required section: CLEANING METHOD or PAINTING METHOD")
     # Accept either "PAYMENT TERMS" or "BOOKING & PAYMENT TERMS"
     if 'PAYMENT TERMS' not in jd_text.upper():
         issues.append("Job description missing required section: BOOKING & PAYMENT TERMS")
@@ -156,6 +159,20 @@ def run_qa(quote_data, subject, body, args):
         warnings.append("No deal ID — email won't be linked to a Pipedrive deal")
 
     return issues, warnings
+
+
+def _urls_to_links(text: str) -> str:
+    """Convert 'Label — https://url' lines into HTML hyperlinks."""
+    import re
+    out = []
+    for line in text.splitlines():
+        m = re.match(r'^(-\s+)?(.+?)\s+[—–-]+\s+(https?://\S+)$', line)
+        if m:
+            bullet = m.group(1) or ''
+            out.append(f'{bullet}<a href="{m.group(3)}">{m.group(2).strip()}</a>')
+        else:
+            out.append(line)
+    return '\n'.join(out)
 
 
 def post_note_to_pipedrive(deal_id, note_content, api_key, domain):
@@ -285,7 +302,7 @@ def main():
         f"<h4>📧 Email Draft</h4>",
         f"<b>To:</b> {args.to}<br>",
         f"<b>Subject:</b> {subject}<br><br>",
-        body.replace('\n', '<br>'),
+        _urls_to_links(body).replace('\n', '<br>'),
         "<hr>",
         "<i>To send: run draft_quote_email.py with --send once approved.</i>",
     ]

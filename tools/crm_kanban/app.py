@@ -13,6 +13,7 @@ Usage:
 import json
 import sys
 import time
+from datetime import timedelta
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
@@ -73,7 +74,6 @@ OUTCOME_TO_STAGE = {
     'Warm Interest': 'warm_interest',
     'Meeting Booked': 'meeting_booked',
     'Not Interested - Convo': 'not_interested',
-    'Not Interested - No Convo': 'not_interested',
     'Invalid Number': 'not_interested',
     'Hung Up - No Convo': 'not_interested',
 }
@@ -367,6 +367,243 @@ def api_update_card():
         return jsonify({'ok': False, 'error': str(e)}), 500
 
 
+_stats_cache = {'data': None, 'time': 0, 'ttl': 60}
+
+
+@app.route('/api/outreach/detailed')
+def api_outreach_detailed():
+    """Rich call analytics for the cold calling feedback dashboard."""
+    from collections import Counter
+    from datetime import datetime
+
+    try:
+        now_ts = time.time()
+        if _stats_cache['data'] and (now_ts - _stats_cache['time']) < _stats_cache['ttl']:
+            return jsonify(_stats_cache['data'])
+
+        service = get_sheets_service()
+        now = datetime.now()
+        today_label = f"{now.day} {now.strftime('%B')}"
+
+        # Date labels for last 14 days
+        date_labels = {}
+        for d in range(14):
+            dt = now - timedelta(days=d)
+            date_labels[f"{dt.day} {dt.strftime('%B')}"] = dt.strftime('%Y-%m-%d')
+
+        # Week (Sun–Sat)
+        week_start = now - timedelta(days=(now.weekday() + 1) % 7)
+        week_labels = set()
+        for d in range(7):
+            dt = week_start + timedelta(days=d)
+            week_labels.add(f"{dt.day} {dt.strftime('%B')}")
+
+        CONVO_OUTCOMES = {
+            'Warm Interest', 'Meeting Booked', 'Call Back',
+            'Asked For Email', 'Late Follow Up', 'Not Interested - Convo',
+        }
+        NO_ANSWER = {'No Answer 1', 'No Answer 2', 'No Answer 3', 'No Answer 4', 'No Answer 5'}
+
+        meta = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+        existing_tabs = {s['properties']['title'] for s in meta['sheets']}
+
+        today_outcomes = []
+        week_outcomes = []
+        daily_data = {}
+        total_called = 0
+        total_uncalled = 0
+
+        tabs_to_fetch = [t for t in ALL_TABS if t in existing_tabs]
+        batch_res = service.spreadsheets().values().batchGet(
+            spreadsheetId=SPREADSHEET_ID,
+            ranges=[f"'{t}'" for t in tabs_to_fetch],
+        ).execute()
+
+        for tab, vr in zip(tabs_to_fetch, batch_res.get('valueRanges', [])):
+            rows = vr.get('values', [])
+            if not rows:
+                continue
+            headers = rows[0]
+            col_map = {h: i for i, h in enumerate(headers)}
+
+            for i, row in enumerate(rows[1:], start=2):
+                lead = parse_row(row, col_map, tab, i)
+                if not lead:
+                    continue
+                outcome = lead.get('call_outcome', '') or 'New / No Label'
+                dc = (lead.get('date_called', '') or '').strip()
+
+                if not dc or outcome == 'New / No Label':
+                    total_uncalled += 1
+                    continue
+
+                total_called += 1
+                if dc == today_label:
+                    today_outcomes.append(outcome)
+                if dc in week_labels:
+                    week_outcomes.append(outcome)
+                if dc in date_labels:
+                    daily_data.setdefault(date_labels[dc], []).append(outcome)
+
+        t_total = len(today_outcomes)
+        t_convos = sum(1 for o in today_outcomes if o in CONVO_OUTCOMES)
+        t_no_answer = sum(1 for o in today_outcomes if o in NO_ANSWER)
+        t_hung_up = sum(1 for o in today_outcomes if o == 'Hung Up - No Convo')
+        t_not_interested = sum(1 for o in today_outcomes if o == 'Not Interested - Convo')
+        t_invalid = sum(1 for o in today_outcomes if o == 'Invalid Number')
+        t_warm = sum(1 for o in today_outcomes if o in HOT_OUTCOMES)
+        t_callback = sum(1 for o in today_outcomes if o == 'Call Back')
+        t_email = sum(1 for o in today_outcomes if o == 'Asked For Email')
+        t_meeting = sum(1 for o in today_outcomes if o == 'Meeting Booked')
+
+        DAILY_GOAL = 100
+
+        w_total = len(week_outcomes)
+        w_convos = sum(1 for o in week_outcomes if o in CONVO_OUTCOMES)
+        w_no_answer = sum(1 for o in week_outcomes if o in NO_ANSWER)
+        w_hung_up = sum(1 for o in week_outcomes if o == 'Hung Up - No Convo')
+        w_warm = sum(1 for o in week_outcomes if o in HOT_OUTCOMES)
+        w_conv_rate = round(w_convos / w_total * 100) if w_total else 0
+
+        conv_rate = round(t_convos / t_total * 100) if t_total else 0
+
+        # 14-day trend
+        trend = []
+        for d in range(13, -1, -1):
+            dt = now - timedelta(days=d)
+            ds = dt.strftime('%Y-%m-%d')
+            outs = daily_data.get(ds, [])
+            day_total = len(outs)
+            day_convos = sum(1 for o in outs if o in CONVO_OUTCOMES)
+            trend.append({
+                'date': ds, 'day': dt.strftime('%a'), 'short': dt.strftime('%d'),
+                'calls': day_total, 'convos': day_convos,
+                'rate': round(day_convos / day_total * 100) if day_total else 0,
+            })
+
+        # Streak
+        streak = 0
+        for d in range(1, 30):
+            dt = now - timedelta(days=d)
+            label = f"{dt.day} {dt.strftime('%B')}"
+            if label in date_labels and date_labels[label] in daily_data:
+                streak += 1
+            else:
+                break
+
+        # --- Benchmarks for coaching ---
+        past_7 = trend[-8:-1]
+        past_14 = trend[:-1]
+        past_7_calls = [d['calls'] for d in past_7 if d['calls'] > 0]
+        avg_7 = round(sum(past_7_calls) / len(past_7_calls)) if past_7_calls else 0
+        max_7 = max(past_7_calls) if past_7_calls else 0
+        past_7_convos = sum(d['convos'] for d in past_7)
+        past_7_total = sum(d['calls'] for d in past_7)
+        avg_conv_rate_7 = round(past_7_convos / past_7_total * 100) if past_7_total else 0
+
+        trend_3 = trend[-3:]
+        is_declining_3 = (len(trend_3) == 3
+                         and trend_3[0]['calls'] > trend_3[1]['calls'] > trend_3[2]['calls']
+                         and trend_3[0]['calls'] > 10)
+
+        warm_last_3_actual = sum(
+            sum(1 for o in daily_data.get(d['date'], []) if o in HOT_OUTCOMES)
+            for d in trend[-3:]
+        )
+        warm_last_10 = sum(
+            sum(1 for o in daily_data.get(d['date'], []) if o in HOT_OUTCOMES)
+            for d in trend[-11:-3] if d
+        )
+
+        hours_elapsed = max((now.hour + now.minute / 60) - 9, 0.1)
+        hours_left = max(18 - (now.hour + now.minute / 60), 0)
+        pace_per_hour = round(t_total / hours_elapsed, 1) if t_total > 0 and hours_elapsed > 0.5 else 0
+        projected_eod = round(t_total + (pace_per_hour * hours_left)) if pace_per_hour > 0 else t_total
+
+        # --- Next-level coaching nudges ---
+        nudges = []
+
+        if t_total == 0 and now.hour >= 10:
+            if avg_7 > 20:
+                nudges.append({'type': 'warning', 'text': f'Zero calls. It\'s {now.hour}:00. Your 7-day avg is {avg_7}. Phone up.'})
+            else:
+                nudges.append({'type': 'action', 'text': f'No calls yet at {now.hour}:00. First dial breaks inertia. Start now.'})
+        elif t_total == 0 and now.hour < 10:
+            nudges.append({'type': 'action', 'text': 'Fresh day. First call kicks it off.'})
+
+        if is_declining_3:
+            a, b, c = trend_3[0]['calls'], trend_3[1]['calls'], trend_3[2]['calls']
+            nudges.append({'type': 'warning', 'text': f'3-day slide: {a} → {b} → {c}. Declining hard. What changed?'})
+
+        if t_total > 0 and pace_per_hour > 0 and hours_left > 0.5:
+            gap = DAILY_GOAL - t_total
+            needed_pace = round(gap / hours_left, 1) if hours_left > 0 else 0
+            if projected_eod < DAILY_GOAL * 0.6:
+                nudges.append({'type': 'warning', 'text': f'Pace: {pace_per_hour}/hr. EOD projection: {projected_eod}. Need {needed_pace}/hr to hit 100. Big gap.'})
+            elif projected_eod < DAILY_GOAL:
+                nudges.append({'type': 'push', 'text': f'Pace: {pace_per_hour}/hr → {projected_eod} by EOD. Bump to {needed_pace}/hr for the goal.'})
+            else:
+                nudges.append({'type': 'win', 'text': f'On pace for {projected_eod} calls. Hold the rhythm.'})
+
+        if t_total > 5 and avg_7 > 0:
+            if t_total < avg_7 * 0.5 and now.hour >= 13:
+                nudges.append({'type': 'warning', 'text': f'Today: {t_total}. 7-day avg: {avg_7}. You\'re half your pace. Why?'})
+            elif t_total > max_7 and max_7 > 0:
+                nudges.append({'type': 'win', 'text': f'New high: {t_total} calls beats your 7-day best ({max_7}). Lock this in.'})
+
+        if t_total >= 10 and avg_conv_rate_7 > 0:
+            if conv_rate > avg_conv_rate_7 * 1.3:
+                nudges.append({'type': 'win', 'text': f'Conv rate {conv_rate}% vs {avg_conv_rate_7}% avg. Note what you changed today.'})
+            elif conv_rate < avg_conv_rate_7 * 0.5 and t_total >= 15:
+                nudges.append({'type': 'warning', 'text': f'Conv rate {conv_rate}% vs {avg_conv_rate_7}% avg. Opener is dying. Test a new one on next 10.'})
+
+        if warm_last_3_actual == 0 and warm_last_10 > 3 and t_total > 0:
+            nudges.append({'type': 'insight', 'text': f'Zero warm leads in 3 days ({warm_last_10} in days 4-10). Pitch drifted or list went cold.'})
+
+        if t_no_answer > 5 and t_total > 0 and (t_no_answer / t_total) > 0.75:
+            pct = round(t_no_answer / t_total * 100)
+            nudges.append({'type': 'insight', 'text': f'{pct}% no-answers. Wrong hour or wrong list. Switch to 10-11am or 2-4pm window.'})
+
+        if t_hung_up >= 4 and t_total > 0 and (t_hung_up / t_total) > 0.2:
+            nudges.append({'type': 'warning', 'text': f'{t_hung_up} hang-ups. Opener too salesy. Lead with name + reason, not pitch.'})
+
+        if t_invalid > 0 and t_total > 0 and (t_invalid / t_total) > 0.2:
+            pct = round(t_invalid / t_total * 100)
+            nudges.append({'type': 'insight', 'text': f'{pct}% invalid numbers. Lead source quality dropping. Check where these came from.'})
+
+        if t_warm > 0:
+            nudges.append({'type': 'win', 'text': f'{t_warm} warm lead{"s" if t_warm > 1 else ""} today. Follow up inside 24h — goes cold fast.'})
+
+        if t_total >= DAILY_GOAL:
+            nudges.append({'type': 'win', 'text': f'Goal hit: {t_total}. Now protect the warm leads. Draft follow-ups.'})
+
+        if streak >= 3:
+            nudges.append({'type': 'win', 'text': f'{streak}-day calling streak. Don\'t break it.'})
+
+        payload = {
+            'ok': True, 'goal': DAILY_GOAL,
+            'today': {
+                'total': t_total, 'no_answer': t_no_answer, 'hung_up': t_hung_up,
+                'not_interested': t_not_interested, 'invalid': t_invalid,
+                'callback': t_callback, 'email': t_email, 'warm': t_warm,
+                'meeting': t_meeting, 'convos': t_convos, 'conv_rate': conv_rate,
+            },
+            'week': {
+                'total': w_total, 'convos': w_convos, 'no_answer': w_no_answer,
+                'hung_up': w_hung_up, 'warm': w_warm, 'conv_rate': w_conv_rate,
+            },
+            'alltime': {'called': total_called, 'uncalled': total_uncalled},
+            'trend': trend, 'streak': streak,
+            'best_day': max(trend[-7:], key=lambda x: x['calls']) if trend else None,
+            'nudges': nudges,
+        }
+        _stats_cache['data'] = payload
+        _stats_cache['time'] = time.time()
+        return jsonify(payload)
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 500
+
+
 if __name__ == '__main__':
     print("CRM Kanban Board → http://localhost:5001")
-    app.run(port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True, threaded=True)

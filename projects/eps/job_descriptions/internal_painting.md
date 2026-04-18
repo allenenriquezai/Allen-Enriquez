@@ -20,33 +20,23 @@ JOB SUMMARY
 
 2. SCOPE OF WORK
 
-REPAINT WORKS
+A. REPAINT WORKS
 * Minor surface preparation including sanding and gap filling where required
 * Spot priming of exposed areas where required
 * Application of two full finishing coats of Dulux interior paint system
+* Painting of all internal areas listed below as specified
+* Final inspection and thorough clean-up of work areas
 
-NEW CONSTRUCTION WORKS
+A. NEW CONSTRUCTION WORKS (use instead of REPAINT WORKS when applicable)
 * Surface inspection prior to commencement
 * Application of one full primer coat
 * Application of two full finishing coats
 * Three coat system applied in accordance with Dulux specifications
 * Minor preparation only, limited to light sanding and minor touch-ups
-
 * Painting of all internal areas listed below as specified
 * Final inspection and thorough clean-up of work areas
 
----
-
-3. PREPARATION & EXECUTION
-* Protection of floors, fixtures, cabinetry, windows, and fittings
-* Surface preparation completed in accordance with Dulux manufacturer recommendations
-* Brush, roller, and or spray application for consistent coverage
-* Correct drying times observed between coats as per Dulux specifications
-* Care taken to minimise disruption during works
-
----
-
-4. INTERNAL AREAS
+B. INTERNAL AREAS
 * Internal wall painting
 * Internal ceiling painting
 * Internal skirting board painting
@@ -54,18 +44,30 @@ NEW CONSTRUCTION WORKS
 * Timber trims, frames, and architraves where applicable
 
 OPTIONAL LEVEL BREAKDOWN FOR NEW CONSTRUCTION
-A) GROUND FLOOR
+B. GROUND FLOOR
 * Internal wall painting
 * Internal ceiling painting
 * Internal skirting board painting
 * Internal door painting both sides
-B) FIRST FLOOR
+B. FIRST FLOOR
 * Internal wall painting
 * Internal ceiling painting
 * Internal skirting board painting
 * Internal door painting both sides
-C) STAIRWELL OR ADDITIONAL AREAS WHERE APPLICABLE
+B. STAIRWELL OR ADDITIONAL AREAS WHERE APPLICABLE
 * Wall and ceiling painting
+
+C. NOTES
+* [Deal-specific exclusions, special conditions, client-supplied items go here]
+
+---
+
+3. PAINTING METHOD
+* Protection of floors, fixtures, cabinetry, windows, and fittings
+* Surface preparation completed in accordance with Dulux manufacturer recommendations
+* Brush, roller, and or spray application for consistent coverage
+* Correct drying times observed between coats as per Dulux specifications
+* Care taken to minimise disruption during works
 
 ---
 
@@ -89,7 +91,7 @@ C) STAIRWELL OR ADDITIONAL AREAS WHERE APPLICABLE
 
 ---
 
-7. GENERAL EXCLUSIONS
+7. EXCLUSIONS
 * Asbestos handling or removal
 * Major plaster repairs, stopping rectification, or surface correction beyond minor preparation
 * For new construction works, surfaces are assumed to be delivered paint-ready by others; rectification beyond minor preparation will be treated as a variation

@@ -71,7 +71,6 @@ def _populate_defaults(service, sheet_id):
         ['Personal Morning', 'Learn AI & Automation 1', 'check', '3', 'TRUE'],
         ['Personal Morning', 'Read (Pages)', 'count', '4', 'TRUE'],
         ['Personal Morning', 'Cardio', 'check', '5', 'TRUE'],
-        ['Personal Morning', 'US Outreach', 'check', '6', 'TRUE'],
         # EPS
         ['EPS', 'Check Sent Quotes', 'check', '1', 'TRUE'],
         ['EPS', 'Check Follow Ups', 'check', '2', 'TRUE'],
@@ -94,6 +93,9 @@ def _populate_defaults(service, sheet_id):
         ['Personal Closing', 'Learn AI & Automation 2', 'check', '1', 'TRUE'],
         ['Personal Closing', 'Build Systems', 'check', '2', 'TRUE'],
         ['Personal Closing', 'Cold Outreach', 'check', '3', 'TRUE'],
+        # Personal Brand (weekends only — replaces EPS)
+        ['Personal Brand', 'Content Creation', 'check', '1', 'TRUE'],
+        ['Personal Brand', 'Study AI Automation', 'check', '2', 'TRUE'],
     ]
 
     log_headers = [['Date', 'Item', 'Value', 'Timestamp']]
@@ -153,8 +155,13 @@ def index():
                 done += 1
     pct = round(done / total * 100) if total else 0
 
-    # Category order
-    cat_order = ['Personal Morning', 'EPS', 'Workout', 'Family & Home', 'Personal Closing']
+    # Category order — weekends swap EPS for Personal Brand
+    view_date = datetime.strptime(date, '%Y-%m-%d').date()
+    is_weekend = view_date.weekday() in (5, 6)  # Sat=5, Sun=6
+    if is_weekend:
+        cat_order = ['Personal Morning', 'Personal Brand', 'Workout', 'Family & Home', 'Personal Closing']
+    else:
+        cat_order = ['Personal Morning', 'EPS', 'Workout', 'Family & Home', 'Personal Closing']
     categories = []
     for cat in cat_order:
         if cat not in config:
@@ -191,7 +198,15 @@ def index():
 
 @app.route('/api/checklist/config')
 def api_checklist_config():
+    date = request.args.get('date', today_ph())
     config = _load_config()
+    # Filter categories by weekday/weekend
+    view_date = datetime.strptime(date, '%Y-%m-%d').date()
+    is_weekend = view_date.weekday() in (5, 6)
+    if is_weekend:
+        config.pop('EPS', None)
+    else:
+        config.pop('Personal Brand', None)
     return jsonify({'ok': True, 'config': config})
 
 
@@ -227,13 +242,29 @@ def api_checklist_count():
 @app.route('/api/checklist/weekly')
 def api_checklist_weekly():
     """7-day summary ending at given date."""
-    end = request.args.get('end', today_ph())
+    ref = request.args.get('end', today_ph())
     try:
-        end_date = datetime.strptime(end, '%Y-%m-%d').date()
-        start_date = end_date - timedelta(days=6)
+        ref_date = datetime.strptime(ref, '%Y-%m-%d').date()
+        # Always show Sun→Sat week containing the reference date
+        # weekday(): Mon=0 ... Sun=6. We want Sunday as start.
+        days_since_sunday = (ref_date.weekday() + 1) % 7
+        start_date = ref_date - timedelta(days=days_since_sunday)
+        end_date = start_date + timedelta(days=6)
 
         config = _load_config()
-        total_items = sum(len(items) for items in config.values())
+
+        # Build item sets for weekday vs weekend
+        weekday_items = set()
+        weekend_items = set()
+        for cat, items in config.items():
+            for item in items:
+                if cat == 'EPS':
+                    weekday_items.add(item['name'])
+                elif cat == 'Personal Brand':
+                    weekend_items.add(item['name'])
+                else:
+                    weekday_items.add(item['name'])
+                    weekend_items.add(item['name'])
 
         # Load log entries for the date range from SQLite
         log_range = db.load_log_range(
@@ -248,29 +279,30 @@ def api_checklist_weekly():
                 if val and val != '0' and val.upper() != 'FALSE':
                     daily.setdefault(day_key, set()).add(item_name)
 
-        # Build summary
+        # Build summary — each day uses its own item set
         days = []
         d = start_date
         while d <= end_date:
             key = d.strftime('%Y-%m-%d')
-            done = len(daily.get(key, set()))
+            is_wknd = d.weekday() in (5, 6)
+            day_items = weekend_items if is_wknd else weekday_items
+            day_total = len(day_items)
+            day_done_set = daily.get(key, set()) & day_items
+            done = len(day_done_set)
             days.append({
                 'date': key,
                 'day': d.strftime('%a'),
                 'done': done,
-                'total': total_items,
-                'pct': round(done / total_items * 100) if total_items else 0,
+                'total': day_total,
+                'pct': round(done / day_total * 100) if day_total else 0,
             })
             d += timedelta(days=1)
 
-        # Missed items (items never completed this week)
+        # Missed items (items never completed this week, per their relevant days)
         all_done = set()
         for s in daily.values():
             all_done.update(s)
-        all_items = set()
-        for items in config.values():
-            for item in items:
-                all_items.add(item['name'])
+        all_items = weekday_items | weekend_items
         missed = list(all_items - all_done)
 
         # Streaks: consecutive days with >0 completions
@@ -299,11 +331,17 @@ def api_checklist_weekly():
 from routes_spend import spend_bp, init_spend
 from routes_command import command_bp, init_command
 from routes_brief import brief_bp, init_brief, warm_cache
+from routes_deal import deal_bp
+from routes_ops import ops_bp
+from routes_notes import notes_bp
 from config import now_ph, today_ph
 
 app.register_blueprint(spend_bp)
 app.register_blueprint(command_bp)
 app.register_blueprint(brief_bp)
+app.register_blueprint(deal_bp)
+app.register_blueprint(ops_bp)
+app.register_blueprint(notes_bp)
 
 
 # ============================================================

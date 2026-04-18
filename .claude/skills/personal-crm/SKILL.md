@@ -1,6 +1,6 @@
 ---
-name: crm
-description: Personal brand CRM — report, cleanup, brief, draft. Triggers on "CRM report", "clean up my CRM", "evening brief", "draft email for lead", or /crm.
+name: personal-crm
+description: Personal brand CRM — report, cleanup, brief, draft. Triggers on "personal CRM", "clean up my CRM", "evening brief", "draft email for lead", or /personal-crm.
 ---
 
 Personal Brand CRM tool. Do NOT read any other files — everything you need is here.

@@ -608,13 +608,9 @@ async function openDealDetail(dealId, e) {
     const sm8 = data.sm8 || {};
     const history = data.sync_history || [];
     const projects = data.linked_projects || [];
-    // Filter out SM8-synced notes (already in SM8 Activity section) + deduplicate by content
-    const _rawNotes = (data.notes || []).filter(n => {
-        const c = (n.content || '').trim();
-        return !c.startsWith('[SM8 Sync]') && !c.startsWith('[SM8 Update]');
-    });
+    // Deduplicate notes by content (keep all types including SM8)
     const _seen = new Set();
-    const notes = _rawNotes.filter(n => {
+    const notes = (data.notes || []).filter(n => {
         const key = (n.content || '').trim().slice(0, 150).toLowerCase();
         if (_seen.has(key)) return false;
         _seen.add(key);
@@ -686,8 +682,25 @@ async function openDealDetail(dealId, e) {
         notes.forEach(n => {
             const pin = n.pinned ? '<span class="text-amber-500 mr-1" title="Pinned">&#128204;</span>' : '';
             const by = n.user ? `<span class="text-gray-400"> · ${esc(n.user)}</span>` : '';
-            html += `<div style="margin-bottom:8px;padding:8px 10px;background:rgb(249 250 251);border-radius:6px;border-left:2px solid rgb(229 231 235)">
-                <div class="text-xs text-gray-400 mb-1">${pin}${esc(n.add_time)}${by}</div>
+            const c = (n.content || '').trim();
+            // Color-code SM8 notes by type
+            let borderColor = 'rgb(229 231 235)';  // default gray
+            let labelHtml = '';
+            if (c.startsWith('[SM8 Update]')) {
+                borderColor = 'rgb(37 99 235)';  // blue
+                labelHtml = '<span class="text-xs font-semibold text-blue-600 mr-1">SM8</span>';
+            } else if (c.startsWith('[SM8 Booking]') || c.startsWith('[SM8 Site Visit]')) {
+                borderColor = 'rgb(147 51 234)';  // purple
+                labelHtml = '<span class="text-xs font-semibold text-purple-600 mr-1">SM8</span>';
+            } else if (c.startsWith('[SM8 Check Out]') || c.startsWith('[SM8 Check In]')) {
+                borderColor = 'rgb(22 163 74)';  // green
+                labelHtml = '<span class="text-xs font-semibold text-green-600 mr-1">SM8</span>';
+            } else if (c.startsWith('[SM8 Sync]') || c.startsWith('[SM8 Activity]')) {
+                borderColor = 'rgb(107 114 128)';  // gray
+                labelHtml = '<span class="text-xs font-semibold text-gray-500 mr-1">SM8</span>';
+            }
+            html += `<div style="margin-bottom:8px;padding:8px 10px;background:rgb(249 250 251);border-radius:6px;border-left:3px solid ${borderColor}">
+                <div class="text-xs text-gray-400 mb-1">${labelHtml}${pin}${esc(n.add_time)}${by}</div>
                 <div class="text-sm text-gray-700" style="white-space:pre-wrap">${esc(n.content)}</div>
             </div>`;
         });

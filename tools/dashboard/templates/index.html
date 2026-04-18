@@ -3,298 +3,490 @@
 <div class="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 md:px-8 py-4 pb-24">
 
     <!-- ============================== -->
-    <!-- TAB: Home (Weekly Overview)    -->
+    <!-- TAB: Personal (Habits + Spend) -->
     <!-- ============================== -->
-    <div id="page-home" class="page-content">
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-bold">Enriquez OS</h1>
-            <span class="text-sm text-gray-400" id="home-date"></span>
+    <div id="page-personal" class="page-content">
+        <div class="flex items-center justify-between mb-4">
+            <h1 class="text-2xl font-bold">Personal</h1>
+            <span class="text-sm text-gray-400" id="personal-date"></span>
         </div>
 
-        <!-- 7-day habit bar -->
-        <div class="mb-5">
-            <div class="text-xs text-gray-300 uppercase tracking-wider mb-2">This Week</div>
-            <div id="week-bars" class="flex gap-1.5">
-                <!-- Filled by command.js -->
-                <div class="flex-1 text-center text-xs text-gray-500 py-3">Loading...</div>
-            </div>
+        <!-- Sub-pills: Habits / Spend -->
+        <div class="flex gap-2 mb-5">
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
+                    data-tab="personal" data-pill="habits"
+                    onclick="switchSubpill('personal','habits')">Habits</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
+                    data-tab="personal" data-pill="spend"
+                    onclick="switchSubpill('personal','spend')">Spend</button>
         </div>
 
-        <!-- Personal stats -->
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Avg</div>
-                <div id="stat-avg" class="text-2xl font-bold text-green-400">--%</div>
-            </div>
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Streak</div>
-                <div id="stat-streak" class="text-2xl font-bold text-purple-400">0d</div>
-            </div>
-        </div>
-
-        <!-- Quick cards -->
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 cursor-pointer hover:border-gray-700 transition"
-                 onclick="switchTab('habits')">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Today's Habits</div>
-                <div id="cmd-habits-value" class="text-xl font-semibold text-white">{{ done }}/{{ total }} ({{ pct }}%)</div>
-                <div class="mt-2 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                    <div id="cmd-habits-bar" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: {{ pct }}%"></div>
-                </div>
-            </div>
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 cursor-pointer hover:border-gray-700 transition"
-                 onclick="switchTab('spend')">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Spend Today</div>
-                <div id="cmd-spend-value" class="text-xl font-semibold text-amber-400">₱0</div>
-            </div>
-        </div>
-
-        <!-- Cold Outreach — Personal -->
-        <div class="mb-6">
-            <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">Personal Outreach</div>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                    <div class="text-xs text-gray-500 mb-2">Today</div>
-                    <div class="flex items-baseline gap-3">
-                        <div class="text-center flex-1">
-                            <div id="p-today-calls" class="text-xl font-bold text-blue-400">--</div>
-                            <div class="text-xs text-gray-500">Calls</div>
-                        </div>
-                        <div class="text-center flex-1">
-                            <div id="p-today-connected" class="text-xl font-bold text-amber-400">--</div>
-                            <div class="text-xs text-gray-500">Connected</div>
-                        </div>
-                        <div class="text-center flex-1">
-                            <div id="p-today-warm" class="text-xl font-bold text-green-400">--</div>
-                            <div class="text-xs text-gray-500">Warm</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                    <div class="text-xs text-gray-500 mb-2">This Week</div>
-                    <div class="flex items-baseline gap-3">
-                        <div class="text-center flex-1">
-                            <div id="p-week-calls" class="text-xl font-bold text-blue-400">--</div>
-                            <div class="text-xs text-gray-500">Calls</div>
-                        </div>
-                        <div class="text-center flex-1">
-                            <div id="p-week-connected" class="text-xl font-bold text-amber-400">--</div>
-                            <div class="text-xs text-gray-500">Connected</div>
-                        </div>
-                        <div class="text-center flex-1">
-                            <div id="p-week-warm" class="text-xl font-bold text-green-400">--</div>
-                            <div class="text-xs text-gray-500">Warm</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cold Outreach — EPS -->
-        <div class="mb-6">
-            <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">EPS Outreach</div>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                    <div class="text-xs text-gray-500 mb-2">Today</div>
-                    <div class="flex items-baseline gap-3">
-                        <div class="text-center flex-1">
-                            <div id="e-today-calls" class="text-xl font-bold text-blue-400">--</div>
-                            <div class="text-xs text-gray-500">Calls</div>
-                        </div>
-                        <div class="text-center flex-1">
-                            <div id="e-today-connected" class="text-xl font-bold text-amber-400">--</div>
-                            <div class="text-xs text-gray-500">Connected</div>
-                        </div>
-                        <div class="text-center flex-1">
-                            <div id="e-today-warm" class="text-xl font-bold text-green-400">--</div>
-                            <div class="text-xs text-gray-500">Warm</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                    <div class="text-xs text-gray-500 mb-2">This Week</div>
-                    <div class="flex items-baseline gap-3">
-                        <div class="text-center flex-1">
-                            <div id="e-week-calls" class="text-xl font-bold text-blue-400">--</div>
-                            <div class="text-xs text-gray-500">Calls</div>
-                        </div>
-                        <div class="text-center flex-1">
-                            <div id="e-week-connected" class="text-xl font-bold text-amber-400">--</div>
-                            <div class="text-xs text-gray-500">Connected</div>
-                        </div>
-                        <div class="text-center flex-1">
-                            <div id="e-week-warm" class="text-xl font-bold text-green-400">--</div>
-                            <div class="text-xs text-gray-500">Warm</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============================== -->
-    <!-- TAB: Habit Checklist           -->
-    <!-- ============================== -->
-    <div id="page-habits" class="page-content hidden">
-        <!-- Date Nav -->
-        <div class="flex items-center justify-between mb-5">
-            <button onclick="changeDate(-1)" class="p-2 text-gray-400 hover:text-white transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </button>
-            <div class="text-center">
-                <div id="date-display" class="text-xl font-semibold">{{ date }}</div>
-                <div id="date-label" class="text-xs text-gray-400"></div>
-            </div>
-            <button onclick="changeDate(1)" class="p-2 text-gray-400 hover:text-white transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-            </button>
-        </div>
-
-        <!-- Overall Progress -->
-        <div class="mb-5">
-            <div class="flex items-center justify-between mb-1.5">
-                <span class="text-base text-gray-300">Daily Progress</span>
-                <span id="progress-text" class="text-base font-medium text-white">{{ done }}/{{ total }} ({{ pct }}%)</span>
-            </div>
-            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                <div id="progress-bar" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: {{ pct }}%"></div>
-            </div>
-        </div>
-
-        <!-- Checklist Sections -->
-        <div id="section-habits" class="md:grid md:grid-cols-2 md:gap-4">
-        {% for cat in categories %}
-        <section class="mb-4">
-            <button onclick="toggleSection('sect-{{ cat.name | replace(' ', '-') | replace('&', 'and') }}')"
-                    class="w-full flex items-center justify-between py-2 group">
-                <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">{{ cat.name }}</h2>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-400">{{ cat.done }}/{{ cat.total }}</span>
-                    <svg class="w-4 h-4 text-gray-500 group-hover:text-gray-300 transition sect-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        <!-- Sub-pill: Habits -->
+        <div id="subpill-personal-habits" class="subpill-content">
+            <!-- Date Nav -->
+            <div class="flex items-center justify-between mb-5">
+                <button onclick="changeDate(-1)" class="p-2 text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
+                </button>
+                <div class="text-center">
+                    <div id="date-display" class="text-xl font-semibold">{{ date }}</div>
+                    <div id="date-label" class="text-xs text-gray-400"></div>
                 </div>
-            </button>
-            <div id="sect-{{ cat.name | replace(' ', '-') | replace('&', 'and') }}" class="space-y-1.5">
-                {% for item in cat.checklist_items %}
-                <div class="flex items-center justify-between py-2.5 px-3 bg-gray-900 rounded-xl border border-gray-800 hover:border-gray-700 transition
-                            {% if item.done %}opacity-60{% endif %}"
-                     data-item="{{ item.name }}" data-type="{{ item.type }}">
-
-                    {% if item.type == 'check' %}
-                    <div class="flex items-center gap-3 flex-1 cursor-pointer" onclick="toggleCheck(this, '{{ item.name }}')">
-                        <div class="w-5 h-5 rounded-md border-2 flex items-center justify-center transition
-                                    {% if item.done %}bg-green-600 border-green-600{% else %}border-gray-600{% endif %}">
-                            {% if item.done %}
-                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            {% endif %}
-                        </div>
-                        <span class="text-base {% if item.done %}line-through text-gray-500{% else %}text-gray-200{% endif %}">{{ item.name }}</span>
-                    </div>
-                    {% else %}
-                    <span class="text-base text-gray-200 flex-1">{{ item.name }}</span>
-                    <input type="number" inputmode="numeric" min="0"
-                           class="count-input"
-                           data-item="{{ item.name }}"
-                           value="{{ item.value or '0' }}"
-                           onfocus="this.select()"
-                           onchange="setCount('{{ item.name }}', this.value)"
-                           onblur="setCount('{{ item.name }}', this.value)">
-                    {% endif %}
-                </div>
-                {% endfor %}
+                <button onclick="changeDate(1)" class="p-2 text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
             </div>
-        </section>
-        {% endfor %}
+
+            <!-- Overall Progress -->
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-base text-gray-300">Daily Progress</span>
+                    <span id="progress-text" class="text-base font-medium text-white">{{ done }}/{{ total }} ({{ pct }}%)</span>
+                </div>
+                <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: {{ pct }}%"></div>
+                </div>
+            </div>
+
+            <!-- 7-day habit bar -->
+            <div class="mb-5">
+                <div class="text-xs text-gray-300 uppercase tracking-wider mb-2">This Week</div>
+                <div id="week-bars" class="flex gap-1.5">
+                    <div class="flex-1 text-center text-xs text-gray-500 py-3">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Streak/Avg cards -->
+            <div class="grid grid-cols-2 gap-3 mb-5">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                    <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Avg</div>
+                    <div id="stat-avg" class="text-2xl font-bold text-green-400">--%</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                    <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Streak</div>
+                    <div id="stat-streak" class="text-2xl font-bold text-purple-400">0d</div>
+                </div>
+            </div>
+
+            <!-- Checklist Sections -->
+            <div id="section-habits">
+            {% for cat in categories %}
+            <section class="mb-6">
+                <button onclick="toggleSection('sect-{{ cat.name | replace(' ', '-') | replace('&', 'and') }}')"
+                        class="w-full flex items-center justify-between py-3 group">
+                    <h2 class="text-base font-semibold text-gray-300 uppercase tracking-wider">{{ cat.name }}</h2>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-400">{{ cat.done }}/{{ cat.total }}</span>
+                        <svg class="w-4 h-4 text-gray-500 group-hover:text-gray-300 transition sect-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                </button>
+                <div id="sect-{{ cat.name | replace(' ', '-') | replace('&', 'and') }}" class="space-y-2">
+                    {% for item in cat.checklist_items %}
+                    <div class="flex items-center justify-between py-3.5 px-4 bg-gray-900 rounded-xl border border-gray-800 hover:border-gray-700 transition
+                                {% if item.done %}opacity-60{% endif %}"
+                         data-item="{{ item.name }}" data-type="{{ item.type }}">
+
+                        {% if item.type == 'check' %}
+                        <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="toggleCheck(this, '{{ item.name }}')">
+                            <div class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition
+                                        {% if item.done %}bg-green-600 border-green-600{% else %}border-gray-600{% endif %}">
+                                {% if item.done %}
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                {% endif %}
+                            </div>
+                            <span class="text-lg {% if item.done %}line-through text-gray-500{% else %}text-gray-200{% endif %}">{{ item.name }}</span>
+                        </div>
+                        {% else %}
+                        <span class="text-lg text-gray-200 flex-1">{{ item.name }}</span>
+                        <input type="number" inputmode="numeric" min="0"
+                               class="count-input"
+                               data-item="{{ item.name }}"
+                               value="{{ item.value or '0' }}"
+                               onfocus="this.select()"
+                               onchange="setCount('{{ item.name }}', this.value)"
+                               onblur="setCount('{{ item.name }}', this.value)">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sub-pill: Spend -->
+        <div id="subpill-personal-spend" class="subpill-content hidden">
+            <!-- Date Nav (Spend) -->
+            <div class="flex items-center justify-between mb-4">
+                <button onclick="changeDate(-1)" class="p-2 text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="text-center">
+                    <div id="spend-date-display" class="text-base font-semibold">{{ date }}</div>
+                </div>
+                <button onclick="changeDate(1)" class="p-2 text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Totals -->
+            <div id="spend-totals" class="text-base text-center mb-4">
+                <span class="text-gray-500">No data</span>
+            </div>
+
+            <!-- Quick-add buttons -->
+            <div class="flex gap-2 mb-4">
+                <button onclick="openSpendModal('Takeout')"
+                        class="flex-1 py-3 bg-amber-900/30 hover:bg-amber-900/50 text-amber-400 rounded-xl text-sm font-medium transition">
+                    + Takeout
+                </button>
+                <button onclick="openSpendModal('General')"
+                        class="flex-1 py-3 bg-blue-900/30 hover:bg-blue-900/50 text-blue-400 rounded-xl text-sm font-medium transition">
+                    + General
+                </button>
+            </div>
+
+            <!-- Today's entries -->
+            <div id="spend-list" class="space-y-1.5">
+                <div class="text-center text-gray-500 text-sm py-4">Loading...</div>
+            </div>
         </div>
     </div>
 
     <!-- ============================== -->
-    <!-- TAB: Learn                     -->
+    <!-- TAB: Learn (Briefs/Notes/Projects) -->
     <!-- ============================== -->
     <div id="page-learn" class="page-content hidden">
-        <div class="flex items-center justify-between mb-3">
-            <h1 class="text-xl font-bold">Learn</h1>
-            <button onclick="refreshLearning()" id="learn-refresh-btn" class="text-xs text-gray-400 hover:text-gray-200 transition">Refresh</button>
+        <div class="flex items-center justify-between mb-4">
+            <h1 class="text-2xl font-bold">Learn</h1>
+            <button onclick="refreshLearn()" id="learn-refresh-btn" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
         </div>
-        <div id="brief-learning">
-            <div class="text-gray-400 text-center py-8 text-sm">Loading...</div>
+
+        <!-- Sub-pills -->
+        <div class="flex gap-2 mb-5">
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
+                    data-tab="learn" data-pill="briefs"
+                    onclick="switchSubpill('learn','briefs')">Briefs</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
+                    data-tab="learn" data-pill="notes"
+                    onclick="switchSubpill('learn','notes')">Notes</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
+                    data-tab="learn" data-pill="projects"
+                    onclick="switchSubpill('learn','projects')">Projects</button>
+        </div>
+
+        <!-- Briefs (was the old Learn tab content) -->
+        <div id="subpill-learn-briefs" class="subpill-content">
+            <div id="brief-learning">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div id="subpill-learn-notes" class="subpill-content hidden">
+            <div class="flex justify-end mb-3">
+                <button onclick="openLibraryModal('notes')"
+                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition">+ New Note</button>
+            </div>
+            <div id="library-notes-list" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Projects -->
+        <div id="subpill-learn-projects" class="subpill-content hidden">
+            <div class="flex justify-end mb-3">
+                <button onclick="openLibraryModal('projects')"
+                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition">+ New Project</button>
+            </div>
+            <div id="library-projects-list" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+            </div>
         </div>
     </div>
 
     <!-- ============================== -->
-    <!-- TAB: Brief                     -->
+    <!-- TAB: Work (EPS / Brand)        -->
     <!-- ============================== -->
-    <div id="page-brief" class="page-content hidden">
+    <div id="page-work" class="page-content hidden">
         <div class="flex items-center justify-between mb-4">
-            <h1 class="text-2xl font-bold">Work Brief</h1>
+            <h1 class="text-2xl font-bold">Work</h1>
             <button onclick="refreshBrief()" id="brief-refresh-btn" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
         </div>
 
-        <!-- Sub-nav pills -->
+        <!-- Sub-pills -->
         <div class="flex gap-2 mb-5">
-            <button class="brief-pill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white" data-section="eps" onclick="switchBrief('eps')">EPS</button>
-            <button class="brief-pill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400" data-section="personal" onclick="switchBrief('personal')">Personal</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
+                    data-tab="work" data-pill="eps"
+                    onclick="switchSubpill('work','eps')">EPS</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
+                    data-tab="work" data-pill="brand"
+                    onclick="switchSubpill('work','brand')">Brand</button>
         </div>
 
-        <!-- Brief content sections -->
-        <div id="brief-eps" class="brief-section">
-            <div class="text-gray-400 text-center py-8 text-sm">Loading...</div>
+        <!-- EPS sub-pill: brief content + EPS cold-call dashboard -->
+        <div id="subpill-work-eps" class="subpill-content">
+            <div id="brief-eps">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+            </div>
+
+            <!-- EPS Cold Calling Dashboard (existing) -->
+            <div class="mt-6" id="outreach-dashboard">
+                <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">Cold Calling</div>
+
+                <!-- Coach's Take -->
+                <div class="bg-gradient-to-br from-gray-900 via-gray-900 to-indigo-950/30 border border-indigo-900/40 rounded-xl p-4 mb-3">
+                    <div class="text-[10px] text-indigo-400 uppercase tracking-wider mb-2 flex items-center gap-2 font-semibold">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Coach's Take
+                    </div>
+                    <div id="coach-text" class="text-sm text-gray-200 leading-relaxed">
+                        <span class="text-gray-500 italic">Reading your numbers...</span>
+                    </div>
+                </div>
+
+                <!-- Progress ring + today's total -->
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-3">
+                    <div class="flex items-center gap-4">
+                        <div class="relative w-20 h-20 flex-shrink-0">
+                            <svg class="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
+                                <circle cx="40" cy="40" r="34" fill="none" stroke="#1f2937" stroke-width="7"/>
+                                <circle id="goal-ring" cx="40" cy="40" r="34" fill="none" stroke="#3b82f6" stroke-width="7"
+                                        stroke-dasharray="213.6" stroke-dashoffset="213.6" stroke-linecap="round"
+                                        class="transition-all duration-700"/>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="goal-num" class="text-lg font-bold text-white">0</span>
+                                <span class="text-[10px] text-gray-500">/ <span id="goal-target">100</span></span>
+                            </div>
+                        </div>
+                        <div class="flex-1 grid grid-cols-3 gap-2 text-center">
+                            <div>
+                                <div id="ot-convos" class="text-xl font-bold text-emerald-400">0</div>
+                                <div class="text-[10px] text-gray-500 uppercase">Convos</div>
+                            </div>
+                            <div>
+                                <div id="ot-no-answer" class="text-xl font-bold text-gray-400">0</div>
+                                <div class="text-[10px] text-gray-500 uppercase">No Answer</div>
+                            </div>
+                            <div>
+                                <div id="ot-warm" class="text-xl font-bold text-amber-400">0</div>
+                                <div class="text-[10px] text-gray-500 uppercase">Warm</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outcome breakdown -->
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-3">
+                    <div class="text-xs text-gray-500 uppercase tracking-wider mb-3">Today's Outcomes</div>
+                    <div id="outcome-bars" class="space-y-2"></div>
+                </div>
+
+                <!-- Week summary + conv rate -->
+                <div class="grid grid-cols-3 gap-3 mb-3">
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                        <div class="text-[10px] text-gray-500 uppercase mb-1">Week</div>
+                        <div id="ow-total" class="text-xl font-bold text-blue-400">0</div>
+                        <div class="text-[10px] text-gray-500">calls</div>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                        <div class="text-[10px] text-gray-500 uppercase mb-1">Conv Rate</div>
+                        <div id="ow-rate" class="text-xl font-bold text-emerald-400">0%</div>
+                        <div class="text-[10px] text-gray-500">today</div>
+                    </div>
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                        <div class="text-[10px] text-gray-500 uppercase mb-1">Streak</div>
+                        <div id="ow-streak" class="text-xl font-bold text-purple-400">0d</div>
+                        <div class="text-[10px] text-gray-500">days</div>
+                    </div>
+                </div>
+
+                <!-- 14-day trend -->
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-3">
+                    <div class="text-xs text-gray-500 uppercase tracking-wider mb-3">14-Day Trend</div>
+                    <div id="trend-chart" class="flex items-end gap-1 h-24"></div>
+                </div>
+
+                <!-- Coaching nudges -->
+                <div id="nudges-container" class="space-y-2"></div>
+            </div>
         </div>
-        <div id="brief-personal" class="brief-section hidden">
-            <div class="text-gray-400 text-center py-8 text-sm">Loading...</div>
+
+        <!-- Brand sub-pill: ops cards (PH outreach + cold calls + content) -->
+        <div id="subpill-work-brand" class="subpill-content hidden">
+            <div id="brief-personal">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+            </div>
+
+            <div class="mt-6">
+                <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">Brand Ops</div>
+                <div id="ops-cards" class="space-y-3">
+                    <div class="text-gray-400 italic text-center py-6 text-sm">Loading...</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- ============================== -->
-    <!-- TAB: Spend                     -->
+    <!-- TAB: Content                   -->
     <!-- ============================== -->
-    <div id="page-spend" class="page-content hidden">
-        <h1 class="text-xl font-bold mb-4">Spend Tracker</h1>
-
-        <!-- Date Nav (Spend) -->
+    <div id="page-content" class="page-content hidden">
         <div class="flex items-center justify-between mb-4">
-            <button onclick="changeDate(-1)" class="p-2 text-gray-400 hover:text-white transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </button>
-            <div class="text-center">
-                <div id="spend-date-display" class="text-base font-semibold">{{ date }}</div>
+            <h1 class="text-2xl font-bold">Content</h1>
+            <button onclick="loadContentOps()" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
+        </div>
+
+        <!-- Top-line stats -->
+        <div class="grid grid-cols-3 gap-3 mb-5">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                <div class="text-[10px] text-gray-500 uppercase mb-1">Scripts</div>
+                <div id="content-scripts" class="text-xl font-bold text-blue-400">0</div>
+                <div class="text-[10px] text-gray-500">ready</div>
             </div>
-            <button onclick="changeDate(1)" class="p-2 text-gray-400 hover:text-white transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-            </button>
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                <div class="text-[10px] text-gray-500 uppercase mb-1">Recordings</div>
+                <div id="content-recordings" class="text-xl font-bold text-amber-400">0</div>
+                <div class="text-[10px] text-gray-500">in buffer</div>
+            </div>
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                <div class="text-[10px] text-gray-500 uppercase mb-1">Posted</div>
+                <div id="content-posted" class="text-xl font-bold text-emerald-400">0</div>
+                <div class="text-[10px] text-gray-500">this week</div>
+            </div>
         </div>
 
-        <!-- Totals -->
-        <div id="spend-totals" class="text-base text-center mb-4">
-            <span class="text-gray-500">No data</span>
+        <!-- Sub-pills -->
+        <div class="flex gap-2 mb-5">
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
+                    data-tab="content" data-pill="pipeline"
+                    onclick="switchSubpill('content','pipeline')">Pipeline</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
+                    data-tab="content" data-pill="buffer"
+                    onclick="switchSubpill('content','buffer')">Buffer</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
+                    data-tab="content" data-pill="published"
+                    onclick="switchSubpill('content','published')">Published</button>
         </div>
 
-        <!-- Quick-add buttons -->
-        <div class="flex gap-2 mb-4">
-            <button onclick="openSpendModal('Takeout')"
-                    class="flex-1 py-3 bg-amber-900/30 hover:bg-amber-900/50 text-amber-400 rounded-xl text-sm font-medium transition">
-                + Takeout
-            </button>
-            <button onclick="openSpendModal('General')"
-                    class="flex-1 py-3 bg-blue-900/30 hover:bg-blue-900/50 text-blue-400 rounded-xl text-sm font-medium transition">
-                + General
-            </button>
+        <!-- Pipeline -->
+        <div id="subpill-content-pipeline" class="subpill-content">
+            <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Upcoming Film Schedule</div>
+            <div id="content-pipeline" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+            </div>
         </div>
 
-        <!-- Today's entries -->
-        <div id="spend-list" class="space-y-1.5">
-            <div class="text-center text-gray-500 text-sm py-4">Loading...</div>
+        <!-- Buffer -->
+        <div id="subpill-content-buffer" class="subpill-content hidden">
+            <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Scripts Ready / Recordings Done</div>
+            <div id="content-buffer" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Published -->
+        <div id="subpill-content-published" class="subpill-content hidden">
+            <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Published</div>
+            <div id="content-published" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+            </div>
+            <div class="text-xs text-gray-500 italic text-center mt-4">Analytics coming soon</div>
+        </div>
+    </div>
+
+    <!-- ============================== -->
+    <!-- TAB: Outreach                  -->
+    <!-- ============================== -->
+    <div id="page-outreach" class="page-content hidden">
+        <div class="flex items-center justify-between mb-4">
+            <h1 class="text-2xl font-bold">Outreach</h1>
+            <button onclick="loadOutreachOps()" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
+        </div>
+
+        <!-- Sub-pills -->
+        <div class="flex gap-2 mb-5">
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
+                    data-tab="outreach" data-pill="cold-call"
+                    onclick="switchSubpill('outreach','cold-call')">Cold Call</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
+                    data-tab="outreach" data-pill="cold-dm"
+                    onclick="switchSubpill('outreach','cold-dm')">Cold DM</button>
+        </div>
+
+        <!-- Cold Call (US painters) -->
+        <div id="subpill-outreach-cold-call" class="subpill-content">
+            <a href="http://localhost:5001" target="_blank"
+               class="block w-full mb-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium text-center transition">
+                Open CRM Kanban &rarr;
+            </a>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                    <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Active Leads</div>
+                    <div id="cc-active" class="text-2xl font-bold text-blue-400">0</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                    <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Due Today</div>
+                    <div id="cc-due" class="text-2xl font-bold text-amber-400">0</div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
+                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Next Action</div>
+                <div id="cc-next-action" class="text-sm text-gray-200">Loading...</div>
+                <div class="text-[10px] text-gray-500 mt-2">Last sent: <span id="cc-last-sent">--</span></div>
+            </div>
+
+            <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Follow-Ups Due Today</div>
+            <div id="cc-followups" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-6 text-sm">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Cold DM (PH outreach) -->
+        <div id="subpill-outreach-cold-dm" class="subpill-content hidden">
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <div class="text-[10px] text-gray-500 uppercase mb-1">Queue</div>
+                    <div id="ph-queue" class="text-xl font-bold text-blue-400">0</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <div class="text-[10px] text-gray-500 uppercase mb-1">Sent</div>
+                    <div id="ph-sent" class="text-xl font-bold text-emerald-400">0</div>
+                    <div class="text-[10px] text-gray-500">today</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <div class="text-[10px] text-gray-500 uppercase mb-1">Replies</div>
+                    <div id="ph-replies" class="text-xl font-bold text-amber-400">0</div>
+                    <div class="text-[10px] text-gray-500">pending</div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
+                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Follow-Ups Due</div>
+                <div id="ph-followups-due" class="text-2xl font-bold text-amber-400">0</div>
+            </div>
+
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Next Action</div>
+                <div id="ph-next-action" class="text-sm text-gray-200">Loading...</div>
+                <div class="text-[10px] text-gray-500 mt-2">Last queue: <span id="ph-last-run">--</span></div>
+            </div>
         </div>
     </div>
 
@@ -372,22 +564,80 @@
     </div>
 </div>
 
+<!-- Library Modal (notes/projects create+edit) -->
+<div id="library-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end justify-center"
+     onclick="if(event.target===this)closeLibraryModal()">
+    <div class="bg-gray-900 rounded-t-2xl border-t border-gray-700 w-full max-w-lg p-5 space-y-4 animate-slide-up max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+            <h3 id="library-modal-title" class="text-lg font-semibold text-white">New Note</h3>
+            <button onclick="closeLibraryModal()" class="text-gray-400 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <input type="hidden" id="library-collection" value="notes">
+        <input type="hidden" id="library-item-id" value="">
+
+        <div>
+            <label class="text-xs text-gray-400 uppercase tracking-wider">Title</label>
+            <input id="library-title" type="text" placeholder="Title"
+                   class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-base text-white focus:border-blue-500 outline-none">
+        </div>
+
+        <div>
+            <label class="text-xs text-gray-400 uppercase tracking-wider">Tags (comma-separated)</label>
+            <input id="library-tags" type="text" placeholder="tag1, tag2"
+                   class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none">
+        </div>
+
+        <div>
+            <label class="text-xs text-gray-400 uppercase tracking-wider">Body (markdown)</label>
+            <textarea id="library-body" rows="10" placeholder="Write..."
+                      class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 font-mono focus:border-blue-500 outline-none"></textarea>
+        </div>
+
+        <div class="flex gap-2">
+            <button onclick="deleteLibraryItem()" id="library-delete-btn"
+                    class="px-4 py-2.5 bg-red-900/50 hover:bg-red-900 text-red-300 rounded-xl text-sm font-medium transition hidden">
+                Delete
+            </button>
+            <button onclick="saveLibraryItem()" id="library-save-btn"
+                    class="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium transition">
+                Save
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Deal Context Panel -->
+<div id="deal-panel" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end justify-center"
+     onclick="if(event.target===this)closeDealPanel()">
+    <div class="bg-gray-900 rounded-t-2xl border-t border-gray-700 w-full max-w-lg p-5 animate-slide-up max-h-[80vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4">
+            <h3 id="deal-panel-title" class="text-lg font-semibold text-white">Deal</h3>
+            <button onclick="closeDealPanel()" class="text-gray-400 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div id="deal-panel-content">
+            <div class="text-gray-500 text-center py-4 text-sm loading-pulse">Loading...</div>
+        </div>
+    </div>
+</div>
+
 <!-- Bottom Tab Bar -->
 <nav class="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-40 pb-[env(safe-area-inset-bottom)]">
     <div class="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto flex">
-        <button onclick="switchTab('home')" data-tab="home"
+        <button onclick="switchTab('personal')" data-tab="personal"
                 class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-green-400">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
             </svg>
-            Home
-        </button>
-        <button onclick="switchTab('habits')" data-tab="habits"
-                class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-            </svg>
-            Habits
+            Personal
         </button>
         <button onclick="switchTab('learn')" data-tab="learn"
                 class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
@@ -396,19 +646,26 @@
             </svg>
             Learn
         </button>
-        <button onclick="switchTab('brief')" data-tab="brief"
+        <button onclick="switchTab('work')" data-tab="work"
                 class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
-            Work Brief
+            Work
         </button>
-        <button onclick="switchTab('spend')" data-tab="spend"
+        <button onclick="switchTab('content')" data-tab="content"
                 class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
             </svg>
-            Spend
+            Content
+        </button>
+        <button onclick="switchTab('outreach')" data-tab="outreach"
+                class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0019 4H5.21l-.94-2H1v2h2zm16 16c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM7 21c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+            </svg>
+            Outreach
         </button>
     </div>
 </nav>

@@ -31,7 +31,7 @@ JOB SUMMARY
 
 ---
 
-4. GENERAL EXCLUSIONS
+4. EXCLUSIONS
 * Works outside agreed daily tasks without prior approval
 * Major surface preparation, structural repairs, or restoration work unless specifically agreed
 * Any variation to agreed scope will be discussed and approved before proceeding

@@ -70,7 +70,7 @@ JOB SUMMARY
 
 ---
 
-7. GENERAL EXCLUSIONS
+7. EXCLUSIONS
 * Structural roof repairs
 * Roof replacements
 * Electrical works

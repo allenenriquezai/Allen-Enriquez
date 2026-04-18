@@ -18,7 +18,7 @@ from __future__ import annotations
 import argparse
 import re
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 # --- Config ---
 
@@ -26,6 +26,13 @@ WIDTH = 1080
 HEIGHT = 1350  # 4:5 ratio — optimal for IG/FB feed
 
 BRAND_BLUE = (2, 179, 233)  # #02B3E9
+
+# Profile header
+PROFILE_PHOTO_PATH = Path(__file__).resolve().parent.parent / "projects" / "personal" / "assets" / "profile.png"
+PROFILE_NAME = "Allen Enriquez"
+PROFILE_HANDLE = "@allenenriquezz"
+PROFILE_PHOTO_SIZE = 100  # diameter
+PROFILE_BORDER_WIDTH = 5
 
 # Colors
 BG = (255, 255, 255)
@@ -148,6 +155,58 @@ def draw_handle(draw: ImageDraw.ImageDraw, handle: str):
     )
 
 
+def draw_profile_header(img: Image.Image, draw: ImageDraw.ImageDraw, y_start: int = 100) -> int:
+    """Draw circular profile photo + name + handle. Returns y after header."""
+    photo_size = PROFILE_PHOTO_SIZE
+    border = PROFILE_BORDER_WIDTH
+
+    # Load and crop photo to circle
+    if PROFILE_PHOTO_PATH.exists():
+        photo = Image.open(PROFILE_PHOTO_PATH).convert("RGBA")
+        # Crop to square (center crop)
+        w, h = photo.size
+        side = min(w, h)
+        left = (w - side) // 2
+        top = (h - side) // 2
+        photo = photo.crop((left, top, left + side, top + side))
+        photo = photo.resize((photo_size, photo_size), Image.LANCZOS)
+
+        # Create circular mask
+        mask = Image.new("L", (photo_size, photo_size), 0)
+        mask_draw = ImageDraw.Draw(mask)
+        mask_draw.ellipse([0, 0, photo_size - 1, photo_size - 1], fill=255)
+
+        # Draw blue border circle on img
+        border_size = photo_size + border * 2
+        photo_x = PADDING_X
+        border_x = photo_x - border
+        border_y = y_start - border
+        draw.ellipse(
+            [border_x, border_y, border_x + border_size, border_y + border_size],
+            fill=ACCENT,
+        )
+
+        # Paste circular photo
+        img.paste(photo, (photo_x, y_start), mask)
+    else:
+        photo_x = PADDING_X
+        border_size = photo_size + border * 2
+
+    # Name — bold, right of photo
+    name_font = load_font(FONT_HEADER_PATHS, 52, bold=True)
+    handle_font = load_font(FONT_BODY_PATHS, 32)
+
+    text_x = photo_x + photo_size + border + 24
+    name_y = y_start + 10
+    draw.text((text_x, name_y), PROFILE_NAME, fill=TEXT_PRIMARY, font=name_font)
+
+    # Handle — below name
+    handle_y = name_y + 52
+    draw.text((text_x, handle_y), PROFILE_HANDLE, fill=TEXT_SECONDARY, font=handle_font)
+
+    return y_start + photo_size + border * 2 + 30
+
+
 def draw_slide_counter(draw: ImageDraw.ImageDraw, current: int, total: int):
     """Draw slide counter at top-right."""
     font = load_font(FONT_BODY_PATHS, 26)
@@ -193,8 +252,8 @@ def measure_text_block(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.Fre
     return total
 
 
-def render_title_slide(text: str, slide_num: int, total: int, handle: str) -> Image.Image:
-    """Slide 1: hook/title. Big bold header, optional subtitle, accent bar. Vertically centered."""
+def render_title_slide(text: str, slide_num: int, total: int, handle: str, show_profile: bool = True) -> Image.Image:
+    """Slide 1: optional profile header + hook/title. Big bold header, optional subtitle, accent bar."""
     img = Image.new("RGB", (WIDTH, HEIGHT), BG)
     draw = ImageDraw.Draw(img)
 
@@ -206,25 +265,26 @@ def render_title_slide(text: str, slide_num: int, total: int, handle: str) -> Im
         header = text
         subtitle = ""
 
-    # Accent bar at top
-    draw.rectangle([0, 0, WIDTH, 12], fill=ACCENT)
+    if show_profile:
+        profile_bottom = draw_profile_header(img, draw, y_start=PADDING_TOP)
+        safe_top = profile_bottom + 40
+    else:
+        # Accent bar at top
+        draw.rectangle([0, 0, WIDTH, 12], fill=ACCENT)
+        safe_top = 60
 
-    # Safe area: below accent bar, above handle/dots
-    safe_top = 60  # below accent bar
-    safe_bottom = HEIGHT - 160  # above handle + dots
+    safe_bottom = HEIGHT - 160
     safe_h = safe_bottom - safe_top
 
     header_font = load_font(FONT_HEADER_PATHS, 110, bold=True)
 
     if subtitle:
         sub_font = load_font(FONT_BODY_PATHS, 56, bold=True)
-        # Measure total content block: header + bar + subtitle
         header_h = measure_text_block(draw, header, header_font, MAX_TEXT_WIDTH, 16)
         bar_gap = 30 + ACCENT_BAR_HEIGHT + 30
         subtitle_h = measure_text_block(draw, subtitle, sub_font, MAX_TEXT_WIDTH, 14)
         total_block = header_h + bar_gap + subtitle_h
 
-        # Center within safe area
         block_y = safe_top + (safe_h - total_block) // 2
         header_bottom = draw_text_block(draw, header, header_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, block_y, line_spacing=16, align="left")
         draw_accent_bar(draw, header_bottom + 30)
@@ -234,8 +294,6 @@ def render_title_slide(text: str, slide_num: int, total: int, handle: str) -> Im
         header_y = safe_top + (safe_h - header_h) // 2
         draw_text_block(draw, header, header_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, header_y, line_spacing=16, align="left")
 
-    if handle:
-        draw_handle(draw, handle)
     draw_swipe_dots(draw, slide_num, total)
 
     return img
@@ -292,16 +350,18 @@ def render_content_slide(text: str, slide_num: int, total: int, content_num: int
     return img
 
 
-def render_cta_slide(text: str, slide_num: int, total: int, handle: str) -> Image.Image:
-    """Last slide: CTA with accent bar and handle."""
+def render_cta_slide(text: str, slide_num: int, total: int, handle: str, show_profile: bool = True) -> Image.Image:
+    """Last slide: optional profile header + CTA."""
     img = Image.new("RGB", (WIDTH, HEIGHT), BG)
     draw = ImageDraw.Draw(img)
 
-    # Accent bar at top
-    draw.rectangle([0, 0, WIDTH, 12], fill=ACCENT)
+    if show_profile:
+        profile_bottom = draw_profile_header(img, draw, y_start=PADDING_TOP)
+        safe_top = profile_bottom + 40
+    else:
+        draw.rectangle([0, 0, WIDTH, 12], fill=ACCENT)
+        safe_top = 60
 
-    # CTA text — centered in safe area (below bar, above handle/dots)
-    safe_top = 60
     safe_bottom = HEIGHT - 160
     safe_h = safe_bottom - safe_top
 
@@ -310,8 +370,6 @@ def render_cta_slide(text: str, slide_num: int, total: int, handle: str) -> Imag
     y_start = safe_top + (safe_h - total_h) // 2
     draw_text_block(draw, text, cta_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, y_start, line_spacing=16, align="left")
 
-    if handle:
-        draw_handle(draw, handle)
     draw_swipe_dots(draw, slide_num, total)
 
     return img
@@ -322,8 +380,9 @@ def render_cta_slide(text: str, slide_num: int, total: int, handle: str) -> Imag
 def generate_carousel(
     topic: str,
     num_slides: int,
-    handle: str = "@allenenriquez",
+    handle: str = "@allenenriquezz",
     copy: list[str] | None = None,
+    show_profile: bool = True,
 ) -> Path:
     """Generate all carousel slides and save to .tmp/carousels/<slug>/."""
     slug = slugify(topic)
@@ -346,9 +405,9 @@ def generate_carousel(
         slide_num = i + 1
 
         if slide_num == 1:
-            img = render_title_slide(text, slide_num, num_slides, handle)
+            img = render_title_slide(text, slide_num, num_slides, handle, show_profile=show_profile)
         elif slide_num == num_slides:
-            img = render_cta_slide(text, slide_num, num_slides, handle)
+            img = render_cta_slide(text, slide_num, num_slides, handle, show_profile=show_profile)
         else:
             content_num = slide_num - 1  # 1-based content counter
             img = render_content_slide(text, slide_num, num_slides, content_num, content_total, handle)
@@ -371,12 +430,13 @@ def main():
     parser = argparse.ArgumentParser(description="Generate Hormozi-style carousel PNGs")
     parser.add_argument("--topic", required=True, help="Carousel topic / hook text")
     parser.add_argument("--slides", type=int, default=7, help="Number of slides (default: 7)")
-    parser.add_argument("--handle", default="@allenenriquez", help="Social handle (default: @allenenriquez)")
+    parser.add_argument("--handle", default="@allenenriquezz", help="Social handle (default: @allenenriquezz)")
     parser.add_argument(
         "--copy-file",
         default=None,
         help="Path to a text file with slide copy (separated by '--- Slide N ---')",
     )
+    parser.add_argument("--no-profile", action="store_true", help="Skip profile header on title and CTA slides")
 
     args = parser.parse_args()
 
@@ -398,6 +458,7 @@ def main():
         num_slides=args.slides,
         handle=args.handle,
         copy=copy,
+        show_profile=not args.no_profile,
     )
 
     print(f"\nDone. Files in: {output}/")

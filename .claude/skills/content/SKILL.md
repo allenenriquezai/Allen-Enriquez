@@ -13,15 +13,23 @@ Pick the right workflow based on Allen's request:
 |---|---|
 | "plan", "status", "what to film", "today", "report", "campaign", "schedule" | `projects/personal/workflows/content/content-calendar.md` |
 | "write", "generate", "script", "draft", "reel", "youtube", "post", "linkedin" | `projects/personal/workflows/content/content-creation.md` |
-| "research", "hooks", "trending", "competitors" | `projects/personal/workflows/content/content-research.md` |
+| "research", "hooks", "trending", "competitors" | **→ Use `/content-research` skill instead** |
+| "edit video", "cut footage", "edit reel", "video editing" | **→ Use `/video-edit` skill instead** |
 
 ## How to run
 
-1. Read `projects/personal/CONTEXT.md` for brand rules, voice, and quality gate
-2. Read the matching workflow from the table above
-3. Follow it
+1. **Immediately on invoke** — before asking Allen what task — load all 5 brand context files:
+   - `projects/personal/CONTEXT.md` (brand foundation, voice, quality gate)
+   - `projects/personal/reference/content-strategy-v2.md` (current strategy + frameworks)
+   - `projects/personal/reference/hormozi-style-guide.md`
+   - `projects/personal/workflows/content/content-creation.md`
+   - `projects/personal/reference/intel/icp-language.md`
+2. Ask Allen which mode (plan / write) if not already clear
+3. Read the matching workflow from the routing table
+4. Follow the workflow
 
 ## Rules
 - Do NOT post anything — only draft and show for approval
 - Always check `projects/personal/CONTEXT.md` voice rules before writing any content
+- For content writing: also load `hormozi-style-guide.md` + `content-creation.md` + `icp-language.md`
 - If Allen asks to regenerate, re-run the same workflow

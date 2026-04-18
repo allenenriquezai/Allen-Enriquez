@@ -155,14 +155,4 @@ Agencies sell project-based builds, but AI systems need ongoing maintenance. Mis
 5. **Nobody trusts "AI experts"** — they trust people who use AI in real work
 6. **Past the hype phase** — 2026 buyers want ROI proof, not cool demos
 
-## Content Hook Ideas (from their language)
-
-1. "I manage $100K/month in sales. My AI does 80% of the admin." — proof hook
-2. "VAs are getting replaced. Here's how to make sure it's not you." — fear + solution
-3. "I'm not a tech guy. I'm a sales guy. And I built this." — relatability
-4. "This one automation saves me 5 hours every week." — specific result
-5. "I'm giving away what others charge $5,000 for." — generosity hook
-6. "Stop doing follow-ups manually. Here's what I do instead." — pattern interrupt
-7. "Why 85% of AI projects fail (and how to be the 15%)" — credibility builder
-8. "The #1 mistake small businesses make with AI automation" — broken process angle
-9. "Filipino VAs: here's exactly what to learn in 2026" — practical upskill guide
+> Hook patterns and templates: see `reference/hormozi-style-guide.md`

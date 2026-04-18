@@ -1,3 +1,120 @@
+## 2026-04-18 — US painter sales asset stack + Enriquez OS app reorg
+**Problem:** (1) Cold-calling US painting companies produced warm interest but lost every lead at email stage — no lead magnet, landing page, calendar, or follow-up. (2) Allen couldn't see which automations were running or rotting — PH outreach, cold calls, content all in different files/sheets/apps. Wanted "one app to operate everything."
+**Change:**
+- US painter sales stack: `projects/personal/sales-assets/` (lead magnet PDF, one-pager PDF, follow-up sequence, invoice template, demo video script, two `build_*.py` PDF generators) + `projects/personal/landing-page/` (static HTML + CSS, GitHub Pages-ready) + `tools/cold_call_followup.py` (4-email Day 0/2/5/10 automation, attaches PDF, tracks JSON state).
+- Campaigns scaffolded: `projects/personal/campaigns/{us-painters,ph-outbound}/{offer.md, icp.md, assets.md, pipeline.md}`.
+- Library scaffolded: `projects/personal/library/{notes,projects,links}/`.
+- Dashboard reorg: 5 tabs (Personal/Learn/Work/Content/Outreach) with sub-pills, replacing Home/Habits/Learn/Brief/Spend. New blueprints `routes_ops.py` (4 endpoints aggregating PH outreach + cold call + content state) and `routes_notes.py` (CRUD on library markdown). New JS `static/{ops.js, library.js}`. `app.py` registers both. Gunicorn restarted, all endpoints live.
+- Memory: `project_personal_brand_strategy.md` rewritten (US painters cold-call primary, supersedes "PH content-led" framing). `reference_jordan_platten.md` added (deferred Q3+).
+**Why:** Cold calls already produced warm interest — gap was conversion infrastructure, not lead volume. Quote builder ($297-$497 entry) chosen because Allen runs it daily at EPS for $114K/mo — provable from day one. Lead-gen-as-a-service rejected (Allen can't deliver leads today). Free Google Calendar over paid Calendly per Allen preference. Dashboard reorg done as render-only over markdown/JSON files — single source of truth in repo, AI keeps reading same files. Cloud migration considered, deferred — local solid first. CRM Kanban merge deferred — link from Outreach tab for now. 4 parallel sub-agents used for the build wave (campaigns + 2 blueprints + UI refactor) — cut wall time ~4x vs serial.
+**Criteria:** Speed: + (5-min PDF build, 72hr offer, one-glance ops view) | Cost: = ($0 — no paid tools added) | Accuracy: + (single source of truth preserved, no data duplication) | Scale: + (campaigns folder template fits N campaigns, library accepts N notes/projects)
+**Next:** Replace calendar + demo video placeholders. Lock PH offer pricing. Build PH lead magnets per niche. Make actual cold calls / send actual DMs (assets exist, no leads through them yet). Future: chat-as-action-bus, CRM Kanban merge into Outreach tab, cloud migration.
+
+## 2026-04-18 — PH outbound outreach system
+**Problem:** No PH market outbound for personal brand consultancy. Allen refuses daily manual prospecting/writing. Cold FB/IG DM automation = ban risk. Pure $0 rules out paid tools.
+**Change:** `tools/outreach.py` (main CLI: discover, enrich, queue, log-sent, followups, replies, stats). 4 modules: `outreach_sources.py` (Places + BusinessList + JobStreet + Kalibrr + FB inbox), `outreach_enrich.py` (website + Snov + Hunter + FB Graph + Haiku hook), `outreach_messages.py` (12 templates + Haiku generator + queue markdown), `outreach_lifecycle.py` (log-sent parser + followup detector + reply drafter). `projects/personal/templates/outreach/` 12 template files. `outreach_config.yaml` limits + segments + guardrails. 2 launchd plists (daily 6am + Sunday 3am). `workflows/sales/ph-outreach-system.md` SOP. `/personal-ph-outreach` skill. 2 new sheets (PH Outreach CRM, PH FB Groups curated).
+**Why:** Automate everything up to send, keep send manual (platform ban protection). Haiku 4.5 (~$3-5/mo) chosen over pure $0 templates because personalisation = 3-5x reply rate. Recruitment/VA + real estate brokerages locked as segments (Tier 1 ICP from research: budget + daily pain + tech-literate). Skipped ManyChat (engagement too low), WhatsApp outbound (opt-in funnel barrier), LinkedIn paid tools (budget), dental/small biz (phase 2). 4 parallel sub-agents built Phases 2-5 simultaneously, cut build time ~4x.
+**Criteria:** Speed: + | Cost: - (Haiku $3-5/mo) | Accuracy: + | Scale: +
+**Next:** Allen adds API keys (Places required, Snov/Hunter/FB Graph optional). Launchctl load. Join 5 Priority-1 FB groups. First real queue fires Apr 19 6am — validate voice quality on first 5 messages. Verify BusinessList/JobStreet/Kalibrr selectors live.
+
+## 2026-04-18 — Feedback loop — outcome tracking + pattern detection
+**Problem:** Outbound actions (emails, quotes, content, outreach) had no closed feedback loop. Outcomes vanished — no tracking of replies, win rates, or content performance. Intel docs updated manually. Workflow SOPs never improved from data.
+**Change:** `tools/log_outcome.py` (outcome logger CLI, 7 action types). `tools/check_outcomes.py` (EOD checker: Pipedrive deal stage, Gmail reply search, outreach log cross-ref, manual content queue; pattern detection across template/tag/domain; intel doc auto-append; workflow_flags.json generation). `automation/com.enriquezOS.eod-ops.plist` chained after crm_sync. `.claude/skills/start/SKILL.md` added Outcome + Workflow Flags sections.
+**Why:** Deterministic rules (5+ data points, 1.5x+ ratio) over LLM — zero cost, catches 80% of signal. Single JSONL log for append speed + grep. Intel docs append-only preserves history. Blotato/paid tools deferred until content volume justifies. Social APIs (Meta Graph, YouTube Data) deferred pending account setup decisions.
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: +
+**Next:** Build Meta Graph + YouTube Data checkers once Allen confirms channel/page/IG account setup. First real data from weekend content batch.
+
+## 2026-04-17 — Quote workflow: hyperlinks + deal value
+**Problem:** Pipedrive notes showed raw URLs instead of clickable hyperlinks. Deal value was never set after quoting — pipeline reports showed $0 for quoted deals.
+**Change:** `qa_quote.py` — added `_urls_to_links()` to convert email body URLs to `<a href>` in Pipedrive notes. `update_pipedrive_deal.py` — added `--field value --value` support. `create-quote.md` — added deal value step to Stage 4d.
+**Why:** Allen sends quotes via Pipedrive (copy from note). Raw URLs look unprofessional and require manual linking. Deal value needed for pipeline reporting accuracy.
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: =
+**Next:** Verify hyperlinks render correctly in next quote sent via Pipedrive.
+
+## 2026-04-17 — Context diet — personal brand token reduction
+**Problem:** Personal brand tasks loaded CONTEXT.md + 8 mandatory blocking files (~11,500 tokens). Voice rules, hook patterns, quality checklist, audience notes, and script structures were duplicated 2-3x across files.
+**Change:** Deduplicated 6 sections across 4 files. Inlined unique memory bits (team, timeline, self-quote) into CONTEXT.md. Replaced "load all 8" blocking loader with task-type tiered loading. Updated content skill and feedback memory. Total: CONTEXT.md, hormozi-style-guide.md, content-creation.md, icp-language.md, content/SKILL.md, feedback_content_load_context.md.
+**Why:** Graphify plugin (code graph) was considered but only indexes code via Tree-sitter — can't touch markdown context files. Deduplication + conservative tiers chosen over strict tiers to preserve output quality. Content writing tier always includes ICP language to prevent generic scripts.
+**Criteria:** Speed: = | Cost: + | Accuracy: = | Scale: =
+**Next:** Test with `/content` skill. Consider similar diet for EPS context.
+
+## 2026-04-17 — CRM sync baseline fix + quote template restructure
+**Problem:** CRM sync missed SM8 Work Order status for deals that were never cached or already Work Order on first sync (Jeevan Paila case). Job description templates mixed deal-specific exclusions into GENERAL EXCLUSIONS section.
+**Change:** `crm_sync.py` — added baseline mismatch check after transition detection; expanded `advance_from` to include SITE VISIT + QUOTE IN PROGRESS stages. 16 job description templates — renamed GENERAL EXCLUSIONS/QUOTE EXCLUSIONS → EXCLUSIONS. `internal_painting.md` — restructured SCOPE OF WORK with A/B/C subsections + C. NOTES for deal-specific items. Updated `create-quote.md` and `qa.md` section references.
+**Why:** Baseline check needed because transition-only logic silently missed deals where SM8 was already ahead. Exclusion rename because GENERAL implies another type exists; deal-specific items belong in SCOPE OF WORK → C. NOTES where they're contextual.
+**Criteria:** Speed: = | Cost: = | Accuracy: + | Scale: =
+**Next:** Run sync live to apply 5 pending DEPOSIT moves. Consider adding A/B/C structure to other painting templates.
+
+## 2026-04-17 — SM8 → Pipedrive full sync + automation health
+**Problem:** SM8 job status (Work Order, Completed), site visits, and activities weren't reflected in Pipedrive. Allen had to check two systems. launchd automations had stale exit codes and no monitoring.
+**Change:** `crm_sync.py` — restructured to sync ALL SM8 activities to Pipedrive (not just diff deals), auto-advance to DEPOSIT on Work Order, UUID-based dedup via `posted_to_pd` column. `eps-dashboard/app.js` — removed SM8 note filter, added color-coded note borders. New: `com.enriquezOS.crm-sync.plist` (10-min polling), `automation_status.py` + plist (daily WhatsApp report at 3 PM). Fixed 4 shell scripts with 3x retry logic. Symlinked all plists.
+**Why:** Allen works in Pipedrive, ops team works in SM8. Polling chosen over n8n/webhooks because Allen wants zero external tool setup. 10-min interval balances freshness vs SM8 rate limits.
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: +
+**Next:** Add SM8 SMS/email/call sync. Monitor 429 rate limits at 10-min polling frequency.
+
+## 2026-04-17 — Split CRM skills: /personal-crm + /eps-crm
+**Problem:** Single `/crm` skill only covered personal brand Google Sheets CRM. EPS Pipedrive CRM had 5 CLI tools but no skill wrapper — required manual tool invocation or workflow doc navigation.
+**Change:** Renamed `.claude/skills/crm/` → `.claude/skills/personal-crm/`. Created `.claude/skills/eps-crm/SKILL.md` wrapping `crm_monitor.py`, `crm_sync.py`, `pipedrive_activities.py`, `pipedrive_create.py`, `update_pipedrive_deal.py`.
+**Why:** Allen needs quick invoke for both CRM systems. Naming was ambiguous — "CRM" could mean either. Skill wrapper removes need to remember tool names and CLI flags.
+**Criteria:** Speed: + | Cost: = | Accuracy: = | Scale: +
+**Next:** Test both skills live. Consider adding single-deal deep lookup action.
+
+## 2026-04-16 — Carousel generator: profile header + no-profile flag
+**Problem:** Carousel slides needed optional profile header (circular photo, name, handle) like Hormozi/Dan Martell style. Also needed ability to generate without it for Canva workflows.
+**Change:** `tools/generate_carousel.py` — added `draw_profile_header()`, `--no-profile` CLI flag, `show_profile` param on title/CTA renderers. `projects/personal/assets/profile.png` — saved profile photo. Updated default handle to @allenenriquezz.
+**Why:** Allen uses Canva for final styling, so needs clean slides without baked-in branding. Profile header stays available for standalone PNG output.
+**Criteria:** Speed: + | Cost: = | Accuracy: = | Scale: +
+**Next:** Canva Connect MCP integration for direct text push into Canva templates
+
+## 2026-04-16 — Quote template section spacing fix
+**Problem:** Job description sections in Google Docs ran together with no visual separation. Allen flagged it looked cramped.
+**Change:** `tools/fill_quote_template.py` line 177 — changed `"\n".join()` to `"\n\n".join()` for job_description array. Adds blank line between sections, keeps bullets within sections compact.
+**Why:** `\n` only separates array items by one line break (no visual gap). `\n\n` adds a blank line between sections without affecting intra-section bullet spacing.
+**Criteria:** Speed: = | Cost: = | Accuracy: + | Scale: +
+**Next:** Monitor if spacing is sufficient or needs `\n\n\n` for bigger gaps
+
+## 2026-04-16 — Email format rules + liquid nail add-on saved to SOP
+**Problem:** Email format preferences (bullet points, bold concerns, discount phrasing) and liquid nail service add-on not documented. Next session would lose context.
+**Change:** `projects/eps/workflows/sales/create-quote.md` — added email format rules section. `projects/eps/job_descriptions/misc_painting_repairs.md` — added liquid nail add-on with one-bullet-per-section pattern.
+**Why:** Allen corrected email draft from paragraphs to bullet points. Liquid nail is a recurring add-on that should be templated.
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: +
+**Next:** Add more add-ons to misc template as they come up
+
+## 2026-04-16 — QA tool fix: accept painting method section
+**Problem:** qa_quote.py hardcoded "CLEANING METHOD" as required section for all quotes. Painting jobs always failed QA.
+**Change:** `tools/qa_quote.py` — now accepts either CLEANING METHOD or PAINTING METHOD. Removed GUARANTEES from hard requirement.
+**Why:** Painting job descriptions use "PAINTING METHOD" per their templates. QA was blocking valid painting quotes.
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: =
+**Next:** Consider service-type-aware section validation (paint vs clean templates have different required sections)
+
+## 2026-04-16 — SOP update: Pipedrive address is custom field
+**Problem:** Quote workflow assumed address was a standard Pipedrive field. It's always a custom field — caused missed address lookup.
+**Change:** `projects/eps/workflows/sales/create-quote.md` — updated Stage 1 intake to specify address lives in custom deal field.
+**Why:** Allen corrected after address was missed on Ronda Jones quote (Deal #1299).
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: =
+**Next:** None
+
+## 2026-04-16 — CRM dropdown cleanup + sticky save button
+**Problem:** "Not Interested - No Convo" redundant with "Hung Up - No Convo". Dropdown order didn't follow natural call escalation. Save button in kanban modal required scrolling — bad for accessibility.
+**Change:** Removed "Not Interested - No Convo" from DROPDOWN_VALUES + DEAD_OUTCOMES (personal_crm.py), OUTCOME_TO_STAGE (crm_kanban/app.py). Reordered dropdown to escalation flow. Migrated 4 sheet rows. Updated validation on 10 tabs. Made modal footer sticky (flex col + overflow-y on body).
+**Why:** Allen uses "Hung Up - No Convo" for same purpose. Fewer options = faster calling flow. Sticky save = less friction during high-volume calling sessions.
+**Criteria:** Speed: + | Cost: = | Accuracy: = | Scale: =
+**Next:** Monitor if any other dropdown options are redundant after more calling sessions.
+
+## 2026-04-16 — Jake-style CLAUDE.md trim
+**Problem:** CLAUDE.md was 131 lines (~1,500+ tokens), loaded every conversation. Half was behavior rules, design principles, correction loops that only matter once inside a workspace. Wasted tokens on every message.
+**Change:** Trimmed CLAUDE.md to 73 lines — pure map + routing + tools access. Moved Design Principles, Behavior, Change Tracking into both workspace CONTEXT.md files. Added Token Management table (explicit load/don't-load per task type). Removed sections already duplicated in CONTEXT.md files (Correction Loop, Quality).
+**Why:** Following Jake Van Clief's (RinDig) pattern more closely. His rule: "right context, not all context." CLAUDE.md should be a map (~800 tokens). Workspace-specific rules load on demand when that workspace is active. Tools & Access table stays in CLAUDE.md so sessions always know their capabilities.
+**Criteria:** Speed: + | Cost: + | Accuracy: = | Scale: =
+**Next:** Test in fresh sessions. Verify EPS and personal tasks still route correctly and load the right context.
+
+## 2026-04-15 — Workspace restructure: kill agents, merge into workflows
+**Problem:** Preferences scattered across 5+ locations (agent files, workflow files, memory files, multiple CLAUDE.md files). Corrections saved to memory but missed during execution because subagents didn't read memory, and even main session missed preferences when info was in the wrong file. Same corrections needed repeatedly.
+**Change:** Deleted 23 agent files, merged into 28 department-organized workflow SOPs. Killed workspace CLAUDE.md files, replaced with CONTEXT.md. Rewrote root CLAUDE.md as lean routing table. Updated 6 skills to read workflows directly instead of spawning agents. Baked 7 memory-stored quoting preferences into create-quote.md. Added correction loop to CLAUDE.md (corrections → update workflow file, not just memory).
+**Why:** Inspired by Jake Van Clief's three-layer architecture (CLAUDE.md → CONTEXT.md → workflows). His simpler pattern gives more deterministic results because: one source of truth per task, main session keeps all context, corrections actually stick. Agent spawning was an optimization that cost accuracy — principle #1 (less Allen input) and #2 (accuracy) both suffered.
+**Criteria:** Speed: = | Cost: + | Accuracy: + | Scale: +
+**Next:** Test `/quote` and `/content` in fresh sessions. Fine-tune workflow files based on real-world use. Trim verbose workflows after testing.
+
 ## 2026-04-14 — Quoting process hard rules + fill_quote_template fix
 **Problem:** Quote creation had multiple process failures: mob fees added without asking, job descriptions rewritten instead of copied from templates, line items lumped together instead of per component/apartment/level, docs left unfilled, wrong pipeline used, totals changed during reformatting.
 **Change:** Updated `eps-quote-agent.md` (added General hard rules + Job Description hard rule), `create-quote.md` workflow (added Hard Rules section + job description rule), `fill_quote_template.py` (changed `\n\n` join to `\n` for compact spacing), `feedback_quoting_process.md` memory (consolidated 7 rules). Added doc naming convention rule.

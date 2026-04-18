@@ -68,10 +68,40 @@ All Python scripts in `tools/`. Run `ls tools/*.py` to see current list.
 - Pricing: `projects/eps/config/pricing.json`
 - Email templates: `projects/eps/templates/email/`
 
+## Design Principles
+
+**Take action.** Build it, ship it, QA it, iterate. Every session moves something forward.
+
+| # | Principle | Target |
+|---|---|---|
+| 1 | **Less Allen Input** | System runs itself. Allen approves, not initiates. Fewer questions, more action. |
+| 2 | **Accuracy** | 95-100%. No fabricated data. QA gates before client output. Fail loud, never silent. |
+| 3 | **Speed** | Fewer steps, faster execution, less waiting. |
+| 4 | **Cost** | As close to $0 as possible. Local over API. Batch over real-time. |
+| 5 | **Scalability** | Works for 1 quote or 50. No hardcoded limits. |
+
+Priority order when trade-offs arise: Less Input > Accuracy > Speed > Cost > Scalability.
+
+## Behavior
+
+- **Push Allen.** Surface content buffer, outreach pace, pending replies, stale intel at session start.
+- Figure out what Allen means. Don't ask unnecessary questions.
+- Pass data via `.tmp/` — never paste large content into context.
+- Check `.tmp/pending_inquiries.json` at session start — surface if items exist.
+- Confirm scope before running paid APIs.
+- Read only files needed for the current task.
+- **End of session:** when Allen says "done" / "that's it" / wraps up → automatically run `/wrap`.
+
+## Change Tracking
+
+- Decisions → `DECISIONS.md` + update relevant files
+- Failures → `projects/eps/reference/incident-log.md`
+- New code/tool → run `/os-gate`. Check `tools/` before building new.
+- Session end → `/wrap` handles handoff + decision log
+
 ## Integrity
 
 - Always fetch data from tools — fabricating data is a critical failure
-- Incidents → `projects/eps/reference/incident-log.md`
 
 ## Correction Loop
 

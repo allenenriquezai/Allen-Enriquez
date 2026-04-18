@@ -1,7 +1,7 @@
 // Service Worker — Enriquez OS Dashboard
 // Enables PWA install + basic offline caching
 
-const CACHE_NAME = 'enriquez-os-v7';
+const CACHE_NAME = 'enriquez-os-v8';
 const PRECACHE = [
     '/',
     '/static/style.css',

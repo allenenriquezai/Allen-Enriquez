@@ -174,7 +174,7 @@ def main():
         with open(data_path, 'w') as f:
             json.dump(data, f, indent=2)
 
-    job_desc = "\n".join(data.get('job_description', []))
+    job_desc = "\n\n".join(data.get('job_description', []))
 
     replacements = {
         '[organizationName]':                          data.get('company_name', ''),

@@ -4,8 +4,15 @@
 let currentDate = new URLSearchParams(window.location.search).get('date')
     || (() => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; })();
 
-// Active tab
-let activeTab = 'home';
+// Active tab + sub-pill state
+let activeTab = 'personal';
+const activeSubpill = {
+    personal: 'habits',
+    learn: 'briefs',
+    work: 'eps',
+    content: 'pipeline',
+    outreach: 'cold-call',
+};
 
 // --- Tab Navigation ---
 function switchTab(tab) {
@@ -29,23 +36,78 @@ function switchTab(tab) {
         }
     });
 
-    // Lazy-load data when switching tabs
-    if (tab === 'spend' && typeof loadSpend === 'function') loadSpend();
-    if (tab === 'brief') {
-        if (typeof loadBrief === 'function') loadBrief(activeBrief);
+    // Lazy-load data when switching tabs (also fires the active sub-pill loader)
+    runSubpillLoader(tab, activeSubpill[tab]);
+
+    // Brief auto-refresh only when on Work tab
+    if (tab === 'work') {
         if (typeof startBriefRefresh === 'function') startBriefRefresh();
     } else {
         if (typeof stopBriefRefresh === 'function') stopBriefRefresh();
     }
-    if (tab === 'learn') {
-        if (typeof loadLearning === 'function') loadLearning();
-    }
-    if (tab === 'home') {
-        if (typeof loadCommandCenter === 'function') loadCommandCenter();
-    }
 
     // Scroll to top
     window.scrollTo(0, 0);
+}
+
+// --- Sub-pill switching ---
+function switchSubpill(tab, pill) {
+    activeSubpill[tab] = pill;
+
+    // Update pill styles within this tab's page
+    const page = document.getElementById(`page-${tab}`);
+    if (!page) return;
+
+    page.querySelectorAll('.subpill').forEach(btn => {
+        if (btn.dataset.tab !== tab) return;
+        if (btn.dataset.pill === pill) {
+            btn.classList.remove('bg-gray-800', 'text-gray-400');
+            btn.classList.add('bg-blue-600', 'text-white');
+        } else {
+            btn.classList.remove('bg-blue-600', 'text-white');
+            btn.classList.add('bg-gray-800', 'text-gray-400');
+        }
+    });
+
+    // Hide all sub-pill containers within this tab, show the active one
+    page.querySelectorAll('.subpill-content').forEach(el => el.classList.add('hidden'));
+    const target = document.getElementById(`subpill-${tab}-${pill}`);
+    if (target) target.classList.remove('hidden');
+
+    runSubpillLoader(tab, pill);
+}
+
+// Map tab+pill -> data loader
+function runSubpillLoader(tab, pill) {
+    if (tab === 'personal' && pill === 'spend') {
+        if (typeof loadSpend === 'function') loadSpend();
+    }
+    if (tab === 'personal' && pill === 'habits') {
+        if (typeof loadCommandCenter === 'function') loadCommandCenter();
+    }
+    if (tab === 'learn' && pill === 'briefs') {
+        if (typeof loadLearning === 'function') loadLearning();
+    }
+    if (tab === 'learn' && pill === 'notes') {
+        if (typeof loadLibrary === 'function') loadLibrary('notes');
+    }
+    if (tab === 'learn' && pill === 'projects') {
+        if (typeof loadLibrary === 'function') loadLibrary('projects');
+    }
+    if (tab === 'work' && pill === 'eps') {
+        if (typeof loadBrief === 'function') loadBrief('eps');
+        if (typeof loadCommandCenter === 'function') loadCommandCenter();
+    }
+    if (tab === 'work' && pill === 'brand') {
+        if (typeof loadBrief === 'function') loadBrief('personal');
+        if (typeof loadOpsAll === 'function') loadOpsAll();
+    }
+    if (tab === 'content') {
+        if (typeof loadContentOps === 'function') loadContentOps();
+    }
+    if (tab === 'outreach') {
+        if (typeof loadOutreachOps === 'function') loadOutreachOps();
+    }
 }
 
 // --- Date Navigation (AJAX — no page reload) ---
@@ -60,11 +122,17 @@ async function changeDate(delta) {
     // Update all date displays
     updateDateDisplays();
 
-    // Reload data for the active tab
+    // Reload data for the active tab — rebuild sections if weekday/weekend changed
     try {
-        const res = await fetch(`/api/checklist/${currentDate}`);
-        const data = await res.json();
-        if (data.ok) updateChecklistUI(data.completions);
+        const [configRes, logRes] = await Promise.all([
+            fetch(`/api/checklist/config?date=${currentDate}`),
+            fetch(`/api/checklist/${currentDate}`),
+        ]);
+        const configData = await configRes.json();
+        const logData = await logRes.json();
+        if (configData.ok && logData.ok) {
+            rebuildHabitSections(configData.config, logData.completions);
+        }
     } catch (err) {
         showToast('Failed to load habits', 'error');
     }
@@ -96,8 +164,8 @@ function updateDateDisplays() {
 
     const spendDate = document.getElementById('spend-date-display');
     if (spendDate) spendDate.textContent = formatted;
-    const homeDate = document.getElementById('home-date');
-    if (homeDate) homeDate.textContent = formatted;
+    const personalDate = document.getElementById('personal-date');
+    if (personalDate) personalDate.textContent = formatted;
 }
 
 function updateChecklistUI(completions) {
@@ -156,15 +224,93 @@ function updateChecklistUI(completions) {
     });
 }
 
+// Rebuild habit sections from config + completions (handles weekday/weekend swap)
+function rebuildHabitSections(config, completions) {
+    const container = document.getElementById('section-habits');
+    if (!container) return;
+
+    const catOrder = ['Personal Morning', 'Personal Brand', 'EPS', 'Workout', 'Family & Home', 'Personal Closing'];
+    let html = '';
+    let totalItems = 0, totalDone = 0;
+
+    for (const cat of catOrder) {
+        const items = config[cat];
+        if (!items || !items.length) continue;
+
+        let catDone = 0;
+        let itemsHtml = '';
+        for (const item of items) {
+            totalItems++;
+            const val = completions[item.name] || '';
+            let isDone = false;
+            if (item.type === 'check') {
+                isDone = ['TRUE', '1', 'YES'].includes(val.toUpperCase());
+            } else {
+                isDone = !!(val && val !== '0');
+            }
+            if (isDone) { catDone++; totalDone++; }
+
+            if (item.type === 'check') {
+                const doneClass = isDone ? 'opacity-60' : '';
+                const cbClass = isDone ? 'bg-green-600 border-green-600' : 'border-gray-600';
+                const checkSvg = isDone ? '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : '';
+                const labelClass = isDone ? 'line-through text-gray-500' : 'text-gray-200';
+                itemsHtml += `<div class="flex items-center justify-between py-3.5 px-4 bg-gray-900 rounded-xl border border-gray-800 hover:border-gray-700 transition ${doneClass}" data-item="${item.name}" data-type="check">
+                    <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="toggleCheck(this, '${item.name}')">
+                        <div class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition ${cbClass}">${checkSvg}</div>
+                        <span class="text-lg ${labelClass}">${item.name}</span>
+                    </div>
+                </div>`;
+            } else {
+                const numVal = parseInt(val) || 0;
+                const doneClass = numVal > 0 ? 'opacity-60' : '';
+                itemsHtml += `<div class="flex items-center justify-between py-3.5 px-4 bg-gray-900 rounded-xl border border-gray-800 hover:border-gray-700 transition ${doneClass}" data-item="${item.name}" data-type="count">
+                    <span class="text-lg text-gray-200 flex-1">${item.name}</span>
+                    <input type="number" inputmode="numeric" min="0" class="count-input" data-item="${item.name}" value="${numVal}" onfocus="this.select()" onchange="setCount('${item.name}', this.value)" onblur="setCount('${item.name}', this.value)">
+                </div>`;
+            }
+        }
+
+        const sectionId = 'sect-' + cat.replace(/ /g, '-').replace(/&/g, 'and');
+        html += `<section class="mb-6">
+            <button onclick="toggleSection('${sectionId}')" class="w-full flex items-center justify-between py-3 group">
+                <h2 class="text-base font-semibold text-gray-300 uppercase tracking-wider">${cat}</h2>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-400">${catDone}/${items.length}</span>
+                    <svg class="w-4 h-4 text-gray-500 group-hover:text-gray-300 transition sect-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+            </button>
+            <div id="${sectionId}" class="space-y-2">${itemsHtml}</div>
+        </section>`;
+    }
+
+    container.innerHTML = html;
+
+    // Update progress bar
+    const pct = totalItems ? Math.round(totalDone / totalItems * 100) : 0;
+    const text = document.getElementById('progress-text');
+    const bar = document.getElementById('progress-bar');
+    if (text) text.textContent = `${totalDone}/${totalItems} (${pct}%)`;
+    if (bar) bar.style.width = `${pct}%`;
+}
+
 // Handle browser back/forward
 window.addEventListener('popstate', async (e) => {
     if (e.state && e.state.date) {
         currentDate = e.state.date;
         updateDateDisplays();
         try {
-            const res = await fetch(`/api/checklist/${currentDate}`);
-            const data = await res.json();
-            if (data.ok) updateChecklistUI(data.completions);
+            const [configRes, logRes] = await Promise.all([
+                fetch(`/api/checklist/config?date=${currentDate}`),
+                fetch(`/api/checklist/${currentDate}`),
+            ]);
+            const configData = await configRes.json();
+            const logData = await logRes.json();
+            if (configData.ok && logData.ok) {
+                rebuildHabitSections(configData.config, logData.completions);
+            }
         } catch (err) {}
         if (typeof loadSpend === 'function') loadSpend();
     }
@@ -193,15 +339,18 @@ document.addEventListener('DOMContentLoaded', () => {
         spendDate.textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     }
 
-    // Home date
-    const homeDate = document.getElementById('home-date');
-    if (homeDate) {
+    // Personal tab date
+    const personalDate = document.getElementById('personal-date');
+    if (personalDate) {
         const d = new Date(currentDate + 'T12:00:00');
-        homeDate.textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        personalDate.textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     }
 
     // Load spend data
     if (typeof loadSpend === 'function') loadSpend();
+
+    // Default tab is 'personal' (Habits sub-pill); fire its loaders
+    if (typeof loadCommandCenter === 'function') loadCommandCenter();
 });
 
 // --- Section Toggle ---

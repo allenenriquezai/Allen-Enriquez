@@ -34,7 +34,7 @@ JOB SUMMARY
 
 ---
 
-4. GENERAL EXCLUSIONS
+4. EXCLUSIONS
 * Windows above safe working height requiring EWP or scaffolding (unless separately quoted)
 * Permanent hard water etching, mineral staining, or scratches beyond standard cleaning
 * Silicone or sealant application to frames or glass

@@ -236,6 +236,11 @@ case "$ACTION" in
         log "Current status: clocked $status"
         ;;
     clock-in)
+        dow=$(date +%u)
+        if [ "$dow" -ge 6 ]; then
+            log "Weekend (dow=$dow) — skipping clock-in"
+            exit 0
+        fi
         ensure_jibble_running
         status=$(get_status)
         log "Current status: clocked $status"

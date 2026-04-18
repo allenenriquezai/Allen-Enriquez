@@ -159,6 +159,14 @@ def init_db():
         );
     """)
     conn.commit()
+
+    # Migration: add posted_to_pd column if missing
+    try:
+        conn.execute("SELECT posted_to_pd FROM sm8_activities LIMIT 1")
+    except sqlite3.OperationalError:
+        conn.execute("ALTER TABLE sm8_activities ADD COLUMN posted_to_pd INTEGER DEFAULT 0")
+        conn.commit()
+
     return conn
 
 
@@ -914,6 +922,8 @@ def run_sync(deal_id=None, dry_run=False, print_mode=False):
         'notes_synced': 0,
         'contacts_updated': 0,
         'status_notes_posted': 0,
+        'stages_moved': 0,
+        'activities_posted': 0,
         'details': [],
     }
 
@@ -1000,32 +1010,161 @@ def run_sync(deal_id=None, dry_run=False, print_mode=False):
         prev = db_get_previous(db, did)
         sm8_status = sm8_job.get('status', '').lower()
         prev_status = (prev['sm8_status'] or '').lower() if prev else ''
+        stage_moved = False
+
+        deposit_stages = {1: 47, 2: 48}  # pipeline_id → DEPOSIT stage_id
+        advance_from = {3, 10, 24, 27, 4, 11, 18, 17, 5, 12}  # SITE VISIT, QUOTE IN PROGRESS, QUOTE SENT, NEGOTIATION, LATE FU
+
         if prev and prev_status and prev_status != sm8_status:
-            post_sm8_status_note(did, prev['sm8_status'], sm8_status, sm8_job_number, dry_run)
+            # Status CHANGED since last sync
+            if sm8_status == 'work order' and stage_id in advance_from:
+                target_stage = deposit_stages.get(pipeline_id)
+                if target_stage:
+                    note_text = (f"[SM8 Update] Job #{sm8_job_number}: "
+                                 f"{SM8_STATUS_LABELS.get(prev_status, prev_status)} → Work Order "
+                                 f"— Deal moved to DEPOSIT PROCESS")
+                    if dry_run:
+                        print(f"    [DRY RUN] Would move deal {did} to DEPOSIT (stage {target_stage})")
+                        print(f"    [DRY RUN] Would post note: {note_text}")
+                    else:
+                        pd_put(f'/deals/{did}', {'stage_id': target_stage})
+                        pd_post('/notes', {
+                            'content': note_text,
+                            'deal_id': did,
+                            'pinned_to_deal_flag': 1,
+                        })
+                        print(f"    Moved to DEPOSIT PROCESS + note posted")
+                    db_log_change(db, did, 'stage_id', str(stage_id), str(target_stage), 'sm8_auto')
+                    stage_moved = True
+                    results['status_notes_posted'] += 1
+                    results['stages_moved'] += 1
+            elif sm8_status == 'completed' and stage_id not in (47, 48):
+                # Completed but not in DEPOSIT — flag for Allen, don't auto-move
+                note_text = (f"[SM8 Update] Job #{sm8_job_number}: "
+                             f"{SM8_STATUS_LABELS.get(prev_status, prev_status)} → Completed "
+                             f"— Review needed (Win/Close?)")
+                if dry_run:
+                    print(f"    [DRY RUN] Would post note: {note_text}")
+                else:
+                    pd_post('/notes', {
+                        'content': note_text,
+                        'deal_id': did,
+                        'pinned_to_deal_flag': 1,
+                    })
+                results['flagged'] += 1
+                results['status_notes_posted'] += 1
+            else:
+                # Other status changes — post note only
+                post_sm8_status_note(did, prev['sm8_status'], sm8_status, sm8_job_number, dry_run)
+                results['status_notes_posted'] += 1
+
             db_log_change(db, did, 'sm8_status', prev['sm8_status'], sm8_status, 'sm8')
-            results['status_notes_posted'] += 1
             if print_mode:
-                old_l = SM8_STATUS_LABELS.get(prev['sm8_status'], prev['sm8_status'])
+                old_l = SM8_STATUS_LABELS.get(prev_status, prev_status)
                 new_l = SM8_STATUS_LABELS.get(sm8_status, sm8_status)
-                print(f"    SM8 status: {old_l} → {new_l} (note posted)")
+                extra = " (→ DEPOSIT)" if stage_moved else ""
+                print(f"    SM8 status: {old_l} → {new_l}{extra}")
+
+        # Baseline mismatch check — catches cases where SM8 was already
+        # ahead when first cached (no transition seen) or cache was empty
+        if not stage_moved:
+            if sm8_status == 'work order' and stage_id in advance_from:
+                target_stage = deposit_stages.get(pipeline_id)
+                if target_stage:
+                    note_text = (f"[SM8 Sync] Job #{sm8_job_number} is Work Order "
+                                 f"— Deal moved to DEPOSIT PROCESS")
+                    if dry_run:
+                        print(f"    [DRY RUN] Baseline fix: would move deal {did} to DEPOSIT (stage {target_stage})")
+                        print(f"    [DRY RUN] Would post note: {note_text}")
+                    else:
+                        pd_put(f'/deals/{did}', {'stage_id': target_stage})
+                        pd_post('/notes', {
+                            'content': note_text,
+                            'deal_id': did,
+                            'pinned_to_deal_flag': 1,
+                        })
+                        print(f"    Baseline fix: moved to DEPOSIT PROCESS + note posted")
+                    db_log_change(db, did, 'stage_id', str(stage_id), str(target_stage), 'sm8_baseline')
+                    stage_moved = True
+                    results['status_notes_posted'] += 1
+                    results['stages_moved'] += 1
+            elif sm8_status == 'completed' and stage_id not in (47, 48):
+                note_text = (f"[SM8 Sync] Job #{sm8_job_number} is Completed "
+                             f"— Review needed (Win/Close?)")
+                if dry_run:
+                    print(f"    [DRY RUN] Baseline flag: {note_text}")
+                else:
+                    pd_post('/notes', {
+                        'content': note_text,
+                        'deal_id': did,
+                        'pinned_to_deal_flag': 1,
+                    })
+                results['flagged'] += 1
+                results['status_notes_posted'] += 1
 
         # Save current state to cache
         db_save_deal(db, deal, sm8_job)
 
         # Cache SM8 activities + files for ALL deals with SM8 jobs
         sm8_uuid = sm8_job.get('uuid', '')
-        sm8_notes = []
+        sm8_activities_raw = []
         if sm8_uuid:
-            sm8_notes = sm8_get_job_notes(sm8_uuid, sm8_key)
+            sm8_activities_raw = sm8_get_job_notes(sm8_uuid, sm8_key)
             staff_map = sm8_cache_staff(sm8_key, pipeline_id, db)
-            cache_sm8_activities(db, did, sm8_uuid, sm8_notes, staff_map, dry_run)
+            cache_sm8_activities(db, did, sm8_uuid, sm8_activities_raw, staff_map, dry_run)
             sm8_files = sm8_get_job_files(sm8_uuid, sm8_key)
             cache_sm8_files(db, did, sm8_uuid, sm8_files, dry_run)
             if sm8_files and print_mode:
                 print(f"    {len(sm8_files)} file(s) cached")
 
-        # Compare
+        # Post unposted SM8 activities as Pipedrive notes (for ALL deals with SM8)
+        if sm8_uuid and not dry_run:
+            unposted = db.execute(
+                "SELECT id, note, start_date, staff_name, was_scheduled "
+                "FROM sm8_activities WHERE deal_id = ? AND posted_to_pd = 0",
+                (did,)
+            ).fetchall()
+            for row in unposted:
+                act_id, act_note, act_start, act_staff, act_scheduled = row
+                # Skip empty notes
+                if not act_note or len(act_note.strip()) < 5:
+                    db.execute("UPDATE sm8_activities SET posted_to_pd = 1 WHERE id = ?", (act_id,))
+                    continue
+                # Format the note for Pipedrive
+                date_str = act_start[:10] if act_start else ''
+                staff_str = f" — {act_staff}" if act_staff else ''
+                content = f"{act_note}{staff_str}"
+                if date_str:
+                    content = f"{content} | {date_str}"
+                # Post to Pipedrive
+                result = pd_post('/notes', {
+                    'content': content,
+                    'deal_id': did,
+                    'pinned_to_deal_flag': 1,
+                })
+                if result:
+                    db.execute("UPDATE sm8_activities SET posted_to_pd = 1 WHERE id = ?", (act_id,))
+                    results['notes_synced'] += 1
+            db.commit()
+        elif sm8_uuid and dry_run:
+            unposted = db.execute(
+                "SELECT note, start_date, staff_name FROM sm8_activities "
+                "WHERE deal_id = ? AND posted_to_pd = 0 AND length(note) > 5",
+                (did,)
+            ).fetchall()
+            if unposted and print_mode:
+                print(f"    [DRY RUN] {len(unposted)} SM8 activities to post as notes")
+                for row in unposted[:3]:
+                    print(f"      {row[0][:80]}")
+            results['notes_synced'] += len(unposted)
+
+        # Compare address/status diffs
         diffs = compare_deal_sm8(deal, sm8_job)
+
+        # Sync contact info (always, not just when diffs exist)
+        contact_updates = sync_contact(deal, sm8_job, dry_run)
+        results['contacts_updated'] += contact_updates
+
         if not diffs:
             if print_mode:
                 print(f"  ✓ #{did} {title} — in sync")
@@ -1056,19 +1195,6 @@ def run_sync(deal_id=None, dry_run=False, print_mode=False):
             elif diff['action'] == 'flag':
                 results['flagged'] += 1
                 deal_detail['actions_taken'].append(f"FLAGGED: {diff.get('note', diff['field'])}")
-
-        # Sync notes from SM8 → Pipedrive (reuse already-fetched notes)
-        if sm8_uuid and sm8_notes:
-            pd_notes_data = pd_get(f'/deals/{did}/notes', {'pinned_to_deal_flag': 1})
-            pd_notes = (pd_notes_data or {}).get('data') or []
-            posted = sync_notes(did, sm8_notes, pd_notes, dry_run)
-            results['notes_synced'] += posted
-            if posted:
-                deal_detail['actions_taken'].append(f"{posted} notes synced from SM8")
-
-        # Sync contact info
-        contact_updates = sync_contact(deal, sm8_job, dry_run)
-        results['contacts_updated'] += contact_updates
 
         results['details'].append(deal_detail)
 
@@ -1178,7 +1304,8 @@ def run_sync(deal_id=None, dry_run=False, print_mode=False):
     print(f"  Auto-fixed:         {results['auto_fixed']}")
     print(f"  Flagged:            {results['flagged']}")
     print(f"  SM8 status notes:   {results['status_notes_posted']}")
-    print(f"  Notes synced:       {results['notes_synced']}")
+    print(f"  Stages moved:       {results['stages_moved']}")
+    print(f"  Activities posted:  {results['notes_synced']}")
     print(f"  Contacts updated:   {results['contacts_updated']}")
     print(f"{'='*50}")
 

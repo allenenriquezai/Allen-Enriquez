@@ -73,7 +73,7 @@ Once collected:
 2. SCOPE OF WORK – QUOTE INCLUSIONS
 3. CLEANING METHOD
 4. INCLUSIONS
-5. QUOTE EXCLUSIONS
+5. EXCLUSIONS
 6. GUARANTEES
 7. VARIATIONS
 8. BOOKING & PAYMENT TERMS
@@ -86,7 +86,7 @@ Write the array into `projects/eps/.tmp/quote_data.json`. Also read the `<!-- qu
 
 Collect:
 - **Client name** — if deal ID given, fetch from Pipedrive (person name or org name). Never write "Client Name" or placeholder text.
-- **Property address** — from Pipedrive if available. If blank, flag it.
+- **Property address** — stored in a custom address field on the Pipedrive deal (not a standard field). Always check custom fields. If blank, flag it.
 - **Job type**
 - **Floor plan** OR **text scope**
 - **Pipedrive deal ID** (optional)
@@ -276,10 +276,11 @@ python3 tools/fill_quote_template.py --doc-id "DOC_ID" --data "projects/eps/.tmp
 python3 tools/export_quote_pdf.py --doc-id "DOC_ID"
 ```
 
-### 4d — Write links to Pipedrive
+### 4d — Write links + value to Pipedrive
 ```bash
 python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field folder --url "FOLDER_URL"  # only if new folder
 python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field doc --url "DOC_URL"          # always
+python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field value --value "SUBTOTAL"     # ex-GST value
 ```
 
 ---
@@ -310,6 +311,13 @@ python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field doc --url "DO
 - **Residential leads** — warmer, personal, concern-led. Reference specific worries from the call.
 - **Builders** — professional, proof-led. Reference company names, past projects, references.
 - All emails: **under 180 words**. Simple English (3rd-5th grade). No fluff.
+
+### Email format rules
+- Use **bullet points** for key selling points — scannable, not paragraphs.
+- Each concern gets its own bold-labelled bullet (e.g. **Floor protection** — ...).
+- If Allen mentions a discount, include it naturally (e.g. "I was able to get you a discounted rate on this one").
+- If a quote expiry date is given, bold it near the end of the email.
+- Keep CTA simple: "Let me know if you'd like to lock it in."
 
 ### Draft command (no send)
 ```bash

@@ -57,7 +57,7 @@ JOB SUMMARY
 
 ---
 
-6. GENERAL EXCLUSIONS
+6. EXCLUSIONS
 * Asbestos handling or removal
 * Major plaster repairs or surface correction beyond minor preparation
 * Structural rectification works

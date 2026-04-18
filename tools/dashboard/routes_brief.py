@@ -183,6 +183,7 @@ def _fetch_eps():
         'won_value_week': kpis.get('won_value_week', 0),
         'yesterday_cold_calls': crm_data.get('yesterday_cold_calls', 0),
         'yesterday_total_calls': crm_data.get('yesterday_total_calls', 0),
+        'calls_this_week': kpis.get('calls_this_week', 0),
     }
 
     todays = crm_data.get('todays_activities', [])
@@ -209,9 +210,11 @@ def _fetch_eps():
         due_date = act.get('due_date', '')
         is_overdue = due_date and due_date < today_str
         return {
+            'id': act.get('id', ''),
             'label': label,
             'subject': act.get('subject', ''),
             'deal_title': act.get('deal_title', ''),
+            'deal_id': act.get('deal_id', ''),
             'due_date': due_date,
             'due_time': (act.get('due_time') or '')[:5],
             'done': act.get('done', False),
@@ -235,6 +238,7 @@ def _fetch_eps():
     ai_can_handle = []
     for item in action_items:
         entry = {
+            'deal_id': item.get('deal_id', ''),
             'deal_title': item.get('deal_title', ''),
             'person_name': item.get('person_name', ''),
             'pipeline': item.get('pipeline', ''),
@@ -254,6 +258,7 @@ def _fetch_eps():
 
     stale = [
         {
+            'deal_id': i.get('deal_id', ''),
             'deal_title': i.get('deal_title', ''),
             'pipeline': i.get('pipeline', ''),
             'stage': i.get('stage', ''),

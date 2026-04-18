@@ -1,9 +1,10 @@
 """
-Updates a Pipedrive deal's custom field with a Google Drive folder or Doc link.
+Updates a Pipedrive deal field — folder link, doc link, or deal value.
 
 Usage:
     python3 tools/update_pipedrive_deal.py --deal-id "123" --field folder --url "https://drive.google.com/..."
-    python3 tools/update_pipedrive_deal.py --deal-id "123" --field doc   --url "https://docs.google.com/..."
+    python3 tools/update_pipedrive_deal.py --deal-id "123" --field doc    --url "https://docs.google.com/..."
+    python3 tools/update_pipedrive_deal.py --deal-id "123" --field value  --value "2000"
 
 Requires in projects/eps/.env:
     PIPEDRIVE_API_KEY
@@ -52,9 +53,10 @@ def update_deal(deal_id: str, field_key: str, url_value: str, api_key: str, doma
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--deal-id', required=True, help='Pipedrive deal ID')
-    parser.add_argument('--field',   required=True, choices=['folder', 'doc'],
-                        help='Which field to write: folder (Quote Folder Link) or doc (Draft Quote Doc Link)')
-    parser.add_argument('--url',     required=True, help='URL to write to the field')
+    parser.add_argument('--field',   required=True, choices=['folder', 'doc', 'value'],
+                        help='Which field to write: folder, doc, or value (deal value in AUD)')
+    parser.add_argument('--url',     default='', help='URL to write (for folder/doc fields)')
+    parser.add_argument('--value',   default='', help='Deal value in AUD (for value field)')
     args = parser.parse_args()
 
     env = load_env()
@@ -63,6 +65,19 @@ def main():
 
     if not api_key:
         print("ERROR: PIPEDRIVE_API_KEY not set in projects/eps/.env", file=sys.stderr)
+        sys.exit(1)
+
+    if args.field == 'value':
+        if not args.value:
+            print("ERROR: --value required when --field is value", file=sys.stderr)
+            sys.exit(1)
+        deal = update_deal(args.deal_id, 'value', args.value, api_key, domain)
+        print(f"Updated deal #{deal['id']}: {deal.get('title', '')}")
+        print(f"Deal value set: ${args.value}")
+        return
+
+    if not args.url:
+        print("ERROR: --url required when --field is folder or doc", file=sys.stderr)
         sys.exit(1)
 
     if args.field == 'folder':

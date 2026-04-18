@@ -90,14 +90,13 @@ TARGET_HEADERS = PRIMARY_COLS + SECONDARY_COLS
 HOT_OUTCOMES = {'Warm Interest', 'Meeting Booked'}
 ACTION_OUTCOMES = {'Asked For Email', 'Call Back', 'Late Follow Up'}
 CALLBACK_OUTCOMES = {'No Answer 1', 'No Answer 2', 'No Answer 3', 'No Answer 4', 'No Answer 5'}
-DEAD_OUTCOMES = {'Not Interested - Convo', 'Not Interested - No Convo', 'Invalid Number', 'Hung Up - No Convo'}
+DEAD_OUTCOMES = {'Not Interested - Convo', 'Invalid Number', 'Hung Up - No Convo'}
 
 DROPDOWN_VALUES = [
     'New / No Label', 'No Answer 1', 'No Answer 2', 'No Answer 3',
-    'No Answer 4', 'No Answer 5', 'Not Interested - No Convo',
+    'No Answer 4', 'No Answer 5', 'Hung Up - No Convo',
     'Not Interested - Convo', 'Invalid Number', 'Call Back',
     'Asked For Email', 'Late Follow Up', 'Warm Interest', 'Meeting Booked',
-    'Hung Up - No Convo',
 ]
 
 # Formatting colours (RGB 0-1)

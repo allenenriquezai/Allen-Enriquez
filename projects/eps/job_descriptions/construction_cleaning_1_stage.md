@@ -52,7 +52,7 @@ FLOOR CLEANING
 
 ---
 
-4. QUOTE EXCLUSIONS
+4. EXCLUSIONS
 * Excess debris removal greater than 2 cubic meters
 * Removal of heavy trade waste, stacked materials, or builder’s rubbish
 * Removal of paint, plaster, concrete, silicone, adhesive, rust, oil stains, or bonded residue
