@@ -5,14 +5,16 @@ let currentDate = new URLSearchParams(window.location.search).get('date')
     || (() => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; })();
 
 // Active tab + sub-pill state
-let activeTab = 'personal';
+let activeTab = 'today';
 const activeSubpill = {
+    today: 'queue',
     personal: 'habits',
-    learn: 'briefs',
-    work: 'eps',
-    content: 'pipeline',
-    outreach: 'cold-call',
+    brand: 'content',
+    eps: 'brief',
+    vault: 'briefs',
 };
+// Inner tab state for Brand > Content (pipeline/buffer/published)
+let activeContentTab = 'pipeline';
 
 // --- Tab Navigation ---
 function switchTab(tab) {

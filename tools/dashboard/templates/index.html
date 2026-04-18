@@ -1,17 +1,115 @@
 {% extends "base.html" %}
 {% block content %}
+{#
+  Dashboard structure:
+  - Today   : queue / goals / journal     (new default tab)
+  - Personal: habits / spend
+  - Brand   : content / outreach / outcomes / systems
+  - EPS     : brief / calls
+  - Vault   : briefs / notes / projects / links / files / archive
+#}
 <div class="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 md:px-8 py-4 pb-24">
+
+    <!-- ============================== -->
+    <!-- TAB: Today                     -->
+    <!-- ============================== -->
+    <div id="page-today" class="page-content">
+        <div class="flex items-center justify-between mb-4">
+            <h1 class="text-2xl font-bold">Today</h1>
+            <span class="text-sm text-gray-400" id="today-date"></span>
+        </div>
+
+        <div class="flex gap-2 mb-5">
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
+                    data-tab="today" data-pill="queue"
+                    onclick="switchSubpill('today','queue')">Queue</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
+                    data-tab="today" data-pill="goals"
+                    onclick="switchSubpill('today','goals')">Goals</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
+                    data-tab="today" data-pill="journal"
+                    onclick="switchSubpill('today','journal')">Journal</button>
+        </div>
+
+        <!-- Queue -->
+        <div id="subpill-today-queue" class="subpill-content">
+            <div id="today-queue-counts" class="text-xs text-gray-400 mb-3"></div>
+            <div id="today-queue-list" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Goals -->
+        <div id="subpill-today-goals" class="subpill-content hidden">
+            <div class="flex justify-end mb-3">
+                <button onclick="openGoalsModal()"
+                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition">Edit</button>
+            </div>
+            <div id="today-goals-meta" class="text-[11px] text-gray-500 mb-2"></div>
+            <div id="today-goals-body" class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 leading-relaxed">
+                <div class="text-gray-400 italic text-center py-6 text-sm">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Journal -->
+        <div id="subpill-today-journal" class="subpill-content hidden">
+            <div id="today-journal-yesterday" class="mb-3"></div>
+
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400 uppercase tracking-wider">3 Wins</label>
+                    <input id="journal-win-1" type="text" placeholder="Win 1"
+                           class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-200 focus:border-blue-500 outline-none">
+                    <input id="journal-win-2" type="text" placeholder="Win 2"
+                           class="mt-2 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-200 focus:border-blue-500 outline-none">
+                    <input id="journal-win-3" type="text" placeholder="Win 3"
+                           class="mt-2 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-200 focus:border-blue-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-400 uppercase tracking-wider">Lesson</label>
+                    <textarea id="journal-lesson" rows="2" placeholder="What did you learn?"
+                              class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-400 uppercase tracking-wider">Tomorrow — Top 3</label>
+                    <input id="journal-tmr-1" type="text" placeholder="#1"
+                           class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-200 focus:border-blue-500 outline-none">
+                    <input id="journal-tmr-2" type="text" placeholder="#2"
+                           class="mt-2 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-200 focus:border-blue-500 outline-none">
+                    <input id="journal-tmr-3" type="text" placeholder="#3"
+                           class="mt-2 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-200 focus:border-blue-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-400 uppercase tracking-wider">Mood</label>
+                    <div id="journal-mood" class="flex gap-2 mt-2">
+                        <button type="button" data-mood="1" class="mood-btn flex-1 py-3 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg text-lg">1</button>
+                        <button type="button" data-mood="2" class="mood-btn flex-1 py-3 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg text-lg">2</button>
+                        <button type="button" data-mood="3" class="mood-btn flex-1 py-3 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg text-lg">3</button>
+                        <button type="button" data-mood="4" class="mood-btn flex-1 py-3 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg text-lg">4</button>
+                        <button type="button" data-mood="5" class="mood-btn flex-1 py-3 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg text-lg">5</button>
+                    </div>
+                </div>
+
+                <button onclick="saveJournal()"
+                        class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium transition">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- ============================== -->
     <!-- TAB: Personal (Habits + Spend) -->
     <!-- ============================== -->
-    <div id="page-personal" class="page-content">
+    <div id="page-personal" class="page-content hidden">
         <div class="flex items-center justify-between mb-4">
             <h1 class="text-2xl font-bold">Personal</h1>
             <span class="text-sm text-gray-400" id="personal-date"></span>
         </div>
 
-        <!-- Sub-pills: Habits / Spend -->
         <div class="flex gap-2 mb-5">
             <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
                     data-tab="personal" data-pill="habits"
@@ -21,9 +119,8 @@
                     onclick="switchSubpill('personal','spend')">Spend</button>
         </div>
 
-        <!-- Sub-pill: Habits -->
+        <!-- Habits -->
         <div id="subpill-personal-habits" class="subpill-content">
-            <!-- Date Nav -->
             <div class="flex items-center justify-between mb-5">
                 <button onclick="changeDate(-1)" class="p-2 text-gray-400 hover:text-white transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,7 +138,6 @@
                 </button>
             </div>
 
-            <!-- Overall Progress -->
             <div class="mb-5">
                 <div class="flex items-center justify-between mb-1.5">
                     <span class="text-base text-gray-300">Daily Progress</span>
@@ -52,7 +148,6 @@
                 </div>
             </div>
 
-            <!-- 7-day habit bar -->
             <div class="mb-5">
                 <div class="text-xs text-gray-300 uppercase tracking-wider mb-2">This Week</div>
                 <div id="week-bars" class="flex gap-1.5">
@@ -60,7 +155,6 @@
                 </div>
             </div>
 
-            <!-- Streak/Avg cards -->
             <div class="grid grid-cols-2 gap-3 mb-5">
                 <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
                     <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Avg</div>
@@ -72,7 +166,6 @@
                 </div>
             </div>
 
-            <!-- Checklist Sections -->
             <div id="section-habits">
             {% for cat in categories %}
             <section class="mb-6">
@@ -122,9 +215,8 @@
             </div>
         </div>
 
-        <!-- Sub-pill: Spend -->
+        <!-- Spend -->
         <div id="subpill-personal-spend" class="subpill-content hidden">
-            <!-- Date Nav (Spend) -->
             <div class="flex items-center justify-between mb-4">
                 <button onclick="changeDate(-1)" class="p-2 text-gray-400 hover:text-white transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,12 +233,10 @@
                 </button>
             </div>
 
-            <!-- Totals -->
             <div id="spend-totals" class="text-base text-center mb-4">
                 <span class="text-gray-500">No data</span>
             </div>
 
-            <!-- Quick-add buttons -->
             <div class="flex gap-2 mb-4">
                 <button onclick="openSpendModal('Takeout')"
                         class="flex-1 py-3 bg-amber-900/30 hover:bg-amber-900/50 text-amber-400 rounded-xl text-sm font-medium transition">
@@ -158,7 +248,6 @@
                 </button>
             </div>
 
-            <!-- Today's entries -->
             <div id="spend-list" class="space-y-1.5">
                 <div class="text-center text-gray-500 text-sm py-4">Loading...</div>
             </div>
@@ -166,87 +255,199 @@
     </div>
 
     <!-- ============================== -->
-    <!-- TAB: Learn (Briefs/Notes/Projects) -->
+    <!-- TAB: Brand                     -->
+    <!-- Content / Outreach / Outcomes / Systems -->
     <!-- ============================== -->
-    <div id="page-learn" class="page-content hidden">
+    <div id="page-brand" class="page-content hidden">
         <div class="flex items-center justify-between mb-4">
-            <h1 class="text-2xl font-bold">Learn</h1>
-            <button onclick="refreshLearn()" id="learn-refresh-btn" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
+            <h1 class="text-2xl font-bold">Brand</h1>
+            <button onclick="runSubpillLoader('brand', activeSubpill.brand)" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
+        </div>
+
+        <!-- Top-line stats (from old Content tab) -->
+        <div class="grid grid-cols-3 gap-3 mb-5">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                <div class="text-[10px] text-gray-500 uppercase mb-1">Scripts</div>
+                <div id="content-scripts" class="text-xl font-bold text-blue-400">0</div>
+                <div class="text-[10px] text-gray-500">ready</div>
+            </div>
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                <div class="text-[10px] text-gray-500 uppercase mb-1">Recordings</div>
+                <div id="content-recordings" class="text-xl font-bold text-amber-400">0</div>
+                <div class="text-[10px] text-gray-500">in buffer</div>
+            </div>
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                <div class="text-[10px] text-gray-500 uppercase mb-1">Posted</div>
+                <div id="content-posted" class="text-xl font-bold text-emerald-400">0</div>
+                <div class="text-[10px] text-gray-500">this week</div>
+            </div>
         </div>
 
         <!-- Sub-pills -->
-        <div class="flex gap-2 mb-5">
-            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
-                    data-tab="learn" data-pill="briefs"
-                    onclick="switchSubpill('learn','briefs')">Briefs</button>
-            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
-                    data-tab="learn" data-pill="notes"
-                    onclick="switchSubpill('learn','notes')">Notes</button>
-            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
-                    data-tab="learn" data-pill="projects"
-                    onclick="switchSubpill('learn','projects')">Projects</button>
+        <div class="flex gap-2 mb-5 overflow-x-auto">
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white shrink-0"
+                    data-tab="brand" data-pill="content"
+                    onclick="switchSubpill('brand','content')">Content</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400 shrink-0"
+                    data-tab="brand" data-pill="outreach"
+                    onclick="switchSubpill('brand','outreach')">Outreach</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400 shrink-0"
+                    data-tab="brand" data-pill="outcomes"
+                    onclick="switchSubpill('brand','outcomes')">Outcomes</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400 shrink-0"
+                    data-tab="brand" data-pill="systems"
+                    onclick="switchSubpill('brand','systems')">Systems</button>
         </div>
 
-        <!-- Briefs (was the old Learn tab content) -->
-        <div id="subpill-learn-briefs" class="subpill-content">
-            <div id="brief-learning">
-                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+        <!-- Content pill (pipeline + buffer + published as sections) -->
+        <div id="subpill-brand-content" class="subpill-content">
+            <div class="flex gap-2 mb-3 overflow-x-auto">
+                <button class="content-tab px-3 py-1.5 rounded-lg text-xs font-medium transition bg-blue-600 text-white shrink-0"
+                        data-ctab="pipeline" onclick="switchContentTab('pipeline')">Pipeline</button>
+                <button class="content-tab px-3 py-1.5 rounded-lg text-xs font-medium transition bg-gray-800 text-gray-400 shrink-0"
+                        data-ctab="buffer" onclick="switchContentTab('buffer')">Buffer</button>
+                <button class="content-tab px-3 py-1.5 rounded-lg text-xs font-medium transition bg-gray-800 text-gray-400 shrink-0"
+                        data-ctab="published" onclick="switchContentTab('published')">Published</button>
+            </div>
+
+            <div id="content-tab-pipeline" class="content-tab-content">
+                <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Upcoming Film Schedule</div>
+                <div id="content-pipeline" class="space-y-2">
+                    <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+                </div>
+            </div>
+            <div id="content-tab-buffer" class="content-tab-content hidden">
+                <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Scripts Ready / Recordings Done</div>
+                <div id="content-buffer" class="space-y-2">
+                    <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+                </div>
+            </div>
+            <div id="content-tab-published" class="content-tab-content hidden">
+                <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Published</div>
+                <div id="content-published" class="space-y-2">
+                    <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+                </div>
+                <div class="text-xs text-gray-500 italic text-center mt-4">Analytics coming soon</div>
             </div>
         </div>
 
-        <!-- Notes -->
-        <div id="subpill-learn-notes" class="subpill-content hidden">
-            <div class="flex justify-end mb-3">
-                <button onclick="openLibraryModal('notes')"
-                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition">+ New Note</button>
+        <!-- Outreach pill (Cold DM — PH outreach) -->
+        <div id="subpill-brand-outreach" class="subpill-content hidden">
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <div class="text-[10px] text-gray-500 uppercase mb-1">Queue</div>
+                    <div id="ph-queue" class="text-xl font-bold text-blue-400">0</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <div class="text-[10px] text-gray-500 uppercase mb-1">Sent</div>
+                    <div id="ph-sent" class="text-xl font-bold text-emerald-400">0</div>
+                    <div class="text-[10px] text-gray-500">today</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
+                    <div class="text-[10px] text-gray-500 uppercase mb-1">Replies</div>
+                    <div id="ph-replies" class="text-xl font-bold text-amber-400">0</div>
+                    <div class="text-[10px] text-gray-500">pending</div>
+                </div>
             </div>
-            <div id="library-notes-list" class="space-y-2">
-                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
+                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Follow-Ups Due</div>
+                <div id="ph-followups-due" class="text-2xl font-bold text-amber-400">0</div>
+            </div>
+
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Next Action</div>
+                <div id="ph-next-action" class="text-sm text-gray-200">Loading...</div>
+                <div class="text-[10px] text-gray-500 mt-2">Last queue: <span id="ph-last-run">--</span></div>
             </div>
         </div>
 
-        <!-- Projects -->
-        <div id="subpill-learn-projects" class="subpill-content hidden">
-            <div class="flex justify-end mb-3">
-                <button onclick="openLibraryModal('projects')"
-                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition">+ New Project</button>
-            </div>
-            <div id="library-projects-list" class="space-y-2">
-                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
+        <!-- Outcomes placeholder -->
+        <div id="subpill-brand-outcomes" class="subpill-content hidden">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 text-center">
+                <div class="text-sm text-gray-400">Outcomes panel — Phase 2</div>
             </div>
         </div>
+
+        <!-- Systems -->
+        <div id="subpill-brand-systems" class="subpill-content hidden">
+            <div class="mb-5">
+                <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Services</div>
+                <div id="systems-services" class="grid grid-cols-2 gap-2">
+                    <div class="text-gray-400 italic text-center py-4 text-sm col-span-2">Loading...</div>
+                </div>
+            </div>
+            <div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Automations</div>
+                <div id="systems-automations" class="space-y-2">
+                    <div class="text-gray-400 italic text-center py-4 text-sm">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Also used by Brand/Outreach: legacy brief-personal mounted invisibly so loaders don't break -->
+        <div id="brief-personal" class="hidden"></div>
+        <div id="ops-cards" class="hidden"></div>
     </div>
 
     <!-- ============================== -->
-    <!-- TAB: Work (EPS / Brand)        -->
+    <!-- TAB: EPS (Brief + Calls)       -->
     <!-- ============================== -->
-    <div id="page-work" class="page-content hidden">
+    <div id="page-eps" class="page-content hidden">
         <div class="flex items-center justify-between mb-4">
-            <h1 class="text-2xl font-bold">Work</h1>
+            <h1 class="text-2xl font-bold">EPS</h1>
             <button onclick="refreshBrief()" id="brief-refresh-btn" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
         </div>
 
-        <!-- Sub-pills -->
         <div class="flex gap-2 mb-5">
             <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
-                    data-tab="work" data-pill="eps"
-                    onclick="switchSubpill('work','eps')">EPS</button>
+                    data-tab="eps" data-pill="brief"
+                    onclick="switchSubpill('eps','brief')">Brief</button>
             <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
-                    data-tab="work" data-pill="brand"
-                    onclick="switchSubpill('work','brand')">Brand</button>
+                    data-tab="eps" data-pill="calls"
+                    onclick="switchSubpill('eps','calls')">Calls</button>
         </div>
 
-        <!-- EPS sub-pill: brief content + EPS cold-call dashboard -->
-        <div id="subpill-work-eps" class="subpill-content">
+        <!-- Brief -->
+        <div id="subpill-eps-brief" class="subpill-content">
             <div id="brief-eps">
                 <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
             </div>
+        </div>
 
-            <!-- EPS Cold Calling Dashboard (existing) -->
+        <!-- Calls (existing cold-calling dashboard) -->
+        <div id="subpill-eps-calls" class="subpill-content hidden">
+            <a href="http://localhost:5001" target="_blank"
+               class="block w-full mb-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium text-center transition">
+                Open CRM Kanban &rarr;
+            </a>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                    <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Active Leads</div>
+                    <div id="cc-active" class="text-2xl font-bold text-blue-400">0</div>
+                </div>
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
+                    <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Due Today</div>
+                    <div id="cc-due" class="text-2xl font-bold text-amber-400">0</div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
+                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Next Action</div>
+                <div id="cc-next-action" class="text-sm text-gray-200">Loading...</div>
+                <div class="text-[10px] text-gray-500 mt-2">Last sent: <span id="cc-last-sent">--</span></div>
+            </div>
+
+            <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Follow-Ups Due Today</div>
+            <div id="cc-followups" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-6 text-sm">Loading...</div>
+            </div>
+
+            <!-- Coach dashboard (existing) -->
             <div class="mt-6" id="outreach-dashboard">
                 <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">Cold Calling</div>
 
-                <!-- Coach's Take -->
                 <div class="bg-gradient-to-br from-gray-900 via-gray-900 to-indigo-950/30 border border-indigo-900/40 rounded-xl p-4 mb-3">
                     <div class="text-[10px] text-indigo-400 uppercase tracking-wider mb-2 flex items-center gap-2 font-semibold">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,7 +460,6 @@
                     </div>
                 </div>
 
-                <!-- Progress ring + today's total -->
                 <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-3">
                     <div class="flex items-center gap-4">
                         <div class="relative w-20 h-20 flex-shrink-0">
@@ -291,13 +491,11 @@
                     </div>
                 </div>
 
-                <!-- Outcome breakdown -->
                 <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-3">
                     <div class="text-xs text-gray-500 uppercase tracking-wider mb-3">Today's Outcomes</div>
                     <div id="outcome-bars" class="space-y-2"></div>
                 </div>
 
-                <!-- Week summary + conv rate -->
                 <div class="grid grid-cols-3 gap-3 mb-3">
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
                         <div class="text-[10px] text-gray-500 uppercase mb-1">Week</div>
@@ -316,176 +514,98 @@
                     </div>
                 </div>
 
-                <!-- 14-day trend -->
                 <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-3">
                     <div class="text-xs text-gray-500 uppercase tracking-wider mb-3">14-Day Trend</div>
                     <div id="trend-chart" class="flex items-end gap-1 h-24"></div>
                 </div>
 
-                <!-- Coaching nudges -->
                 <div id="nudges-container" class="space-y-2"></div>
             </div>
         </div>
-
-        <!-- Brand sub-pill: ops cards (PH outreach + cold calls + content) -->
-        <div id="subpill-work-brand" class="subpill-content hidden">
-            <div id="brief-personal">
-                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
-            </div>
-
-            <div class="mt-6">
-                <div class="text-sm text-gray-300 font-semibold uppercase tracking-wider mb-3">Brand Ops</div>
-                <div id="ops-cards" class="space-y-3">
-                    <div class="text-gray-400 italic text-center py-6 text-sm">Loading...</div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- ============================== -->
-    <!-- TAB: Content                   -->
+    <!-- TAB: Vault                     -->
+    <!-- Briefs / Notes / Projects / Links / Files / Archive -->
     <!-- ============================== -->
-    <div id="page-content" class="page-content hidden">
+    <div id="page-vault" class="page-content hidden">
         <div class="flex items-center justify-between mb-4">
-            <h1 class="text-2xl font-bold">Content</h1>
-            <button onclick="loadContentOps()" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
+            <h1 class="text-2xl font-bold">Vault</h1>
+            <button onclick="runSubpillLoader('vault', activeSubpill.vault)" id="learn-refresh-btn" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
         </div>
 
-        <!-- Top-line stats -->
-        <div class="grid grid-cols-3 gap-3 mb-5">
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                <div class="text-[10px] text-gray-500 uppercase mb-1">Scripts</div>
-                <div id="content-scripts" class="text-xl font-bold text-blue-400">0</div>
-                <div class="text-[10px] text-gray-500">ready</div>
-            </div>
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                <div class="text-[10px] text-gray-500 uppercase mb-1">Recordings</div>
-                <div id="content-recordings" class="text-xl font-bold text-amber-400">0</div>
-                <div class="text-[10px] text-gray-500">in buffer</div>
-            </div>
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                <div class="text-[10px] text-gray-500 uppercase mb-1">Posted</div>
-                <div id="content-posted" class="text-xl font-bold text-emerald-400">0</div>
-                <div class="text-[10px] text-gray-500">this week</div>
-            </div>
+        <div class="flex gap-2 mb-5 overflow-x-auto">
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white shrink-0"
+                    data-tab="vault" data-pill="briefs"
+                    onclick="switchSubpill('vault','briefs')">Briefs</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400 shrink-0"
+                    data-tab="vault" data-pill="notes"
+                    onclick="switchSubpill('vault','notes')">Notes</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400 shrink-0"
+                    data-tab="vault" data-pill="projects"
+                    onclick="switchSubpill('vault','projects')">Projects</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400 shrink-0"
+                    data-tab="vault" data-pill="links"
+                    onclick="switchSubpill('vault','links')">Links</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400 shrink-0"
+                    data-tab="vault" data-pill="files"
+                    onclick="switchSubpill('vault','files')">Files</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400 shrink-0"
+                    data-tab="vault" data-pill="archive"
+                    onclick="switchSubpill('vault','archive')">Archive</button>
         </div>
 
-        <!-- Sub-pills -->
-        <div class="flex gap-2 mb-5">
-            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
-                    data-tab="content" data-pill="pipeline"
-                    onclick="switchSubpill('content','pipeline')">Pipeline</button>
-            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
-                    data-tab="content" data-pill="buffer"
-                    onclick="switchSubpill('content','buffer')">Buffer</button>
-            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
-                    data-tab="content" data-pill="published"
-                    onclick="switchSubpill('content','published')">Published</button>
-        </div>
-
-        <!-- Pipeline -->
-        <div id="subpill-content-pipeline" class="subpill-content">
-            <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Upcoming Film Schedule</div>
-            <div id="content-pipeline" class="space-y-2">
+        <!-- Briefs -->
+        <div id="subpill-vault-briefs" class="subpill-content">
+            <div id="brief-learning">
                 <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
             </div>
         </div>
 
-        <!-- Buffer -->
-        <div id="subpill-content-buffer" class="subpill-content hidden">
-            <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Scripts Ready / Recordings Done</div>
-            <div id="content-buffer" class="space-y-2">
+        <!-- Notes -->
+        <div id="subpill-vault-notes" class="subpill-content hidden">
+            <div class="flex justify-end mb-3">
+                <button onclick="openLibraryModal('notes')"
+                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition">+ New Note</button>
+            </div>
+            <div id="library-notes-list" class="space-y-2">
                 <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
             </div>
         </div>
 
-        <!-- Published -->
-        <div id="subpill-content-published" class="subpill-content hidden">
-            <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Published</div>
-            <div id="content-published" class="space-y-2">
+        <!-- Projects -->
+        <div id="subpill-vault-projects" class="subpill-content hidden">
+            <div class="flex justify-end mb-3">
+                <button onclick="openLibraryModal('projects')"
+                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition">+ New Project</button>
+            </div>
+            <div id="library-projects-list" class="space-y-2">
                 <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
             </div>
-            <div class="text-xs text-gray-500 italic text-center mt-4">Analytics coming soon</div>
-        </div>
-    </div>
-
-    <!-- ============================== -->
-    <!-- TAB: Outreach                  -->
-    <!-- ============================== -->
-    <div id="page-outreach" class="page-content hidden">
-        <div class="flex items-center justify-between mb-4">
-            <h1 class="text-2xl font-bold">Outreach</h1>
-            <button onclick="loadOutreachOps()" class="text-sm text-gray-400 hover:text-gray-200 transition">Refresh</button>
         </div>
 
-        <!-- Sub-pills -->
-        <div class="flex gap-2 mb-5">
-            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white"
-                    data-tab="outreach" data-pill="cold-call"
-                    onclick="switchSubpill('outreach','cold-call')">Cold Call</button>
-            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
-                    data-tab="outreach" data-pill="cold-dm"
-                    onclick="switchSubpill('outreach','cold-dm')">Cold DM</button>
-        </div>
-
-        <!-- Cold Call (US painters) -->
-        <div id="subpill-outreach-cold-call" class="subpill-content">
-            <a href="http://localhost:5001" target="_blank"
-               class="block w-full mb-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium text-center transition">
-                Open CRM Kanban &rarr;
-            </a>
-
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
-                    <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Active Leads</div>
-                    <div id="cc-active" class="text-2xl font-bold text-blue-400">0</div>
-                </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
-                    <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Due Today</div>
-                    <div id="cc-due" class="text-2xl font-bold text-amber-400">0</div>
-                </div>
-            </div>
-
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
-                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Next Action</div>
-                <div id="cc-next-action" class="text-sm text-gray-200">Loading...</div>
-                <div class="text-[10px] text-gray-500 mt-2">Last sent: <span id="cc-last-sent">--</span></div>
-            </div>
-
-            <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Follow-Ups Due Today</div>
-            <div id="cc-followups" class="space-y-2">
-                <div class="text-gray-400 italic text-center py-6 text-sm">Loading...</div>
+        <!-- Links placeholder -->
+        <div id="subpill-vault-links" class="subpill-content hidden">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 text-center">
+                <div class="text-sm text-gray-400">Links — Phase 2</div>
             </div>
         </div>
 
-        <!-- Cold DM (PH outreach) -->
-        <div id="subpill-outreach-cold-dm" class="subpill-content hidden">
-            <div class="grid grid-cols-3 gap-3 mb-4">
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                    <div class="text-[10px] text-gray-500 uppercase mb-1">Queue</div>
-                    <div id="ph-queue" class="text-xl font-bold text-blue-400">0</div>
-                </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                    <div class="text-[10px] text-gray-500 uppercase mb-1">Sent</div>
-                    <div id="ph-sent" class="text-xl font-bold text-emerald-400">0</div>
-                    <div class="text-[10px] text-gray-500">today</div>
-                </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 text-center">
-                    <div class="text-[10px] text-gray-500 uppercase mb-1">Replies</div>
-                    <div id="ph-replies" class="text-xl font-bold text-amber-400">0</div>
-                    <div class="text-[10px] text-gray-500">pending</div>
-                </div>
+        <!-- Files -->
+        <div id="subpill-vault-files" class="subpill-content hidden">
+            <div class="flex justify-end mb-3">
+                <button onclick="openFileUpload()"
+                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition">+ Upload</button>
             </div>
-
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
-                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Follow-Ups Due</div>
-                <div id="ph-followups-due" class="text-2xl font-bold text-amber-400">0</div>
+            <div id="vault-files-list" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
             </div>
+        </div>
 
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Next Action</div>
-                <div id="ph-next-action" class="text-sm text-gray-200">Loading...</div>
-                <div class="text-[10px] text-gray-500 mt-2">Last queue: <span id="ph-last-run">--</span></div>
+        <!-- Archive placeholder -->
+        <div id="subpill-vault-archive" class="subpill-content hidden">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 text-center">
+                <div class="text-sm text-gray-400">Archive — Phase 3</div>
             </div>
         </div>
     </div>
@@ -529,7 +649,7 @@
     </div>
 </div>
 
-<!-- Spend Modal (bottom sheet) -->
+<!-- Spend Modal -->
 <div id="spend-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end justify-center"
      onclick="if(event.target===this)closeSpendModal()">
     <div class="bg-gray-900 rounded-t-2xl border-t border-gray-700 w-full max-w-lg p-5 space-y-4 animate-slide-up">
@@ -541,22 +661,18 @@
                 </svg>
             </button>
         </div>
-
         <input type="hidden" id="spend-category" value="Takeout">
-
         <div>
             <label class="text-xs text-gray-400 uppercase tracking-wider">Amount (₱)</label>
             <input id="spend-amount" type="number" inputmode="decimal" step="0.01" placeholder="0.00"
                    class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-2xl text-center text-white font-semibold focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
                    onkeydown="if(event.key==='Enter')saveSpend()">
         </div>
-
         <div>
             <label class="text-xs text-gray-400 uppercase tracking-wider">Description (optional)</label>
             <input id="spend-desc" type="text" placeholder="What was it?"
                    class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
         </div>
-
         <button onclick="saveSpend()" id="spend-save-btn"
                 class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium transition">
             Save
@@ -564,7 +680,7 @@
     </div>
 </div>
 
-<!-- Library Modal (notes/projects create+edit) -->
+<!-- Library Modal -->
 <div id="library-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end justify-center"
      onclick="if(event.target===this)closeLibraryModal()">
     <div class="bg-gray-900 rounded-t-2xl border-t border-gray-700 w-full max-w-lg p-5 space-y-4 animate-slide-up max-h-[85vh] overflow-y-auto">
@@ -576,28 +692,23 @@
                 </svg>
             </button>
         </div>
-
         <input type="hidden" id="library-collection" value="notes">
         <input type="hidden" id="library-item-id" value="">
-
         <div>
             <label class="text-xs text-gray-400 uppercase tracking-wider">Title</label>
             <input id="library-title" type="text" placeholder="Title"
                    class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-base text-white focus:border-blue-500 outline-none">
         </div>
-
         <div>
             <label class="text-xs text-gray-400 uppercase tracking-wider">Tags (comma-separated)</label>
             <input id="library-tags" type="text" placeholder="tag1, tag2"
                    class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none">
         </div>
-
         <div>
             <label class="text-xs text-gray-400 uppercase tracking-wider">Body (markdown)</label>
             <textarea id="library-body" rows="10" placeholder="Write..."
                       class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 font-mono focus:border-blue-500 outline-none"></textarea>
         </div>
-
         <div class="flex gap-2">
             <button onclick="deleteLibraryItem()" id="library-delete-btn"
                     class="px-4 py-2.5 bg-red-900/50 hover:bg-red-900 text-red-300 rounded-xl text-sm font-medium transition hidden">
@@ -629,43 +740,114 @@
     </div>
 </div>
 
-<!-- Bottom Tab Bar -->
+<!-- Goals Modal -->
+<div id="goals-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end justify-center"
+     onclick="if(event.target===this)closeGoalsModal()">
+    <div class="bg-gray-900 rounded-t-2xl border-t border-gray-700 w-full max-w-lg p-5 space-y-4 animate-slide-up max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-white">Edit Goals</h3>
+            <button onclick="closeGoalsModal()" class="text-gray-400 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <textarea id="goals-textarea" rows="14" placeholder="# Goals..."
+                  class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 font-mono focus:border-blue-500 outline-none"></textarea>
+        <button onclick="saveGoals()"
+                class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium transition">
+            Save
+        </button>
+    </div>
+</div>
+
+<!-- Log Modal (Systems) -->
+<div id="log-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end justify-center"
+     onclick="if(event.target===this)closeLogModal()">
+    <div class="bg-gray-900 rounded-t-2xl border-t border-gray-700 w-full max-w-lg p-5 space-y-3 animate-slide-up max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+            <h3 id="log-modal-title" class="text-lg font-semibold text-white">Log</h3>
+            <button onclick="closeLogModal()" class="text-gray-400 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <pre id="log-modal-body" class="text-xs text-gray-300 bg-gray-950 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap max-h-[60vh] overflow-y-auto">Loading...</pre>
+    </div>
+</div>
+
+<!-- File Upload Modal -->
+<div id="file-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end justify-center"
+     onclick="if(event.target===this)closeFileModal()">
+    <div class="bg-gray-900 rounded-t-2xl border-t border-gray-700 w-full max-w-lg p-5 space-y-4 animate-slide-up max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-white">Upload File</h3>
+            <button onclick="closeFileModal()" class="text-gray-400 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div>
+            <label class="text-xs text-gray-400 uppercase tracking-wider">File</label>
+            <input id="file-input" type="file"
+                   class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-200">
+        </div>
+        <div>
+            <label class="text-xs text-gray-400 uppercase tracking-wider">Tags (comma-separated)</label>
+            <input id="file-tags" type="text" placeholder="tag1, tag2"
+                   class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none">
+        </div>
+        <div>
+            <label class="text-xs text-gray-400 uppercase tracking-wider">Caption</label>
+            <textarea id="file-caption" rows="3" placeholder="Describe this file..."
+                      class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none"></textarea>
+        </div>
+        <button onclick="submitFileUpload()" id="file-upload-btn"
+                class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium transition">
+            Upload
+        </button>
+    </div>
+</div>
+
+<!-- Bottom Tab Bar: Today / Personal / Brand / EPS / Vault -->
 <nav class="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-40 pb-[env(safe-area-inset-bottom)]">
     <div class="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto flex">
-        <button onclick="switchTab('personal')" data-tab="personal"
+        <button onclick="switchTab('today')" data-tab="today"
                 class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-green-400">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Today
+        </button>
+        <button onclick="switchTab('personal')" data-tab="personal"
+                class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
             </svg>
             Personal
         </button>
-        <button onclick="switchTab('learn')" data-tab="learn"
-                class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
-            Learn
-        </button>
-        <button onclick="switchTab('work')" data-tab="work"
-                class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-            </svg>
-            Work
-        </button>
-        <button onclick="switchTab('content')" data-tab="content"
+        <button onclick="switchTab('brand')" data-tab="brand"
                 class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
             </svg>
-            Content
+            Brand
         </button>
-        <button onclick="switchTab('outreach')" data-tab="outreach"
+        <button onclick="switchTab('eps')" data-tab="eps"
                 class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0019 4H5.21l-.94-2H1v2h2zm16 16c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM7 21c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
-            Outreach
+            EPS
+        </button>
+        <button onclick="switchTab('vault')" data-tab="vault"
+                class="tab-btn flex-1 flex flex-col items-center py-2.5 text-xs transition text-gray-500">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            Vault
         </button>
     </div>
 </nav>

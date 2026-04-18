@@ -334,6 +334,9 @@ from routes_brief import brief_bp, init_brief, warm_cache
 from routes_deal import deal_bp
 from routes_ops import ops_bp
 from routes_notes import notes_bp
+from routes_today import today_bp
+from routes_systems import systems_bp
+from routes_files import files_bp
 from config import now_ph, today_ph
 
 app.register_blueprint(spend_bp)
@@ -342,6 +345,9 @@ app.register_blueprint(brief_bp)
 app.register_blueprint(deal_bp)
 app.register_blueprint(ops_bp)
 app.register_blueprint(notes_bp)
+app.register_blueprint(today_bp)
+app.register_blueprint(systems_bp)
+app.register_blueprint(files_bp)
 
 
 # ============================================================
