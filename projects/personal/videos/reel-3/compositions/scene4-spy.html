@@ -1,0 +1,609 @@
+<template id="scene4-spy-template">
+  <div
+    data-composition-id="scene4-spy"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="5.00"
+  >
+    <div class="wrap">
+      <div class="numeral-row">
+        <div class="num-mono" data-num="03">
+          <span class="layer l-base">03</span>
+          <span class="layer l-magenta">03</span>
+          <span class="layer l-blue">03</span>
+        </div>
+        <div class="num-label">
+          <div class="num-title">COMPETITOR SPY</div>
+          <div class="num-sub">PRICING ▸ ADS ▸ REVIEWS</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <!-- Spy avatar: silhouette profile facing right -->
+        <div class="spy-avatar">
+          <svg viewBox="0 0 400 600" width="360" height="540" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="rimGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#02B3E9" stop-opacity="0.0"/>
+                <stop offset="1" stop-color="#02B3E9" stop-opacity="0.6"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Coat body / shoulders -->
+            <path d="M 40 600 L 40 420 C 40 360, 100 330, 160 330 L 260 330 C 330 330, 370 370, 370 430 L 370 600 Z"
+                  fill="#0b1220" stroke="#02B3E9" stroke-width="4"/>
+
+            <!-- Trench-coat collar (turned up behind neck) -->
+            <path d="M 150 340 L 130 250 L 175 270 L 200 330 Z"
+                  fill="#0b1220" stroke="#02B3E9" stroke-width="4"/>
+            <path d="M 255 340 L 285 260 L 250 275 L 230 330 Z"
+                  fill="#0b1220" stroke="#02B3E9" stroke-width="4"/>
+
+            <!-- Lapel hint -->
+            <path d="M 180 340 L 200 420 L 220 340 Z"
+                  fill="#050a12" stroke="#02B3E9" stroke-width="1.5" opacity="0.85"/>
+
+            <!-- Neck -->
+            <path d="M 185 290 L 185 335 L 225 335 L 225 290 Z"
+                  fill="#0b1220" stroke="#02B3E9" stroke-width="4"/>
+
+            <!-- Head (profile, facing right) -->
+            <path d="M 175 250
+                     C 175 205, 195 175, 230 175
+                     C 265 175, 285 200, 285 235
+                     L 300 250
+                     L 292 262
+                     L 285 262
+                     C 285 285, 270 300, 248 300
+                     L 205 300
+                     C 185 300, 175 285, 175 265 Z"
+                  fill="#0b1220" stroke="#02B3E9" stroke-width="4"/>
+
+            <!-- Chin accent -->
+            <path d="M 205 295 L 248 295 L 240 305 L 215 305 Z"
+                  fill="#050a12" opacity="0.8"/>
+
+            <!-- Eye-socket shadow -->
+            <ellipse cx="258" cy="230" rx="9" ry="5" fill="#050a12" opacity="0.9"/>
+
+            <!-- Fedora brim -->
+            <path d="M 120 185 C 145 165, 195 150, 240 150 C 285 150, 325 162, 335 182 L 320 192 C 300 180, 270 172, 240 172 C 200 172, 160 180, 135 195 Z"
+                  fill="#0b1220" stroke="#02B3E9" stroke-width="4"/>
+
+            <!-- Fedora crown -->
+            <path d="M 165 175
+                     C 170 130, 200 110, 235 110
+                     C 275 110, 305 135, 310 178
+                     L 300 182
+                     C 290 160, 270 145, 240 145
+                     C 205 145, 180 158, 170 180 Z"
+                  fill="#0b1220" stroke="#02B3E9" stroke-width="4"/>
+
+            <!-- Hat band -->
+            <path d="M 168 175 C 175 168, 300 168, 308 175 L 306 182 C 295 176, 180 176, 170 182 Z"
+                  fill="#050a12" stroke="#02B3E9" stroke-width="1" opacity="0.9"/>
+
+            <!-- Arm extending forward/right toward dashboard -->
+            <path d="M 310 380
+                     C 345 370, 375 380, 395 400
+                     L 395 430
+                     C 370 420, 340 420, 310 430
+                     Z"
+                  fill="#0b1220" stroke="#02B3E9" stroke-width="4"/>
+
+            <!-- Fist / hand grip -->
+            <ellipse cx="395" cy="415" rx="22" ry="18" fill="#0b1220" stroke="#02B3E9" stroke-width="4"/>
+
+            <!-- Rim-light accent on shoulder -->
+            <path d="M 280 340 C 320 340, 355 360, 365 395 L 355 400 C 345 370, 315 352, 285 352 Z"
+                  fill="url(#rimGrad)" opacity="0.9"/>
+          </svg>
+        </div>
+
+        <!-- Magnifying glass — independent so GSAP can tween its x/y freely -->
+        <div class="mag-glass">
+          <svg viewBox="0 0 260 260" width="260" height="260" xmlns="http://www.w3.org/2000/svg">
+            <!-- Handle -->
+            <rect x="30" y="175" width="60" height="18" rx="6"
+                  transform="rotate(-35 60 184)"
+                  fill="#0b1220" stroke="#02B3E9" stroke-width="3"/>
+            <!-- Lens fill -->
+            <circle cx="140" cy="110" r="92"
+                    fill="rgba(2,179,233,0.12)" stroke="#02B3E9" stroke-width="6"/>
+            <!-- Inner lens highlight -->
+            <circle cx="140" cy="110" r="82"
+                    fill="none" stroke="rgba(2,179,233,0.35)" stroke-width="2"/>
+            <!-- Crosshair -->
+            <line x1="140" y1="40" x2="140" y2="180" stroke="rgba(2,179,233,0.45)" stroke-width="1.5"/>
+            <line x1="70" y1="110" x2="210" y2="110" stroke="rgba(2,179,233,0.45)" stroke-width="1.5"/>
+            <!-- Red gleam arc (always subtle) -->
+            <path d="M 185 70 A 60 60 0 0 1 205 115"
+                  fill="none" stroke="#ff4757" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+            <!-- Red flash gleam (pulses at SCAN COMPLETE) -->
+            <ellipse class="lens-flash" cx="178" cy="78" rx="12" ry="8"
+                     fill="#ff4757" opacity="0"/>
+            <!-- Highlight sparkle -->
+            <ellipse cx="108" cy="78" rx="14" ry="7" fill="#ffffff" opacity="0.35"/>
+          </svg>
+        </div>
+
+        <div class="dash-frame">
+          <div class="dash-chrome">
+            <span class="dc-dot"></span><span class="dc-dot"></span><span class="dc-dot"></span>
+            <span class="dc-title">COMPETITIVE RADAR ▸ LIVE</span>
+            <span class="dc-agent">● SCANNING</span>
+          </div>
+          <div class="dash-grid">
+            <div class="dash-col col-pricing">
+              <div class="col-head">PRICING</div>
+              <div class="col-glow"></div>
+              <div class="price-row pr1">
+                <span class="pr-name">COMP A</span>
+                <span class="pr-old">$199</span>
+                <span class="pr-arrow">→</span>
+                <span class="pr-new">$179</span>
+              </div>
+              <div class="price-row pr2">
+                <span class="pr-name">COMP B</span>
+                <span class="pr-old">$249</span>
+                <span class="pr-arrow">→</span>
+                <span class="pr-new">$229</span>
+              </div>
+              <div class="price-row pr3">
+                <span class="pr-name">COMP C</span>
+                <span class="pr-old">$159</span>
+                <span class="pr-arrow">→</span>
+                <span class="pr-new">$149</span>
+              </div>
+            </div>
+
+            <div class="dash-col col-ads">
+              <div class="col-head">ADS</div>
+              <div class="col-glow"></div>
+              <div class="ad-pill ap1">
+                <span class="ap-label">IG</span>
+                <span class="ap-count">12 NEW</span>
+                <span class="ap-bars"><span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span></span>
+              </div>
+              <div class="ad-pill ap2">
+                <span class="ap-label">FB</span>
+                <span class="ap-count">8 NEW</span>
+                <span class="ap-bars"><span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span></span>
+              </div>
+              <div class="ad-pill ap3">
+                <span class="ap-label">YT</span>
+                <span class="ap-count">3 NEW</span>
+                <span class="ap-bars"><span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span></span>
+              </div>
+            </div>
+
+            <div class="dash-col col-reviews">
+              <div class="col-head">REVIEWS</div>
+              <div class="col-glow"></div>
+              <div class="rev-row rr1">
+                <span class="rv-stars">
+                  <span class="st s-on">★</span><span class="st s-on">★</span><span class="st s-on">★</span><span class="st s-on">★</span><span class="st s-off">★</span>
+                </span>
+                <span class="rv-score">4.2</span>
+              </div>
+              <div class="rev-row rr2">
+                <span class="rv-stars">
+                  <span class="st s-on">★</span><span class="st s-on">★</span><span class="st s-on">★</span><span class="st s-on">★</span><span class="st s-on">★</span>
+                </span>
+                <span class="rv-score">4.8</span>
+              </div>
+              <div class="rev-row rr3">
+                <span class="rv-stars">
+                  <span class="st s-on">★</span><span class="st s-on">★</span><span class="st s-on">★</span><span class="st s-off">★</span><span class="st s-off">★</span>
+                </span>
+                <span class="rv-score">3.1</span>
+              </div>
+            </div>
+          </div>
+          <div class="scanner-line"></div>
+        </div>
+      </div>
+
+      <div class="scan-stamp">SCAN COMPLETE ✓</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene4-spy"] { position: absolute; inset: 0; }
+      [data-composition-id="scene4-spy"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 34px; padding: 60px;
+      }
+      [data-composition-id="scene4-spy"] .numeral-row {
+        display: flex; align-items: center; gap: 36px;
+        position: relative; z-index: 5;
+      }
+      [data-composition-id="scene4-spy"] .num-mono {
+        position: relative; width: 240px; height: 280px;
+      }
+      [data-composition-id="scene4-spy"] .num-mono .layer {
+        position: absolute; inset: 0;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 280px; line-height: 0.85; letter-spacing: -0.04em;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene4-spy"] .num-mono .l-base    { color: #ffffff; text-shadow: 0 0 30px rgba(2,179,233,0.6); }
+      [data-composition-id="scene4-spy"] .num-mono .l-magenta { color: #ff00a8; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene4-spy"] .num-mono .l-blue    { color: #02B3E9; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene4-spy"] .num-label .num-title {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 54px; color: #ffffff;
+      }
+      [data-composition-id="scene4-spy"] .num-label .num-sub {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 26px; letter-spacing: 0.22em;
+        color: rgba(2,179,233,0.9); margin-top: 6px;
+      }
+
+      /* Stage wraps avatar + glass + dashboard so they share a coordinate space */
+      [data-composition-id="scene4-spy"] .stage {
+        position: relative;
+        width: 1000px;
+        height: 700px;
+      }
+
+      [data-composition-id="scene4-spy"] .spy-avatar {
+        position: absolute;
+        left: 20px;
+        top: 70px;
+        width: 400px;
+        height: 600px;
+        z-index: 2;
+        transform-origin: center center;
+        filter: drop-shadow(0 0 22px rgba(2,179,233,0.85)) drop-shadow(0 0 6px rgba(2,179,233,0.9));
+      }
+
+      [data-composition-id="scene4-spy"] .mag-glass {
+        position: absolute;
+        left: 240px;
+        top: 220px;
+        width: 260px;
+        height: 260px;
+        z-index: 4;
+        transform-origin: center center;
+        filter: drop-shadow(0 0 18px rgba(2,179,233,0.55));
+      }
+
+      [data-composition-id="scene4-spy"] .dash-frame {
+        position: absolute;
+        right: 0;
+        top: 110px;
+        width: 760px;
+        border-radius: 22px;
+        background: rgba(5, 10, 18, 0.88);
+        border: 1px solid rgba(2,179,233,0.45);
+        box-shadow: 0 0 40px rgba(2,179,233,0.25);
+        overflow: hidden;
+        z-index: 1;
+      }
+      [data-composition-id="scene4-spy"] .dash-chrome {
+        display: flex; align-items: center; gap: 10px;
+        padding: 16px 22px;
+        background: rgba(255,255,255,0.04);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      [data-composition-id="scene4-spy"] .dc-dot {
+        width: 14px; height: 14px; border-radius: 50%;
+        background: rgba(255,255,255,0.25);
+      }
+      [data-composition-id="scene4-spy"] .dc-title {
+        margin-left: 12px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 20px; color: rgba(255,255,255,0.6);
+        letter-spacing: 0.1em;
+      }
+      [data-composition-id="scene4-spy"] .dc-agent {
+        margin-left: auto;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 18px; color: #02B3E9;
+        letter-spacing: 0.18em; font-weight: 700;
+      }
+
+      [data-composition-id="scene4-spy"] .dash-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr);
+        gap: 12px; padding: 18px;
+      }
+      [data-composition-id="scene4-spy"] .dash-col {
+        position: relative;
+        display: flex; flex-direction: column; gap: 12px;
+        padding: 16px 14px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      [data-composition-id="scene4-spy"] .col-glow {
+        position: absolute; inset: 0;
+        border-radius: 14px;
+        border: 1px solid rgba(2,179,233,0.65);
+        box-shadow: 0 0 22px rgba(2,179,233,0.55) inset, 0 0 20px rgba(2,179,233,0.4);
+        pointer-events: none;
+        opacity: 0;
+      }
+      [data-composition-id="scene4-spy"] .col-head {
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 20px; letter-spacing: 0.22em;
+        color: rgba(255,255,255,0.85);
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+
+      /* Pricing column */
+      [data-composition-id="scene4-spy"] .price-row {
+        display: flex; align-items: center; gap: 8px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 18px;
+        padding: 5px 2px;
+      }
+      [data-composition-id="scene4-spy"] .pr-name {
+        color: rgba(255,255,255,0.75); font-weight: 700;
+        min-width: 70px;
+      }
+      [data-composition-id="scene4-spy"] .pr-old {
+        color: #ff4757;
+        text-decoration: line-through;
+        font-weight: 500;
+        opacity: 0.85;
+      }
+      [data-composition-id="scene4-spy"] .pr-arrow {
+        color: rgba(255,255,255,0.45);
+      }
+      [data-composition-id="scene4-spy"] .pr-new {
+        color: #02B3E9;
+        font-weight: 700;
+        text-shadow: 0 0 14px rgba(2,179,233,0.85);
+      }
+
+      /* Ads column */
+      [data-composition-id="scene4-spy"] .ad-pill {
+        display: flex; align-items: center; gap: 8px;
+        padding: 9px 10px;
+        background: rgba(2,179,233,0.08);
+        border: 1px solid rgba(2,179,233,0.35);
+        border-radius: 10px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 17px;
+      }
+      [data-composition-id="scene4-spy"] .ap-label {
+        color: #ffffff; font-weight: 700;
+        min-width: 28px;
+      }
+      [data-composition-id="scene4-spy"] .ap-count {
+        color: #02B3E9; font-weight: 700;
+        text-shadow: 0 0 10px rgba(2,179,233,0.7);
+        flex: 1;
+      }
+      [data-composition-id="scene4-spy"] .ap-bars {
+        display: inline-flex; align-items: flex-end; gap: 4px;
+        height: 24px;
+      }
+      [data-composition-id="scene4-spy"] .ap-bars .bar {
+        display: inline-block;
+        width: 5px;
+        background: #02B3E9;
+        border-radius: 2px;
+        box-shadow: 0 0 8px rgba(2,179,233,0.7);
+        transform-origin: bottom;
+      }
+      [data-composition-id="scene4-spy"] .ap-bars .b1 { height: 10px; }
+      [data-composition-id="scene4-spy"] .ap-bars .b2 { height: 16px; }
+      [data-composition-id="scene4-spy"] .ap-bars .b3 { height: 24px; }
+
+      /* Reviews column */
+      [data-composition-id="scene4-spy"] .rev-row {
+        display: flex; align-items: center; gap: 10px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 18px;
+        padding: 5px 2px;
+      }
+      [data-composition-id="scene4-spy"] .rv-stars {
+        display: inline-flex; gap: 2px;
+        font-size: 20px;
+        letter-spacing: 0.04em;
+      }
+      [data-composition-id="scene4-spy"] .rv-stars .st {
+        display: inline-block;
+      }
+      [data-composition-id="scene4-spy"] .rv-stars .s-on {
+        color: #fbbf24;
+        text-shadow: 0 0 10px rgba(251,191,36,0.6);
+      }
+      [data-composition-id="scene4-spy"] .rv-stars .s-off {
+        color: rgba(255,255,255,0.22);
+      }
+      [data-composition-id="scene4-spy"] .rv-score {
+        color: #02B3E9; font-weight: 700;
+        text-shadow: 0 0 10px rgba(2,179,233,0.7);
+        margin-left: auto;
+      }
+
+      /* Scanner line */
+      [data-composition-id="scene4-spy"] .scanner-line {
+        position: absolute;
+        left: 0; right: 0;
+        top: 0;
+        height: 4px;
+        background: linear-gradient(90deg,
+          rgba(2,179,233,0) 0%,
+          rgba(2,179,233,0.9) 50%,
+          rgba(2,179,233,0) 100%);
+        box-shadow: 0 0 18px rgba(2,179,233,0.9);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      [data-composition-id="scene4-spy"] .scan-stamp {
+        position: relative;
+        z-index: 10;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 54px;
+        color: #02B3E9;
+        letter-spacing: 0.04em;
+        text-shadow:
+          -3px -3px 0 #000, 3px -3px 0 #000,
+          -3px 3px 0 #000, 3px 3px 0 #000,
+          0 0 30px rgba(2,179,233,0.9);
+        padding: 14px 30px;
+        border: 3px solid rgba(2,179,233,0.8);
+        border-radius: 14px;
+        background: rgba(2,179,233,0.08);
+        transform: rotate(-3deg);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene4-spy"]';
+        const tl = gsap.timeline({ paused: true });
+
+        // Chromatic numeral slam + split-back-to-center
+        tl.from(sel + ' .num-mono', { scale: 0.3, opacity: 0, duration: 0.35, ease: 'back.out(2.5)' }, 0);
+        tl.fromTo(sel + ' .num-mono .l-magenta',
+          { x: -40, y: -20 },
+          { x: -6, y: -3, duration: 0.45, ease: 'expo.out' }, 0);
+        tl.fromTo(sel + ' .num-mono .l-blue',
+          { x: 40, y: 20 },
+          { x: 6, y: 3, duration: 0.45, ease: 'expo.out' }, 0);
+
+        tl.from(sel + ' .num-label', { x: -30, opacity: 0, duration: 0.35, ease: 'power2.out' }, 0.18);
+
+        // Dashboard pops in
+        tl.from(sel + ' .dash-frame', { y: 60, opacity: 0, duration: 0.45, ease: 'power3.out' }, 0.30);
+
+        // Spy avatar entry — slide from left with slight scale bump
+        tl.fromTo(sel + ' .spy-avatar',
+          { x: -300, opacity: 0, scale: 0.95 },
+          { x: 0, opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(1.4)' }, 0.40);
+
+        // Column headers and rows stagger in
+        tl.from(sel + ' .col-head', { y: 14, opacity: 0, duration: 0.25, stagger: 0.05, ease: 'power2.out' }, 0.55);
+        tl.from(sel + ' .price-row', { x: 20, opacity: 0, duration: 0.25, stagger: 0.05, ease: 'power2.out' }, 0.70);
+        tl.from(sel + ' .ad-pill',  { x: 20, opacity: 0, duration: 0.25, stagger: 0.05, ease: 'power2.out' }, 0.80);
+        tl.from(sel + ' .rev-row',  { x: 20, opacity: 0, duration: 0.25, stagger: 0.05, ease: 'power2.out' }, 0.90);
+
+        // Magnifying glass gesture prep — scale up with rotate wiggle
+        tl.fromTo(sel + ' .mag-glass',
+          { scale: 0.8, rotate: -8, opacity: 0 },
+          { scale: 1, rotate: 0, opacity: 1, duration: 0.30, ease: 'back.out(1.6)' }, 0.85);
+
+        // Glass starting position (above the dashboard, pre-scan hover)
+        // Scan anchors relative to the stage (stage is 1000px wide, dash-frame at right: 0 width 820)
+        // Dashboard columns roughly center at stage-x: 380, 560, 740
+        // Glass SVG is 260px wide, so left-anchor offsets: col1 x=250, col2 x=430, col3 x=610
+        const glassBaseX = 250;   // column 1 center
+        const glassBaseY = 60;    // hover y offset within stage (glass top: 220 + y)
+
+        // Glass hovers near column 1 during prep
+        tl.set(sel + ' .mag-glass', { x: glassBaseX - 10, y: glassBaseY - 20 }, 0.85);
+
+        // Column scan 1 — PRICING (glass rests over col 1: t=1.20 → 2.00)
+        tl.to(sel + ' .mag-glass',
+          { x: glassBaseX, y: glassBaseY, duration: 0.35, ease: 'power3.inOut' }, 1.20);
+        tl.to(sel + ' .col-pricing .col-glow',
+          { opacity: 1, duration: 0.30, ease: 'sine.out' }, 1.20);
+
+        // Column scan 2 — ADS (move at t=2.00 → rest until 2.80)
+        tl.to(sel + ' .mag-glass',
+          { x: glassBaseX + 180, y: glassBaseY, duration: 0.35, ease: 'power3.inOut' }, 2.00);
+        tl.to(sel + ' .col-pricing .col-glow',
+          { opacity: 0, duration: 0.35, ease: 'sine.inOut' }, 2.00);
+        tl.to(sel + ' .col-ads .col-glow',
+          { opacity: 1, duration: 0.35, ease: 'sine.inOut' }, 2.00);
+
+        // Column scan 3 — REVIEWS (move at t=2.80 → rest until 3.60)
+        tl.to(sel + ' .mag-glass',
+          { x: glassBaseX + 360, y: glassBaseY, duration: 0.35, ease: 'power3.inOut' }, 2.80);
+        tl.to(sel + ' .col-ads .col-glow',
+          { opacity: 0, duration: 0.35, ease: 'sine.inOut' }, 2.80);
+        tl.to(sel + ' .col-reviews .col-glow',
+          { opacity: 1, duration: 0.35, ease: 'sine.inOut' }, 2.80);
+
+        // Avatar head-bob (subtle y wiggle during scan)
+        tl.to(sel + ' .spy-avatar',
+          { y: -4, duration: 0.60, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 1.20);
+
+        // Glass hand tremor — small scale wiggle while scanning
+        tl.to(sel + ' .mag-glass',
+          { scale: 1.02, duration: 0.30, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 1.30);
+
+        // Scanner line — two top->bottom passes (finite, no repeat -1)
+        tl.set(sel + ' .scanner-line', { top: 0, opacity: 0 }, 1.00);
+        tl.to(sel + ' .scanner-line', { opacity: 1, duration: 0.1, ease: 'none' }, 1.00);
+        tl.to(sel + ' .scanner-line', { top: '100%', duration: 1.10, ease: 'none' }, 1.00);
+        tl.to(sel + ' .scanner-line', { opacity: 0, duration: 0.1, ease: 'none' }, 2.05);
+        tl.set(sel + ' .scanner-line', { top: 0 }, 2.20);
+        tl.to(sel + ' .scanner-line', { opacity: 1, duration: 0.1, ease: 'none' }, 2.20);
+        tl.to(sel + ' .scanner-line', { top: '100%', duration: 1.10, ease: 'none' }, 2.20);
+        tl.to(sel + ' .scanner-line', { opacity: 0, duration: 0.1, ease: 'none' }, 3.25);
+
+        // Pricing — old strikethrough fades in, new prices pulse glow (scale yoyo)
+        tl.from(sel + ' .pr-old', { opacity: 0, duration: 0.25, stagger: 0.05, ease: 'power2.out' }, 1.10);
+        tl.fromTo(sel + ' .pr-new',
+          { scale: 0.8, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.30, stagger: 0.06, ease: 'back.out(2)' }, 1.20);
+        // Continuous new-price pulse (finite, three yoyos each)
+        tl.to(sel + ' .pr-new', { scale: 1.05, duration: 0.45, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 1.60);
+
+        // Ads — bar icons grow vertically, staggered per pill, then across bars
+        tl.fromTo(sel + ' .ap1 .bar',
+          { scaleY: 0 },
+          { scaleY: 1, duration: 0.28, stagger: 0.06, ease: 'power3.out' }, 1.20);
+        tl.fromTo(sel + ' .ap2 .bar',
+          { scaleY: 0 },
+          { scaleY: 1, duration: 0.28, stagger: 0.06, ease: 'power3.out' }, 1.35);
+        tl.fromTo(sel + ' .ap3 .bar',
+          { scaleY: 0 },
+          { scaleY: 1, duration: 0.28, stagger: 0.06, ease: 'power3.out' }, 1.50);
+
+        // Reviews — stars illuminate left->right per row, rows stagger 0.15
+        tl.fromTo(sel + ' .rr1 .st',
+          { opacity: 0.3 },
+          { opacity: 1, duration: 0.22, stagger: 0.05, ease: 'power2.out' }, 1.20);
+        tl.fromTo(sel + ' .rr2 .st',
+          { opacity: 0.3 },
+          { opacity: 1, duration: 0.22, stagger: 0.05, ease: 'power2.out' }, 1.35);
+        tl.fromTo(sel + ' .rr3 .st',
+          { opacity: 0.3 },
+          { opacity: 1, duration: 0.22, stagger: 0.05, ease: 'power2.out' }, 1.50);
+
+        // Secondary motion — ticker-feel opacity pulse on one row per cycle
+        tl.to(sel + ' .pr2', { opacity: 0.55, duration: 0.25, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 1.90);
+        tl.to(sel + ' .ap2', { opacity: 0.55, duration: 0.25, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 2.30);
+        tl.to(sel + ' .rr2', { opacity: 0.55, duration: 0.25, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 2.70);
+        tl.to(sel + ' .pr1', { opacity: 0.55, duration: 0.25, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 3.00);
+
+        // Clear reviews glow before stamp (so we don't leave a column lit)
+        tl.to(sel + ' .col-reviews .col-glow',
+          { opacity: 0, duration: 0.30, ease: 'sine.inOut' }, 3.70);
+
+        // SCAN COMPLETE stamp at t=3.80
+        tl.fromTo(sel + ' .scan-stamp',
+          { scale: 2.0, opacity: 0, rotate: -10 },
+          { scale: 1, opacity: 1, rotate: -3, duration: 0.25, ease: 'power3.out' }, 3.80);
+        tl.to(sel + ' .scan-stamp', { scale: 1.05, duration: 0.22, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 4.05);
+
+        // Avatar nod at stamp moment
+        tl.to(sel + ' .spy-avatar', { rotate: -2, duration: 0.18, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 3.80);
+
+        // Lens red-gleam flash — target acquired
+        tl.fromTo(sel + ' .lens-flash',
+          { opacity: 0 },
+          { opacity: 1, duration: 0.12, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 3.80);
+
+        // Exit
+        tl.to(sel + ' .wrap', { y: -80, opacity: 0, duration: 0.30, ease: 'power2.in' }, 4.72);
+        tl.to({}, { duration: 5.00 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene4-spy"] = tl;
+      })();
+    </script>
+  </div>
+</template>

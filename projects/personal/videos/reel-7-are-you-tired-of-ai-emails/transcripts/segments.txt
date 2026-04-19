@@ -1,0 +1,15 @@
+[0.0-3.8] Are you tired of AI emails that sound like a bot wrote them?
+[4.6-5.7] Let's fix that in 5 minutes.
+[6.8-9.9] ChatGPT does not know you, it writes generic stuff.
+[10.4-14.2] But it can learn your voice, you just need to show it how.
+[15.6-18.1] Step 1. Open your email sent folder.
+[18.7-24.3] Step 2. Copy your last 10 emails, the ones that you like or the ones that were written by your voice.
+[25.1-29.0] Step 3. Paste them into ChatGPT or any AI software.
+[29.0-31.6] Step 4. Write this prompt.
+[32.5-35.7] Study how I write, break down the components from me to learn it.
+[36.2-39.1] Save it as a template so we can match this tone every time.
+[39.7-42.2] Ask clarifying questions if you need to.
+[42.4-46.3] Step 5. Save it as a project or create a custom GPT.
+[47.0-49.9] Step 6. Paste the prompt into the project instruction.
+[50.7-54.2] Then that's it. Now every email sounds like you, not a machine.
+[56.7-61.1] That's it. Do this right now, 5 minutes. Follow for more simple tips.

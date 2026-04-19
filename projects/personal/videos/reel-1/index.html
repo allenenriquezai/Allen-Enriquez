@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #050810;
+        font-family: 'Montserrat', sans-serif;
+        color: #fff;
+      }
+
+      /* Ambient bg — radial blue glow + grid */
+      #ambient {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(ellipse at 50% 40%, rgba(2, 179, 233, 0.25) 0%, rgba(2, 179, 233, 0.08) 40%, transparent 70%),
+          linear-gradient(rgba(2, 179, 233, 0.04) 1px, transparent 1px) 0 0 / 100% 80px,
+          linear-gradient(90deg, rgba(2, 179, 233, 0.04) 1px, transparent 1px) 0 0 / 80px 100%,
+          #050810;
+      }
+      #ambient::after {
+        content: "";
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+      }
+
+      .stage {
+        position: absolute; inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 120px 80px;
+      }
+
+      .line {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 96px;
+        line-height: 1.15;
+        text-align: center;
+        color: #fff;
+        letter-spacing: -2px;
+        text-shadow: 0 0 40px rgba(2, 179, 233, 0.5);
+      }
+      .line.body {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 84px;
+        letter-spacing: -1px;
+      }
+      .line.small {
+        font-size: 64px;
+        font-weight: 400;
+      }
+      .highlight { color: #02B3E9; }
+      .yellow { color: #FFD700; }
+      .strike { position: relative; display: inline-block; }
+      .strike::after {
+        content: "";
+        position: absolute;
+        left: -4%; right: -4%; top: 52%;
+        height: 8px;
+        background: #FF3D3D;
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+
+      .icon-row {
+        display: flex;
+        gap: 60px;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 60px;
+      }
+      .icon {
+        width: 160px; height: 160px;
+        border-radius: 32px;
+        background: rgba(2, 179, 233, 0.08);
+        border: 2px solid rgba(2, 179, 233, 0.4);
+        box-shadow: 0 0 40px rgba(2, 179, 233, 0.25);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 88px;
+      }
+      .arrow {
+        color: #02B3E9;
+        font-size: 72px;
+        font-family: 'Roboto Mono', monospace;
+      }
+
+      .big-number {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 280px;
+        color: #02B3E9;
+        text-shadow: 0 0 60px rgba(2, 179, 233, 0.8);
+        letter-spacing: -8px;
+        line-height: 1;
+      }
+
+      .compare {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+      }
+      .compare-col {
+        flex: 1;
+        padding: 60px 40px;
+        border-radius: 24px;
+        text-align: center;
+        max-width: 380px;
+      }
+      .compare-col.red {
+        background: rgba(255, 61, 61, 0.08);
+        border: 2px solid rgba(255, 61, 61, 0.4);
+      }
+      .compare-col.blue {
+        background: rgba(2, 179, 233, 0.08);
+        border: 2px solid rgba(2, 179, 233, 0.4);
+        box-shadow: 0 0 40px rgba(2, 179, 233, 0.3);
+      }
+      .compare-col .label {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 36px;
+        color: #aaa;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      .compare-col .amount {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 88px;
+        color: #fff;
+      }
+      .compare-col.blue .amount { color: #02B3E9; }
+
+      .loop-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+      }
+      .loop-symbol {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 400px;
+        color: #02B3E9;
+        text-shadow: 0 0 80px rgba(2, 179, 233, 0.9);
+        line-height: 0.8;
+      }
+
+      .clip { opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="42"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="ambient" class="clip" data-start="0" data-duration="42" data-track-index="0"></div>
+
+      <!-- EXPLAIN SCENE (0-12s) -->
+
+      <div id="e1" class="stage clip" data-start="0" data-duration="2.8" data-track-index="1">
+        <div class="line">An AI agent is<br/><span class="highlight">software</span> that<br/>does tasks for you.</div>
+      </div>
+
+      <div id="e2" class="stage clip" data-start="2.8" data-duration="2" data-track-index="1">
+        <div class="icon-row">
+          <div class="icon">💬</div>
+        </div>
+        <div class="line body"><span class="strike" id="e2strike">Not just answer questions.</span></div>
+      </div>
+
+      <div id="e3" class="stage clip" data-start="4.8" data-duration="2" data-track-index="1">
+        <div class="line">It <span class="yellow">DOES</span><br/>the work.</div>
+      </div>
+
+      <div id="e4" class="stage clip" data-start="6.8" data-duration="2" data-track-index="1">
+        <div class="icon-row">
+          <div class="icon">📧</div>
+        </div>
+        <div class="line body">It reads<br/>your emails.</div>
+      </div>
+
+      <div id="e5" class="stage clip" data-start="8.8" data-duration="2" data-track-index="1">
+        <div class="icon-row">
+          <div class="icon">✍️</div>
+        </div>
+        <div class="line body">It writes<br/>the reply.</div>
+      </div>
+
+      <div id="e6" class="stage clip" data-start="10.8" data-duration="1.2" data-track-index="1">
+        <div class="icon-row">
+          <div class="icon">✅</div>
+        </div>
+        <div class="line">You approve.<br/><span class="highlight">Done.</span></div>
+      </div>
+
+      <!-- ILLUSTRATE SCENE (12-42s) -->
+
+      <div id="i1" class="stage clip" data-start="12" data-duration="4" data-track-index="1">
+        <div class="icon-row">
+          <div class="icon">👤</div>
+        </div>
+        <div class="line">Think of it like<br/><span class="highlight">hiring someone.</span></div>
+      </div>
+
+      <div id="i2" class="stage clip" data-start="16" data-duration="4" data-track-index="1">
+        <div class="big-number">24/7</div>
+        <div class="line body" style="margin-top: 40px">But they work<br/>all the time.</div>
+      </div>
+
+      <div id="i3" class="stage clip" data-start="20" data-duration="4" data-track-index="1">
+        <div class="icon-row">
+          <div class="icon">🧠</div>
+        </div>
+        <div class="line">They <span class="highlight">never</span><br/>forget.</div>
+      </div>
+
+      <div id="i4" class="stage clip" data-start="24" data-duration="4" data-track-index="1">
+        <div class="icon-row">
+          <div class="icon">🤒</div>
+        </div>
+        <div class="line"><span class="strike" id="i4strike">They never call in sick.</span></div>
+      </div>
+
+      <div id="i5" class="stage clip" data-start="28" data-duration="6" data-track-index="1">
+        <div class="line small" style="margin-bottom: 60px">Cost less than your phone bill.</div>
+        <div class="compare">
+          <div class="compare-col red">
+            <div class="label">Phone</div>
+            <div class="amount" id="i5phone">$100</div>
+          </div>
+          <div class="compare-col blue">
+            <div class="label">AI Agent</div>
+            <div class="amount" id="i5ai">$20</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="i6" class="stage clip" data-start="34" data-duration="4" data-track-index="1">
+        <div class="icon-row">
+          <div class="icon">💬</div>
+        </div>
+        <div class="line">Tell them <span class="yellow">once.</span></div>
+      </div>
+
+      <div id="i7" class="stage clip" data-start="38" data-duration="4" data-track-index="1">
+        <div class="loop-box">
+          <div class="loop-symbol">∞</div>
+          <div class="line body">They do it<br/><span class="highlight">forever.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // ambient always visible
+      tl.set("#ambient", { opacity: 1 }, 0);
+
+      // Explain scenes — snap in, hold, snap out
+      const explainScenes = ["#e1", "#e2", "#e3", "#e4", "#e5", "#e6"];
+      const explainStarts = [0, 2.8, 4.8, 6.8, 8.8, 10.8];
+      const explainDurs   = [2.8, 2, 2, 2, 2, 1.2];
+
+      explainScenes.forEach((id, idx) => {
+        const start = explainStarts[idx];
+        const dur = explainDurs[idx];
+        tl.fromTo(id,
+          { opacity: 0, y: 60, scale: 0.96 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: "back.out(1.6)" },
+          start
+        );
+        tl.to(id, { opacity: 0, y: -40, duration: 0.25, ease: "power2.in" }, start + dur - 0.25);
+      });
+
+      // strike animation on "Not just answer questions"
+      tl.to("#e2strike::after", { scaleX: 1, duration: 0.6, ease: "power2.out" }, 3.2);
+      // CSS pseudo can't be tweened directly via gsap — use parent var trick
+      gsap.set("#e2strike", { "--sx": 0 });
+      tl.to("#e2strike", {
+        duration: 0.6,
+        ease: "power2.out",
+        onUpdate: function() {
+          const el = document.querySelector("#e2strike");
+          if (el) {
+            const p = this.progress();
+            const after = el.querySelector("::after");
+            el.style.setProperty("--sx", p);
+          }
+        }
+      }, 3.2);
+
+      // Illustrate scenes
+      const ilScenes = ["#i1", "#i2", "#i3", "#i4", "#i5", "#i6", "#i7"];
+      const ilStarts = [12, 16, 20, 24, 28, 34, 38];
+      const ilDurs   = [4, 4, 4, 4, 6, 4, 4];
+
+      ilScenes.forEach((id, idx) => {
+        const start = ilStarts[idx];
+        const dur = ilDurs[idx];
+        tl.fromTo(id,
+          { opacity: 0, y: 80, scale: 0.95 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.4)" },
+          start
+        );
+        tl.to(id, { opacity: 0, y: -50, duration: 0.3, ease: "power2.in" }, start + dur - 0.3);
+      });
+
+      // Icon pulse on illustrate scenes
+      ilScenes.forEach((id, idx) => {
+        const start = ilStarts[idx];
+        tl.fromTo(`${id} .icon`,
+          { scale: 0.7, boxShadow: "0 0 0 rgba(2, 179, 233, 0)" },
+          { scale: 1, boxShadow: "0 0 60px rgba(2, 179, 233, 0.6)", duration: 0.5, ease: "back.out(2)" },
+          start + 0.1
+        );
+      });
+
+      // Big 24/7 number counter effect
+      tl.fromTo("#i2 .big-number",
+        { scale: 0.5, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(2)" },
+        16.1
+      );
+
+      // Phone vs AI compare — numbers count
+      tl.from("#i5 .compare-col.red", { x: -100, opacity: 0, duration: 0.5, ease: "power3.out" }, 28.2);
+      tl.from("#i5 .compare-col.blue", { x: 100, opacity: 0, duration: 0.5, ease: "power3.out" }, 28.4);
+
+      // Infinity symbol pulse
+      tl.to("#i7 .loop-symbol",
+        { scale: 1.08, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: 2 },
+        38.5
+      );
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

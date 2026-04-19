@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Are You Tired of AI Emails — Reel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  html, body { margin: 0; padding: 0; background: #05080f; height: 100%; overflow: hidden; font-family: 'Montserrat', sans-serif; }
+  #root { position: absolute; inset: 0; }
+  @keyframes aeblink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#0A1628"/>
+  <rect x="120" y="120" width="160" height="160" rx="20" fill="#4EB3F2"/>
+  <text x="200" y="240" font-family="monospace" font-weight="700" font-size="90" fill="#0A1628" text-anchor="middle" font-style="italic">AE</text>
+</svg>
+</template>
+<div id="root"></div>
+
+<script type="text/babel" src="animations.jsx"></script>
+<script type="text/babel" src="scenes.jsx"></script>
+<script type="text/babel">
+
+/*EDITMODE-BEGIN*/
+const TWEAKS = {
+  "accent": "#4EB3F2",
+  "showTransitions": true,
+  "showProgressBar": true
+}
+/*EDITMODE-END*/
+
+// Segment boundaries (local seconds from the 15.0s mark of the script)
+// 0–3:    Step 1 — Open sent folder
+// 3–9:    Step 2 — Copy 10 emails
+// 9–14:   Step 3 — Paste into AI
+// 14–27:  Step 4 — Write this prompt (incl. 3 sub-lines)
+// 27–32:  Step 5 — Save as project
+// 32–40:  Step 6 — Paste into project instructions
+
+const DURATION = 42;
+
+function ProgressBar() {
+  if (!TWEAKS.showProgressBar) return null;
+  const { time } = useTimeline();
+  const pct = (time / DURATION) * 100;
+  return (
+    <div style={{
+      position: 'absolute',
+      top: 28, left: 48, right: 48,
+      height: 6, borderRadius: 3,
+      background: 'rgba(255,255,255,0.08)',
+      overflow: 'hidden',
+      zIndex: 100,
+    }}>
+      <div style={{
+        width: `${pct}%`, height: '100%',
+        background: BRAND.accent,
+        boxShadow: `0 0 12px ${BRAND.glow}`,
+        transition: 'none',
+      }}/>
+    </div>
+  );
+}
+
+function Watermark() {
+  return (
+    <div style={{
+      position: 'absolute',
+      bottom: 28, right: 48,
+      display: 'flex', alignItems: 'center', gap: 10,
+      zIndex: 100,
+      opacity: 0.8,
+    }}>
+      <div style={{
+        fontFamily: MONO, fontSize: 18, fontWeight: 700,
+        color: BRAND.accent, fontStyle: 'italic',
+        letterSpacing: '-0.02em',
+        textShadow: `0 0 12px ${BRAND.glow}`,
+      }}>AE</div>
+      <div style={{
+        fontFamily: MONO, fontSize: 12, color: BRAND.grey,
+        letterSpacing: '0.15em',
+      }}>@ALLEN.ENRIQUEZ</div>
+    </div>
+  );
+}
+
+function Hook() {
+  const { time } = useTimeline();
+  // Show the "5 minutes" countdown ticker as persistent overlay
+  const remaining = Math.max(0, DURATION - time);
+  const totalFake = 5 * 60;
+  const displayed = Math.floor(totalFake - (time / DURATION) * (60 + 30));
+  const m = Math.floor(displayed / 60);
+  const s = displayed % 60;
+  return (
+    <div style={{
+      position: 'absolute',
+      bottom: 28, left: 48,
+      display: 'flex', alignItems: 'center', gap: 12,
+      zIndex: 100,
+    }}>
+      <div style={{
+        width: 12, height: 12, borderRadius: '50%',
+        background: BRAND.orange,
+        boxShadow: `0 0 14px ${BRAND.orange}`,
+        animation: 'aeblink 1s steps(2) infinite',
+      }}/>
+      <div style={{
+        fontFamily: MONO, fontSize: 16, fontWeight: 500,
+        color: BRAND.offwhite,
+        letterSpacing: '0.12em',
+      }}>UNDER 5 MIN · {String(m)}:{String(s).padStart(2,'0')}</div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Stage
+      width={1080}
+      height={1920}
+      duration={DURATION}
+      background={BRAND.bg}
+      persistKey="ae-reel"
+    >
+      <BackgroundGrid />
+
+      <ProgressBar />
+
+      {/* STEPS */}
+      <Sprite start={0} end={3}>
+        <Step1_OpenSent />
+      </Sprite>
+
+      <Sprite start={3} end={9}>
+        <Step2_CopyEmails />
+      </Sprite>
+
+      <Sprite start={9} end={14}>
+        <Step3_Paste />
+      </Sprite>
+
+      <Sprite start={14} end={27}>
+        <Step4_Prompt />
+      </Sprite>
+
+      <Sprite start={27} end={32}>
+        <Step5_SaveProject />
+      </Sprite>
+
+      <Sprite start={32} end={36.5}>
+        <Step6_PasteInstructions />
+      </Sprite>
+
+      <Sprite start={36.5} end={42}>
+        <FinaleEmail />
+      </Sprite>
+
+      {/* Transition flashes between steps (optional) */}
+      {TWEAKS.showTransitions && (
+        <>
+          <Sprite start={2.7} end={3.5}>
+            <StepTransition step="02" title="Copy your 10 emails." />
+          </Sprite>
+          <Sprite start={8.7} end={9.5}>
+            <StepTransition step="03" title="Paste them into AI." />
+          </Sprite>
+          <Sprite start={13.7} end={14.5}>
+            <StepTransition step="04" title="Write this prompt." />
+          </Sprite>
+          <Sprite start={26.7} end={27.5}>
+            <StepTransition step="05" title="Save as a project." />
+          </Sprite>
+          <Sprite start={31.7} end={32.5}>
+            <StepTransition step="06" title="Paste the instructions." />
+          </Sprite>
+          <Sprite start={36.2} end={37.0}>
+            <StepTransition step="✓" title="Every email sounds like you." />
+          </Sprite>
+        </>
+      )}
+
+      <Watermark />
+      <Hook />
+    </Stage>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+// ── Tweaks wiring ────────────────────────────────────────────────────────
+window.addEventListener('message', (e) => {
+  const data = e.data || {};
+  if (data.type === '__activate_edit_mode') {
+    showTweakPanel();
+  } else if (data.type === '__deactivate_edit_mode') {
+    hideTweakPanel();
+  }
+});
+window.parent.postMessage({type: '__edit_mode_available'}, '*');
+
+function showTweakPanel() {
+  if (document.getElementById('ae-tweaks')) return;
+  const panel = document.createElement('div');
+  panel.id = 'ae-tweaks';
+  panel.style.cssText = `
+    position: fixed; bottom: 80px; right: 20px; z-index: 99999;
+    background: rgba(10,22,40,0.96); border: 1px solid rgba(78,179,242,0.35);
+    border-radius: 12px; padding: 16px; width: 260px;
+    box-shadow: 0 0 40px rgba(78,179,242,0.3);
+    font-family: 'Roboto Mono', monospace; color: #E8EEF5;
+    backdrop-filter: blur(10px);
+  `;
+  panel.innerHTML = `
+    <div style="font-size:11px; letter-spacing:0.2em; color:#4EB3F2; margin-bottom:14px; font-weight:500;">TWEAKS</div>
+    <label style="display:block; margin-bottom:12px; font-size:12px;">
+      <span style="display:block; margin-bottom:6px; color:#98A2B3;">Accent color</span>
+      <input type="color" id="tw-accent" value="${TWEAKS.accent}" style="width:100%; height:32px; border:none; background:none; cursor:pointer;"/>
+    </label>
+    <label style="display:flex; align-items:center; gap:8px; margin-bottom:10px; font-size:12px; cursor:pointer;">
+      <input type="checkbox" id="tw-transitions" ${TWEAKS.showTransitions ? 'checked' : ''}/>
+      <span>Step transitions</span>
+    </label>
+    <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer;">
+      <input type="checkbox" id="tw-progress" ${TWEAKS.showProgressBar ? 'checked' : ''}/>
+      <span>Progress bar</span>
+    </label>
+  `;
+  document.body.appendChild(panel);
+  document.getElementById('tw-accent').addEventListener('input', (e) => {
+    TWEAKS.accent = e.target.value;
+    BRAND.accent = e.target.value;
+    window.parent.postMessage({type: '__edit_mode_set_keys', edits: {accent: e.target.value}}, '*');
+    // Force rerender
+    root.render(<App />);
+  });
+  document.getElementById('tw-transitions').addEventListener('change', (e) => {
+    TWEAKS.showTransitions = e.target.checked;
+    window.parent.postMessage({type: '__edit_mode_set_keys', edits: {showTransitions: e.target.checked}}, '*');
+    root.render(<App />);
+  });
+  document.getElementById('tw-progress').addEventListener('change', (e) => {
+    TWEAKS.showProgressBar = e.target.checked;
+    window.parent.postMessage({type: '__edit_mode_set_keys', edits: {showProgressBar: e.target.checked}}, '*');
+    root.render(<App />);
+  });
+}
+function hideTweakPanel() {
+  const p = document.getElementById('ae-tweaks');
+  if (p) p.remove();
+}
+</script>
+</body>
+</html>

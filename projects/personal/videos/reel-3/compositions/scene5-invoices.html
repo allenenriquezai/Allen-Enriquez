@@ -1,0 +1,281 @@
+<template id="scene5-invoices-template">
+  <div
+    data-composition-id="scene5-invoices"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="2.92"
+  >
+    <div class="wrap">
+      <div class="numeral-row">
+        <div class="num-mono" data-num="04">
+          <span class="layer l-base">04</span>
+          <span class="layer l-magenta">04</span>
+          <span class="layer l-blue">04</span>
+        </div>
+        <div class="num-label">
+          <div class="num-title">CHASES INVOICES</div>
+          <div class="num-sub">OVERDUE &#9656; PAID</div>
+        </div>
+      </div>
+
+      <div class="inv-panel">
+        <div class="inv-header">
+          <span class="inv-title">ACCOUNTS RECEIVABLE</span>
+          <span class="inv-agent">&#9679; AGENT ACTIVE</span>
+        </div>
+        <div class="agent-ping-wrap">
+          <span class="agent-ping"></span>
+        </div>
+        <div class="inv-list">
+          <div class="inv-row r1">
+            <span class="inv-num">#INV-1048</span>
+            <span class="inv-client">Client A</span>
+            <span class="inv-amt">$2,400</span>
+            <span class="pill-slot">
+              <span class="pill pill-overdue">OVERDUE</span>
+              <span class="pill pill-paid">PAID &#10003;</span>
+            </span>
+          </div>
+          <div class="inv-row r2">
+            <span class="inv-num">#INV-1052</span>
+            <span class="inv-client">Client B</span>
+            <span class="inv-amt">$1,180</span>
+            <span class="pill-slot">
+              <span class="pill pill-overdue">OVERDUE</span>
+              <span class="pill pill-paid">PAID &#10003;</span>
+            </span>
+          </div>
+          <div class="inv-row r3">
+            <span class="inv-num">#INV-1067</span>
+            <span class="inv-client">Vendor C</span>
+            <span class="inv-amt">$3,600</span>
+            <span class="pill-slot">
+              <span class="pill pill-overdue">OVERDUE</span>
+              <span class="pill pill-paid">PAID &#10003;</span>
+            </span>
+          </div>
+          <div class="inv-row r4">
+            <span class="inv-num">#INV-1073</span>
+            <span class="inv-client">Client D</span>
+            <span class="inv-amt">$890</span>
+            <span class="pill-slot">
+              <span class="pill pill-overdue">OVERDUE</span>
+              <span class="pill pill-paid">PAID &#10003;</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="payoff-stamp">PAID &#10003; +$8,070</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene5-invoices"] { position: absolute; inset: 0; }
+      [data-composition-id="scene5-invoices"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 34px; padding: 60px;
+      }
+      [data-composition-id="scene5-invoices"] .numeral-row {
+        display: flex; align-items: center; gap: 36px;
+      }
+      [data-composition-id="scene5-invoices"] .num-mono {
+        position: relative; width: 240px; height: 280px;
+      }
+      [data-composition-id="scene5-invoices"] .num-mono .layer {
+        position: absolute; inset: 0;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 280px; line-height: 0.85; letter-spacing: -0.04em;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene5-invoices"] .num-mono .l-base    { color: #ffffff; text-shadow: 0 0 30px rgba(2,179,233,0.6); }
+      [data-composition-id="scene5-invoices"] .num-mono .l-magenta { color: #ff00a8; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene5-invoices"] .num-mono .l-blue    { color: #02B3E9; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene5-invoices"] .num-label .num-title {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 54px; color: #ffffff; letter-spacing: -0.01em;
+      }
+      [data-composition-id="scene5-invoices"] .num-label .num-sub {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 26px; letter-spacing: 0.22em;
+        color: rgba(2,179,233,0.9); margin-top: 6px;
+      }
+      [data-composition-id="scene5-invoices"] .inv-panel {
+        position: relative;
+        width: 960px;
+        border-radius: 22px;
+        background: rgba(5, 10, 18, 0.88);
+        border: 1px solid rgba(2,179,233,0.45);
+        box-shadow: 0 0 40px rgba(2,179,233,0.25);
+        overflow: hidden;
+      }
+      [data-composition-id="scene5-invoices"] .inv-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 18px 24px;
+        background: rgba(255,255,255,0.04);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene5-invoices"] .inv-title {
+        font-size: 24px; color: rgba(255,255,255,0.75);
+        letter-spacing: 0.2em; font-weight: 700;
+      }
+      [data-composition-id="scene5-invoices"] .inv-agent {
+        font-size: 20px; color: #02B3E9;
+        letter-spacing: 0.18em; font-weight: 700;
+      }
+      [data-composition-id="scene5-invoices"] .agent-ping-wrap {
+        position: absolute;
+        top: 14px; right: 220px;
+        width: 20px; height: 20px;
+        pointer-events: none;
+      }
+      [data-composition-id="scene5-invoices"] .agent-ping {
+        display: block;
+        width: 20px; height: 20px; border-radius: 50%;
+        background: #02B3E9;
+        box-shadow: 0 0 22px rgba(2,179,233,0.95);
+        opacity: 0;
+      }
+      [data-composition-id="scene5-invoices"] .inv-list {
+        display: flex; flex-direction: column;
+        padding: 10px 0;
+      }
+      [data-composition-id="scene5-invoices"] .inv-row {
+        display: flex; align-items: center;
+        padding: 18px 26px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        gap: 22px;
+      }
+      [data-composition-id="scene5-invoices"] .inv-row:last-child {
+        border-bottom: none;
+      }
+      [data-composition-id="scene5-invoices"] .inv-num {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 24px; color: rgba(255,255,255,0.65);
+        min-width: 170px;
+      }
+      [data-composition-id="scene5-invoices"] .inv-client {
+        font-family: 'Montserrat', sans-serif; font-weight: 700;
+        font-size: 26px; color: #ffffff;
+        min-width: 170px;
+      }
+      [data-composition-id="scene5-invoices"] .inv-amt {
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 26px; color: #ffffff;
+        min-width: 130px;
+      }
+      [data-composition-id="scene5-invoices"] .pill-slot {
+        position: relative;
+        margin-left: auto;
+        width: 200px; height: 54px;
+        display: inline-block;
+      }
+      [data-composition-id="scene5-invoices"] .pill {
+        position: absolute;
+        inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 22px;
+        padding: 10px 18px;
+        border-radius: 10px;
+        letter-spacing: 0.1em;
+      }
+      [data-composition-id="scene5-invoices"] .pill-overdue {
+        background: rgba(255,71,87,0.18);
+        border: 1px solid #ff4757;
+        color: #ff4757;
+        box-shadow: 0 0 14px rgba(255,71,87,0.45);
+        opacity: 1;
+      }
+      [data-composition-id="scene5-invoices"] .pill-paid {
+        background: rgba(34,197,94,0.20);
+        border: 1px solid #22c55e;
+        color: #22c55e;
+        box-shadow: 0 0 14px rgba(34,197,94,0.55);
+        opacity: 0;
+      }
+      [data-composition-id="scene5-invoices"] .payoff-stamp {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 52px;
+        color: #22c55e;
+        text-shadow:
+          -3px -3px 0 #000, 3px -3px 0 #000,
+          -3px 3px 0 #000, 3px 3px 0 #000,
+          0 0 30px rgba(34,197,94,0.85);
+        padding: 14px 30px;
+        border: 3px solid rgba(34,197,94,0.8);
+        border-radius: 14px;
+        background: rgba(34,197,94,0.08);
+        transform: rotate(-3deg);
+        letter-spacing: 0.02em;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene5-invoices"]';
+        const tl = gsap.timeline({ paused: true });
+
+        // Chromatic numeral slam
+        tl.from(sel + ' .num-mono', { scale: 0.3, opacity: 0, duration: 0.30, ease: 'back.out(2.5)' }, 0);
+        tl.fromTo(sel + ' .num-mono .l-magenta', { x: -40, y: -20 }, { x: -6, y: -3, duration: 0.38, ease: 'expo.out' }, 0);
+        tl.fromTo(sel + ' .num-mono .l-blue',    { x: 40, y: 20 },  { x: 6, y: 3, duration: 0.38, ease: 'expo.out' }, 0);
+
+        // Label slide-in
+        tl.from(sel + ' .num-label', { x: -30, opacity: 0, duration: 0.30, ease: 'power2.out' }, 0.18);
+
+        // Invoice stack container pop-in
+        tl.from(sel + ' .inv-panel', { y: 40, opacity: 0, duration: 0.35, ease: 'power3.out' }, 0.30);
+
+        // Invoice rows stagger in
+        tl.from(sel + ' .inv-row', { y: 20, opacity: 0, duration: 0.25, stagger: 0.08, ease: 'power2.out' }, 0.50);
+
+        // Overdue pulses red — scale yoyo x3 (warning flash)
+        tl.to(sel + ' .pill-overdue', {
+          scale: 1.03, duration: 0.12,
+          yoyo: true, repeat: 5, ease: 'sine.inOut'
+        }, 1.10);
+
+        // Agent ping — pulse once
+        tl.fromTo(sel + ' .agent-ping',
+          { scale: 0.6, opacity: 0 },
+          { scale: 1.4, opacity: 1, duration: 0.22, ease: 'power2.out' }, 1.45);
+        tl.to(sel + ' .agent-ping', { scale: 1, opacity: 0, duration: 0.28, ease: 'power2.in' }, 1.67);
+
+        // Flip cascade — red out / green in, staggered starts
+        const flipStarts = [1.55, 1.70, 1.85, 2.00];
+        const rows = ['.r1', '.r2', '.r3', '.r4'];
+        rows.forEach((r, i) => {
+          const t = flipStarts[i];
+          tl.to(sel + ' ' + r + ' .pill-overdue', {
+            opacity: 0, duration: 0.20, ease: 'power2.out'
+          }, t);
+          tl.to(sel + ' ' + r + ' .pill-paid', {
+            opacity: 1, duration: 0.20, ease: 'power2.out'
+          }, t);
+          // Continuous secondary motion — glow pulse (scale) on green pill after it lands
+          tl.to(sel + ' ' + r + ' .pill-paid', {
+            scale: 1.05, duration: 0.18, yoyo: true, repeat: 1, ease: 'sine.inOut'
+          }, t + 0.20);
+        });
+
+        // Payoff stamp pop
+        tl.fromTo(sel + ' .payoff-stamp',
+          { scale: 2.0, opacity: 0, rotate: -10 },
+          { scale: 1, opacity: 1, rotate: -3, duration: 0.25, ease: 'power3.out' }, 2.10);
+        tl.to(sel + ' .payoff-stamp', { scale: 1.05, duration: 0.2, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 2.35);
+
+        // Exit
+        tl.to(sel + ' .wrap', { y: -60, opacity: 0, duration: 0.25, ease: 'power2.in' }, 2.67);
+
+        tl.to({}, { duration: 2.92 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene5-invoices"] = tl;
+      })();
+    </script>
+  </div>
+</template>

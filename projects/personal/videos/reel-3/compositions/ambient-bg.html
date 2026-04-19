@@ -1,0 +1,87 @@
+<template id="ambient-bg-template">
+  <div
+    data-composition-id="ambient-bg"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="24.10"
+  >
+    <div class="bg-base"></div>
+    <div class="grid-floor"></div>
+    <div class="glow-orb glow-a"></div>
+    <div class="glow-orb glow-b"></div>
+    <div class="glow-orb glow-c"></div>
+    <div class="scanline"></div>
+    <div class="noise"></div>
+
+    <style>
+      [data-composition-id="ambient-bg"] { position: absolute; inset: 0; }
+      [data-composition-id="ambient-bg"] .bg-base {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(ellipse at 50% 30%, rgba(2, 179, 233, 0.14), transparent 55%),
+          radial-gradient(ellipse at 50% 80%, rgba(2, 179, 233, 0.07), transparent 60%),
+          #05080F;
+      }
+      [data-composition-id="ambient-bg"] .grid-floor {
+        position: absolute; inset: -200px -200px 0 -200px;
+        transform: perspective(1400px) rotateX(62deg) translateY(20%);
+        transform-origin: 50% 100%;
+        background:
+          repeating-linear-gradient(0deg,  rgba(2,179,233,0.20) 0 1px, transparent 1px 120px),
+          repeating-linear-gradient(90deg, rgba(2,179,233,0.20) 0 1px, transparent 1px 120px);
+        opacity: 0.50;
+      }
+      [data-composition-id="ambient-bg"] .glow-orb {
+        position: absolute;
+        width: 800px; height: 800px;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.35;
+      }
+      [data-composition-id="ambient-bg"] .glow-a {
+        background: rgba(2, 179, 233, 0.55);
+        left: -200px; top: 200px;
+      }
+      [data-composition-id="ambient-bg"] .glow-b {
+        background: rgba(2, 179, 233, 0.40);
+        right: -200px; top: 900px;
+      }
+      [data-composition-id="ambient-bg"] .glow-c {
+        background: rgba(120, 40, 200, 0.22);
+        left: 200px; top: 1400px;
+        width: 700px; height: 700px;
+      }
+      [data-composition-id="ambient-bg"] .scanline {
+        position: absolute; inset: 0;
+        background: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px);
+        pointer-events: none;
+      }
+      [data-composition-id="ambient-bg"] .noise {
+        position: absolute; inset: 0;
+        background-image:
+          radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+        background-size: 3px 3px;
+        mix-blend-mode: overlay;
+        opacity: 0.6;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const sel = '[data-composition-id="ambient-bg"]';
+        tl.to(sel + ' .glow-a', { x: 220, y: -80, duration: 24.10, ease: 'sine.inOut' }, 0);
+        tl.to(sel + ' .glow-b', { x: -180, y: 140, duration: 24.10, ease: 'sine.inOut' }, 0);
+        tl.to(sel + ' .glow-c', { x: 120, y: -120, duration: 24.10, ease: 'sine.inOut' }, 0);
+        // Hard fade-out at end so ambient-bg DOM does not bleed into CTA window.
+        tl.to(sel, { opacity: 0, duration: 0.30, ease: 'power2.in' }, 23.80);
+        tl.set(sel, { opacity: 0, visibility: 'hidden' }, 24.10);
+        tl.to({}, { duration: 24.10 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["ambient-bg"] = tl;
+      })();
+    </script>
+  </div>
+</template>

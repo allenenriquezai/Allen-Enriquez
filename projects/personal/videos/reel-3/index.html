@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>5 Things AI Agents Do — Animation Overlay</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Roboto+Mono:wght@400;500;700&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #05080F;
+        font-family: "Montserrat", sans-serif;
+        color: #ffffff;
+      }
+      .scene-layer {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1080px;
+        height: 1920px;
+      }
+      /* Face fills the portrait frame via object-fit cover on a 1080x1920 element.
+         The source is 1920x1080 landscape — cover crops horizontally and scales up. */
+      #face-video {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+        object-position: center center;
+        transform-origin: center center;
+        filter: contrast(1.08) saturate(1.08) brightness(0.97);
+        z-index: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-duration="35.96"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- Face video (talking head) — direct child of root, fills portrait frame
+           via object-fit cover. Scene overlays sit above with opaque navy bg so
+           they cover the face during the animation window (8.80s → 32.90s).
+           Face is visible during hook + retention tease (0 → 8.80) and CTA (32.90 → 35.96).
+           NOTE: no data-start on <video> — root's data-start owns the timeline and
+           the video's playback is inferred from the clip src duration. -->
+      <video
+        id="face-video"
+        data-start="0"
+        data-duration="35.96"
+        data-clip-type="video"
+        src="assets/source.mp4"
+        preload="auto"
+        muted
+        playsinline
+      ></video>
+
+      <!-- Audio — separate track so the mixer can manage it. -->
+      <audio
+        id="face-audio"
+        data-start="0"
+        data-duration="35.96"
+        data-clip-type="audio"
+        data-volume="1"
+        src="assets/source.mp4"
+      ></audio>
+
+      <!-- Pinned retention note — small sticky-note badge on top of the face during
+           the retention tease (2.0s → 8.80s) so the viewer can see the promise
+           WHILE hearing Allen say "stay till the end". -->
+      <div id="pin-note" class="clip" data-start="2.00" data-duration="6.80" data-track-index="8">
+        <div class="pin-tack"></div>
+        <div class="pin-body">
+          <div class="pin-row-top">
+            <span class="pin-dot"></span>
+            <span class="pin-label">PINNED</span>
+          </div>
+          <div class="pin-title">STAY TILL <b>#5</b></div>
+          <div class="pin-metric">
+            <span class="pin-num">10<span class="pin-plus">+</span></span>
+            <span class="pin-unit">HRS / WEEK<br/>SAVED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ambient background: only during animation middle (starts at 01). -->
+      <div
+        class="scene-layer"
+        data-composition-id="ambient-bg"
+        data-composition-src="compositions/ambient-bg.html"
+        data-start="8.80"
+        data-duration="24.10"
+        data-track-index="1"
+        data-width="1080"
+        data-height="1920"
+      ></div>
+
+      <!-- 6 scene beats on the same overlay track (retention tease is delivered as
+           a pinned note over the face instead of a full scene). -->
+      <div class="scene-layer"
+        data-composition-id="scene2-inbox"
+        data-composition-src="compositions/scene2-inbox.html"
+        data-start="8.80" data-duration="4.93" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene3-calendar"
+        data-composition-src="compositions/scene3-calendar.html"
+        data-start="13.74" data-duration="2.52" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene4-spy"
+        data-composition-src="compositions/scene4-spy.html"
+        data-start="16.26" data-duration="5.00" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene5-invoices"
+        data-composition-src="compositions/scene5-invoices.html"
+        data-start="21.26" data-duration="2.92" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene6-proposal"
+        data-composition-src="compositions/scene6-proposal.html"
+        data-start="24.18" data-duration="3.26" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene7-payoff"
+        data-composition-src="compositions/scene7-payoff.html"
+        data-start="27.44" data-duration="5.46" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Karaoke captions across the FULL source duration (hook + animation + CTA). -->
+      <div class="scene-layer"
+        data-composition-id="captions"
+        data-composition-src="compositions/captions.html"
+        data-start="0" data-duration="35.96" data-track-index="20"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Vignette overlay only during animation middle. -->
+      <div id="top-vignette" class="clip" data-start="8.80" data-duration="24.10" data-track-index="25"></div>
+    </div>
+
+    <style>
+      #top-vignette {
+        position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 55%, rgba(5, 8, 15, 0.85) 100%);
+        z-index: 40;
+      }
+
+      /* Pinned retention note — sits top-center over the face during the tease
+         window (2.0s → 8.80s). Small enough that the face reads clearly. */
+      #pin-note {
+        position: absolute;
+        top: 150px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-2deg);
+        width: 520px;
+        padding: 20px 24px 22px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #FFF8B0 0%, #FFE86A 100%);
+        color: #1a1a1a;
+        box-shadow:
+          0 10px 26px rgba(0, 0, 0, 0.45),
+          0 2px 4px rgba(0, 0, 0, 0.30);
+        z-index: 30;
+        font-family: 'Montserrat', sans-serif;
+      }
+      #pin-note::before {
+        /* Torn-tape / highlight on top */
+        content: "";
+        position: absolute;
+        top: -6px; left: 40px; right: 40px;
+        height: 12px;
+        background: rgba(2, 179, 233, 0.85);
+        border-radius: 3px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+      #pin-note .pin-tack {
+        position: absolute;
+        top: -8px; left: 50%;
+        transform: translateX(-50%);
+        width: 22px; height: 22px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #ff7a90 0%, #ff4757 60%, #b30022 100%);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+      }
+      #pin-note .pin-row-top {
+        display: flex; align-items: center; gap: 10px;
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 18px;
+        letter-spacing: 0.24em;
+        color: #b11a3b;
+      }
+      #pin-note .pin-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: #ff4757;
+        box-shadow: 0 0 6px rgba(255, 71, 87, 0.6);
+      }
+      #pin-note .pin-title {
+        margin-top: 6px;
+        font-weight: 900;
+        font-size: 44px;
+        line-height: 1.05;
+        letter-spacing: -0.01em;
+        color: #0b1220;
+      }
+      #pin-note .pin-title b {
+        color: #02B3E9;
+        font-weight: 900;
+        text-shadow: 0 1px 0 rgba(0,0,0,0.05);
+      }
+      #pin-note .pin-metric {
+        display: flex; align-items: center; gap: 14px;
+        margin-top: 10px;
+      }
+      #pin-note .pin-num {
+        font-weight: 900;
+        font-size: 78px;
+        line-height: 1;
+        color: #0b1220;
+        display: inline-flex;
+        align-items: flex-start;
+      }
+      #pin-note .pin-plus {
+        font-size: 44px;
+        color: #02B3E9;
+        margin-left: 2px;
+        line-height: 1;
+      }
+      #pin-note .pin-unit {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: 0.18em;
+        color: #1a1a1a;
+        line-height: 1.15;
+      }
+    </style>
+
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        // Subtle Ken Burns zoom on the face across the full duration.
+        tl.to("#face-video", { scale: 1.025, duration: 35.96, ease: "none" }, 0);
+        tl.to({}, { duration: 35.96 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

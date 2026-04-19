@@ -1,0 +1,314 @@
+<template id="captions-template">
+  <div
+    data-composition-id="captions"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="35.96"
+  >
+    <div class="cap-stage" id="cap-stage"></div>
+
+    <style>
+      [data-composition-id="captions"] {
+        position: absolute; inset: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="captions"] .cap-stage {
+        position: absolute;
+        left: 0; right: 0;
+        bottom: 280px;
+        height: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="captions"] .cap-line-wrap {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        display: flex;
+        justify-content: center;
+        padding: 0 60px;
+        opacity: 0;
+        visibility: hidden;
+      }
+      [data-composition-id="captions"] .cap-line {
+        display: inline-block;
+        max-width: 960px;
+        text-align: center;
+        font-family: "Montserrat", sans-serif;
+        font-weight: 900;
+        font-size: 68px;
+        line-height: 1.12;
+        letter-spacing: -0.01em;
+        color: #ffffff;
+        text-transform: uppercase;
+        text-shadow:
+          -3px -3px 0 #000,
+          3px -3px 0 #000,
+          -3px 3px 0 #000,
+          3px 3px 0 #000,
+          -4px 0 0 #000,
+          4px 0 0 #000,
+          0 -4px 0 #000,
+          0 4px 0 #000,
+          0 6px 16px rgba(0, 0, 0, 0.6);
+        white-space: normal;
+      }
+      [data-composition-id="captions"] .cap-word {
+        position: relative;
+        display: inline-block;
+        transform-origin: center center;
+        will-change: transform;
+        padding: 0 2px;
+        color: #ffffff;
+      }
+      [data-composition-id="captions"] .w-active {
+        position: absolute;
+        inset: 0;
+        color: #02B3E9;
+        opacity: 0;
+        pointer-events: none;
+        text-shadow:
+          -3px -3px 0 #000,
+          3px -3px 0 #000,
+          -3px 3px 0 #000,
+          3px 3px 0 #000,
+          -4px 0 0 #000,
+          4px 0 0 #000,
+          0 -4px 0 #000,
+          0 4px 0 #000;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const SEGMENTS = [
+          { words: [
+            { word: "Here", start: 0.34, end: 0.35 },
+            { word: "are", start: 0.35, end: 0.61 },
+            { word: "five", start: 0.61, end: 0.96 },
+            { word: "things", start: 0.96, end: 1.52 },
+            { word: "AI", start: 1.52, end: 1.76 },
+            { word: "agents", start: 1.76, end: 2.49 },
+          ]},
+          { words: [
+            { word: "do", start: 2.49, end: 2.88 },
+            { word: "for", start: 2.93, end: 3.02 },
+            { word: "business", start: 3.02, end: 3.39 },
+            { word: "owners", start: 3.39, end: 3.68 },
+            { word: "and", start: 3.68, end: 3.79 },
+            { word: "professionals.", start: 3.79, end: 4.64 },
+          ]},
+          { words: [
+            { word: "Number", start: 4.98, end: 5.06 },
+            { word: "five,", start: 5.06, end: 5.38 },
+            { word: "save", start: 5.49, end: 5.71 },
+            { word: "me", start: 5.82, end: 5.9 },
+            { word: "at", start: 5.9, end: 6.04 },
+            { word: "least", start: 6.04, end: 6.39 },
+            { word: "10", start: 6.39, end: 6.81 },
+          ]},
+          { words: [
+            { word: "hours", start: 6.81, end: 7.14 },
+            { word: "a", start: 7.14, end: 7.32 },
+            { word: "week,", start: 7.32, end: 7.6 },
+            { word: "so", start: 7.6, end: 7.75 },
+            { word: "stay", start: 7.75, end: 8.04 },
+            { word: "till", start: 8.04, end: 8.33 },
+          ]},
+          { words: [
+            { word: "the", start: 8.33, end: 8.4 },
+            { word: "end.", start: 8.59, end: 8.8 },
+            { word: "Number", start: 9.14, end: 9.36 },
+            { word: "one,", start: 9.36, end: 9.84 },
+            { word: "analyzes", start: 9.84, end: 10.87 },
+            { word: "your", start: 10.55, end: 10.87 },
+          ]},
+          { words: [
+            { word: "inbox", start: 10.87, end: 11.28 },
+            { word: "and", start: 11.28, end: 11.31 },
+            { word: "automatically", start: 11.49, end: 11.92 },
+            { word: "replies", start: 11.92, end: 12.48 },
+            { word: "in", start: 12.48, end: 12.62 },
+            { word: "your", start: 12.66, end: 13.0 },
+            { word: "tone.", start: 13.0, end: 13.4 },
+          ]},
+          { words: [
+            { word: "Number", start: 13.74, end: 13.85 },
+            { word: "two,", start: 13.85, end: 14.14 },
+            { word: "books", start: 14.25, end: 14.6 },
+            { word: "meetings", start: 14.6, end: 15.21 },
+            { word: "for", start: 15.21, end: 15.41 },
+            { word: "you.", start: 15.43, end: 15.91 },
+          ]},
+          { words: [
+            { word: "Number", start: 16.26, end: 16.41 },
+            { word: "three,", start: 16.41, end: 16.97 },
+            { word: "spies", start: 16.97, end: 17.37 },
+            { word: "on", start: 17.37, end: 17.47 },
+            { word: "your", start: 17.62, end: 17.85 },
+            { word: "competitor", start: 17.85, end: 18.41 },
+          ]},
+          { words: [
+            { word: "pricing,", start: 18.65, end: 19.39 },
+            { word: "ads,", start: 19.39, end: 19.74 },
+            { word: "and", start: 19.8, end: 20.03 },
+            { word: "reviews.", start: 20.03, end: 20.92 },
+            { word: "Number", start: 21.26, end: 21.43 },
+            { word: "four,", start: 21.43, end: 21.94 },
+          ]},
+          { words: [
+            { word: "chase", start: 21.94, end: 22.36 },
+            { word: "unpaid", start: 22.36, end: 22.87 },
+            { word: "invoices.", start: 22.87, end: 23.81 },
+            { word: "Number", start: 24.18, end: 24.28 },
+            { word: "five,", start: 24.28, end: 24.71 },
+            { word: "creates", start: 24.71, end: 25.17 },
+          ]},
+          { words: [
+            { word: "proposals", start: 25.22, end: 25.88 },
+            { word: "from", start: 25.88, end: 26.17 },
+            { word: "a", start: 26.17, end: 26.24 },
+            { word: "two-line", start: 26.24, end: 26.82 },
+            { word: "brief.", start: 26.82, end: 27.44 },
+            { word: "Any", start: 27.44, end: 27.64 },
+          ]},
+          { words: [
+            { word: "of", start: 27.64, end: 27.78 },
+            { word: "these", start: 27.78, end: 28.1 },
+            { word: "takes", start: 28.1, end: 28.43 },
+            { word: "at", start: 28.43, end: 28.51 },
+            { word: "least", start: 28.62, end: 28.89 },
+            { word: "30", start: 28.89, end: 29.29 },
+            { word: "minutes", start: 29.29, end: 29.76 },
+          ]},
+          { words: [
+            { word: "by", start: 29.76, end: 29.89 },
+            { word: "hand.", start: 29.89, end: 30.4 },
+            { word: "An", start: 30.4, end: 30.53 },
+            { word: "agent", start: 30.74, end: 30.87 },
+            { word: "does", start: 30.87, end: 31.14 },
+            { word: "it", start: 31.25, end: 31.27 },
+          ]},
+          { words: [
+            { word: "in", start: 31.27, end: 31.4 },
+            { word: "30", start: 31.4, end: 31.79 },
+            { word: "seconds.", start: 31.8, end: 32.56 },
+            { word: "Comment,", start: 32.9, end: 33.22 },
+            { word: "agent,", start: 33.22, end: 33.76 },
+            { word: "and", start: 33.76, end: 33.91 },
+          ]},
+          { words: [
+            { word: "I", start: 33.93, end: 33.97 },
+            { word: "will", start: 33.97, end: 34.11 },
+            { word: "help", start: 34.26, end: 34.39 },
+            { word: "you", start: 34.39, end: 34.55 },
+            { word: "set", start: 34.55, end: 34.71 },
+            { word: "one", start: 34.71, end: 34.87 },
+          ]},
+          { words: [
+            { word: "of", start: 34.87, end: 34.98 },
+            { word: "these", start: 34.98, end: 35.07 },
+            { word: "up", start: 35.24, end: 35.36 },
+            { word: "for", start: 35.36, end: 35.52 },
+            { word: "free.", start: 35.52, end: 35.96 },
+          ]},
+        ];
+
+        const COMP_DURATION = 35.96;
+        const DIM = "rgba(255,255,255,0.85)";
+        const ACTIVE = "#02B3E9";
+        const SPOKEN = "#ffffff";
+        const ACTIVE_SCALE = 1.16;
+
+        const stage = document.querySelector('[data-composition-id="captions"] #cap-stage');
+        if (!stage) return;
+
+        SEGMENTS.forEach(function (seg, segIdx) {
+          const wrap = document.createElement("div");
+          wrap.className = "cap-line-wrap";
+          wrap.id = "cap-seg-" + segIdx;
+
+          const line = document.createElement("div");
+          line.className = "cap-line";
+
+          seg.words.forEach(function (w, wIdx) {
+            const span = document.createElement("span");
+            span.className = "cap-word";
+            span.id = "cap-w-" + segIdx + "-" + wIdx;
+            // Base (rest) white text as textContent
+            span.appendChild(document.createTextNode(w.word));
+            // Overlaid active (brand blue) layer, opacity 0 by default
+            const active = document.createElement("span");
+            active.className = "w-active";
+            active.id = "cap-wa-" + segIdx + "-" + wIdx;
+            active.textContent = w.word;
+            span.appendChild(active);
+            line.appendChild(span);
+            if (wIdx < seg.words.length - 1) {
+              line.appendChild(document.createTextNode(" "));
+            }
+          });
+
+          wrap.appendChild(line);
+          stage.appendChild(wrap);
+        });
+
+        const tl = gsap.timeline({ paused: true });
+        const FADE_IN = 0.05;
+        const FADE_OUT = 0.05;
+
+        SEGMENTS.forEach(function (seg, segIdx) {
+          const wrapSel = '[data-composition-id="captions"] #cap-seg-' + segIdx;
+          const segStart = seg.words[0].start;
+          const segEnd = seg.words[seg.words.length - 1].end;
+
+          const nextSeg = SEGMENTS[segIdx + 1];
+          const hardEnd = nextSeg ? nextSeg.words[0].start : Math.min(segEnd + 0.3, COMP_DURATION);
+          const fadeInAt = Math.max(segStart - 0.02, 0);
+          const fadeOutAt = Math.max(hardEnd - FADE_OUT - 0.02, fadeInAt + 0.1);
+          const hideAt = hardEnd - 0.01;
+
+          // Reset all words' active layer + scale before segment enters
+          seg.words.forEach(function (w, wIdx) {
+            const wordSel = '[data-composition-id="captions"] #cap-w-' + segIdx + "-" + wIdx;
+            const activeSel = '[data-composition-id="captions"] #cap-wa-' + segIdx + "-" + wIdx;
+            tl.set(wordSel, { scale: 1.0 }, fadeInAt);
+            tl.set(activeSel, { opacity: 0 }, fadeInAt);
+          });
+
+          tl.set(wrapSel, { visibility: "visible" }, fadeInAt);
+          tl.fromTo(
+            wrapSel,
+            { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: FADE_IN, ease: "power2.out" },
+            fadeInAt
+          );
+
+          // Karaoke via layered opacity (fast-mode safe, no color tween)
+          seg.words.forEach(function (w, wIdx) {
+            const wordSel = '[data-composition-id="captions"] #cap-w-' + segIdx + "-" + wIdx;
+            const activeSel = '[data-composition-id="captions"] #cap-wa-' + segIdx + "-" + wIdx;
+            // Pop active layer + scale parent on word start
+            tl.to(activeSel, { opacity: 1, duration: 0.08, ease: 'power2.out' }, w.start);
+            tl.to(wordSel, { scale: ACTIVE_SCALE, duration: 0.08, ease: 'back.out(3)' }, w.start);
+            // Fade active layer + scale back on word end
+            tl.to(activeSel, { opacity: 0, duration: 0.12, ease: 'power2.out' }, w.end);
+            tl.to(wordSel, { scale: 1.0, duration: 0.12, ease: 'power2.out' }, w.end);
+          });
+
+          tl.to(
+            wrapSel,
+            { opacity: 0, duration: FADE_OUT, ease: "power2.in" },
+            fadeOutAt
+          );
+          tl.set(wrapSel, { visibility: "hidden" }, hideAt);
+        });
+
+        tl.set({}, {}, COMP_DURATION);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["captions"] = tl;
+      })();
+    </script>
+  </div>
+</template>

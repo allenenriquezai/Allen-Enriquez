@@ -1,0 +1,817 @@
+[
+  {
+    "word": " Are",
+    "start": 0.0,
+    "end": 0.7
+  },
+  {
+    "word": " you",
+    "start": 0.7,
+    "end": 0.86
+  },
+  {
+    "word": " tired",
+    "start": 0.86,
+    "end": 1.02
+  },
+  {
+    "word": " of",
+    "start": 1.02,
+    "end": 1.26
+  },
+  {
+    "word": " AI",
+    "start": 1.26,
+    "end": 1.52
+  },
+  {
+    "word": " emails",
+    "start": 1.52,
+    "end": 1.84
+  },
+  {
+    "word": " that",
+    "start": 1.84,
+    "end": 2.12
+  },
+  {
+    "word": " sound",
+    "start": 2.12,
+    "end": 2.36
+  },
+  {
+    "word": " like",
+    "start": 2.36,
+    "end": 2.58
+  },
+  {
+    "word": " a",
+    "start": 2.58,
+    "end": 2.72
+  },
+  {
+    "word": " bot",
+    "start": 2.72,
+    "end": 2.94
+  },
+  {
+    "word": " wrote",
+    "start": 2.94,
+    "end": 3.36
+  },
+  {
+    "word": " them?",
+    "start": 3.36,
+    "end": 3.76
+  },
+  {
+    "word": " Let's",
+    "start": 4.56,
+    "end": 4.74
+  },
+  {
+    "word": " fix",
+    "start": 4.74,
+    "end": 4.86
+  },
+  {
+    "word": " that",
+    "start": 4.86,
+    "end": 5.08
+  },
+  {
+    "word": " in",
+    "start": 5.08,
+    "end": 5.18
+  },
+  {
+    "word": " 5",
+    "start": 5.18,
+    "end": 5.34
+  },
+  {
+    "word": " minutes.",
+    "start": 5.34,
+    "end": 5.74
+  },
+  {
+    "word": " ChatGPT",
+    "start": 6.84,
+    "end": 7.28
+  },
+  {
+    "word": " does",
+    "start": 7.28,
+    "end": 7.58
+  },
+  {
+    "word": " not",
+    "start": 7.58,
+    "end": 7.78
+  },
+  {
+    "word": " know",
+    "start": 7.78,
+    "end": 7.98
+  },
+  {
+    "word": " you,",
+    "start": 7.98,
+    "end": 8.22
+  },
+  {
+    "word": " it",
+    "start": 8.46,
+    "end": 8.68
+  },
+  {
+    "word": " writes",
+    "start": 8.68,
+    "end": 8.96
+  },
+  {
+    "word": " generic",
+    "start": 8.96,
+    "end": 9.38
+  },
+  {
+    "word": " stuff.",
+    "start": 9.38,
+    "end": 9.88
+  },
+  {
+    "word": " But",
+    "start": 10.4,
+    "end": 10.78
+  },
+  {
+    "word": " it",
+    "start": 10.78,
+    "end": 11.64
+  },
+  {
+    "word": " can",
+    "start": 11.64,
+    "end": 11.82
+  },
+  {
+    "word": " learn",
+    "start": 11.82,
+    "end": 12.02
+  },
+  {
+    "word": " your",
+    "start": 12.02,
+    "end": 12.2
+  },
+  {
+    "word": " voice,",
+    "start": 12.2,
+    "end": 12.52
+  },
+  {
+    "word": " you",
+    "start": 12.94,
+    "end": 13.08
+  },
+  {
+    "word": " just",
+    "start": 13.08,
+    "end": 13.24
+  },
+  {
+    "word": " need",
+    "start": 13.24,
+    "end": 13.46
+  },
+  {
+    "word": " to",
+    "start": 13.46,
+    "end": 13.66
+  },
+  {
+    "word": " show",
+    "start": 13.66,
+    "end": 13.8
+  },
+  {
+    "word": " it",
+    "start": 13.8,
+    "end": 13.94
+  },
+  {
+    "word": " how.",
+    "start": 13.94,
+    "end": 14.18
+  },
+  {
+    "word": " Step",
+    "start": 15.62,
+    "end": 15.82
+  },
+  {
+    "word": " 1.",
+    "start": 15.82,
+    "end": 16.14
+  },
+  {
+    "word": " Open",
+    "start": 16.78,
+    "end": 16.92
+  },
+  {
+    "word": " your",
+    "start": 16.92,
+    "end": 17.1
+  },
+  {
+    "word": " email",
+    "start": 17.1,
+    "end": 17.4
+  },
+  {
+    "word": " sent",
+    "start": 17.4,
+    "end": 17.68
+  },
+  {
+    "word": " folder.",
+    "start": 17.68,
+    "end": 18.1
+  },
+  {
+    "word": " Step",
+    "start": 18.68,
+    "end": 18.9
+  },
+  {
+    "word": " 2.",
+    "start": 18.9,
+    "end": 19.16
+  },
+  {
+    "word": " Copy",
+    "start": 19.7,
+    "end": 19.76
+  },
+  {
+    "word": " your",
+    "start": 19.76,
+    "end": 19.92
+  },
+  {
+    "word": " last",
+    "start": 19.92,
+    "end": 20.18
+  },
+  {
+    "word": " 10",
+    "start": 20.18,
+    "end": 20.54
+  },
+  {
+    "word": " emails,",
+    "start": 20.54,
+    "end": 20.98
+  },
+  {
+    "word": " the",
+    "start": 21.32,
+    "end": 21.5
+  },
+  {
+    "word": " ones",
+    "start": 21.5,
+    "end": 21.64
+  },
+  {
+    "word": " that",
+    "start": 21.64,
+    "end": 21.8
+  },
+  {
+    "word": " you",
+    "start": 21.8,
+    "end": 21.98
+  },
+  {
+    "word": " like",
+    "start": 21.98,
+    "end": 22.2
+  },
+  {
+    "word": " or",
+    "start": 22.2,
+    "end": 22.68
+  },
+  {
+    "word": " the",
+    "start": 22.68,
+    "end": 22.84
+  },
+  {
+    "word": " ones",
+    "start": 22.84,
+    "end": 23.0
+  },
+  {
+    "word": " that",
+    "start": 23.0,
+    "end": 23.14
+  },
+  {
+    "word": " were",
+    "start": 23.14,
+    "end": 23.28
+  },
+  {
+    "word": " written",
+    "start": 23.28,
+    "end": 23.58
+  },
+  {
+    "word": " by",
+    "start": 23.58,
+    "end": 23.8
+  },
+  {
+    "word": " your",
+    "start": 23.8,
+    "end": 24.0
+  },
+  {
+    "word": " voice.",
+    "start": 24.0,
+    "end": 24.3
+  },
+  {
+    "word": " Step",
+    "start": 25.14,
+    "end": 25.38
+  },
+  {
+    "word": " 3.",
+    "start": 25.38,
+    "end": 25.66
+  },
+  {
+    "word": " Paste",
+    "start": 26.22,
+    "end": 26.28
+  },
+  {
+    "word": " them",
+    "start": 26.28,
+    "end": 26.5
+  },
+  {
+    "word": " into",
+    "start": 26.5,
+    "end": 26.74
+  },
+  {
+    "word": " ChatGPT",
+    "start": 26.74,
+    "end": 27.34
+  },
+  {
+    "word": " or",
+    "start": 27.34,
+    "end": 27.98
+  },
+  {
+    "word": " any",
+    "start": 27.98,
+    "end": 28.26
+  },
+  {
+    "word": " AI",
+    "start": 28.26,
+    "end": 28.58
+  },
+  {
+    "word": " software.",
+    "start": 28.58,
+    "end": 29.0
+  },
+  {
+    "word": " Step",
+    "start": 29.0,
+    "end": 29.82
+  },
+  {
+    "word": " 4.",
+    "start": 29.82,
+    "end": 30.12
+  },
+  {
+    "word": " Write",
+    "start": 31.12,
+    "end": 31.18
+  },
+  {
+    "word": " this",
+    "start": 31.18,
+    "end": 31.4
+  },
+  {
+    "word": " prompt.",
+    "start": 31.4,
+    "end": 31.6
+  },
+  {
+    "word": " Study",
+    "start": 32.46,
+    "end": 32.46
+  },
+  {
+    "word": " how",
+    "start": 32.46,
+    "end": 32.7
+  },
+  {
+    "word": " I",
+    "start": 32.7,
+    "end": 32.92
+  },
+  {
+    "word": " write,",
+    "start": 32.92,
+    "end": 33.26
+  },
+  {
+    "word": " break",
+    "start": 33.66,
+    "end": 33.82
+  },
+  {
+    "word": " down",
+    "start": 33.82,
+    "end": 34.02
+  },
+  {
+    "word": " the",
+    "start": 34.02,
+    "end": 34.14
+  },
+  {
+    "word": " components",
+    "start": 34.14,
+    "end": 34.42
+  },
+  {
+    "word": " from",
+    "start": 34.42,
+    "end": 34.66
+  },
+  {
+    "word": " me",
+    "start": 34.66,
+    "end": 34.88
+  },
+  {
+    "word": " to",
+    "start": 34.88,
+    "end": 35.14
+  },
+  {
+    "word": " learn",
+    "start": 35.14,
+    "end": 35.3
+  },
+  {
+    "word": " it.",
+    "start": 35.3,
+    "end": 35.74
+  },
+  {
+    "word": " Save",
+    "start": 36.24,
+    "end": 36.42
+  },
+  {
+    "word": " it",
+    "start": 36.42,
+    "end": 36.56
+  },
+  {
+    "word": " as",
+    "start": 36.56,
+    "end": 36.72
+  },
+  {
+    "word": " a",
+    "start": 36.72,
+    "end": 36.82
+  },
+  {
+    "word": " template",
+    "start": 36.82,
+    "end": 37.06
+  },
+  {
+    "word": " so",
+    "start": 37.06,
+    "end": 37.46
+  },
+  {
+    "word": " we",
+    "start": 37.46,
+    "end": 37.6
+  },
+  {
+    "word": " can",
+    "start": 37.6,
+    "end": 37.72
+  },
+  {
+    "word": " match",
+    "start": 37.72,
+    "end": 37.98
+  },
+  {
+    "word": " this",
+    "start": 37.98,
+    "end": 38.24
+  },
+  {
+    "word": " tone",
+    "start": 38.24,
+    "end": 38.52
+  },
+  {
+    "word": " every",
+    "start": 38.52,
+    "end": 38.82
+  },
+  {
+    "word": " time.",
+    "start": 38.82,
+    "end": 39.08
+  },
+  {
+    "word": " Ask",
+    "start": 39.74,
+    "end": 40.04
+  },
+  {
+    "word": " clarifying",
+    "start": 40.04,
+    "end": 40.56
+  },
+  {
+    "word": " questions",
+    "start": 40.56,
+    "end": 40.86
+  },
+  {
+    "word": " if",
+    "start": 40.86,
+    "end": 41.22
+  },
+  {
+    "word": " you",
+    "start": 41.22,
+    "end": 41.32
+  },
+  {
+    "word": " need",
+    "start": 41.32,
+    "end": 41.46
+  },
+  {
+    "word": " to.",
+    "start": 41.46,
+    "end": 42.18
+  },
+  {
+    "word": " Step",
+    "start": 42.44,
+    "end": 42.52
+  },
+  {
+    "word": " 5.",
+    "start": 42.52,
+    "end": 42.84
+  },
+  {
+    "word": " Save",
+    "start": 43.52,
+    "end": 43.76
+  },
+  {
+    "word": " it",
+    "start": 43.76,
+    "end": 43.94
+  },
+  {
+    "word": " as",
+    "start": 43.94,
+    "end": 44.1
+  },
+  {
+    "word": " a",
+    "start": 44.1,
+    "end": 44.24
+  },
+  {
+    "word": " project",
+    "start": 44.24,
+    "end": 44.5
+  },
+  {
+    "word": " or",
+    "start": 44.5,
+    "end": 45.02
+  },
+  {
+    "word": " create",
+    "start": 45.02,
+    "end": 45.3
+  },
+  {
+    "word": " a",
+    "start": 45.3,
+    "end": 45.48
+  },
+  {
+    "word": " custom",
+    "start": 45.48,
+    "end": 45.76
+  },
+  {
+    "word": " GPT.",
+    "start": 45.76,
+    "end": 46.26
+  },
+  {
+    "word": " Step",
+    "start": 47.04,
+    "end": 47.26
+  },
+  {
+    "word": " 6.",
+    "start": 47.26,
+    "end": 47.56
+  },
+  {
+    "word": " Paste",
+    "start": 48.12,
+    "end": 48.18
+  },
+  {
+    "word": " the",
+    "start": 48.18,
+    "end": 48.36
+  },
+  {
+    "word": " prompt",
+    "start": 48.36,
+    "end": 48.58
+  },
+  {
+    "word": " into",
+    "start": 48.58,
+    "end": 48.88
+  },
+  {
+    "word": " the",
+    "start": 48.88,
+    "end": 49.04
+  },
+  {
+    "word": " project",
+    "start": 49.04,
+    "end": 49.32
+  },
+  {
+    "word": " instruction.",
+    "start": 49.32,
+    "end": 49.92
+  },
+  {
+    "word": " Then",
+    "start": 50.68,
+    "end": 50.84
+  },
+  {
+    "word": " that's",
+    "start": 50.84,
+    "end": 51.1
+  },
+  {
+    "word": " it.",
+    "start": 51.1,
+    "end": 51.24
+  },
+  {
+    "word": " Now",
+    "start": 51.68,
+    "end": 51.86
+  },
+  {
+    "word": " every",
+    "start": 51.86,
+    "end": 52.38
+  },
+  {
+    "word": " email",
+    "start": 52.38,
+    "end": 52.62
+  },
+  {
+    "word": " sounds",
+    "start": 52.62,
+    "end": 52.88
+  },
+  {
+    "word": " like",
+    "start": 52.88,
+    "end": 53.1
+  },
+  {
+    "word": " you,",
+    "start": 53.1,
+    "end": 53.34
+  },
+  {
+    "word": " not",
+    "start": 53.68,
+    "end": 53.86
+  },
+  {
+    "word": " a",
+    "start": 53.86,
+    "end": 53.98
+  },
+  {
+    "word": " machine.",
+    "start": 53.98,
+    "end": 54.24
+  },
+  {
+    "word": " That's",
+    "start": 56.72,
+    "end": 57.24
+  },
+  {
+    "word": " it.",
+    "start": 57.24,
+    "end": 57.34
+  },
+  {
+    "word": " Do",
+    "start": 57.98,
+    "end": 58.04
+  },
+  {
+    "word": " this",
+    "start": 58.04,
+    "end": 58.22
+  },
+  {
+    "word": " right",
+    "start": 58.22,
+    "end": 58.42
+  },
+  {
+    "word": " now,",
+    "start": 58.42,
+    "end": 58.76
+  },
+  {
+    "word": " 5",
+    "start": 59.02,
+    "end": 59.16
+  },
+  {
+    "word": " minutes.",
+    "start": 59.16,
+    "end": 59.46
+  },
+  {
+    "word": " Follow",
+    "start": 60.06,
+    "end": 60.1
+  },
+  {
+    "word": " for",
+    "start": 60.1,
+    "end": 60.34
+  },
+  {
+    "word": " more",
+    "start": 60.34,
+    "end": 60.5
+  },
+  {
+    "word": " simple",
+    "start": 60.5,
+    "end": 60.82
+  },
+  {
+    "word": " tips.",
+    "start": 60.82,
+    "end": 61.12
+  }
+]

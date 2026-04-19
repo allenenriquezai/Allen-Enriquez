@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>What Is an AI Agent — Animation Overlay</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Roboto+Mono:wght@400;500;700&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: transparent;
+        font-family: "Montserrat", sans-serif;
+        color: #ffffff;
+      }
+      .scene-layer {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1080px;
+        height: 1920px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="55.56"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- Ambient background: only during animation middle. -->
+      <div
+        class="scene-layer"
+        data-composition-id="ambient-bg"
+        data-composition-src="compositions/ambient-bg.html"
+        data-start="8.87"
+        data-duration="43.53"
+        data-track-index="1"
+        data-width="1080"
+        data-height="1920"
+      ></div>
+
+      <!-- 7 scene beats. data-start shifted by +8.87 (source-time). -->
+      <div class="scene-layer"
+        data-composition-id="scene1-old"
+        data-composition-src="compositions/scene1-old.html"
+        data-start="8.87" data-duration="3.53" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene2-new"
+        data-composition-src="compositions/scene2-new.html"
+        data-start="12.40" data-duration="2.60" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene3-oldway"
+        data-composition-src="compositions/scene3-oldway.html"
+        data-start="15.00" data-duration="5.91" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene4-newway"
+        data-composition-src="compositions/scene4-newway.html"
+        data-start="20.91" data-duration="9.29" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene5-capabilities"
+        data-composition-src="compositions/scene5-capabilities.html"
+        data-start="30.20" data-duration="5.96" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene6-urgency"
+        data-composition-src="compositions/scene6-urgency.html"
+        data-start="36.16" data-duration="2.88" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene7-start"
+        data-composition-src="compositions/scene7-start.html"
+        data-start="39.04" data-duration="13.36" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Karaoke captions across the FULL source duration (hook + animation + CTA). -->
+      <div class="scene-layer"
+        data-composition-id="captions"
+        data-composition-src="compositions/captions.html"
+        data-start="0" data-duration="55.56" data-track-index="20"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Vignette overlay only during animation middle. -->
+      <div id="top-vignette" class="clip" data-start="8.87" data-duration="43.53" data-track-index="25"></div>
+    </div>
+
+    <style>
+      #top-vignette {
+        position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 55%, rgba(5, 8, 15, 0.85) 100%);
+        z-index: 40;
+      }
+    </style>
+
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        tl.to({}, { duration: 55.56 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

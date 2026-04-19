@@ -1,0 +1,311 @@
+<template id="scene7-start-template">
+  <div
+    data-composition-id="scene7-start"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="13.36"
+  >
+    <div class="wrap">
+      <div class="banner">HERE'S WHERE TO START:</div>
+
+      <div class="step s1">
+        <div class="step-active-bg"></div>
+        <div class="num">01</div>
+        <div class="body">
+          <div class="title">OPEN AN AI AGENT APP</div>
+          <div class="apps">
+            <span class="app">Claude</span>
+            <span class="app">Manus</span>
+            <span class="app">ChatGPT Agent</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini Claude app demo — appears during step 1 active window -->
+      <div class="app-demo" id="app-demo">
+        <div class="app-window">
+          <div class="app-header">
+            <div class="win-dots">
+              <span class="wd"></span><span class="wd"></span><span class="wd"></span>
+            </div>
+            <div class="win-title">Claude</div>
+          </div>
+          <div class="app-body">
+            <div class="ghost-greeting" id="ghost-greet">How can I help?</div>
+            <div class="input-row" id="input-row">
+              <span class="input-text" id="demo-text"></span><span class="blinker">▋</span>
+              <span class="input-glow"></span>
+            </div>
+          </div>
+        </div>
+        <div class="cursor-icon" id="cursor"></div>
+      </div>
+
+      <div class="step s2">
+        <div class="step-active-bg"></div>
+        <div class="num">02</div>
+        <div class="body">
+          <div class="title">PICK ONE TASK FROM YOUR WEEK</div>
+          <div class="sub">something you'd normally do yourself</div>
+        </div>
+      </div>
+
+      <div class="step s3">
+        <div class="step-active-bg"></div>
+        <div class="num">03</div>
+        <div class="body">
+          <div class="title">TELL IT WHAT TO DO</div>
+          <div class="sub">confused? let it teach you.</div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      [data-composition-id="scene7-start"] { position: absolute; inset: 0; }
+      [data-composition-id="scene7-start"] .wrap {
+        position: absolute; inset: 0;
+        padding: 60px;
+        display: flex; flex-direction: column;
+        justify-content: center;
+        gap: 22px;
+      }
+      [data-composition-id="scene7-start"] .banner {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 62px;
+        color: #02B3E9;
+        text-shadow: 0 0 28px rgba(2,179,233,0.55);
+        text-align: center;
+        letter-spacing: -0.01em;
+      }
+      [data-composition-id="scene7-start"] .step {
+        position: relative;
+        display: flex; align-items: center; gap: 28px;
+        padding: 26px 36px;
+        border-radius: 22px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.16);
+      }
+      [data-composition-id="scene7-start"] .step-active-bg {
+        position: absolute; inset: 0;
+        border-radius: 22px;
+        background: rgba(2,179,233,0.14);
+        border: 1px solid rgba(2,179,233,0.7);
+        box-shadow: 0 0 40px rgba(2,179,233,0.25);
+        opacity: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="scene7-start"] .num {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 60px;
+        color: #02B3E9;
+        min-width: 96px;
+        text-shadow: 0 0 20px rgba(2,179,233,0.5);
+        position: relative; z-index: 1;
+      }
+      [data-composition-id="scene7-start"] .body { flex: 1; position: relative; z-index: 1; }
+      [data-composition-id="scene7-start"] .title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 38px;
+        color: #ffffff;
+        line-height: 1.1;
+      }
+      [data-composition-id="scene7-start"] .sub {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 22px;
+        color: rgba(255,255,255,0.65);
+        margin-top: 6px;
+      }
+      [data-composition-id="scene7-start"] .apps {
+        display: flex; gap: 10px; flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      [data-composition-id="scene7-start"] .app {
+        padding: 8px 16px;
+        border-radius: 10px;
+        background: rgba(2,179,233,0.15);
+        border: 1px solid rgba(2,179,233,0.45);
+        color: #02B3E9;
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700; font-size: 22px;
+      }
+
+      /* Claude App Demo */
+      [data-composition-id="scene7-start"] .app-demo {
+        position: relative;
+        align-self: center;
+        width: 780px;
+        opacity: 0;
+      }
+      [data-composition-id="scene7-start"] .app-window {
+        width: 100%;
+        border-radius: 22px;
+        background: linear-gradient(180deg, #0E1520, #0A0F18);
+        border: 1px solid rgba(2,179,233,0.4);
+        box-shadow: 0 0 50px rgba(2,179,233,0.22), 0 20px 40px rgba(0,0,0,0.5);
+        overflow: hidden;
+      }
+      [data-composition-id="scene7-start"] .app-header {
+        display: flex; align-items: center;
+        padding: 14px 18px;
+        background: rgba(255,255,255,0.03);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        gap: 14px;
+      }
+      [data-composition-id="scene7-start"] .win-dots {
+        display: flex; gap: 8px;
+      }
+      [data-composition-id="scene7-start"] .wd {
+        width: 14px; height: 14px; border-radius: 50%;
+        background: rgba(255,255,255,0.18);
+      }
+      [data-composition-id="scene7-start"] .win-title {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 22px;
+        color: #02B3E9;
+        letter-spacing: 0.05em;
+      }
+      [data-composition-id="scene7-start"] .app-body {
+        padding: 28px;
+        min-height: 170px;
+        display: flex; flex-direction: column; gap: 18px;
+        justify-content: center;
+      }
+      [data-composition-id="scene7-start"] .ghost-greeting {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 30px;
+        color: rgba(255,255,255,0.5);
+        text-align: center;
+      }
+      [data-composition-id="scene7-start"] .input-row {
+        position: relative;
+        padding: 18px 22px;
+        border-radius: 14px;
+        background: rgba(2,179,233,0.08);
+        border: 1px solid rgba(2,179,233,0.4);
+        font-family: 'Roboto Mono', monospace;
+        font-size: 26px;
+        color: #ffffff;
+        min-height: 64px;
+        display: flex; align-items: center;
+      }
+      [data-composition-id="scene7-start"] .input-glow {
+        position: absolute; inset: -4px;
+        border-radius: 18px;
+        box-shadow: 0 0 40px rgba(2,179,233,0.6);
+        opacity: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="scene7-start"] .input-text {
+        display: inline-flex;
+        white-space: pre;
+      }
+      [data-composition-id="scene7-start"] .ich {
+        display: inline-block;
+        opacity: 0;
+        white-space: pre;
+      }
+      [data-composition-id="scene7-start"] .blinker {
+        color: #02B3E9; margin-left: 4px;
+      }
+      [data-composition-id="scene7-start"] .cursor-icon {
+        position: absolute;
+        top: 10px; left: 30%;
+        width: 40px; height: 40px;
+        border-left: 4px solid #ffffff;
+        border-top: 4px solid #ffffff;
+        transform: rotate(-30deg);
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+        opacity: 0;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene7-start"]';
+
+        // Pre-build typewriter char spans for the Claude input demo
+        const cmd = 'follow up with my leads';
+        const demoEl = document.querySelector(sel + ' #demo-text');
+        if (demoEl) {
+          demoEl.innerHTML = '';
+          for (const ch of cmd) {
+            const s = document.createElement('span');
+            s.className = 'ich';
+            s.textContent = ch;
+            demoEl.appendChild(s);
+          }
+        }
+
+        const tl = gsap.timeline({ paused: true });
+
+        tl.from(sel + ' .wrap', { y: 150, scale: 0.92, opacity: 0, duration: 0.55, ease: 'power3.out' }, 0);
+        tl.from(sel + ' .banner', { scale: 0.75, opacity: 0, duration: 0.45, ease: 'back.out(2.2)' }, 0.2);
+
+        // Step 1 text appears
+        tl.from(sel + ' .s1', { x: -150, opacity: 0, duration: 0.45, ease: 'power3.out' }, 1.3);
+        tl.from(sel + ' .s1 .app', { y: 20, opacity: 0, scale: 0.8, duration: 0.25, ease: 'back.out(2)', stagger: 0.10 }, 1.7);
+
+        // Claude app demo animation sequence (2.2s-4.4s)
+        // 1. Window slides up
+        tl.to(sel + ' #app-demo', { opacity: 1, duration: 0.3, ease: 'power2.out' }, 2.2);
+        tl.from(sel + ' .app-window', { y: 60, scale: 0.9, opacity: 0, duration: 0.5, ease: 'back.out(1.8)' }, 2.2);
+
+        // 2. Cursor appears + clicks (x,y — supported; removed top/left)
+        tl.to(sel + ' #cursor', { opacity: 1, duration: 0.15 }, 2.6);
+        tl.to(sel + ' #cursor', { x: 100, y: 120, duration: 0.4, ease: 'power2.inOut' }, 2.6);
+        tl.to(sel + ' #cursor', { scale: 0.82, duration: 0.08, ease: 'power2.in' }, 3.0);
+        tl.to(sel + ' #cursor', { scale: 1, duration: 0.2, ease: 'back.out(3)' }, 3.08);
+
+        // 3. Greeting fades
+        tl.to(sel + ' #ghost-greet', { opacity: 0, y: -10, duration: 0.25, ease: 'power2.in' }, 3.0);
+
+        // 4. Typewriter: per-char opacity stagger (fast-mode safe)
+        const CHAR_DUR = 0.02;
+        const CHAR_STEP = 0.05;
+        tl.to(sel + ' .ich', { opacity: 1, duration: CHAR_DUR, ease: 'none', stagger: CHAR_STEP }, 3.15);
+
+        // 5. Input row glow — opacity on sibling .input-glow (fast-mode safe)
+        tl.to(sel + ' .input-glow', { opacity: 1, duration: 0.3, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 4.35);
+
+        // 6. Cursor fades
+        tl.to(sel + ' #cursor', { opacity: 0, duration: 0.2 }, 4.5);
+
+        // Blinker — discrete toggles instead of tween with steps easing
+        for (let i = 0; i < 5; i++) {
+          tl.set(sel + ' .blinker', { opacity: 0 }, 2.5 + i * 0.8);
+          tl.set(sel + ' .blinker', { opacity: 1 }, 2.5 + i * 0.8 + 0.4);
+        }
+
+        // App demo exit when step 2 activates
+        tl.to(sel + ' #app-demo', {
+          opacity: 0, y: -40, scale: 0.94,
+          duration: 0.45, ease: 'power2.in'
+        }, 4.6);
+
+        // Step 2 activates: "Pick one task from your week" ~ 4.8-6.3s
+        tl.from(sel + ' .s2', { x: -150, opacity: 0, duration: 0.45, ease: 'power3.out' }, 4.85);
+
+        // Step 3 activates: "Tell it what to do" ~ 6.4-8.0s
+        tl.from(sel + ' .s3', { x: -150, opacity: 0, duration: 0.45, ease: 'power3.out' }, 6.4);
+
+        // Active step highlighting — opacity on .step-active-bg (fast-mode safe, no className)
+        tl.to(sel + ' .s1 .step-active-bg', { opacity: 1, duration: 0.01 }, 1.3);
+        tl.to(sel + ' .s1 .step-active-bg', { opacity: 0, duration: 0.01 }, 4.65);
+        tl.to(sel + ' .s2 .step-active-bg', { opacity: 1, duration: 0.01 }, 4.85);
+        tl.to(sel + ' .s2 .step-active-bg', { opacity: 0, duration: 0.01 }, 6.25);
+        tl.to(sel + ' .s3 .step-active-bg', { opacity: 1, duration: 0.01 }, 6.4);
+
+        tl.to({}, { duration: 13.36 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene7-start"] = tl;
+      })();
+    </script>
+  </div>
+</template>

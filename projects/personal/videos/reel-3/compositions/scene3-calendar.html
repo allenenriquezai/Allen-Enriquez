@@ -1,0 +1,169 @@
+<template id="scene3-calendar-template">
+  <div
+    data-composition-id="scene3-calendar"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="2.52"
+  >
+    <div class="wrap">
+      <div class="numeral-row">
+        <div class="num-mono" data-num="02">
+          <span class="layer l-base">02</span>
+          <span class="layer l-magenta">02</span>
+          <span class="layer l-blue">02</span>
+        </div>
+        <div class="num-label">
+          <div class="num-title">BOOKS MEETINGS</div>
+          <div class="num-sub">AUTO-SCHEDULES</div>
+        </div>
+      </div>
+
+      <div class="cal-frame">
+        <div class="cal-header">
+          <span class="cal-title">THIS WEEK</span>
+          <span class="cal-agent">● AGENT ACTIVE</span>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-col"><div class="cal-day">MON</div><div class="cal-slot"></div><div class="cal-slot"></div><div class="cal-slot booked s1"><span>✓</span></div></div>
+          <div class="cal-col"><div class="cal-day">TUE</div><div class="cal-slot"></div><div class="cal-slot"></div><div class="cal-slot"></div></div>
+          <div class="cal-col"><div class="cal-day">WED</div><div class="cal-slot"></div><div class="cal-slot booked s2"><span>✓</span></div><div class="cal-slot"></div></div>
+          <div class="cal-col"><div class="cal-day">THU</div><div class="cal-slot"></div><div class="cal-slot"></div><div class="cal-slot"></div></div>
+          <div class="cal-col"><div class="cal-day">FRI</div><div class="cal-slot booked s3"><span>✓</span></div><div class="cal-slot"></div><div class="cal-slot"></div></div>
+        </div>
+      </div>
+
+      <div class="booked-stamp">BOOKED ×3</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene3-calendar"] { position: absolute; inset: 0; }
+      [data-composition-id="scene3-calendar"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 34px; padding: 60px;
+      }
+      [data-composition-id="scene3-calendar"] .numeral-row {
+        display: flex; align-items: center; gap: 36px;
+      }
+      [data-composition-id="scene3-calendar"] .num-mono {
+        position: relative; width: 240px; height: 280px;
+      }
+      [data-composition-id="scene3-calendar"] .num-mono .layer {
+        position: absolute; inset: 0;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 280px; line-height: 0.85; letter-spacing: -0.04em;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene3-calendar"] .num-mono .l-base    { color: #ffffff; text-shadow: 0 0 30px rgba(2,179,233,0.6); }
+      [data-composition-id="scene3-calendar"] .num-mono .l-magenta { color: #ff00a8; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene3-calendar"] .num-mono .l-blue    { color: #02B3E9; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene3-calendar"] .num-label .num-title {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 54px; color: #ffffff;
+      }
+      [data-composition-id="scene3-calendar"] .num-label .num-sub {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 26px; letter-spacing: 0.22em;
+        color: rgba(2,179,233,0.9); margin-top: 6px;
+      }
+      [data-composition-id="scene3-calendar"] .cal-frame {
+        width: 960px;
+        border-radius: 22px;
+        background: rgba(5, 10, 18, 0.88);
+        border: 1px solid rgba(2,179,233,0.45);
+        box-shadow: 0 0 40px rgba(2,179,233,0.25);
+        overflow: hidden;
+      }
+      [data-composition-id="scene3-calendar"] .cal-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 18px 24px;
+        background: rgba(255,255,255,0.04);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene3-calendar"] .cal-title {
+        font-size: 24px; color: rgba(255,255,255,0.75);
+        letter-spacing: 0.2em; font-weight: 700;
+      }
+      [data-composition-id="scene3-calendar"] .cal-agent {
+        font-size: 20px; color: #02B3E9;
+        letter-spacing: 0.18em; font-weight: 700;
+      }
+      [data-composition-id="scene3-calendar"] .cal-grid {
+        display: grid; grid-template-columns: repeat(5, 1fr);
+        gap: 10px; padding: 22px;
+      }
+      [data-composition-id="scene3-calendar"] .cal-col {
+        display: flex; flex-direction: column; gap: 10px;
+      }
+      [data-composition-id="scene3-calendar"] .cal-day {
+        text-align: center;
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 22px; color: rgba(255,255,255,0.65);
+        letter-spacing: 0.18em;
+        padding: 8px 0;
+      }
+      [data-composition-id="scene3-calendar"] .cal-slot {
+        height: 78px; border-radius: 10px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene3-calendar"] .cal-slot.booked {
+        background: rgba(2,179,233,0.22);
+        border: 2px solid #02B3E9;
+        box-shadow: 0 0 22px rgba(2,179,233,0.55);
+        color: #02B3E9;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 40px;
+      }
+      [data-composition-id="scene3-calendar"] .booked-stamp {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 62px;
+        color: #02B3E9;
+        text-shadow:
+          -3px -3px 0 #000, 3px -3px 0 #000,
+          -3px 3px 0 #000, 3px 3px 0 #000,
+          0 0 30px rgba(2,179,233,0.9);
+        padding: 14px 30px;
+        border: 3px solid rgba(2,179,233,0.8);
+        border-radius: 14px;
+        transform: rotate(-3deg);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene3-calendar"]';
+        const tl = gsap.timeline({ paused: true });
+
+        // Numeral slam
+        tl.from(sel + ' .num-mono', { scale: 0.3, opacity: 0, duration: 0.30, ease: 'back.out(2.5)' }, 0);
+        tl.fromTo(sel + ' .num-mono .l-magenta', { x: -40, y: -20 }, { x: -6, y: -3, duration: 0.38, ease: 'expo.out' }, 0);
+        tl.fromTo(sel + ' .num-mono .l-blue',    { x: 40, y: 20 },  { x: 6, y: 3, duration: 0.38, ease: 'expo.out' }, 0);
+        tl.from(sel + ' .num-label', { x: -30, opacity: 0, duration: 0.30, ease: 'power2.out' }, 0.18);
+
+        tl.from(sel + ' .cal-frame', { y: 40, opacity: 0, duration: 0.35, ease: 'power3.out' }, 0.30);
+        tl.from(sel + ' .cal-col', { y: 20, opacity: 0, duration: 0.25, stagger: 0.04, ease: 'power2.out' }, 0.50);
+
+        // Slots lock in sequentially with ✓ pop
+        tl.to(sel + ' .cal-slot.s1', { scale: 1.08, duration: 0.18, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 1.10);
+        tl.to(sel + ' .cal-slot.s2', { scale: 1.08, duration: 0.18, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 1.35);
+        tl.to(sel + ' .cal-slot.s3', { scale: 1.08, duration: 0.18, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 1.60);
+
+        tl.fromTo(sel + ' .booked-stamp',
+          { scale: 2.2, opacity: 0, rotate: -12 },
+          { scale: 1, opacity: 1, rotate: -3, duration: 0.25, ease: 'power3.out' }, 1.70);
+        tl.to(sel + ' .booked-stamp', { scale: 1.05, duration: 0.2, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 1.95);
+
+        tl.to(sel + ' .wrap', { y: -60, opacity: 0, duration: 0.25, ease: 'power2.in' }, 2.27);
+        tl.to({}, { duration: 2.52 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene3-calendar"] = tl;
+      })();
+    </script>
+  </div>
+</template>

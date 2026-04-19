@@ -1,0 +1,932 @@
+[
+  {
+    "text": "You're",
+    "start": 0.05,
+    "end": 0.44
+  },
+  {
+    "text": "still",
+    "start": 0.44,
+    "end": 0.82
+  },
+  {
+    "text": "using",
+    "start": 0.82,
+    "end": 1.2
+  },
+  {
+    "text": "AI",
+    "start": 1.2,
+    "end": 1.34
+  },
+  {
+    "text": "wrong.",
+    "start": 1.34,
+    "end": 1.78
+  },
+  {
+    "text": "You",
+    "start": 1.83,
+    "end": 2.04
+  },
+  {
+    "text": "ask,",
+    "start": 2.09,
+    "end": 2.58
+  },
+  {
+    "text": "it",
+    "start": 2.58,
+    "end": 2.78
+  },
+  {
+    "text": "answers,",
+    "start": 2.78,
+    "end": 3.7
+  },
+  {
+    "text": "you",
+    "start": 3.7,
+    "end": 3.85
+  },
+  {
+    "text": "still",
+    "start": 3.85,
+    "end": 4.1
+  },
+  {
+    "text": "do",
+    "start": 4.1,
+    "end": 4.2
+  },
+  {
+    "text": "the",
+    "start": 4.21,
+    "end": 4.3
+  },
+  {
+    "text": "work.",
+    "start": 4.43,
+    "end": 4.76
+  },
+  {
+    "text": "AI",
+    "start": 4.81,
+    "end": 4.9
+  },
+  {
+    "text": "agents",
+    "start": 4.9,
+    "end": 5.32
+  },
+  {
+    "text": "are",
+    "start": 5.32,
+    "end": 5.53
+  },
+  {
+    "text": "different.",
+    "start": 5.53,
+    "end": 6.4
+  },
+  {
+    "text": "Stick",
+    "start": 6.45,
+    "end": 6.83
+  },
+  {
+    "text": "to",
+    "start": 6.83,
+    "end": 6.99
+  },
+  {
+    "text": "the",
+    "start": 6.99,
+    "end": 7.26
+  },
+  {
+    "text": "end",
+    "start": 7.26,
+    "end": 7.54
+  },
+  {
+    "text": "and",
+    "start": 7.54,
+    "end": 7.69
+  },
+  {
+    "text": "I'll",
+    "start": 7.69,
+    "end": 7.79
+  },
+  {
+    "text": "show",
+    "start": 7.91,
+    "end": 8.12
+  },
+  {
+    "text": "you",
+    "start": 8.2,
+    "end": 8.29
+  },
+  {
+    "text": "where",
+    "start": 8.29,
+    "end": 8.57
+  },
+  {
+    "text": "to",
+    "start": 8.57,
+    "end": 8.64
+  },
+  {
+    "text": "start.",
+    "start": 8.64,
+    "end": 9.18
+  },
+  {
+    "text": "With",
+    "start": 9.23,
+    "end": 9.43
+  },
+  {
+    "text": "common",
+    "start": 9.43,
+    "end": 9.8
+  },
+  {
+    "text": "AI",
+    "start": 9.8,
+    "end": 9.91
+  },
+  {
+    "text": "softwares,",
+    "start": 9.92,
+    "end": 10.54
+  },
+  {
+    "text": "you",
+    "start": 10.61,
+    "end": 10.82
+  },
+  {
+    "text": "still",
+    "start": 10.98,
+    "end": 11.18
+  },
+  {
+    "text": "do",
+    "start": 11.18,
+    "end": 11.32
+  },
+  {
+    "text": "most",
+    "start": 11.32,
+    "end": 11.57
+  },
+  {
+    "text": "of",
+    "start": 11.57,
+    "end": 11.7
+  },
+  {
+    "text": "the",
+    "start": 11.83,
+    "end": 11.95
+  },
+  {
+    "text": "work.",
+    "start": 11.95,
+    "end": 12.4
+  },
+  {
+    "text": "With",
+    "start": 12.53,
+    "end": 12.74
+  },
+  {
+    "text": "an",
+    "start": 12.79,
+    "end": 12.88
+  },
+  {
+    "text": "AI",
+    "start": 12.88,
+    "end": 13.01
+  },
+  {
+    "text": "agent,",
+    "start": 13.01,
+    "end": 13.48
+  },
+  {
+    "text": "it",
+    "start": 13.48,
+    "end": 13.61
+  },
+  {
+    "text": "does",
+    "start": 13.61,
+    "end": 13.82
+  },
+  {
+    "text": "the",
+    "start": 13.82,
+    "end": 14.08
+  },
+  {
+    "text": "work",
+    "start": 14.28,
+    "end": 14.35
+  },
+  {
+    "text": "for",
+    "start": 14.35,
+    "end": 14.55
+  },
+  {
+    "text": "you.",
+    "start": 14.55,
+    "end": 14.89
+  },
+  {
+    "text": "Old",
+    "start": 15.09,
+    "end": 15.29
+  },
+  {
+    "text": "way,",
+    "start": 15.29,
+    "end": 15.7
+  },
+  {
+    "text": "you",
+    "start": 15.7,
+    "end": 15.95
+  },
+  {
+    "text": "ask",
+    "start": 15.95,
+    "end": 16.2
+  },
+  {
+    "text": "a",
+    "start": 16.2,
+    "end": 16.28
+  },
+  {
+    "text": "chat",
+    "start": 16.28,
+    "end": 16.4
+  },
+  {
+    "text": "GPT",
+    "start": 16.54,
+    "end": 16.88
+  },
+  {
+    "text": "to",
+    "start": 16.88,
+    "end": 16.99
+  },
+  {
+    "text": "write",
+    "start": 16.99,
+    "end": 17.27
+  },
+  {
+    "text": "one",
+    "start": 17.27,
+    "end": 17.44
+  },
+  {
+    "text": "follow-up",
+    "start": 17.69,
+    "end": 18.13
+  },
+  {
+    "text": "email.",
+    "start": 18.13,
+    "end": 18.52
+  },
+  {
+    "text": "You",
+    "start": 18.57,
+    "end": 18.74
+  },
+  {
+    "text": "copy,",
+    "start": 18.74,
+    "end": 19.17
+  },
+  {
+    "text": "you",
+    "start": 19.17,
+    "end": 19.39
+  },
+  {
+    "text": "paste,",
+    "start": 19.39,
+    "end": 19.86
+  },
+  {
+    "text": "then",
+    "start": 19.86,
+    "end": 20.19
+  },
+  {
+    "text": "you",
+    "start": 20.32,
+    "end": 20.41
+  },
+  {
+    "text": "send.",
+    "start": 20.41,
+    "end": 20.91
+  },
+  {
+    "text": "New",
+    "start": 21.03,
+    "end": 21.24
+  },
+  {
+    "text": "way,",
+    "start": 21.29,
+    "end": 21.73
+  },
+  {
+    "text": "you",
+    "start": 21.73,
+    "end": 22.01
+  },
+  {
+    "text": "tell",
+    "start": 22.01,
+    "end": 22.29
+  },
+  {
+    "text": "an",
+    "start": 22.39,
+    "end": 22.58
+  },
+  {
+    "text": "AI",
+    "start": 22.58,
+    "end": 22.78
+  },
+  {
+    "text": "agent,",
+    "start": 22.78,
+    "end": 23.28
+  },
+  {
+    "text": "follow",
+    "start": 23.33,
+    "end": 23.62
+  },
+  {
+    "text": "up",
+    "start": 23.62,
+    "end": 23.73
+  },
+  {
+    "text": "with",
+    "start": 23.73,
+    "end": 23.95
+  },
+  {
+    "text": "my",
+    "start": 23.95,
+    "end": 24.06
+  },
+  {
+    "text": "10",
+    "start": 24.06,
+    "end": 24.4
+  },
+  {
+    "text": "leads",
+    "start": 24.4,
+    "end": 24.62
+  },
+  {
+    "text": "today.",
+    "start": 24.62,
+    "end": 25.16
+  },
+  {
+    "text": "It",
+    "start": 25.21,
+    "end": 25.27
+  },
+  {
+    "text": "can",
+    "start": 25.27,
+    "end": 25.42
+  },
+  {
+    "text": "go",
+    "start": 25.47,
+    "end": 25.54
+  },
+  {
+    "text": "through",
+    "start": 25.54,
+    "end": 25.93
+  },
+  {
+    "text": "your",
+    "start": 25.93,
+    "end": 26.15
+  },
+  {
+    "text": "CRM",
+    "start": 26.15,
+    "end": 26.31
+  },
+  {
+    "text": "and",
+    "start": 26.31,
+    "end": 26.46
+  },
+  {
+    "text": "analyze",
+    "start": 26.46,
+    "end": 26.54
+  },
+  {
+    "text": "the",
+    "start": 26.96,
+    "end": 27.02
+  },
+  {
+    "text": "history.",
+    "start": 27.02,
+    "end": 27.57
+  },
+  {
+    "text": "It's",
+    "start": 27.69,
+    "end": 27.82
+  },
+  {
+    "text": "going",
+    "start": 27.82,
+    "end": 28.05
+  },
+  {
+    "text": "to",
+    "start": 28.05,
+    "end": 28.14
+  },
+  {
+    "text": "write",
+    "start": 28.14,
+    "end": 28.37
+  },
+  {
+    "text": "the",
+    "start": 28.37,
+    "end": 28.51
+  },
+  {
+    "text": "email",
+    "start": 28.51,
+    "end": 28.74
+  },
+  {
+    "text": "and",
+    "start": 28.74,
+    "end": 28.88
+  },
+  {
+    "text": "then",
+    "start": 28.88,
+    "end": 29
+  },
+  {
+    "text": "it's",
+    "start": 29.07,
+    "end": 29.25
+  },
+  {
+    "text": "going",
+    "start": 29.44,
+    "end": 29.48
+  },
+  {
+    "text": "to",
+    "start": 29.48,
+    "end": 29.57
+  },
+  {
+    "text": "send",
+    "start": 29.57,
+    "end": 29.76
+  },
+  {
+    "text": "them.",
+    "start": 29.76,
+    "end": 30.15
+  },
+  {
+    "text": "Agents",
+    "start": 30.21,
+    "end": 30.64
+  },
+  {
+    "text": "can",
+    "start": 30.64,
+    "end": 30.88
+  },
+  {
+    "text": "now",
+    "start": 30.88,
+    "end": 31.12
+  },
+  {
+    "text": "edit",
+    "start": 31.12,
+    "end": 31.43
+  },
+  {
+    "text": "videos,",
+    "start": 31.43,
+    "end": 32.12
+  },
+  {
+    "text": "book",
+    "start": 32.12,
+    "end": 32.39
+  },
+  {
+    "text": "meetings,",
+    "start": 32.41,
+    "end": 33.2
+  },
+  {
+    "text": "post",
+    "start": 33.2,
+    "end": 33.38
+  },
+  {
+    "text": "content,",
+    "start": 33.88,
+    "end": 34.04
+  },
+  {
+    "text": "and",
+    "start": 34.09,
+    "end": 34.24
+  },
+  {
+    "text": "even",
+    "start": 34.24,
+    "end": 34.51
+  },
+  {
+    "text": "run",
+    "start": 34.51,
+    "end": 34.71
+  },
+  {
+    "text": "your",
+    "start": 34.71,
+    "end": 34.98
+  },
+  {
+    "text": "computer",
+    "start": 34.98,
+    "end": 35.35
+  },
+  {
+    "text": "for",
+    "start": 35.46,
+    "end": 35.72
+  },
+  {
+    "text": "you.",
+    "start": 35.84,
+    "end": 36.16
+  },
+  {
+    "text": "If",
+    "start": 36.21,
+    "end": 36.27
+  },
+  {
+    "text": "you",
+    "start": 36.27,
+    "end": 36.42
+  },
+  {
+    "text": "don't",
+    "start": 36.47,
+    "end": 36.72
+  },
+  {
+    "text": "use",
+    "start": 36.72,
+    "end": 36.89
+  },
+  {
+    "text": "this,",
+    "start": 36.89,
+    "end": 37.28
+  },
+  {
+    "text": "your",
+    "start": 37.28,
+    "end": 37.5
+  },
+  {
+    "text": "competitor",
+    "start": 37.96,
+    "end": 38.41
+  },
+  {
+    "text": "will.",
+    "start": 38.41,
+    "end": 39.04
+  },
+  {
+    "text": "So",
+    "start": 39.09,
+    "end": 39.17
+  },
+  {
+    "text": "here's",
+    "start": 39.17,
+    "end": 39.56
+  },
+  {
+    "text": "where",
+    "start": 39.56,
+    "end": 39.89
+  },
+  {
+    "text": "to",
+    "start": 39.89,
+    "end": 40.02
+  },
+  {
+    "text": "start.",
+    "start": 40.02,
+    "end": 40.42
+  },
+  {
+    "text": "Open",
+    "start": 40.61,
+    "end": 40.95
+  },
+  {
+    "text": "Cloud",
+    "start": 40.95,
+    "end": 41.44
+  },
+  {
+    "text": "or",
+    "start": 41.44,
+    "end": 41.63
+  },
+  {
+    "text": "Manus",
+    "start": 41.63,
+    "end": 42.1
+  },
+  {
+    "text": "or",
+    "start": 42.15,
+    "end": 42.23
+  },
+  {
+    "text": "any",
+    "start": 42.36,
+    "end": 42.59
+  },
+  {
+    "text": "AI",
+    "start": 42.59,
+    "end": 42.77
+  },
+  {
+    "text": "agent",
+    "start": 42.77,
+    "end": 43.27
+  },
+  {
+    "text": "app.",
+    "start": 43.27,
+    "end": 43.78
+  },
+  {
+    "text": "Pick",
+    "start": 43.97,
+    "end": 44.18
+  },
+  {
+    "text": "one",
+    "start": 44.23,
+    "end": 44.47
+  },
+  {
+    "text": "task",
+    "start": 44.47,
+    "end": 44.78
+  },
+  {
+    "text": "from",
+    "start": 44.78,
+    "end": 45.09
+  },
+  {
+    "text": "your",
+    "start": 45.09,
+    "end": 45.28
+  },
+  {
+    "text": "week",
+    "start": 45.72,
+    "end": 45.76
+  },
+  {
+    "text": "and",
+    "start": 45.81,
+    "end": 45.99
+  },
+  {
+    "text": "then",
+    "start": 45.99,
+    "end": 46.3
+  },
+  {
+    "text": "you",
+    "start": 46.3,
+    "end": 46.53
+  },
+  {
+    "text": "tell",
+    "start": 46.53,
+    "end": 46.83
+  },
+  {
+    "text": "the",
+    "start": 46.83,
+    "end": 47.06
+  },
+  {
+    "text": "AI",
+    "start": 47.06,
+    "end": 47.12
+  },
+  {
+    "text": "what",
+    "start": 47.12,
+    "end": 47.56
+  },
+  {
+    "text": "to",
+    "start": 47.56,
+    "end": 47.68
+  },
+  {
+    "text": "do.",
+    "start": 47.68,
+    "end": 48.1
+  },
+  {
+    "text": "If",
+    "start": 48.17,
+    "end": 48.26
+  },
+  {
+    "text": "you're",
+    "start": 48.26,
+    "end": 48.7
+  },
+  {
+    "text": "confused,",
+    "start": 48.7,
+    "end": 49.32
+  },
+  {
+    "text": "then",
+    "start": 49.32,
+    "end": 49.46
+  },
+  {
+    "text": "you",
+    "start": 49.46,
+    "end": 49.57
+  },
+  {
+    "text": "simply",
+    "start": 49.6,
+    "end": 49.83
+  },
+  {
+    "text": "let",
+    "start": 49.92,
+    "end": 50.04
+  },
+  {
+    "text": "it",
+    "start": 50.04,
+    "end": 50.1
+  },
+  {
+    "text": "teach",
+    "start": 50.11,
+    "end": 50.44
+  },
+  {
+    "text": "you",
+    "start": 50.44,
+    "end": 50.59
+  },
+  {
+    "text": "how",
+    "start": 50.65,
+    "end": 50.8
+  },
+  {
+    "text": "to",
+    "start": 50.8,
+    "end": 50.93
+  },
+  {
+    "text": "use",
+    "start": 50.93,
+    "end": 51.13
+  },
+  {
+    "text": "it.",
+    "start": 51.13,
+    "end": 51.48
+  },
+  {
+    "text": "Comment",
+    "start": 51.53,
+    "end": 52.59
+  },
+  {
+    "text": "agent",
+    "start": 52.59,
+    "end": 53.4
+  },
+  {
+    "text": "and",
+    "start": 53.4,
+    "end": 53.5
+  },
+  {
+    "text": "I'll",
+    "start": 53.5,
+    "end": 53.63
+  },
+  {
+    "text": "help",
+    "start": 53.63,
+    "end": 53.72
+  },
+  {
+    "text": "you",
+    "start": 53.72,
+    "end": 53.88
+  },
+  {
+    "text": "set",
+    "start": 53.88,
+    "end": 53.99
+  },
+  {
+    "text": "up",
+    "start": 54.13,
+    "end": 54.18
+  },
+  {
+    "text": "your",
+    "start": 54.18,
+    "end": 54.45
+  },
+  {
+    "text": "first",
+    "start": 54.45,
+    "end": 54.7
+  },
+  {
+    "text": "one",
+    "start": 54.7,
+    "end": 55
+  },
+  {
+    "text": "for",
+    "start": 55,
+    "end": 55.2
+  },
+  {
+    "text": "free.",
+    "start": 55.2,
+    "end": 55.56
+  }
+]

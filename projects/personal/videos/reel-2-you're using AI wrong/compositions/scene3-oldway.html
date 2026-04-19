@@ -1,0 +1,122 @@
+<template id="scene3-oldway-template">
+  <div
+    data-composition-id="scene3-oldway"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="5.91"
+  >
+    <div class="wrap">
+      <div class="banner">OLD WAY</div>
+      <div class="steps">
+        <div class="step s1">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">ASK ChatGPT</div>
+            <div class="step-sub">type the prompt</div>
+          </div>
+          <div class="manual">MANUAL</div>
+        </div>
+        <div class="step s2">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">COPY / PASTE</div>
+            <div class="step-sub">into your email</div>
+          </div>
+          <div class="manual">MANUAL</div>
+        </div>
+        <div class="step s3">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">HIT SEND</div>
+            <div class="step-sub">one email. that's it.</div>
+          </div>
+          <div class="manual">MANUAL</div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      [data-composition-id="scene3-oldway"] { position: absolute; inset: 0; }
+      [data-composition-id="scene3-oldway"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 40px;
+        padding: 0 80px;
+      }
+      [data-composition-id="scene3-oldway"] .banner {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 84px;
+        letter-spacing: -0.02em;
+        color: #FF3B30;
+        text-shadow: 0 0 28px rgba(255,59,48,0.5);
+      }
+      [data-composition-id="scene3-oldway"] .steps {
+        display: flex; flex-direction: column; gap: 28px;
+        width: 100%;
+      }
+      [data-composition-id="scene3-oldway"] .step {
+        display: flex; align-items: center; gap: 28px;
+        padding: 26px 32px;
+        border-radius: 22px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.14);
+      }
+      [data-composition-id="scene3-oldway"] .step-num {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 56px;
+        color: rgba(255,255,255,0.55);
+        min-width: 80px;
+      }
+      [data-composition-id="scene3-oldway"] .step-body { flex: 1; }
+      [data-composition-id="scene3-oldway"] .step-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 44px;
+        color: #ffffff;
+      }
+      [data-composition-id="scene3-oldway"] .step-sub {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 26px;
+        color: rgba(255,255,255,0.6);
+        margin-top: 6px;
+      }
+      [data-composition-id="scene3-oldway"] .manual {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 24px;
+        letter-spacing: 0.2em;
+        color: #FF3B30;
+        border: 2px solid #FF3B30;
+        padding: 10px 16px;
+        border-radius: 8px;
+        transform: rotate(-6deg);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const sel = '[data-composition-id="scene3-oldway"]';
+        tl.from(sel + ' .wrap', { y: 150, scale: 0.92, opacity: 0, duration: 0.55, ease: 'power3.out' }, 0);
+        tl.from(sel + ' .banner', { scale: 0.7, opacity: 0, duration: 0.4, ease: 'back.out(2.2)' }, 0.2);
+        tl.from(sel + ' .s1', { x: -120, opacity: 0, duration: 0.45, ease: 'power3.out' }, 0.6);
+        tl.from(sel + ' .s2', { x: -120, opacity: 0, duration: 0.45, ease: 'power3.out' }, 2.0);
+        tl.from(sel + ' .s3', { x: -120, opacity: 0, duration: 0.45, ease: 'power3.out' }, 3.6);
+        // Manual stamps pulse
+        tl.from(sel + ' .s1 .manual', { scale: 0, duration: 0.3, ease: 'back.out(3)' }, 1.0);
+        tl.from(sel + ' .s2 .manual', { scale: 0, duration: 0.3, ease: 'back.out(3)' }, 2.4);
+        tl.from(sel + ' .s3 .manual', { scale: 0, duration: 0.3, ease: 'back.out(3)' }, 4.0);
+        // Exit
+        tl.to(sel + ' .wrap', { y: -150, scale: 0.92, opacity: 0, duration: 0.33, ease: 'power2.in' }, 5.58);
+        tl.to({}, { duration: 5.91 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene3-oldway"] = tl;
+      })();
+    </script>
+  </div>
+</template>

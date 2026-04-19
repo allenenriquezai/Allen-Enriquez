@@ -1,0 +1,94 @@
+<template id="scene1-old-template">
+  <div
+    data-composition-id="scene1-old"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="3.53"
+  >
+    <div class="wrap">
+      <div class="label">AI CHATBOTS</div>
+      <div class="mock">
+        <div class="mock-bubble user">write my follow-up email</div>
+        <div class="mock-bubble bot">Sure! Here's a draft...</div>
+      </div>
+      <div class="stamp">STILL DOING<br/>THE WORK</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene1-old"] { position: absolute; inset: 0; }
+      [data-composition-id="scene1-old"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 48px;
+      }
+      [data-composition-id="scene1-old"] .label {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 44px;
+        letter-spacing: 0.28em;
+        color: rgba(255,255,255,0.55);
+        text-transform: uppercase;
+      }
+      [data-composition-id="scene1-old"] .mock {
+        width: 760px;
+        padding: 42px 36px;
+        border-radius: 28px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(12px);
+        display: flex; flex-direction: column; gap: 24px;
+      }
+      [data-composition-id="scene1-old"] .mock-bubble {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 34px;
+        line-height: 1.25;
+        padding: 28px 34px;
+        border-radius: 22px;
+        max-width: 560px;
+      }
+      [data-composition-id="scene1-old"] .mock-bubble.user {
+        background: rgba(2,179,233,0.18);
+        border: 1px solid rgba(2,179,233,0.5);
+        color: #ffffff;
+        align-self: flex-end;
+      }
+      [data-composition-id="scene1-old"] .mock-bubble.bot {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.18);
+        color: rgba(255,255,255,0.85);
+        align-self: flex-start;
+      }
+      [data-composition-id="scene1-old"] .stamp {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 72px;
+        line-height: 0.95;
+        text-align: center;
+        color: #FF3B30;
+        text-shadow: 0 0 30px rgba(255, 59, 48, 0.4);
+        transform: rotate(-4deg);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const sel = '[data-composition-id="scene1-old"]';
+        // Entry: label + mock slide up + fade
+        tl.from(sel + ' .label', { y: 30, opacity: 0, duration: 0.4, ease: 'power3.out' }, 0);
+        tl.from(sel + ' .mock', { y: 40, opacity: 0, scale: 0.96, duration: 0.5, ease: 'power3.out' }, 0.15);
+        tl.from(sel + ' .stamp', { scale: 0.5, opacity: 0, duration: 0.45, ease: 'back.out(2.2)' }, 1.4);
+        // Stamp wobble
+        tl.to(sel + ' .stamp', { rotation: -1, duration: 0.8, ease: 'sine.inOut', yoyo: true, repeat: 3 }, 1.85);
+        // Exit whip up — scale + fade (fast-mode props only)
+        tl.to(sel + ' .wrap', { y: -150, scale: 0.92, opacity: 0, duration: 0.33, ease: 'power2.in' }, 3.2);
+        tl.to({}, { duration: 3.53 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene1-old"] = tl;
+      })();
+    </script>
+  </div>
+</template>

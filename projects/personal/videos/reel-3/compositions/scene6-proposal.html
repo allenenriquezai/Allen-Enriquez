@@ -1,0 +1,303 @@
+<template id="scene6-proposal-template">
+  <div
+    data-composition-id="scene6-proposal"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="3.26"
+  >
+    <div class="wrap">
+      <div class="numeral-row">
+        <div class="num-mono" data-num="05">
+          <span class="layer l-base">05</span>
+          <span class="layer l-magenta">05</span>
+          <span class="layer l-blue">05</span>
+        </div>
+        <div class="num-label">
+          <div class="num-title">WRITES PROPOSALS</div>
+          <div class="num-sub">TWO LINES &#9656; FULL DOC</div>
+        </div>
+      </div>
+
+      <div class="brief-box">
+        <div class="brief-line" id="brief-line-1"></div>
+        <div class="brief-line" id="brief-line-2"></div>
+      </div>
+
+      <div class="arrow-down">&#9660;</div>
+
+      <div class="doc-mockup">
+        <div class="doc-header">
+          <div class="doc-accent"></div>
+          <div class="doc-title">PROPOSAL &mdash; WEBSITE REDESIGN</div>
+          <div class="shine"></div>
+        </div>
+        <div class="doc-client">For: ACME CO.</div>
+        <div class="doc-section ds-scope">
+          <div class="ds-label">SCOPE</div>
+          <div class="ds-bar b1">&bull; Homepage redesign</div>
+          <div class="ds-bar b2">&bull; 6 inner pages</div>
+          <div class="ds-bar b3">&bull; Copywriting</div>
+        </div>
+        <div class="doc-section ds-timeline">
+          <div class="ds-label">TIMELINE</div>
+          <div class="ds-bar b1">&bull; Week 1: design + copy</div>
+          <div class="ds-bar b2">&bull; Week 2: build + QA</div>
+        </div>
+        <div class="doc-section ds-deliverables">
+          <div class="ds-label">DELIVERABLES</div>
+          <div class="ds-bar b1">&bull; Responsive site</div>
+          <div class="ds-bar b2">&bull; SEO setup</div>
+          <div class="ds-bar b3">&bull; Handover docs</div>
+        </div>
+        <div class="doc-section ds-pricing">
+          <div class="ds-label">PRICING</div>
+          <div class="ds-bar b1">&bull; Fixed scope</div>
+          <div class="ds-bar b2">&bull; 50% deposit</div>
+        </div>
+        <div class="doc-total">
+          <span class="doc-total-label">TOTAL:</span>
+          <span class="doc-total-amt">$4,950</span>
+        </div>
+      </div>
+
+      <div class="payoff-stamp">30 SECONDS.</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene6-proposal"] { position: absolute; inset: 0; }
+      [data-composition-id="scene6-proposal"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 34px; padding: 60px;
+      }
+      [data-composition-id="scene6-proposal"] .numeral-row {
+        display: flex; align-items: center; gap: 36px;
+      }
+      [data-composition-id="scene6-proposal"] .num-mono {
+        position: relative; width: 240px; height: 280px;
+      }
+      [data-composition-id="scene6-proposal"] .num-mono .layer {
+        position: absolute; inset: 0;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 280px; line-height: 0.85; letter-spacing: -0.04em;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene6-proposal"] .num-mono .l-base    { color: #ffffff; text-shadow: 0 0 30px rgba(2,179,233,0.6); }
+      [data-composition-id="scene6-proposal"] .num-mono .l-magenta { color: #ff00a8; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene6-proposal"] .num-mono .l-blue    { color: #02B3E9; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene6-proposal"] .num-label .num-title {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 54px; color: #ffffff; letter-spacing: -0.01em;
+      }
+      [data-composition-id="scene6-proposal"] .num-label .num-sub {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 26px; letter-spacing: 0.22em;
+        color: rgba(2,179,233,0.9); margin-top: 6px;
+      }
+
+      /* Brief box (terminal) */
+      [data-composition-id="scene6-proposal"] .brief-box {
+        width: 880px; height: 160px;
+        border-radius: 16px;
+        background: rgba(5, 10, 18, 0.92);
+        border: 1px solid rgba(2,179,233,0.55);
+        box-shadow: 0 0 36px rgba(2,179,233,0.28);
+        padding: 28px 32px;
+        display: flex; flex-direction: column; justify-content: center;
+        gap: 14px;
+      }
+      [data-composition-id="scene6-proposal"] .brief-line {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 28px; color: #ffffff;
+        letter-spacing: 0.02em; white-space: pre;
+      }
+      [data-composition-id="scene6-proposal"] .dch { display: inline-block; opacity: 0; white-space: pre; }
+
+      /* Arrow */
+      [data-composition-id="scene6-proposal"] .arrow-down {
+        font-size: 70px; color: #02B3E9; line-height: 1;
+        text-shadow: 0 0 22px rgba(2,179,233,0.85);
+      }
+
+      /* Doc mockup */
+      [data-composition-id="scene6-proposal"] .doc-mockup {
+        width: 820px; height: 560px;
+        background: rgba(255,255,255,0.96);
+        border-radius: 18px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        padding: 26px 30px 24px 30px;
+        display: flex; flex-direction: column;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+      }
+      [data-composition-id="scene6-proposal"] .doc-header {
+        position: relative;
+        display: flex; align-items: center; gap: 14px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(0,0,0,0.12);
+      }
+      [data-composition-id="scene6-proposal"] .doc-accent {
+        width: 8px; height: 36px; border-radius: 2px;
+        background: #02B3E9;
+      }
+      [data-composition-id="scene6-proposal"] .doc-title {
+        font-family: 'Montserrat', sans-serif; font-weight: 800;
+        font-size: 26px; color: #0a0f1a;
+        letter-spacing: 0.02em;
+      }
+      [data-composition-id="scene6-proposal"] .doc-header .shine {
+        position: absolute; inset: 0;
+        background: linear-gradient(90deg, rgba(2,179,233,0) 0%, rgba(2,179,233,0.35) 50%, rgba(2,179,233,0) 100%);
+        opacity: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="scene6-proposal"] .doc-client {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 18px; color: rgba(0,0,0,0.7);
+        letter-spacing: 0.08em;
+      }
+      [data-composition-id="scene6-proposal"] .doc-section {
+        display: flex; flex-direction: column; gap: 4px;
+        padding: 4px 0;
+      }
+      [data-composition-id="scene6-proposal"] .ds-label {
+        font-family: 'Montserrat', sans-serif; font-weight: 800;
+        font-size: 14px; color: #02B3E9;
+        letter-spacing: 0.24em;
+      }
+      [data-composition-id="scene6-proposal"] .ds-bar {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 16px;
+        color: rgba(0,0,0,0.55);
+        background: rgba(0,0,0,0.05);
+        border-radius: 4px;
+        padding: 4px 10px;
+      }
+      [data-composition-id="scene6-proposal"] .ds-bar.b1 { width: 92%; }
+      [data-composition-id="scene6-proposal"] .ds-bar.b2 { width: 78%; }
+      [data-composition-id="scene6-proposal"] .ds-bar.b3 { width: 66%; }
+      [data-composition-id="scene6-proposal"] .doc-total {
+        margin-top: auto;
+        display: flex; align-items: center; gap: 14px;
+        padding: 12px 16px;
+        border: 2px solid #02B3E9;
+        border-radius: 10px;
+        align-self: flex-end;
+      }
+      [data-composition-id="scene6-proposal"] .doc-total-label {
+        font-family: 'Montserrat', sans-serif; font-weight: 800;
+        font-size: 22px; color: #0a0f1a; letter-spacing: 0.14em;
+      }
+      [data-composition-id="scene6-proposal"] .doc-total-amt {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 30px; color: #000000;
+      }
+
+      /* Payoff stamp */
+      [data-composition-id="scene6-proposal"] .payoff-stamp {
+        position: absolute;
+        top: 58%; right: 80px;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 58px;
+        color: #02B3E9;
+        letter-spacing: 0.03em;
+        text-shadow:
+          -3px -3px 0 #000, 3px -3px 0 #000,
+          -3px 3px 0 #000, 3px 3px 0 #000,
+          0 0 30px rgba(2,179,233,0.9);
+        padding: 12px 26px;
+        border: 3px solid rgba(2,179,233,0.8);
+        border-radius: 14px;
+        background: rgba(2,179,233,0.08);
+        transform: rotate(-3deg);
+        opacity: 0;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene6-proposal"]';
+
+        // Build typewriter spans for the two brief lines
+        const lines = [
+          { id: '#brief-line-1', text: '> fix website + add SEO' },
+          { id: '#brief-line-2', text: '> budget $5k, 2 weeks' }
+        ];
+        lines.forEach(function (ln) {
+          const el = document.querySelector(sel + ' ' + ln.id);
+          if (!el) return;
+          el.innerHTML = '';
+          for (const ch of ln.text) {
+            const s = document.createElement('span');
+            s.className = 'dch';
+            s.textContent = ch;
+            el.appendChild(s);
+          }
+        });
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Numeral chromatic slam
+        tl.from(sel + ' .num-mono', { scale: 0.3, opacity: 0, duration: 0.30, ease: 'back.out(2.5)' }, 0);
+        tl.fromTo(sel + ' .num-mono .l-magenta', { x: -40, y: -20 }, { x: -6, y: -3, duration: 0.38, ease: 'expo.out' }, 0);
+        tl.fromTo(sel + ' .num-mono .l-blue',    { x: 40, y: 20 },  { x: 6, y: 3, duration: 0.38, ease: 'expo.out' }, 0);
+
+        // Label slide-in
+        tl.from(sel + ' .num-label', { x: -30, opacity: 0, duration: 0.30, ease: 'power2.out' }, 0.18);
+
+        // Brief box pop-in
+        tl.from(sel + ' .brief-box', { y: 40, scale: 0.92, opacity: 0, duration: 0.30, ease: 'back.out(1.6)' }, 0.30);
+
+        // Typewriter: line 1 (~0.6s total), line 2 after
+        const CHAR_DUR = 0.02;
+        const CHAR_STEP = 0.04; // 25 chars/sec
+        const line1Chars = lines[0].text.length;
+        const line1Dur = line1Chars * CHAR_STEP;
+        tl.to(sel + ' #brief-line-1 .dch', { opacity: 1, duration: CHAR_DUR, ease: 'none', stagger: CHAR_STEP }, 0.55);
+        tl.to(sel + ' #brief-line-2 .dch', { opacity: 1, duration: CHAR_DUR, ease: 'none', stagger: CHAR_STEP }, 0.55 + line1Dur + 0.05);
+
+        // Arrow pop + pulse
+        tl.fromTo(sel + ' .arrow-down',
+          { scale: 0.3, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(2.2)' }, 1.40);
+        tl.to(sel + ' .arrow-down', { scale: 1.05, duration: 0.22, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 1.65);
+
+        // Doc slam in
+        tl.fromTo(sel + ' .doc-mockup',
+          { y: 80, opacity: 0, scale: 0.90 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.40, ease: 'back.out(1.8)' }, 1.65);
+
+        // Doc contents stagger at t=2.00
+        tl.from(sel + ' .doc-header', { y: 12, opacity: 0, duration: 0.22, ease: 'power2.out' }, 2.00);
+        tl.from(sel + ' .doc-client', { y: 10, opacity: 0, duration: 0.20, ease: 'power2.out' }, 2.08);
+        tl.from(sel + ' .ds-label',   { x: -12, opacity: 0, duration: 0.20, stagger: 0.05, ease: 'power2.out' }, 2.14);
+        tl.from(sel + ' .ds-bar',     { x: -16, opacity: 0, duration: 0.18, stagger: 0.05, ease: 'power2.out' }, 2.18);
+        tl.from(sel + ' .doc-total',  { scale: 0.88, opacity: 0, duration: 0.25, ease: 'back.out(1.8)' }, 2.34);
+
+        // Pricing pulse
+        tl.to(sel + ' .doc-total-amt', { scale: 1.04, duration: 0.18, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 2.50);
+
+        // Header shine sweep
+        tl.to(sel + ' .doc-header .shine', { opacity: 0.4, duration: 0.4, ease: 'sine.out' }, 2.10);
+        tl.to(sel + ' .doc-header .shine', { opacity: 0, duration: 0.4, ease: 'sine.in' }, 2.50);
+
+        // Payoff stamp
+        tl.fromTo(sel + ' .payoff-stamp',
+          { scale: 2.0, opacity: 0, rotate: -10 },
+          { scale: 1, opacity: 1, rotate: -3, duration: 0.25, ease: 'power3.out' }, 2.40);
+        tl.to(sel + ' .payoff-stamp', { scale: 1.05, duration: 0.20, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 2.68);
+
+        // Exit
+        tl.to(sel + ' .wrap', { y: -70, opacity: 0, duration: 0.28, ease: 'power2.in' }, 3.00);
+
+        tl.to({}, { duration: 3.26 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene6-proposal"] = tl;
+      })();
+    </script>
+  </div>
+</template>

@@ -1,0 +1,55 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Montserrat,90,&H00FFFFFF,&H00F2B34E,&H00000000,&H64000000,-1,0,0,0,100,100,0,0,1,6,0,2,80,80,280,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:01.52,Default,,0,0,0,,{\k70}Are {\k16\c&HF2B34E&}you {\k16\c&HFFFFFF&}tired {\k24}of {\k26}AI
+Dialogue: 0,0:00:01.52,0:00:02.72,Default,,0,0,0,,{\k32\c&HF2B34E&}emails {\k28\c&HFFFFFF&}that {\k24}sound {\k22}like {\k14}a
+Dialogue: 0,0:00:02.72,0:00:03.76,Default,,0,0,0,,{\k22\c&HF2B34E&}bot {\k42\c&HFFFFFF&}wrote {\k40}them?
+Dialogue: 0,0:00:04.56,0:00:05.34,Default,,0,0,0,,{\k18}Let's {\k12}fix {\k22}that {\k10}in {\k16\c&HF2B34E&}5
+Dialogue: 0,0:00:05.34,0:00:05.74,Default,,0,0,0,,{\k40\c&HF2B34E&}minutes.
+Dialogue: 0,0:00:06.84,0:00:08.46,Default,,0,0,0,,{\k44\c&HF2B34E&}ChatGPT {\k30\c&HFFFFFF&}does {\k20}not {\k20}know {\k48\c&HF2B34E&}you,
+Dialogue: 0,0:00:08.46,0:00:09.88,Default,,0,0,0,,{\k22}it {\k28}writes {\k42\c&HF2B34E&}generic {\k50\c&HFFFFFF&}stuff.
+Dialogue: 0,0:00:10.40,0:00:12.20,Default,,0,0,0,,{\k38}But {\k86}it {\k18}can {\k20}learn {\k18}your
+Dialogue: 0,0:00:12.20,0:00:13.66,Default,,0,0,0,,{\k32\c&HF2B34E&}voice, {\k14}you {\k16\c&HFFFFFF&}just {\k22}need {\k20}to
+Dialogue: 0,0:00:13.66,0:00:14.18,Default,,0,0,0,,{\k14}show {\k14}it {\k24}how.
+Dialogue: 0,0:00:15.62,0:00:16.14,Default,,0,0,0,,{\k20\c&HF2B34E&}Step {\k32}1.
+Dialogue: 0,0:00:16.78,0:00:18.10,Default,,0,0,0,,{\k14}Open {\k18}your {\k30}email {\k28\c&HF2B34E&}sent {\k42\c&HFFFFFF&}folder.
+Dialogue: 0,0:00:18.68,0:00:19.16,Default,,0,0,0,,{\k22\c&HF2B34E&}Step {\k26}2.
+Dialogue: 0,0:00:19.70,0:00:20.98,Default,,0,0,0,,{\k6}Copy {\k16}your {\k26}last {\k36}10 {\k44\c&HF2B34E&}emails,
+Dialogue: 0,0:00:21.32,0:00:22.20,Default,,0,0,0,,{\k18}the {\k14}ones {\k16}that {\k18\c&HF2B34E&}you {\k22\c&HFFFFFF&}like
+Dialogue: 0,0:00:22.20,0:00:23.28,Default,,0,0,0,,{\k48}or {\k16}the {\k16}ones {\k14}that {\k14}were
+Dialogue: 0,0:00:23.28,0:00:24.30,Default,,0,0,0,,{\k30}written {\k22}by {\k20}your {\k30\c&HF2B34E&}voice.
+Dialogue: 0,0:00:25.14,0:00:25.66,Default,,0,0,0,,{\k24\c&HF2B34E&}Step {\k28}3.
+Dialogue: 0,0:00:26.22,0:00:27.98,Default,,0,0,0,,{\k6}Paste {\k22}them {\k24}into {\k60\c&HF2B34E&}ChatGPT {\k64\c&HFFFFFF&}or
+Dialogue: 0,0:00:27.98,0:00:29.00,Default,,0,0,0,,{\k28}any {\k32}AI {\k42}software.
+Dialogue: 0,0:00:29.00,0:00:30.12,Default,,0,0,0,,{\k82\c&HF2B34E&}Step {\k30}4.
+Dialogue: 0,0:00:31.12,0:00:31.60,Default,,0,0,0,,{\k6}Write {\k22}this {\k20\c&HF2B34E&}prompt.
+Dialogue: 0,0:00:32.46,0:00:33.26,Default,,0,0,0,,{\k1}Study {\k24}how {\k22}I {\k34}write,
+Dialogue: 0,0:00:33.66,0:00:34.66,Default,,0,0,0,,{\k16}break {\k20}down {\k12}the {\k28}components {\k24}from
+Dialogue: 0,0:00:34.66,0:00:35.74,Default,,0,0,0,,{\k22}me {\k26}to {\k16}learn {\k44}it.
+Dialogue: 0,0:00:36.24,0:00:37.06,Default,,0,0,0,,{\k18}Save {\k14}it {\k16}as {\k10}a {\k24}template
+Dialogue: 0,0:00:37.06,0:00:38.24,Default,,0,0,0,,{\k40}so {\k14}we {\k12}can {\k26}match {\k26}this
+Dialogue: 0,0:00:38.24,0:00:39.08,Default,,0,0,0,,{\k28}tone {\k30}every {\k26}time.
+Dialogue: 0,0:00:39.74,0:00:41.32,Default,,0,0,0,,{\k30}Ask {\k52}clarifying {\k30}questions {\k36}if {\k10\c&HF2B34E&}you
+Dialogue: 0,0:00:41.32,0:00:42.18,Default,,0,0,0,,{\k14}need {\k72}to.
+Dialogue: 0,0:00:42.44,0:00:42.84,Default,,0,0,0,,{\k8\c&HF2B34E&}Step {\k32}5.
+Dialogue: 0,0:00:43.52,0:00:44.50,Default,,0,0,0,,{\k24}Save {\k18}it {\k16}as {\k14}a {\k26\c&HF2B34E&}project
+Dialogue: 0,0:00:44.50,0:00:46.26,Default,,0,0,0,,{\k52}or {\k28}create {\k18}a {\k28}custom {\k50\c&HF2B34E&}GPT.
+Dialogue: 0,0:00:47.04,0:00:47.56,Default,,0,0,0,,{\k22\c&HF2B34E&}Step {\k30}6.
+Dialogue: 0,0:00:48.12,0:00:49.04,Default,,0,0,0,,{\k6}Paste {\k18}the {\k22\c&HF2B34E&}prompt {\k30\c&HFFFFFF&}into {\k16}the
+Dialogue: 0,0:00:49.04,0:00:49.92,Default,,0,0,0,,{\k28\c&HF2B34E&}project {\k60\c&HFFFFFF&}instruction.
+Dialogue: 0,0:00:50.68,0:00:51.24,Default,,0,0,0,,{\k16}Then {\k26}that's {\k14}it.
+Dialogue: 0,0:00:51.68,0:00:53.10,Default,,0,0,0,,{\k18\c&HF2B34E&}Now {\k52\c&HFFFFFF&}every {\k24}email {\k26\c&HF2B34E&}sounds {\k22\c&HFFFFFF&}like
+Dialogue: 0,0:00:53.10,0:00:54.24,Default,,0,0,0,,{\k24\c&HF2B34E&}you, {\k18\c&HFFFFFF&}not {\k12}a {\k26\c&HF2B34E&}machine.
+Dialogue: 0,0:00:56.72,0:00:57.34,Default,,0,0,0,,{\k52}That's {\k10}it.
+Dialogue: 0,0:00:57.98,0:00:58.76,Default,,0,0,0,,{\k6}Do {\k18}this {\k20}right {\k34\c&HF2B34E&}now,
+Dialogue: 0,0:00:59.02,0:00:59.46,Default,,0,0,0,,{\k14\c&HF2B34E&}5 {\k30}minutes.
+Dialogue: 0,0:01:00.06,0:01:01.12,Default,,0,0,0,,{\k4\c&HF2B34E&}Follow {\k24\c&HFFFFFF&}for {\k16}more {\k32}simple {\k30\c&HF2B34E&}tips.

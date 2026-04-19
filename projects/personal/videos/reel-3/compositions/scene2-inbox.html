@@ -1,0 +1,223 @@
+<template id="scene2-inbox-template">
+  <div
+    data-composition-id="scene2-inbox"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="4.93"
+  >
+    <div class="wrap">
+      <div class="numeral-row">
+        <div class="num-mono" data-num="01">
+          <span class="layer l-base">01</span>
+          <span class="layer l-magenta">01</span>
+          <span class="layer l-blue">01</span>
+        </div>
+        <div class="num-label">
+          <div class="num-title">INBOX AUTOPILOT</div>
+          <div class="num-sub">ANALYZES + REPLIES</div>
+        </div>
+      </div>
+
+      <div class="mail-window">
+        <div class="mail-chrome">
+          <span class="mc-dot"></span><span class="mc-dot"></span><span class="mc-dot"></span>
+          <span class="mc-title">INBOX ▸ 5 UNREAD</span>
+        </div>
+        <div class="mail-list">
+          <div class="mail-row m1"><span class="mr-dot"></span><span class="mr-from">Client A</span><span class="mr-sub">Re: proposal timeline?</span></div>
+          <div class="mail-row m2"><span class="mr-dot"></span><span class="mr-from">Vendor B</span><span class="mr-sub">Invoice #4821 attached</span></div>
+          <div class="mail-row m3"><span class="mr-dot"></span><span class="mr-from">Lead C</span><span class="mr-sub">Quick question about —</span></div>
+          <div class="mail-row m4"><span class="mr-dot"></span><span class="mr-from">Client D</span><span class="mr-sub">Can we meet this week</span></div>
+          <div class="mail-row m5"><span class="mr-dot"></span><span class="mr-from">Lead E</span><span class="mr-sub">Price list request</span></div>
+        </div>
+        <div class="draft-banner">
+          <span class="agent-dot"></span>
+          <span class="draft-text" id="draft-text"></span>
+          <span class="draft-cursor">▋</span>
+        </div>
+      </div>
+
+      <div class="tone-badge">IN YOUR TONE ✓</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene2-inbox"] { position: absolute; inset: 0; }
+      [data-composition-id="scene2-inbox"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 34px; padding: 60px;
+      }
+      [data-composition-id="scene2-inbox"] .numeral-row {
+        display: flex; align-items: center; gap: 36px;
+      }
+      [data-composition-id="scene2-inbox"] .num-mono {
+        position: relative;
+        width: 240px; height: 280px;
+      }
+      [data-composition-id="scene2-inbox"] .num-mono .layer {
+        position: absolute; inset: 0;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 280px;
+        line-height: 0.85;
+        letter-spacing: -0.04em;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene2-inbox"] .num-mono .l-base    { color: #ffffff; text-shadow: 0 0 30px rgba(2,179,233,0.6); }
+      [data-composition-id="scene2-inbox"] .num-mono .l-magenta { color: #ff00a8; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene2-inbox"] .num-mono .l-blue    { color: #02B3E9; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene2-inbox"] .num-label .num-title {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 54px; color: #ffffff; letter-spacing: -0.01em;
+      }
+      [data-composition-id="scene2-inbox"] .num-label .num-sub {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 26px; letter-spacing: 0.22em;
+        color: rgba(2,179,233,0.9);
+        margin-top: 6px;
+      }
+      [data-composition-id="scene2-inbox"] .mail-window {
+        width: 960px;
+        border-radius: 22px;
+        background: rgba(5, 10, 18, 0.88);
+        border: 1px solid rgba(2,179,233,0.45);
+        box-shadow: 0 0 40px rgba(2,179,233,0.25);
+        overflow: hidden;
+      }
+      [data-composition-id="scene2-inbox"] .mail-chrome {
+        display: flex; align-items: center; gap: 10px;
+        padding: 16px 22px;
+        background: rgba(255,255,255,0.04);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      [data-composition-id="scene2-inbox"] .mc-dot {
+        width: 14px; height: 14px; border-radius: 50%;
+        background: rgba(255,255,255,0.25);
+      }
+      [data-composition-id="scene2-inbox"] .mc-title {
+        margin-left: 12px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 22px; color: rgba(255,255,255,0.6);
+        letter-spacing: 0.1em;
+      }
+      [data-composition-id="scene2-inbox"] .mail-list {
+        display: flex; flex-direction: column;
+      }
+      [data-composition-id="scene2-inbox"] .mail-row {
+        display: flex; align-items: center; gap: 18px;
+        padding: 18px 26px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        font-family: 'Roboto Mono', monospace;
+        font-size: 24px;
+      }
+      [data-composition-id="scene2-inbox"] .mr-dot {
+        width: 12px; height: 12px; border-radius: 50%;
+        background: #02B3E9;
+        box-shadow: 0 0 10px rgba(2,179,233,0.8);
+      }
+      [data-composition-id="scene2-inbox"] .mr-from {
+        color: #ffffff; font-weight: 700; min-width: 170px;
+      }
+      [data-composition-id="scene2-inbox"] .mr-sub {
+        color: rgba(255,255,255,0.55); overflow: hidden;
+        white-space: nowrap; text-overflow: ellipsis;
+      }
+      [data-composition-id="scene2-inbox"] .draft-banner {
+        display: flex; align-items: center; gap: 14px;
+        padding: 22px 26px;
+        background: linear-gradient(90deg, rgba(2,179,233,0.20), rgba(2,179,233,0.06));
+        border-top: 1px solid rgba(2,179,233,0.55);
+        font-family: 'Roboto Mono', monospace;
+        font-size: 26px; color: #ffffff;
+        min-height: 76px;
+      }
+      [data-composition-id="scene2-inbox"] .agent-dot {
+        width: 14px; height: 14px; border-radius: 50%;
+        background: #02B3E9;
+        box-shadow: 0 0 12px rgba(2,179,233,0.9);
+      }
+      [data-composition-id="scene2-inbox"] .draft-text { white-space: pre; }
+      [data-composition-id="scene2-inbox"] .dch { display: inline-block; opacity: 0; white-space: pre; }
+      [data-composition-id="scene2-inbox"] .draft-cursor { color: #02B3E9; margin-left: 2px; }
+      [data-composition-id="scene2-inbox"] .tone-badge {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 48px; color: #02B3E9;
+        letter-spacing: 0.04em;
+        text-shadow:
+          -3px -3px 0 #000, 3px -3px 0 #000,
+          -3px 3px 0 #000, 3px 3px 0 #000,
+          0 0 26px rgba(2,179,233,0.8);
+        padding: 16px 32px;
+        border: 2px solid rgba(2,179,233,0.7);
+        border-radius: 14px;
+        background: rgba(2,179,233,0.08);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene2-inbox"]';
+
+        const draft = 'Draft ready — "Thanks for circling back…"';
+        const dEl = document.querySelector(sel + ' #draft-text');
+        if (dEl) {
+          dEl.innerHTML = '';
+          for (const ch of draft) {
+            const s = document.createElement('span');
+            s.className = 'dch';
+            s.textContent = ch;
+            dEl.appendChild(s);
+          }
+        }
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Chromatic numeral slam
+        tl.from(sel + ' .num-mono', { scale: 0.3, opacity: 0, duration: 0.35, ease: 'back.out(2.5)' }, 0);
+        tl.fromTo(sel + ' .num-mono .l-magenta',
+          { x: -40, y: -20 },
+          { x: -6, y: -3, duration: 0.45, ease: 'expo.out' }, 0);
+        tl.fromTo(sel + ' .num-mono .l-blue',
+          { x: 40, y: 20 },
+          { x: 6, y: 3, duration: 0.45, ease: 'expo.out' }, 0);
+
+        tl.from(sel + ' .num-label', { x: -30, opacity: 0, duration: 0.35, ease: 'power2.out' }, 0.20);
+
+        // Mail window pops in
+        tl.from(sel + ' .mail-window', { y: 60, opacity: 0, duration: 0.45, ease: 'power3.out' }, 0.35);
+
+        // Mail rows stagger (stream in)
+        tl.from(sel + ' .mail-row', { x: 40, opacity: 0, duration: 0.25, stagger: 0.08, ease: 'power2.out' }, 0.60);
+
+        // Agent dot pulse — starts when rows land
+        tl.to(sel + ' .agent-dot', { scale: 1.3, opacity: 0.7, duration: 0.4, yoyo: true, repeat: 6, ease: 'sine.inOut' }, 1.30);
+
+        // Typewriter draft (25 chars/sec)
+        const CHAR_DUR = 0.02;
+        const CHAR_STEP = 0.04;
+        tl.to(sel + ' .dch', { opacity: 1, duration: CHAR_DUR, ease: 'none', stagger: CHAR_STEP }, 1.40);
+
+        // Cursor blink
+        for (let i = 0; i < 6; i++) {
+          tl.set(sel + ' .draft-cursor', { opacity: 0 }, 1.50 + i * 0.5);
+          tl.set(sel + ' .draft-cursor', { opacity: 1 }, 1.50 + i * 0.5 + 0.25);
+        }
+
+        // Tone badge stamp
+        tl.fromTo(sel + ' .tone-badge',
+          { scale: 2.0, opacity: 0, rotate: -6 },
+          { scale: 1, opacity: 1, rotate: 0, duration: 0.28, ease: 'power3.out' }, 3.50);
+        tl.to(sel + ' .tone-badge', { scale: 1.04, duration: 0.3, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 3.80);
+
+        // Exit
+        tl.to(sel + ' .wrap', { y: -80, opacity: 0, duration: 0.30, ease: 'power2.in' }, 4.63);
+        tl.to({}, { duration: 4.93 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene2-inbox"] = tl;
+      })();
+    </script>
+  </div>
+</template>

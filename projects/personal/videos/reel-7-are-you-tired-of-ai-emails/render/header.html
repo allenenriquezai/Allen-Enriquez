@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 1080px;
+    height: 280px;
+    background: transparent;
+    overflow: hidden;
+  }
+  .stage {
+    width: 1080px;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+  }
+  .pill {
+    width: 960px;
+    height: 220px;
+    border-radius: 40px;
+    background: linear-gradient(180deg, #0E1D32 0%, #07121E 100%);
+    border: 3px solid #4EB3F2;
+    box-shadow:
+      0 0 24px rgba(78, 179, 242, 0.65),
+      0 0 48px rgba(78, 179, 242, 0.30),
+      inset 0 0 0 1px rgba(78, 179, 242, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 900;
+    color: #FFFFFF;
+    text-align: center;
+    letter-spacing: -0.01em;
+    line-height: 1.0;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  }
+  .line {
+    font-size: 96px;
+    display: block;
+  }
+  .line + .line {
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="pill">
+      <span class="line">TIRED OF</span>
+      <span class="line">AI EMAILS?</span>
+    </div>
+  </div>
+</body>
+</html>
