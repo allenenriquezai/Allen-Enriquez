@@ -1,3 +1,99 @@
+## 2026-04-20 — Reel-3 shipped + hook sticker locked + fast overlay SOP
+**Problem:** Needed (1) a repeatable hook-sticker visual identity every reel uses on top of Allen's face, (2) a faster iteration path than re-rendering Hyperframes (~8 min) every time a text overlay changes, (3) a reliable way to composite face + animation + sticker when Hyperframes freezes the face mid-playback.
+**Change:**
+- Locked hook-sticker style in `memory/feedback_hook_sticker_style.md` — dark navy pill (#071020) + 5px cyan (#02B3E9) border + strong outer glow + Montserrat 900 uppercase white text with layered black stroke. Replaces earlier yellow sticky-note direction (rejected).
+- Saved captions style in `memory/feedback_captions_style.md` — Montserrat 900 68px, layered text-shadow stroke (never `-webkit-text-stroke`), scale-1.16 active-word pop + cross-faded blue-word overlay, bottom:280px positioning, 6–7 word segments hard-cut on next segment.
+- Saved Chrome-headless PNG pattern in `memory/feedback_overlay_png_chrome_headless.md` — `chrome --headless=new --virtual-time-budget=4000 --screenshot` produces transparent-bg PNGs in ~2s; ffmpeg `overlay=X:Y:enable='between(t,T1,T2)'` composites onto already-rendered reels in <30s.
+- Added 3 new SOP sections to `.claude/skills/short-form-video/SKILL.md`: hook sticker spec, Chrome-headless fast iteration, and three-input ffmpeg composite (face base + overlay render + sticker PNG) that sidesteps Hyperframes' MOV-freeze and ambient-bg-DOM-bleed bugs.
+- Created `projects/personal/videos/ready/` as symlink-only aggregator for upload-ready finals (avoids duplicate MP4s, keeps project folders self-contained).
+- Shipped reel-3 ("5 Things AI Agents Do For Business Owners & Professionals") as proof-of-recipe using the new three-input composite + spy-avatar SVG in scene 4.
+**Why:** Hyperframes' screenshot-capture mode is triggered by raw `requestAnimationFrame()` in our compositions — each full render is ~8 min. Chose Chrome-headless PNG + ffmpeg overlay for text iteration over switching the render mode (would require deep compositional refactor and lose the GSAP ergonomics). Chose three-input ffmpeg composite over fixing Hyperframes' face-freeze/DOM-bleed because root-cause fix is framework-level and this gives us a reliable, reproducible shipping path today. Symlinks over copies because Allen explicitly flagged duplicate storage as clutter.
+**Criteria:** Speed: + (text-overlay changes now 30s instead of 8min; symlinks save 50MB per reel) | Cost: = | Accuracy: + (recipe is verifiable with frame-check; hook sticker standardized across reels) | Scale: + (SOPs documented in SKILL.md so next reel follows same path without re-discovery)
+**Next:**
+- Validate the SOP on reel-7 ("Are You Tired Of AI Emails") — if it flows smoothly, the recipe is production-grade.
+- Consider promoting the hook-sticker HTML generator into `tools/` as a parameterized script (`tools/generate_hook_sticker.py <title> <subtitle> <out>.png`) so future reels don't re-copy the HTML scaffold.
+- Investigate whether switching Hyperframes' render mode (remove raw `requestAnimationFrame` detection trigger) would cut the 8min floor — would enable full re-renders for animated overlays too.
+
+---
+
+## 2026-04-20 — Week 1 reel scripts v4 (Tue–Sun calendar, 6 options/day)
+**Problem:** Week 1 v3 had 10 scripts but only 3 filmed + mixed "liked/rejected/rewrite" status. Allen wanted a logically ordered calendar where he can pick 2 reels/day from 6 options without decision friction. Two reels (1 + 2) shared the same CTA keyword (AGENT), risking DM flow collisions.
+**Change:**
+- New file `projects/personal/content/scripts/week1-reels-v4.md` — 34 scripts across Tue–Sun: 1 existing liked reel as Option A per day + 5 new (Sun = 2 As + 4 new). 30 new scripts total including Reel 10 rewrite
+- Reused topic-backlog-v2.md as pre-validated source pool (Sabrina tutorials / Dan Martell lists / Kane Kallaway fundamentals / Angelica Automates proof / Nathan Hodgson objection-removal)
+- Replaced Google Doc `1Y5mAR_Fjsj6Ap5OdgJ3Ziw6XB6WXDRTUO779tUHtt7w` content in-place via Docs API (deleteContentRange + insertText + per-line updateParagraphStyle for H1/H2/H3) — 1,166 lines, 50 headings
+- Renamed doc from "Week 1 Reel Scripts v3 — 10 Reels" → "Week 1 Reel Scripts v4 — Tue–Sun Calendar"
+- Moved doc to `My Drive > 1. Personal Brand > Contents` via Drive API (addParents + removeParents)
+- Rewrote Reel 10 with Allen's "Build automation using Claude" angle. Dropped Reel 4 per Allen
+- All 38 CTA keywords unique; Mon Reel 2 flagged to switch AGENT → AGENTS5 before posting
+**Why:** Chose in-place doc replacement over new v4 doc + archive v3 — preserves Google Doc version history for rollback, keeps one link stable, no broken references elsewhere. Picked talking-head-only scripts (not screen recording) because v3 locked that constraint and current production is stable on it; Week 2 will loosen per content-calendar.md phase 2. 6 options/day (not 3) because Allen's decision time is the bottleneck — more options = faster pick.
+**Criteria:** Speed: + (Allen scans one doc, picks 2, films — no re-prompting me for scripts) | Cost: = | Accuracy: + (all scripts filtered through H.E.I.T. + CCN + 3rd grade + viewer-first + unique CTA) | Scale: + (in-place doc replacement pattern reusable for future weeks)
+**Next:**
+- Track which Option letter wins each day → feed into Week 2 topic selection
+- Build DM deliverables on-demand per memory rule (first real comment → build)
+- Week 2 calendar can reuse push_reels_v4 script pattern — consider promoting `/tmp/push_reels_v4.py` logic into `tools/` as `update_gdoc_content.py`
+- Add CTA-uniqueness check to content-creation workflow so collision like Mon Reel 1+2 doesn't repeat
+
+---
+
+## 2026-04-20 — First AE Hyperframes reel shipped + short-form recipe locked
+**Problem:** Needed a repeatable, brand-consistent Hyperframes reel pipeline before shipping 2 more reels this week. First build (reel-2, What Is an AI Agent) required figuring out: face+animation composite, full-duration karaoke captions, brand hook sticker, and which GSAP props keep Hyperframes in fast render mode.
+**Change:**
+- Built `projects/personal/videos/reel-2/` — 7 scene compositions + karaoke captions + ambient bg + transparent-bg root, composite via ffmpeg chroma-key + brand sticker overlay
+- Shipped `renders/final-v4.mp4` (55.56s, 1080×1920, 23MB) through iterations v2 → v3 (sticker added) → v4 (fast-mode refactor)
+- Generated brand hook sticker via Pillow: dark panel + blue glow + white Montserrat 900, 2-line layout (`assets/hook-sticker.png`)
+- Locked the full recipe into `projects/personal/workflows/content/video-editing.md` — project scaffold, sticker spec, karaoke caption rules, scene composition rules, composite ffmpeg command, fast-mode render rules
+- Refactored all 10 compositions to fast-mode-preferred props (removed: blur filter tweens, onUpdate typewriters, color/boxShadow/className tweens). Replaced with: scale+fade entries, per-char opacity stagger, sibling .glow divs, layered word spans for karaoke, opacity on .step-active-bg
+**Why:** Committed to Hyperframes after yesterday's consolidation — first real output validated the stack and surfaced the speed/quality trade-offs. Chose chroma-key composite (face visible through transparent bg zones) over alpha-channel render because Hyperframes webm output was yuv420p not yuva420p. Kept GSAP despite screenshot-mode trigger — full native-timing refactor deferred; visual quality stays identical with ~40% speedup (4m25s vs 7m).
+**Criteria:** Speed: + (40% faster render, locked recipe = no re-discovery next reel) | Cost: = | Accuracy: + (verified frames, karaoke synced to source-time whisper transcript) | Scale: + (SOP doc enables reel 3-4 without re-figuring)
+**Next:** Build 2 more reels on this recipe. Future upgrades when needed: (1) true 5x speedup via full GSAP→native data-* timing rewrite, (2) Nate Herk heavy motion (whip transitions, chrome gradient text, camera dollies, visual callbacks) for brand hype reels, (3) 4-6s CTA hold for classic outro land.
+
+---
+
+## 2026-04-19 — Hyperframes becomes primary video stack
+**Problem:** Video skills split across global (`~/.claude/skills/` — Nate Herk's Hyperframes suite) and project (`.claude/skills/video-edit` — old Pillow/FFmpeg). Two incompatible engines. Allen wanted ownership + one unified system.
+**Change:**
+- Moved 7 Hyperframes skills to `.claude/skills/`: hyperframes, hyperframes-cli, hyperframes-registry, gsap, make-a-video, short-form-video, website-to-hyperframes
+- Deleted `.claude/skills/video-edit/` + empty `.claude/skills/edit-video/`
+- Rewired `.claude/skills/content/SKILL.md` router + `projects/personal/workflows/content/content-formats.md` to point at Hyperframes skills
+- Updated memory `project_hyperframes_video_stack.md` → PRIMARY; deleted `project_video_pipeline.md` + `project_reel_pipeline.md`
+**Why:** Absorb (Option A) beats route (Option B) because Allen wants to layer brand customization on the skills. Route would leave customization awkward across global/project boundary. Trade-off: lose auto-updates from Nate's repo. Acceptable — manual pull when new features ship.
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: +
+**Next:** Delete `tools/edit_video.py` + `personal-video-editor.md` agent (pending). Build `enriquez-hyperframes` brand overlay (#02B3E9, Roboto Mono + Montserrat, 90pt captions, AE logo). Test first real reel.
+
+---
+
+## 2026-04-19 — Reel script rewrite (Week 1 trim + Week 2 pool)
+**Problem:** Week 1's 14 reels were generated in bulk before angle was locked. Every fix-pass on Reel 1 exposed a new misalignment (hook too soft, distancing voice, overlapping EXPLAIN/ILLUSTRATE, false Allen-specific claim in Reel 2). 5 reels contradicted the main teach or duplicated proof. No fresh topic pool for Week 2+. Allen wants to read variations + pick winners, not iterate line-by-line.
+**Change:**
+- Killed reels 6, 8, 9, 11, 13 from source doc `1DZ2gI5nUIdMVYSgOZo__rq8gyEXHYEIsRKHjqXev-xU`. Remaining: 1, 2, 3, 4, 5, 7, 10, 12, 14.
+- Reel 1 rewritten end-to-end (hook / explain / illustrate / takeaway / CTA — all passes applied iteratively)
+- Reel 2 truth fix: "I bought every AI tool" → "I started with n8n. Connected ChatGPT, Zapier, the works." (per memory rule — only claim what Allen has lived)
+- Voice sweep across reels 2–13: 8 distancing phrases replaced (most people / everyone / they → you)
+- Source doc formatting upgrade: yellow highlight on all spoken script lines + one-sentence-per-line teleprompter layout
+- Competitor research: `projects/personal/reference/intel/competitor-scripts.md` — 27 pieces from Justyn the AI Guy (TikTok) + Sabrina Ramonov (YouTube/TikTok/Substack)
+- Fresh Week 2 pool: 30 reel scripts in new doc `19vYDtUWhPWhcRYD2uFx97JU3Lh5HqaXKakUXqacUk9E` across 5 categories (Proof / Tutorials / Mindset / News-hook / PAS), ghostwriter-grade rewrite applied after first pass
+- 2 new memory rules: `feedback_reels_one_to_one.md` (1:1 voice), `feedback_cta_deliverables_on_demand.md` (don't pre-build DM lead magnets)
+**Why:** Line-by-line patching exposed root cause: scripts generated before angle locked. Better to trash weak ones + mass-generate fresh pool than patch forever. Justyn/Sabrina research surfaced useful FORMAT patterns (caption SEO, news-hook templates, comment-for-DM funnel) but their topics didn't match Allen's niche — noted to research topic-matched creators (Nick Saraev / Liam Ottley / Brand Nat / Kane Kallaway) in future pass. Agent delegation used for bulk generation (50 then 30 variations) — kept main context clean, parallelised quality pass. Sabrina's "AI chatbot for lead gen, follow up FAST and FIRST" = Allen's EPS story exactly → direct template for his first proof-lane reel. Gap flagged: neither Allen nor I have a "mine 1 long-form → 10 clips" loop yet — top strategic finding from research.
+**Criteria:** Speed: + (30 fresh scripts in one agent pass, beats line-by-line patching) | Cost: = ($0 — web search + agent delegation only) | Accuracy: + (truth rules enforced via memory, $40K fabricated claim removed) | Scale: + (variation doc structure + memory rules apply to future script batches)
+**Next:** Allen reads 30 fresh scripts, picks winners to film. Decide if Speed to Lead reel copies from variations doc into Week 1 source doc. Research pass 2 on topic-matched creators. Once first long-form asset ships (YouTube or Substack), build the clip-farm loop.
+
+## 2026-04-19 — Hyperframes video stack installed + Week 1 reel pipeline
+**Problem:** Allen saw Nate Herk-style motion-graphic reels (AE-branded overlays, karaoke captions, animated diagrams) and wanted that look for Week 1 content. Existing Python pipeline (`tools/edit_video.py`) handles talking-head cuts/captions/zoom but can't do branded motion graphics or generated animation scenes. Shooting all 6 Week 1 reels tonight — needs a fast path to final production-ready shorts in 6 hours.
+**Change:**
+- Installed HeyGen Hyperframes (HTML+GSAP+Puppeteer → MP4). 7 skills global (`~/.claude/skills/`: hyperframes, hyperframes-cli, gsap, hyperframes-registry, website-to-hyperframes, make-a-video, short-form-video).
+- Cloned Nate Herk's `hyperframes-student-kit` (12 reference projects) to `projects/personal/reference/hyperframes-student-kit/`.
+- Created `projects/personal/videos/reel-1` through `reel-6/` workspace.
+- Scaffolded + built first composition: `projects/personal/videos/reel-1/index.html` — 42s EXPLAIN + ILLUSTRATE animation (13 scenes, AE brand: #02B3E9 blue, dark navy, Roboto Mono + Montserrat, blue glow) — Allen approved the look.
+- Rendered draft MP4 (2.9 MB, clean lint).
+- Added Hyperframes section + two-pipeline table to `projects/personal/workflows/content/video-editing.md`.
+- New memory: `project_hyperframes_video_stack.md`, indexed in MEMORY.md.
+- Brand asset folder: `projects/personal/reference/brand/` for `brand-guidelines.png` (Allen to drop).
+- Logged DM magnet backlog: `projects/personal/TODO.md` — build only on comment trigger.
+**Why:** Two pipelines beats one. Python stays for plain talking-head (fast, proven). Hyperframes takes motion-graphic reels + brand polish + from-scratch animation scenes (replaces need for screen recordings on teaching beats). `npx skills add heygen-com/hyperframes` chosen over manual clone — installs skills that teach Claude framework-specific patterns (data-* attrs, window.__timelines, composition scaffold) not in generic web docs. Student kit cloned separately as reference so Allen's own videos don't live inside someone else's repo. DM magnets deferred to trigger event — no proof of demand, don't build speculatively.
+**Criteria:** Speed: + (animations generated from code, no stock footage hunt) | Cost: = ($0 — Hyperframes free/open source) | Accuracy: + (deterministic renders, brand-system compliant by design) | Scale: + (template one reel, clone for N reels)
+**Next:** Allen shoots 6 face-cam reels tonight → drops raw.mp4 per slot → build compositions using Reel 1 as template + karaoke captions + AE intro/outro → render finals → upload to Blotato. Second pass once volume built: evaluate if Python pipeline still needed or if Hyperframes absorbs all formats.
+
 ## 2026-04-18 — US painter sales asset stack + Enriquez OS app reorg
 **Problem:** (1) Cold-calling US painting companies produced warm interest but lost every lead at email stage — no lead magnet, landing page, calendar, or follow-up. (2) Allen couldn't see which automations were running or rotting — PH outreach, cold calls, content all in different files/sheets/apps. Wanted "one app to operate everything."
 **Change:**

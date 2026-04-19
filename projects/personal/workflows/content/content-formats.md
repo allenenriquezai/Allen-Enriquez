@@ -204,12 +204,12 @@ One idea can become multiple pieces:
 
 ## Editing Rules (Hormozi Style)
 
-AI-assisted editing via `tools/edit_video.py` and the video editor agent.
+AI-assisted editing via Hyperframes stack (HTML + GSAP + Puppeteer). See `project_hyperframes_video_stack` memory.
 
 ### Reel Editing Rules (Hormozi Style)
 
-**Tool:** `python3 tools/edit_video.py edit --input raw.mp4 --type reel`
-**Agent:** `projects/personal/agents/personal-video-editor.md`
+**Skill:** `/short-form-video` — vertical 9:16 (TikTok/Reels/Shorts)
+**Kit:** `projects/personal/reference/hyperframes-student-kit/`
 
 **Silence removal:**
 - Cut all pauses > 0.4s, filler words, breaths. Zero dead air.
@@ -236,8 +236,8 @@ AI-assisted editing via `tools/edit_video.py` and the video editor agent.
 
 ### YouTube Editing Rules (Hormozi Style)
 
-**Tool:** `python3 tools/edit_video.py edit --input raw.mp4 --type youtube`
-**Agent:** `projects/personal/agents/personal-video-editor.md`
+**Skill:** `/make-a-video` — long-form 16:9 via Hyperframes
+**Kit:** `projects/personal/reference/hyperframes-student-kit/`
 
 **Silence removal:**
 - Same threshold as reels but preserve natural breathing room between sections.
