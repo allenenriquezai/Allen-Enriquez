@@ -1,0 +1,63 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-20T08:27:35.603Z",
+  "context": "eps-quote",
+  "deal_id": "1374",
+  "client": "Ken Fokart",
+  "project": "Ryno Fencing Office Renovation — 584 Old Gympie Rd, Narangba QLD 4504",
+  "builder": "FEZ Constructions",
+  "service_type": "Construction Cleaning (1-stage / final)",
+  "status": "paused_awaiting_allen_approval",
+  "quotes": [
+    {
+      "label": "Downstairs (Ground)",
+      "doc_url": "https://docs.google.com/document/d/1wVNQ4WVokJEsQUSe6nkNofkPC7h5jl0CtkXbs_NRqHw/edit",
+      "doc_id": "1wVNQ4WVokJEsQUSe6nkNofkPC7h5jl0CtkXbs_NRqHw",
+      "data_file": "projects/eps/.tmp/quote_data_downstairs.json",
+      "pdf": "projects/eps/.tmp/quote_downstairs.pdf",
+      "subtotal": 1797.75,
+      "gst": 179.78,
+      "total": 1977.53,
+      "line_items": [
+        {"desc": "Ground Floor Office — Final Construction Clean", "qty": 143.8, "rate": 7.50, "subtotal": 1078.50},
+        {"desc": "Ground Floor W/Shop Office — Final Construction Clean", "qty": 95.9, "rate": 7.50, "subtotal": 719.25},
+        {"desc": "Window & Glass Cleaning — hourly", "qty": 0, "rate": 85.00, "subtotal": 0.00}
+      ]
+    },
+    {
+      "label": "Upstairs (Level 1 + Mezzanine)",
+      "doc_url": "https://docs.google.com/document/d/1UqtIuOZ27ZcZSwS6cSJGSdeepu0nO_NnEaESJTrNlso/edit",
+      "doc_id": "1UqtIuOZ27ZcZSwS6cSJGSdeepu0nO_NnEaESJTrNlso",
+      "data_file": "projects/eps/.tmp/quote_data_upstairs.json",
+      "pdf": "projects/eps/.tmp/quote_upstairs.pdf",
+      "subtotal": 1849.50,
+      "gst": 184.95,
+      "total": 2034.45,
+      "line_items": [
+        {"desc": "Upper Level Office (Level 1) — Final Construction Clean", "qty": 153.6, "rate": 7.50, "subtotal": 1152.00},
+        {"desc": "Mezzanine Storage — Final Construction Clean", "qty": 93.0, "rate": 7.50, "subtotal": 697.50},
+        {"desc": "Window & Glass Cleaning — hourly", "qty": 0, "rate": 85.00, "subtotal": 0.00}
+      ]
+    }
+  ],
+  "folder_url": "https://drive.google.com/drive/folders/1LqabudAfo0y_LW0x3ehFKlkN_5XK3rXv",
+  "combined_ex_gst": 3647.25,
+  "combined_inc_gst": 4011.98,
+  "pipedrive_updated": {"folder": true, "doc_primary": "downstairs", "value": 3647.25},
+  "decisions": [
+    {"decision": "1-stage builders clean @ $7.50/sqm (BUILD-01 / EPSCLEAN-BUILD-01)", "rationale": "Allen confirmed 1-stage only"},
+    {"decision": "Two separate quote docs in same deal folder (not split into 2 deals)", "rationale": "One deal 1374, two docs for upstairs/downstairs split"},
+    {"decision": "Window cleaning quoted as hourly $85/hr + GST, total on completion — note in JOB SUMMARY + SCOPE, line item qty 0", "rationale": "Allen specified hourly billing"},
+    {"decision": "Plan-based disclaimer added as first JOB SUMMARY bullet per hard rule #11", "rationale": "Quotes built from plans only, site visit still required"},
+    {"decision": "Scope split — Downstairs=Ground 143.8 + W/Shop 95.9 = 239.7m² | Upstairs=Level 1 153.6 + Mezzanine 93 = 246.6m²", "rationale": "Per architect labels on site plan WD103"}
+  ],
+  "remaining_work": [
+    "Allen reviews both docs + line items",
+    "If approved: draft email (Stage 5) — template=quotes/builders_cleaning, first-name=Ken, to=kfokart@gmail.com — ONE email covering both quotes, link both docs + folder",
+    "QA (Stage 6) — run qa_quote.py with doc URL",
+    "If QA passes: show Allen email draft for approval",
+    "Send (Stage 7) — draft_quote_email.py with --send"
+  ],
+  "blockers": [],
+  "next_action": "Ask Allen if docs approved. If yes, draft builders_cleaning email to Ken with both quote totals + links. One email, not two."
+}
