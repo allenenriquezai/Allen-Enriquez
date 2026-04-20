@@ -9,6 +9,17 @@ Short-form = 1080x1920 vertical, 10–30s, talking-head face + motion-graphic sc
 
 **Always invoke `/hyperframes` first.** This skill sits on top of it — it does not replace the framework rules (`data-*` attributes, `window.__timelines`, composition structure). Those are non-negotiable regardless of the format.
 
+## GATE 0 — Animation Lock (BLOCKING, before anything else)
+
+Before face / audio / captions / ambient-bg work: **all scene animations MUST be scrub-approved via `/scene-animation`**. This gate exists because full Hyperframes render on Mac = ~8 min, and animation tweaks after face+audio+captions are layered cost a full re-render every time.
+
+**Check:** Does `compositions/scene*.html` exist AND has Allen scrub-approved each one at `localhost:3002?comp=<id>`?
+
+- **No** → STOP. Run `/scene-animation` first. Return here only when scenes locked.
+- **Yes** → proceed. Pick up with the 4-layer scaffold and layer face + audio + captions on top of the locked scenes.
+
+Retime exception: if Allen re-edits audio AFTER scenes locked, scenes straddling the new cut must be re-previewed via `/scene-animation` before proceeding.
+
 ## When this skill fires
 
 - "Make a short-form video", "TikTok post", "Reels", "Shorts", "vertical video"
@@ -309,6 +320,36 @@ Three simultaneous changes = "a real editor edited this." Any one alone = rigid.
 For scenes 3–5 of a 15–20s short (the "middle grind" where attention drops the hardest), lean on visuals that read as information — bar races, stat grids with counting numbers, heatmaps, sparklines, flowcharts, dashboard chrome with telemetry ticking, pain-point grids that flash red in sequence. may-shorts-18 v1 scene 4 was a radar-rings + terminal-chip + sparks combo — functional but decorative, and Nate called it "bland." v2 replaced it with a 3×3 pain-point grid lighting up red-orange in sequence + a sparkline stroke-drawing with a YOU-ARE-HERE marker + the payoff slam — same time budget, much higher engagement.
 
 **Rule:** pure typography-plus-icon scenes feel like slides. Data-feel scenes feel like evidence. When a middle scene feels bland, replace the decoration with something that reads as *information*: a small number ticking up, a bar filling, a chart stroking in, a grid flashing in sequence.
+
+## Speed target — 20 min per reel (Single-Render Pipeline)
+
+Allen wants reels shipped in ≤20 min (post-filming) because reel volume is scaling. The goal is NOT to make Hyperframes render faster — it's to render **once** and use ffmpeg for every iteration after.
+
+**Pipeline budget:**
+| Step | Time |
+|---|---|
+| Transcribe source audio (`npx hyperframes transcribe`) | 2 min |
+| Copy scene scaffold from prior reel + edit text/timing/data | 5 min |
+| **ONE** full Hyperframes render (no retries) | ~8 min |
+| ffmpeg composite (face + animation + hook sticker) | 30 sec |
+| Frame-verify 4 key timestamps | 1 min |
+| Final standard encode | 2–3 min |
+| **Total** | **≈20 min** |
+
+**Rules:**
+- Render full Hyperframes composition ONCE per reel. Never re-render for text tweaks.
+- Every text/sticker/overlay iteration after the first render → Chrome-headless PNG + ffmpeg overlay. 30 sec.
+- Copy scenes from `projects/personal/videos/reel-3/compositions/` or prior reels. Never author from scratch.
+- If a scene's animation needs to change, edit once then render ONCE. Accept minor imperfections — don't re-render to polish.
+
+**Why Hyperframes is 8min/render on Mac (context, don't fight it):**
+- Hyperframes' fast path is `BeginFrame` via Chromium DevTools, which is Linux-only (`cli.js:20547–20551`).
+- macOS always falls back to screenshot-capture mode (6 parallel workers, 1 per frame, ~8min for a 36s composition).
+- `--workers 10` and `--gpu` flags don't help on Mac (capture worker count is pinned; GPU only affects the final encode).
+- To unlock 30s–2min renders: install Docker Desktop + pass `--docker` flag. Worth it if reel volume exceeds 10/week; otherwise stick with single-render pipeline.
+
+**Template library (TODO — speedup for future reels):**
+Build `.claude/skills/short-form-video/templates/` with a copy-ready scene catalog (numeral-intro scene, data-dashboard scene, invoice-flip scene, clock-vs-timer payoff scene, spy-avatar scene, etc.). Each template is a single `scene*.html` file with inline comments on what to swap per reel. Reduces step 2 from 5 min → 2 min.
 
 ## Hook sticker SOP (every new reel)
 

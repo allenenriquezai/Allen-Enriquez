@@ -99,7 +99,11 @@ Full style flow + MOTION_PHILOSOPHY defaults: `Read: references/style-intake.md`
 
 ### Handoff check first
 
-If the brief describes a 9:16 vertical talking-head with face-cam + scene overlays, invoke `/short-form-video` NOW and hand off the brief. Its 4-layer scaffold is purpose-built for that format.
+If the brief describes a 9:16 vertical talking-head with face-cam + scene overlays:
+1. Invoke `/scene-animation` FIRST — build + scrub-approve each scene's motion in isolation at `localhost:3002?comp=<id>`. Locks animation before face/audio/captions so tweaks cost seconds, not an 8-min re-render.
+2. Only after all scenes locked → invoke `/short-form-video` to layer face + audio + captions on top.
+
+Its 4-layer scaffold is purpose-built for that format.
 
 Otherwise continue:
 
