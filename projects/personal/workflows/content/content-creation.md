@@ -2,6 +2,12 @@
 
 Write reel scripts, YouTube scripts, FB group posts, LinkedIn posts. All content follows Hormozi style.
 
+## Rule: Never fabricate proof lines
+
+Never insert "I use [tool] to [result]" lines without verifying Allen has actually done that with that specific tool. Allen's automation results (1.6M pipeline, 80+ deals, $60-100K/mo) came from his full stack — not specifically Claude. Claude use started ~April 2026, so any "I use Claude to..." claim must match that timeline + his real use.
+
+**How to apply:** Before writing any "I / my system" proof line in a script, check: (1) does the claim match the specific tool in the script? (2) does the timeline match Allen's actual use? If unsure, ask Allen for the real metric or leave proof out entirely. Audience smells borrowed authority instantly — Allen has zero clients and can't afford trust damage.
+
 ## References
 
 - Style guide: `projects/personal/reference/hormozi-style-guide.md`
@@ -52,6 +58,10 @@ After generating a raw draft:
 6. Confirm CTA or engagement question at the end.
 7. Check word count against format limit.
 8. Write final drafts back to `.tmp/content_drafts.json`.
+
+## Captions + Hashtags
+
+See `captions.md` for platform-specific caption generation SOP. Hybrid method: viral reference modeling + platform meta rules + voice filter.
 
 ## Cross-Platform Repurposing
 

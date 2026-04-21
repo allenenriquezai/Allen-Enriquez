@@ -206,6 +206,14 @@ projects/personal/videos/reel-N/
 **Position:** y=160, centered horizontally.
 **Generator:** Pillow script (920×340 canvas, inner 960×220 with 60px glow padding, 86pt 2-line font for bold presence without overflow). Save to `assets/hook-sticker.png`.
 
+**Exact CSS spec** (locked — use on every reel):
+- Container: `background: #071020`, `border: 5px solid #02B3E9`, `border-radius: 36px`
+- Glow: `box-shadow: 0 0 28px rgba(2,179,233,0.85), 0 0 64px rgba(2,179,233,0.50), 0 10px 26px rgba(0,0,0,0.55)`
+- Text: Montserrat 900, UPPERCASE, white, layered black text-shadow stroke (`-3/3/3/3` offsets + `0 6px 18px rgba(0,0,0,0.7)` drop)
+- Text wrap: `white-space: nowrap` each line + tune font-size so each line fits (54–64px for 800px wide sticker)
+- Reference working file: `projects/personal/videos/reel-3/assets/pin-note.html` (filename says pin-note, it IS the hook sticker)
+- **Do NOT** use yellow Post-it / sticky-note styling — rejected. Dark pill + cyan glow only.
+
 Prompt template per reel: one punchy line, 2 words × 2 lines max. Examples:
 - "YOU'RE USING / AI WRONG" (AI agents reel)
 - "STOP CHASING / PERFECTION" (productivity reel)
@@ -321,3 +329,12 @@ After draft render:
 1. Extract frames at each beat boundary: `ffmpeg -ss <t> -i draft.mp4 -frames:v 1 frame_<t>.png`
 2. Read frames visually — confirm: no caption stacking, no text overflow, scene timings align with voiceover.
 3. Only then run final render + ship.
+
+### Face Visibility Rule
+Allen's face MUST stay visible on the hook (first ~5–6s) and CTA (last ~13s). Scene overlays replace the face only in the middle (teaching/explain sections). Never cover the face during hook or CTA — personal connection at the open grabs attention, face at the close builds trust for the ask.
+
+### Third-Party Proof — Blur Faces
+When showing third-party people/companies as social proof (e.g., a screenshot of someone else's result), **blur the person's face/photo** (GaussianBlur radius 20 on photo regions). Keep headlines and stat numbers sharp — the stat matters, not the person. Avoids appearing to endorse or promote specific third parties.
+
+### Caption Emphasis
+"FREE" always capitalized in karaoke captions when Allen says "for free" — brand rule, emphasizes the value offer.

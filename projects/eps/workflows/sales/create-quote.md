@@ -78,6 +78,11 @@ Once collected:
 7. VARIATIONS
 8. BOOKING & PAYMENT TERMS
 
+**Exclusion placement rule (important):**
+- **Deal-specific exclusions** (e.g. "bathroom ceilings not included", "bedroom ceilings not included", client-supplied paint) go under SCOPE OF WORK as a `C. NOTES` subsection, NOT in GENERAL EXCLUSIONS.
+- **GENERAL EXCLUSIONS** stays boilerplate only — asbestos, plaster repair, structural work. Same text every quote.
+- Structure SCOPE OF WORK with `A/B/C` subsections: A. REPAINT WORKS (or relevant work type), B. INTERNAL AREAS (or area breakdown), C. NOTES (deal-specific exclusions, special conditions, client-supplied items).
+
 Write the array into `projects/eps/.tmp/quote_data.json`. Also read the `<!-- quote_title: ... -->` comment from the job description template file and include it as `"quote_title"` field — required.
 
 ---
