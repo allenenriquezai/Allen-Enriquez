@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.enriquezOS.tokenaudit</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/allenenriquez/Desktop/Allen Enriquez/automation/run_daily_token_audit.sh</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>6</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/token-audit-cron.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/token-audit-cron-error.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>
