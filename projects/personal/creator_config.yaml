@@ -1,0 +1,12 @@
+creators:
+  - name: Justyn.ai
+    platforms:
+      tiktok: https://www.tiktok.com/@justyn.ai
+  - name: Sabrina Ramonov
+    platforms:
+      tiktok: https://www.tiktok.com/@sabrina_ramonov
+      youtube: https://www.youtube.com/@sabrina_ramonov
+
+max_posts_per_run: 5
+breakdown_with_claude: true
+transcribe_max_duration_sec: 600
