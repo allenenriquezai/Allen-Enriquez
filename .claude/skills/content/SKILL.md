@@ -23,7 +23,7 @@ Pick the right workflow based on Allen's request:
    - `projects/personal/reference/content-strategy-v2.md` (current strategy + frameworks)
    - `projects/personal/reference/hormozi-style-guide.md`
    - `projects/personal/workflows/content/content-creation.md`
-   - `projects/personal/reference/intel/icp-language.md`
+   - `projects/personal/intel/icp-language.md`
 2. Ask Allen which mode (plan / write) if not already clear
 3. Read the matching workflow from the routing table
 4. Follow the workflow

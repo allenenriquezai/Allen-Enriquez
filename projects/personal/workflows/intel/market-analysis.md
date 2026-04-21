@@ -38,7 +38,7 @@ When data is available, check:
 
 ## Output
 
-Write to `projects/personal/reference/intel/market-validation.md`:
+Write to `projects/personal/intel/market-validation.md`:
 
 ```markdown
 # Market Validation

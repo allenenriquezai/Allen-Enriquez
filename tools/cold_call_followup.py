@@ -28,7 +28,7 @@ List active leads:
 CONFIG
 ------
 Edit CALENDAR_LINK and YOUR_PHONE below before first send.
-Lead magnet PDF auto-attached to Day 0 from sales-assets/lead-magnet.pdf.
+Lead magnet PDF auto-attached to Day 0 from sales/lead-magnet.pdf.
 """
 
 import argparse
@@ -50,7 +50,7 @@ from googleapiclient.discovery import build
 BASE_DIR = Path(__file__).parent.parent
 TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
 LEADS_FILE = BASE_DIR / 'projects' / 'personal' / '.tmp' / 'cold_call_leads.json'
-LEAD_MAGNET = BASE_DIR / 'projects' / 'personal' / 'sales-assets' / 'lead-magnet.pdf'
+LEAD_MAGNET = BASE_DIR / 'projects' / 'personal' / 'sales' / 'lead-magnet.pdf'
 
 FROM_EMAIL = 'allenenriquez006@gmail.com'
 FROM_NAME = 'Allen Enriquez'

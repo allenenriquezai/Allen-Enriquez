@@ -23,7 +23,14 @@ Map of where everything Allen saves lives. Claude reads on demand; not auto-load
 | `outreach/prospects.jsonl` | Unified multi-channel prospect records | JSONL | one line per prospect |
 | `outreach/log.jsonl` | Send + reply events | JSONL | append-only |
 | `outreach/templates/` | Per-channel message templates | markdown | `{channel}_{type}_t{n}.md` |
-| `reference/` | Intel, style guides, configs (hand-maintained) | markdown + YAML | various |
+| `brand/` | Allen brand assets (logo, guidelines, profile, carousel style) | PNG + markdown | various |
+| `intel/` | Living intel docs (ICP, competitor, market, performance) | markdown | hand-maintained, dated |
+| `sales/` | Lead magnets, one-pager, landing page, invoice template, PDF builders | PDF + HTML + py | see `sales/README.md` |
+| `content/carousels/` | Published carousel slide sets | PNG + copy.txt | `{slug}/slide_NN.png` |
+| `content/reels/` | Published reel projects (hyperframes + renders) | HTML + MP4 | `{slug}/` |
+| `content/assets/third-party-logos/` | Third-party logos used IN content (Gmail, Calendar, CRM) | PNG + JPG | lowercase-hyphenated |
+| `clients/` | Active/paid client workspaces (auth tokens, audits, drafts) | varies | `{client-name}/` |
+| `reference/` | Static references (hyperframes kit, style guides, hyperlinks) | markdown + PDF | various |
 | `ideas/` | Free-form idea docs (future features, bets) | markdown | `{slug}.md` |
 
 ## How Claude uses this

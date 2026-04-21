@@ -42,7 +42,7 @@ For each segment:
 
 ## Output
 
-Write to `projects/personal/reference/intel/icp-language.md`:
+Write to `projects/personal/intel/icp-language.md`:
 
 ```markdown
 # ICP Language & Pain Points

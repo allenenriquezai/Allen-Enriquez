@@ -358,7 +358,7 @@ QA posts report + email draft to Pipedrive as pinned note.
 - **If FAILED:** fix issues, re-draft email (Stage 5), re-run QA. Do NOT show Allen the draft.
 - **If PASSED:** show Allen the email draft and wait for approval.
 
-Full QA check details in `projects/projects/eps/workflows/sales/qa.md`.
+Full QA check details in `projects/eps/workflows/sales/qa.md`.
 
 ---
 

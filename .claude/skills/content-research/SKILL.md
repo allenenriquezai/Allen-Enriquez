@@ -10,7 +10,7 @@ Content research for Allen's personal brand. Separate from content creation.
 1. **Immediately on invoke** — load these files:
    - `projects/personal/CONTEXT.md` (brand foundation)
    - `projects/personal/reference/content-strategy-v2.md` (current strategy)
-   - `projects/personal/reference/intel/icp-language.md` (audience language)
+   - `projects/personal/intel/icp-language.md` (audience language)
 2. Check if `.tmp/content-research.md` exists — load if yes (prior research)
 3. Ask Allen what to research if not clear from context
 4. Follow the research workflow: `projects/personal/workflows/content/content-research.md`

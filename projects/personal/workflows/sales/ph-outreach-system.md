@@ -13,7 +13,7 @@ Automated outbound pipeline for PH market. Discovers prospects, enriches them, g
 | `tools/outreach_enrich.py` | Website scrape, email finder, FB Graph, Haiku hook |
 | `tools/outreach_messages.py` | 12 templates + Haiku message generator |
 | `tools/outreach_lifecycle.py` | log-sent, follow-ups, reply drafting |
-| `projects/personal/templates/outreach/*.md` | 12 message templates |
+| `projects/personal/outreach/templates/*.md` | 12 message templates |
 | `projects/personal/reference/outreach_config.yaml` | Limits, segments, pain points |
 | `projects/personal/.tmp/fb_prospects_inbox.txt` | Where you drop FB URLs |
 | Sheet: [PH Outreach](https://docs.google.com/spreadsheets/d/15NvyLkAWya3ZNxT-R1dSPTVN1z2CyKEzDTdfxHY38Do/edit) | Prospect CRM |

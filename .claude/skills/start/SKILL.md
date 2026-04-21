@@ -23,7 +23,7 @@ Skip any that don't exist. Do not error.
 Run these checks and print a status dashboard:
 
 ### Intel Freshness
-Check `last_updated` date in each file in `projects/personal/reference/intel/`. Flag any older than 7 days (14 days for `market-validation.md`). Format:
+Check `last_updated` date in each file in `projects/personal/intel/`. Flag any older than 7 days (14 days for `market-validation.md`). Format:
 ```
 Intel: 3/7 docs fresh | STALE: competitor-moves.md (12d), icp-language.md (9d)
 ```

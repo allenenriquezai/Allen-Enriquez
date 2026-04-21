@@ -40,7 +40,7 @@ REPO_TMP = BASE_DIR / '.tmp'
 PERSONAL_DIR = BASE_DIR / 'projects' / 'personal'
 PERSONAL_TMP = PERSONAL_DIR / '.tmp'
 
-# Templates live at projects/personal/templates/outreach/*.md (actual layout).
+# Templates live at projects/personal/outreach/templates/*.md (actual layout).
 # Spec mentions projects/personal/outreach/templates/ — try both.
 TEMPLATE_DIRS = [
     PERSONAL_DIR / 'templates' / 'outreach',

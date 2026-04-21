@@ -15,9 +15,9 @@ Track content and outreach performance. Identify what's working, what's dying, w
 | Source | What it tells you |
 |---|---|
 | `projects/personal/.tmp/outreach_log.jsonl` | Outreach metrics -- contacts, response rates |
-| `projects/personal/reference/intel/competitor-moves.md` | What competitors are doing |
-| `projects/personal/reference/intel/icp-language.md` | What the audience wants |
-| `projects/personal/reference/intel/market-validation.md` | Pricing and PMF signals |
+| `projects/personal/intel/competitor-moves.md` | What competitors are doing |
+| `projects/personal/intel/icp-language.md` | What the audience wants |
+| `projects/personal/intel/market-validation.md` | Pricing and PMF signals |
 | Content metrics (when available) | Views, engagement, CTR per piece |
 
 ## What to Track
@@ -37,7 +37,7 @@ CPC, CPL, cost per call booked, ROAS, best creative/copy.
 
 ## Output Files
 
-### `projects/personal/reference/intel/performance-scorecard.md`
+### `projects/personal/intel/performance-scorecard.md`
 
 ```markdown
 # Performance Scorecard
@@ -65,15 +65,15 @@ CPC, CPL, cost per call booked, ROAS, best creative/copy.
 - [Formats to pause or change]
 ```
 
-### `projects/personal/reference/intel/content-whats-working.md`
+### `projects/personal/intel/content-whats-working.md`
 
 Top performers, best hooks, best topics, what's NOT working, monthly Best Of breakdown.
 
-### `projects/personal/reference/intel/outreach-whats-working.md`
+### `projects/personal/intel/outreach-whats-working.md`
 
 Best templates, best segments, best send times, what's NOT working.
 
-### `projects/personal/reference/intel/ads-whats-working.md`
+### `projects/personal/intel/ads-whats-working.md`
 
 Active campaigns, best creatives, best audiences, what to kill.
 

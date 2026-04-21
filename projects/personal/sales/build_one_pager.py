@@ -8,7 +8,7 @@ from reportlab.platypus import (
 )
 from reportlab.lib.enums import TA_LEFT, TA_CENTER
 
-OUT = "/Users/allenenriquez/Desktop/Allen Enriquez/projects/personal/sales-assets/one-pager-quote-builder.pdf"
+OUT = "/Users/allenenriquez/Desktop/Allen Enriquez/projects/personal/sales/one-pager-quote-builder.pdf"
 BRAND = HexColor("#02B3E9")
 DARK = HexColor("#0F172A")
 GREY = HexColor("#475569")

@@ -4,7 +4,7 @@ What is built. What is missing. Where things live.
 
 ## Built
 
-- **DM and email templates** — `projects/personal/templates/outreach/`
+- **DM and email templates** — `projects/personal/outreach/templates/`
   12 files. 2 niches × 2 channels × 3 variants.
 
 - **Workflow doc** — `projects/personal/workflows/sales/ph-outreach-system.md`

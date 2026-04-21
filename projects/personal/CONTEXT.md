@@ -147,11 +147,11 @@ CONTEXT.md is the brand foundation. Always loaded. Additional files load by task
 
 | Task | Also load |
 |---|---|
-| Write content (scripts, posts) | `reference/hormozi-style-guide.md` + `workflows/content/content-creation.md` + `reference/intel/icp-language.md` |
+| Write content (scripts, posts) | `reference/hormozi-style-guide.md` + `workflows/content/content-creation.md` + `intel/icp-language.md` |
 | Content calendar/planning | `workflows/content/content-creation.md` |
-| Research (ICP, competitor, market) | `reference/intel/icp-language.md` + `reference/intel/competitor-moves.md` |
-| Outreach / follow-up | `reference/intel/icp-language.md` |
-| Content research (hooks, trends) | `.tmp/content-research.md` + `reference/intel/icp-language.md` |
+| Research (ICP, competitor, market) | `intel/icp-language.md` + `intel/competitor-moves.md` |
+| Outreach / follow-up | `intel/icp-language.md` |
+| Content research (hooks, trends) | `.tmp/content-research.md` + `intel/icp-language.md` |
 
 Memory files (content_profile, sales_identity, content_models) are auto-loaded by Claude's memory system — do NOT manually read them.
 

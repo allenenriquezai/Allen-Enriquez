@@ -281,7 +281,7 @@ def page_org_chart(c):
     # Intel output box
     ay -= 8
     draw_rounded_rect(c, col4 + 5, ay, col_w + 5, 32, r=6, fill_color=HexColor("#0d2a2a"), stroke_color=TEAL)
-    draw_text(c, "reference/intel/", col4 + 14, ay + 18, size=7, color=TEAL, font="Helvetica-Bold")
+    draw_text(c, "intel/", col4 + 14, ay + 18, size=7, color=TEAL, font="Helvetica-Bold")
     draw_text(c, "7 living docs \u2014 auto-updated weekly", col4 + 14, ay + 6, size=6, color=GRAY, font="Helvetica")
 
     # Intel feeds all (dashed)
@@ -362,7 +362,7 @@ def page_data_flow(c):
         ("Competitor Researcher", "scans what competitors post + sell", TEAL),
         ("ICP Researcher", "monitors audience pain points + language", TEAL),
         ("Market & Service", "validates offer positioning + pricing", TEAL),
-        ("", "writes to reference/intel/ (7 living docs)", TEAL),
+        ("", "writes to intel/ (7 living docs)", TEAL),
         ("ALL departments", "read latest intel before doing ANY work", GOLD),
     ]
     sy = loop3_y - 28
@@ -395,7 +395,7 @@ def page_data_flow(c):
 
     # Living Docs
     docs_y = 85
-    draw_dept_header(c, 30, docs_y + 45, "LIVING INTELLIGENCE DOCS (reference/intel/)", TEAL, w=400)
+    draw_dept_header(c, 30, docs_y + 45, "LIVING INTELLIGENCE DOCS (intel/)", TEAL, w=400)
     docs = [
         ("content-whats-working.md", "Best hooks, formats, topics by performance data"),
         ("ads-whats-working.md", "Ad creative, targeting, CTA that converts"),

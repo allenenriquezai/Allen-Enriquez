@@ -7,10 +7,10 @@ This is the definitive visual specification for all AI-generated Excalidraw-styl
 **Pass the style reference image on EVERY generation.** This is the single biggest lever for visual consistency. The style reference lives at:
 
 ```
-brand-assets/excalidraw-style-reference.png
+projects/personal/brand/excalidraw-style-reference.png
 ```
 
-Always include: `--input "brand-assets/excalidraw-style-reference.png"`
+Always include: `--input "projects/personal/brand/excalidraw-style-reference.png"`
 
 This image shows the model exactly what the target aesthetic looks like -- font, colors, shapes, icons, and spacing all in one place.
 

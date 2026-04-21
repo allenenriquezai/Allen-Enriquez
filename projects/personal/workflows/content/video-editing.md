@@ -149,7 +149,7 @@ npx hyperframes doctor             # troubleshoot env
 
 ### Brand application
 
-Every Hyperframes composition for Allen MUST apply the AE brand system (see `project_brand_visual_system` memory + `reference/brand/brand-guidelines.png`):
+Every Hyperframes composition for Allen MUST apply the AE brand system (see `project_brand_visual_system` memory + `projects/personal/brand/brand-guidelines.png`):
 - Primary blue `#02B3E9` on accents, buttons, active states
 - Dark navy near-black backgrounds with subtle radial blue glow
 - Roboto Mono Medium for stats/UI/numbers, Montserrat Light for body

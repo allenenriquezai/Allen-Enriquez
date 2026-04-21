@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#02B3E9;
+    --blue-glow:rgba(2,179,233,0.55);
+    --blue-soft:rgba(2,179,233,0.14);
+    --navy:#0a1220;
+    --white:#ffffff;
+    --grey-dim:#8592ab;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#0a1220}
+  .cover{
+    width:1640px;height:624px;
+    background:
+      radial-gradient(ellipse 1200px 900px at 50% 50%, #13213d 0%, #0a1220 75%);
+    position:relative;overflow:hidden;
+    font-family:'Montserrat',sans-serif;color:var(--white);
+  }
+  .glow{
+    position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 1100px 700px at 78% 50%, rgba(2,179,233,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 900px 600px at 20% 60%, rgba(2,179,233,0.10) 0%, transparent 70%);
+  }
+  .grid{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(2,179,233,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(2,179,233,0.05) 1px, transparent 1px);
+    background-size:80px 80px;
+    mask-image:radial-gradient(ellipse at center, black 55%, transparent 95%);
+    -webkit-mask-image:radial-gradient(ellipse at center, black 55%, transparent 95%);
+  }
+  .stage{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    gap:96px;
+    padding:0 140px;
+  }
+  .mono{
+    font-family:'Roboto Mono',monospace;font-weight:700;
+    font-size:300px;line-height:1;letter-spacing:-0.04em;
+    color:var(--white);
+    text-shadow:
+      0 0 24px var(--blue-glow),
+      0 0 80px var(--blue-glow),
+      0 0 160px rgba(2,179,233,0.35);
+    position:relative;
+  }
+  .mono::after{
+    content:"";position:absolute;left:0;right:0;bottom:-28px;height:6px;
+    background:var(--blue);box-shadow:0 0 20px var(--blue-glow);
+    width:40%;
+  }
+  .txt{display:flex;flex-direction:column;gap:22px;max-width:760px}
+  .name{
+    font-family:'Roboto Mono',monospace;font-weight:700;
+    font-size:72px;letter-spacing:0.02em;line-height:1;
+    color:var(--white);
+  }
+  .tag{
+    font-family:'Roboto Mono',monospace;font-weight:500;
+    font-size:30px;letter-spacing:0.24em;line-height:1;
+    color:var(--blue);
+    text-shadow:0 0 18px var(--blue-glow);
+    text-transform:uppercase;
+  }
+  .sub{
+    font-family:'Montserrat',sans-serif;font-weight:300;
+    font-size:24px;line-height:1.5;color:var(--grey-dim);
+    max-width:680px;
+  }
+  .sub b{color:var(--blue);font-weight:700;text-shadow:0 0 14px var(--blue-glow)}
+  .corner{
+    position:absolute;top:44px;right:52px;
+    font-family:'Roboto Mono',monospace;font-weight:500;
+    font-size:18px;letter-spacing:0.3em;color:var(--grey-dim);
+    text-transform:uppercase;
+  }
+  .corner span{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="glow"></div>
+  <div class="grid"></div>
+  <div class="corner">EST. <span>2026</span></div>
+  <div class="stage">
+    <div class="mono">AE</div>
+    <div class="txt">
+      <div class="name">ALLEN ENRIQUEZ</div>
+      <div class="tag">AI-Powered Automations</div>
+      <div class="sub">Helping business owners and professionals buy back their <b>TIME</b> and make more <b>MONEY</b> with custom AI-powered automations.</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

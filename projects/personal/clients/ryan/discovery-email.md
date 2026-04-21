@@ -1,0 +1,192 @@
+# Discovery Email — Ryan Canton (SC-Incorporated) — v6
+
+**To:** ryan@sc-incorporated.com
+**From:** allenenriquez.ai@gmail.com
+**Subject:** Ryan — had a look at your inbox, few things I need from you
+**Attachment:** gmail-mockup.png
+
+---
+
+Hey Ryan,
+
+Poked around your inbox today so I don't have to ask you 40 generic questions. Got a good read on it. 1,695 emails over the last 60 days. About 28 a day. Mostly real work, not junk.
+
+Here's what I want to build and a few things I need you to confirm. I attached a picture so you can see what your Gmail will look like when it's done.
+
+---
+
+## Email cleanup — what I'll set up
+
+AI reads every new email as it comes in and drops it into the right folder.
+
+```
+Inbox — only urgent + important stuff lands here
+│
+├── Projects/ — one folder per live job
+│   ├── Pura Vida Miami
+│   ├── Deckers Cafe
+│   ├── Colony Parc II
+│   └── (auto-added as new jobs kick off)
+│
+├── Bids — invites from GCs. Kept OUT of your main inbox
+│                unless urgent or from a GC you care about.
+│                Kharene can work through these on her time.
+├── Vendors — material suppliers
+├── Team Daily — daily updates from the guys
+├── Admin — accounting, insurance, payroll
+├── Promos — marketing noise
+└── Review — anything the AI wasn't sure about
+```
+
+Check the picture — that's the look.
+
+---
+
+## Your team
+
+From your inbox I can see Kharene runs most of it (488 emails in 60 days). Joseph's the other big one (324). You sent 171.
+
+**Q1.** You want this set up for you AND Kharene? Or just you?
+
+---
+
+## Your live projects
+
+Below is every project I could pull from your inbox. **Copy this list into your reply, delete the ones that are done, and add any I missed.**
+
+- Pura Vida Miami (Long Beach)
+- Deckers Cafe / Brands (Goleta)
+- Colony Parc II
+- Porto's Bakery (Anaheim)
+- Whole Foods TI (LA)
+- Angel City Football Club TI (Santa Monica)
+- Poly Plaza
+- Lounge 1888
+- 500 Thousand Oaks Blvd Apartments
+- MGA Warehouse (Apple Valley)
+- OMP Gardena
+- MacArthur Court
+- Anaheim Plaza 2A / 2B
+- Club Studio (Long Beach)
+- David's Place (Norwalk)
+- Bridge/Kurv (Inglewood)
+- Transwestern Berry Way (Brea)
+- Trojan Self Storage (Inglewood)
+- Logistic Center Valencia
+- Hesperia Truck Warehouse
+- Apex Space TI (LA)
+
+---
+
+## GCs (bid invites)
+
+I saw these GCs sending you bids: RCI Builders, ITX Construction, Patterson, 4Willis, EB Bradley, HBI, PAG, Fullmer, WE O'Neil, Kondor, Oltmans, Trinity Surfaces.
+
+Plan: bids from these sit quietly in the **Bids** folder. **Only urgent ones or the GCs you tell me are priority will hit your main inbox.**
+
+**Q2.** Which GCs are your priority ones? (The ones you always want to see.)
+**Q3.** Any GCs you don't want to hear from at all?
+
+---
+
+## Vendors
+
+I saw these: Daltile, Bedrosians, Caesarstone, LX Hausys, Cosentino, Emser, Arizona Tile, Coronado.
+
+**Q4.** Missing any? Any you want flagged as priority?
+
+---
+
+## Daily updates from the team
+
+I counted 125 "daily accomplishment" emails in the last 60 days.
+
+**Q5.** Who writes them and how often? (Looks like Joseph and some Gmail addresses — subs?)
+**Q6.** Two options: just file them in a folder, OR I can send you ONE short morning summary every day ("Here's what the team did yesterday"). Which do you want?
+
+---
+
+## The noise
+
+- **Lowes** is sending you 58 marketing emails a month.
+- **Autodesk Construction Cloud** is pinging you every hour about Colony Parc II.
+
+**Q7.** Lowes — straight to trash, weekly digest, or leave alone?
+**Q8.** Autodesk hourly pings — mute them, daily digest, or leave alone?
+
+---
+
+## What's urgent
+
+**Q9.** What should buzz your phone the second it hits your inbox?
+
+Think of things like:
+- "Change Order" in the subject
+- Anything from Kharene
+- Anything from your top GCs
+- Anything after 9pm about tomorrow's site visit
+
+Whatever makes you drop what you're doing — tell me, and I'll build that rule in.
+
+---
+
+## Auto-replies (optional)
+
+**Q10.** Any email type you want auto-answered so you don't have to touch it?
+
+Example: bid invites → *"Got it, thanks. Kharene will have a quote to you within 48 hours."*
+
+---
+
+# Calendar
+
+**Q11.** Tell me what you want from your calendar. What hurts today? What would save you time if it ran on its own?
+
+Think things like: double bookings, chasing GCs to confirm site visits, forgetting what's on tomorrow, losing track of bid due dates. Don't overthink it — just tell me the pain.
+
+---
+
+# Website
+
+**Q12.** What do you want the site to do — win bids, show past work, take inquiries, all of it?
+
+**Q13.** Walk me through how you want it to look. Any sites you like (doesn't have to be tile/stone — any industry)? Send me 2–3 links.
+
+**Q14.** You mentioned photos — how many past-job shots do you have, and where are they saved? (Phone, Drive, Dropbox, somewhere else?)
+
+---
+
+## How to reply — pick whatever's fastest
+
+1. Type answers inline right in this email.
+2. Record a voice memo (phone Voice Memos, WhatsApp voice note, whatever) and send it back. Just talk through the questions top to bottom. I'll write up the answers.
+3. Quick video on Loom or your phone — walk me through it.
+4. Or book a time and I'll call.
+
+No rush — take your time.
+
+You know this stuff better than I do — if I got anything wrong above, tell me. I'd rather rebuild once now than five times later.
+
+Talk soon,
+Allen
+
+---
+
+## P.S. — where this goes next (just so you see the ceiling)
+
+Everything above is phase 1. Here's what comes after, if you want it:
+
+**Email — phase 2.** AI doesn't just sort your inbox. It drafts your reply for every email — in your voice, with the right info pulled from your other emails, projects, and team. You read, tweak, send. No more staring at a blank compose box at 9pm.
+
+**Calendar — phase 2.** AI runs scheduling for you. GC emails "can we meet Thursday?" — AI checks your calendar, finds the time, proposes it, books it when they confirm. You don't touch it.
+
+**Phase 3 — your own AI app.** A dashboard built just for you. Email, calendar, active projects, bid pipeline, quote status, what the team did today — all in one place. Ask it anything:
+
+- "What's happening on Pura Vida?"
+- "Draft a follow-up to Ken at RCI."
+- "What's overdue this week?"
+- "When can I fit in a site visit at Deckers?"
+
+Your own AI assistant. Knows your business. Runs your day.
+
+That's the direction. Phase 1 first — let's nail the basics. I just want you to see where we can take this.

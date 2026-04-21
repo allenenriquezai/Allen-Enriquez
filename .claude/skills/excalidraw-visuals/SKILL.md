@@ -9,7 +9,7 @@ Before using this skill, make sure you have:
 1. A kie.ai API key (sign up at https://kie.ai) added to `.env` as `KIE_AI_API_KEY`
 2. Node.js installed
 3. The generation script at `scripts/excalidraw-visuals/generate-visual.js`
-4. The style reference image at `brand-assets/excalidraw-style-reference.png`
+4. The style reference image at `projects/personal/brand/excalidraw-style-reference.png`
 
 ---
 
@@ -122,17 +122,17 @@ Never leave color choice to the model. Always specify.
 **Always include the style reference image.** This is mandatory for visual consistency.
 
 ```bash
-node scripts/excalidraw-visuals/generate-visual.js "<FULL_PROMPT>" ".tmp/visuals/[YYYY-MM-DD]-[slug].png" "[ASPECT_RATIO]" --input "brand-assets/excalidraw-style-reference.png"
+node scripts/excalidraw-visuals/generate-visual.js "<FULL_PROMPT>" ".tmp/visuals/[YYYY-MM-DD]-[slug].png" "[ASPECT_RATIO]" --input "projects/personal/brand/excalidraw-style-reference.png"
 ```
 
 You can pass additional reference images (logos, screenshots, etc.) via extra `--input` arguments:
 ```bash
-node scripts/excalidraw-visuals/generate-visual.js "<FULL_PROMPT>" ".tmp/visuals/[YYYY-MM-DD]-[slug].png" "[ASPECT_RATIO]" --input "brand-assets/excalidraw-style-reference.png" "path/to/another-image.png"
+node scripts/excalidraw-visuals/generate-visual.js "<FULL_PROMPT>" ".tmp/visuals/[YYYY-MM-DD]-[slug].png" "[ASPECT_RATIO]" --input "projects/personal/brand/excalidraw-style-reference.png" "path/to/another-image.png"
 ```
 
 Aspect ratios: `16:9` (default), `1:1`, `4:5`
 
-If `brand-assets/excalidraw-style-reference.png` does not exist, generate without it and tell the user to add a style reference image for consistent results.
+If `projects/personal/brand/excalidraw-style-reference.png` does not exist, generate without it and tell the user to add a style reference image for consistent results.
 
 ## Step 7: Present Result
 
@@ -150,7 +150,7 @@ If adjustments needed: modify only the diagram-specific portion. Never change th
 |------|------|
 | Style guide | `.claude/skills/excalidraw-visuals/style-guide.md` |
 | Script | `scripts/excalidraw-visuals/generate-visual.js` |
-| Style reference | `brand-assets/excalidraw-style-reference.png` |
+| Style reference | `projects/personal/brand/excalidraw-style-reference.png` |
 | Output | `.tmp/visuals/` |
 | API key | `.env` (KIE_AI_API_KEY) |
 

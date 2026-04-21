@@ -1,0 +1,32 @@
+/Users/allenenriquez/Library/Python/3.9/lib/python/site-packages/google/auth/__init__.py:54: FutureWarning: You are using a Python version 3.9 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.9"), FutureWarning)
+/Users/allenenriquez/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+/Users/allenenriquez/Library/Python/3.9/lib/python/site-packages/google/oauth2/__init__.py:40: FutureWarning: You are using a Python version 3.9 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.9"), FutureWarning)
+/Users/allenenriquez/Library/Python/3.9/lib/python/site-packages/google/api_core/_python_version_support.py:246: FutureWarning: You are using a non-supported Python version (3.9.6). Google will not post any further updates to google.api_core supporting this Python version. Please upgrade to the latest Python version, or at least Python 3.10, and then update google.api_core.
+  warnings.warn(message, FutureWarning)
+Getting credentials for client: ryan
+Fetching label list...
+  15 labels.
+Listing message IDs from last 60 days...
+  1694 message IDs.
+  942 already fetched from previous run — skipping those.
+  753 messages to fetch.
+Fetching metadata (small batches, with backoff)...
+  fetched 200/753...
+  fetched 400/753...
+  fetched 600/753...
+  753 new messages normalised. 0 failed.
+  Appended to: /Users/allenenriquez/Desktop/Allen Enriquez/projects/personal/.tmp/clients/ryan/raw-messages.jsonl
+Total messages: 1695
+Computing stats...
+Classifying 753 messages in batches of 40...
+  ...cached 1062/1695
+  ...cached 1182/1695
+  ...cached 1302/1695
+  ...cached 1422/1695
+  ...cached 1541/1695
+  ...cached 1661/1695
+Writing report...
+Report: /Users/allenenriquez/Desktop/Allen Enriquez/projects/personal/.tmp/clients/ryan/inbox-audit.md

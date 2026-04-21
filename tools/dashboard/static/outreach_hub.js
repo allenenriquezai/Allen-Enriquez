@@ -252,7 +252,7 @@ async function ohLoadTemplates() {
         if (!data.ok) throw new Error(data.error || 'Templates failed');
         const tpls = data.templates || [];
         if (!tpls.length) {
-            pane.innerHTML = `<div class="rounded-xl p-4 text-center text-sm text-gray-400 border" style="background:${OH_CARD};border-color:${OH_BORDER}">No templates found. Add files to <code class="text-[#02B3E9]">projects/personal/templates/outreach/</code></div>`;
+            pane.innerHTML = `<div class="rounded-xl p-4 text-center text-sm text-gray-400 border" style="background:${OH_CARD};border-color:${OH_BORDER}">No templates found. Add files to <code class="text-[#02B3E9]">projects/personal/outreach/templates/</code></div>`;
             return;
         }
         pane.innerHTML = tpls.map((t, i) => {

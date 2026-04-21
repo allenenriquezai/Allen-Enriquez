@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Intel freshness checker for Enriquez OS.
-Checks last_updated dates in reference/intel/ docs and flags stale ones.
+Checks last_updated dates in intel/ docs and flags stale ones.
 
 Usage:
     python3 tools/intel_freshness.py          # Check all intel docs

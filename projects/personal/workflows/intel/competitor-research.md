@@ -33,7 +33,7 @@ Weekly (every Monday). Triggerable on demand.
 
 ## Output
 
-Write to `projects/personal/reference/intel/competitor-moves.md`:
+Write to `projects/personal/intel/competitor-moves.md`:
 
 ```markdown
 # Competitor Moves
