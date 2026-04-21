@@ -374,6 +374,8 @@ def main():
     cfg = load_config()
     if args.limit is None:
         args.limit = cfg.get("max_posts_per_run", 5)
+    if cfg.get("breakdown_with_claude") is False:
+        args.no_breakdown = True
 
     conn = db_connect()
     added = 0
