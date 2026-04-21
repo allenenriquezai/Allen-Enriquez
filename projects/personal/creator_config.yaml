@@ -8,5 +8,5 @@ creators:
       youtube: https://www.youtube.com/@sabrina_ramonov
 
 max_posts_per_run: 5
-breakdown_with_claude: false
+breakdown_with_claude: true
 transcribe_max_duration_sec: 600
