@@ -293,6 +293,22 @@ header{background:rgba(10,18,32,0.92);backdrop-filter:blur(12px);-webkit-backdro
 .task-del{background:none;border:none;color:var(--grey-dim);cursor:pointer;font-size:16px;
   padding:0 4px;opacity:0.4;transition:opacity .15s;}
 .task-del:hover{opacity:1;color:#e74c3c;}
+/* Thread viewer */
+.thread-back{margin-bottom:16px;}
+.back-link{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--blue);
+  text-decoration:none;letter-spacing:0.06em;}
+.back-link:hover{color:var(--white);}
+.thread-subj{font-size:16px;font-weight:700;color:var(--white);margin-bottom:20px;line-height:1.4;}
+.msg-card{background:var(--navy-2);border:1px solid var(--blue-border);border-radius:12px;
+  padding:16px;margin-bottom:12px;}
+.msg-card:last-child{margin-bottom:0;}
+.msg-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.msg-sender{font-size:13px;font-weight:700;color:var(--white);}
+.msg-time{font-family:var(--mono);font-size:10px;color:var(--grey-dim);}
+.msg-to{font-size:11px;color:var(--grey-dim);margin-bottom:12px;}
+.msg-body{font-size:13px;font-weight:300;color:var(--grey);line-height:1.7;}
+.msg-para{margin-bottom:12px;}
+.msg-para:last-child{margin-bottom:0;}
 """
 
 _JS_STABS = """
@@ -405,10 +421,10 @@ def render_dashboard(token: str = "ryan-sc") -> str:
         urgent_html = ""
         for u in urgent[:15]:
             reasons = "; ".join(u.get("reasons", []))
-            link = _gmail_link(u.get("thread_id", ""))
+            link = _thread_link(u.get("thread_id", ""), token)
             tag = f'<div class="card-tag">{_esc(reasons)}</div>' if reasons else ""
             urgent_html += (
-                f'<a class="card card-urgent" href="{link}" target="_blank" rel="noopener">'
+                f'<a class="card card-urgent" href="{link}">'
                 f'<div class="card-subj">{_esc(u["subject"][:90]) or "(no subject)"}</div>'
                 f'<div class="card-meta">{_esc(u["from"][:65])}</div>{tag}</a>'
             )
@@ -419,9 +435,9 @@ def render_dashboard(token: str = "ryan-sc") -> str:
         team_html = ""
         for t in team[:10]:
             sender = t["from"].split("<")[0].strip() or t["from"][:40]
-            link = _gmail_link(t.get("thread_id", ""))
+            link = _thread_link(t.get("thread_id", ""), token)
             team_html += (
-                f'<a class="card card-team" href="{link}" target="_blank" rel="noopener">'
+                f'<a class="card card-team" href="{link}">'
                 f'<div class="team-sender">{_esc(sender[:30])}</div>'
                 f'<div class="card-subj">{_esc(t["subject"][:80])}</div></a>'
             )
@@ -504,12 +520,12 @@ def render_inbox(token: str = "ryan-sc") -> str:
 
     def _row(m: dict) -> str:
         sender = m["from"].split("<")[0].strip() or m["from"][:50]
-        link = _gmail_link(m.get("thread_id", ""))
+        link = _thread_link(m.get("thread_id", ""), token)
         unread_cls = " unread" if "UNREAD" in m.get("label_ids", []) else ""
         t = _fmt_rel_time(m.get("ts_ms", 0))
         snippet = m.get("snippet", "")
         return (
-            f'<a class="thread-row{unread_cls}" href="{link}" target="_blank" rel="noopener">'
+            f'<a class="thread-row{unread_cls}" href="{link}">'
             f'<span class="tr-star">&#9734;</span>'
             f'<span class="tr-sender">{_esc(sender[:30])}</span>'
             f'<span class="tr-body">'
@@ -701,3 +717,42 @@ def render_calendar(token: str = "ryan-sc") -> str:
 <div data-tab="bids" style="display:none">{bids_html}</div>
 """
     return _page_shell(token, "calendar", "Calendar", body, extra_js="initStabs('CAL_TAB','grid');")
+
+
+# ── Thread viewer page ────────────────────────────────────────────────────────
+
+def render_thread(thread_id: str, token: str = "ryan-sc") -> str:
+    try:
+        messages = fetch_thread(thread_id)
+    except Exception as e:
+        return _page_shell(token, "inbox", "Thread", f'<div class="empty">Could not load thread: {_esc(str(e))}</div>')
+
+    if not messages:
+        return _page_shell(token, "inbox", "Thread", '<div class="empty">Thread not found or empty.</div>')
+
+    subject = messages[0]["subject"]
+
+    def _msg_html(m: dict) -> str:
+        t = _fmt_rel_time(m.get("ts_ms", 0))
+        sender = m["from"].split("<")[0].strip() or m["from"]
+        body = m.get("body", "").strip()
+        # Convert line breaks to <br> for display
+        body_html = _esc(body).replace("\n\n", '</p><p class="msg-para">').replace("\n", "<br>")
+        return f"""<div class="msg-card">
+  <div class="msg-meta">
+    <span class="msg-sender">{_esc(sender[:60])}</span>
+    <span class="msg-time">{_esc(t)}</span>
+  </div>
+  <div class="msg-to">To: {_esc(m.get("to","")[:80])}</div>
+  <div class="msg-body"><p class="msg-para">{body_html}</p></div>
+</div>"""
+
+    msgs_html = "".join(_msg_html(m) for m in messages)
+    back_url = f"/inbox?token={token}"
+
+    body_html = f"""
+<div class="thread-back"><a href="{back_url}" class="back-link">&#8592; Back to Inbox</a></div>
+<div class="thread-subj">{_esc(subject[:120])}</div>
+{msgs_html}
+"""
+    return _page_shell(token, "inbox", "Thread", body_html)

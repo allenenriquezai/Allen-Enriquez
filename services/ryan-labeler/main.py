@@ -21,9 +21,9 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 import config
-from briefer import run_brief, run_evening_brief
+from briefer import run_brief, run_evening_brief, add_task, toggle_task, delete_task
 from classifier import classify
-from dashboard import render_dashboard, render_inbox, render_calendar, warm_all_caches
+from dashboard import render_dashboard, render_inbox, render_calendar, render_thread, render_tasks_html, warm_all_caches
 from bid_extractor import extract_bid_due
 from labeler import fetch_message, route_and_label
 
@@ -79,6 +79,11 @@ class LabelResponse(BaseModel):
     applied: bool
     error: Optional[str] = None
     took_ms: int
+
+
+class TaskRequest(BaseModel):
+    text: Optional[str] = None
+    id: Optional[str] = None
 
 
 def _append_audit(entry: dict) -> None:
@@ -228,6 +233,50 @@ def calendar_view(token: str = "") -> HTMLResponse:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"calendar failed: {e}")
 
+
+
+@app.get("/thread", response_class=HTMLResponse)
+def thread_view(id: str = "", token: str = "") -> HTMLResponse:
+    _check_token(token)
+    if not id:
+        raise HTTPException(status_code=400, detail="Missing thread id")
+    try:
+        return HTMLResponse(content=render_thread(id, token))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"thread failed: {e}")
+
+
+@app.get("/tasks-html")
+def tasks_html_fragment(token: str = "") -> HTMLResponse:
+    _check_token(token)
+    return HTMLResponse(content=render_tasks_html(token))
+
+
+@app.post("/tasks/add")
+def task_add(req: TaskRequest, token: str = "") -> dict:
+    _check_token(token)
+    if not req.text:
+        raise HTTPException(status_code=400, detail="text required")
+    task = add_task(req.text)
+    return {"ok": True, "task": task}
+
+
+@app.post("/tasks/toggle")
+def task_toggle(req: TaskRequest, token: str = "") -> dict:
+    _check_token(token)
+    if not req.id:
+        raise HTTPException(status_code=400, detail="id required")
+    done = toggle_task(req.id)
+    return {"ok": True, "done": done}
+
+
+@app.post("/tasks/delete")
+def task_delete(req: TaskRequest, token: str = "") -> dict:
+    _check_token(token)
+    if not req.id:
+        raise HTTPException(status_code=400, detail="id required")
+    delete_task(req.id)
+    return {"ok": True}
 
 
 if __name__ == "__main__":
