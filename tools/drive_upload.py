@@ -23,7 +23,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 DRIVE_FOLDER_NAME = 'Enriquez OS Files'
 
 

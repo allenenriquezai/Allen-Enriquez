@@ -12,7 +12,7 @@ Usage:
     python3 tools/enrich_prospects.py enrich --limit 5 --dry-run  # Preview without writing
 
 Requires:
-    projects/personal/token_personal.pickle: Google OAuth token with Sheets scope
+    projects/personal/token_personal_ai.pickle: Google OAuth token with Sheets scope
 """
 
 import argparse
@@ -31,7 +31,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 BASE_DIR = Path(__file__).parent.parent
-TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 TMP_DIR = BASE_DIR / 'projects' / 'personal' / '.tmp'
 OUTPUT_FILE = TMP_DIR / 'enrichment_results.json'
 

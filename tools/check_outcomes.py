@@ -83,7 +83,7 @@ def pd_get(path, params=None):
 # --- Gmail API (same pattern as send_email_gmail.py) ---
 
 EPS_TOKEN = BASE_DIR / 'projects' / 'eps' / 'token_eps.pickle'
-PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 
 
 def get_gmail_service(domain):

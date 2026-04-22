@@ -21,7 +21,7 @@ from google.auth.transport.requests import Request
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CREDENTIALS_FILE = os.path.join(BASE_DIR, 'projects', 'personal', 'credentials_personal.json')
-TOKEN_FILE = os.path.join(BASE_DIR, 'projects', 'personal', 'token_personal.pickle')
+TOKEN_FILE = os.path.join(BASE_DIR, 'projects', 'personal', 'token_personal_ai.pickle')
 
 SCOPES = [
     'https://www.googleapis.com/auth/gmail.readonly',

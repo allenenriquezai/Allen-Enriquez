@@ -14,7 +14,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TOKEN_FILE = os.path.join(BASE_DIR, 'projects', 'personal', 'token_personal.pickle')
+TOKEN_FILE = os.path.join(BASE_DIR, 'projects', 'personal', 'token_personal_ai.pickle')
 
 
 def get_creds():

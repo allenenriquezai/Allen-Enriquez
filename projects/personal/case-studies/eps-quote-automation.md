@@ -77,4 +77,4 @@ Want to see it work on one of your actual floor plans? Takes 5 minutes.
 
 **Allen Enriquez**
 AI Automation for Painting Companies
-allenenriquez006@gmail.com
+allenenriquez.ai@gmail.com

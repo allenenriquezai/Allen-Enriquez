@@ -75,7 +75,7 @@ def cta():
     inner = [
         [Paragraph("72-hour setup. Free 15-min call to scope it.", S["cta_t"])],
         [Paragraph("calendar.app.google/your-link-here", S["cta_b"])],
-        [Paragraph("allenenriquez006@gmail.com  •  +63 945 420 3195", S["cta_b"])],
+        [Paragraph("allenenriquez.ai@gmail.com  •  +63 945 420 3195", S["cta_b"])],
     ]
     t = Table(inner, colWidths=[6.5 * inch])
     t.setStyle(TableStyle([

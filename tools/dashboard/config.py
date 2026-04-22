@@ -73,7 +73,7 @@ def get_eps_token_path():
 def get_personal_token_path():
     return os.environ.get(
         'GOOGLE_PERSONAL_TOKEN_PATH',
-        str(BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle')
+        str(BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle')
     )
 
 

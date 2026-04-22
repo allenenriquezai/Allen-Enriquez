@@ -15,7 +15,7 @@ Usage:
     python3 tools/briefing_action_loop.py --show        # show today's manifest only
 
 Requires:
-    projects/personal/token_personal.pickle: Gmail OAuth token
+    projects/personal/token_personal_ai.pickle: Gmail OAuth token
     .tmp/briefing_actions.json: saved by morning_briefing.py
 """
 
@@ -33,14 +33,14 @@ from googleapiclient.discovery import build
 
 BASE_DIR = Path(__file__).parent.parent
 TMP_DIR = BASE_DIR / '.tmp'
-PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 MANIFEST_FILE = TMP_DIR / 'briefing_actions.json'
 
 PENDING_INQUIRIES_FILE = TMP_DIR / 'pending_inquiries.json'
 
 BRIEFING_FROM_EMAIL = 'allenenriquez@gmail.com'
 BRIEFING_FROM_NAME = 'Enriquez OS'
-BRIEFING_TO_EMAIL = 'allenenriquez006@gmail.com'
+BRIEFING_TO_EMAIL = 'allenenriquez.ai@gmail.com'
 
 
 def load_manifest():

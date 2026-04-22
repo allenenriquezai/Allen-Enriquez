@@ -12,7 +12,7 @@ Usage:
 
 Requires:
     projects/eps/.env: PIPEDRIVE_API_KEY, PIPEDRIVE_COMPANY_DOMAIN
-    projects/personal/token_personal.pickle: Gmail OAuth token with send scope
+    projects/personal/token_personal_ai.pickle: Gmail OAuth token with send scope
 """
 
 import argparse
@@ -33,11 +33,11 @@ BASE_DIR = Path(__file__).parent.parent
 ENV_FILE = BASE_DIR / 'projects' / 'eps' / '.env'
 TMP_DIR = BASE_DIR / '.tmp'
 EPS_TOKEN = BASE_DIR / 'projects' / 'eps' / 'token_eps.pickle'
-PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 
 BRIEFING_FROM_EMAIL = 'allenenriquez@gmail.com'
 BRIEFING_FROM_NAME = 'Enriquez OS'
-BRIEFING_TO_EMAIL_DEFAULT = 'allenenriquez006@gmail.com'
+BRIEFING_TO_EMAIL_DEFAULT = 'allenenriquez.ai@gmail.com'
 
 # Import sibling tools
 sys.path.insert(0, str(Path(__file__).parent))

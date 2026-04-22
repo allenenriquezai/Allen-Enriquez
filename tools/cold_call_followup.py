@@ -48,11 +48,11 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 BASE_DIR = Path(__file__).parent.parent
-TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 LEADS_FILE = BASE_DIR / 'projects' / 'personal' / '.tmp' / 'cold_call_leads.json'
 LEAD_MAGNET = BASE_DIR / 'projects' / 'personal' / 'sales' / 'lead-magnet.pdf'
 
-FROM_EMAIL = 'allenenriquez006@gmail.com'
+FROM_EMAIL = 'allenenriquez.ai@gmail.com'
 FROM_NAME = 'Allen Enriquez'
 
 # EDIT THESE before first send

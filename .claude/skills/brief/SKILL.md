@@ -20,7 +20,7 @@ Shows the HTML briefing without sending. Always preview first.
 ```bash
 python3 tools/morning_briefing.py 2>&1 | grep -v Warning | grep -v warnings
 ```
-Sends via personal Gmail (allenenriquez@gmail.com → allenenriquez006@gmail.com).
+Sends via personal Gmail (allenenriquez@gmail.com → allenenriquez.ai@gmail.com).
 
 ### Custom recipient
 ```bash

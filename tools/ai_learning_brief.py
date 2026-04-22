@@ -12,7 +12,7 @@ Usage:
     python3 tools/ai_learning_brief.py --to x@y.com # override recipient (with --send)
 
 Requires:
-    projects/personal/token_personal.pickle: Gmail OAuth token with send scope
+    projects/personal/token_personal_ai.pickle: Gmail OAuth token with send scope
     projects/personal/.env: ANTHROPIC_API_KEY
 """
 
@@ -34,13 +34,13 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 BASE_DIR = Path(__file__).parent.parent
-PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 PERSONAL_ENV = BASE_DIR / 'projects' / 'personal' / '.env'
 TMP_DIR = BASE_DIR / '.tmp'
 
 FROM_EMAIL = 'allenenriquez@gmail.com'
 FROM_NAME = 'Enriquez OS'
-TO_EMAIL_DEFAULT = 'allenenriquez006@gmail.com'
+TO_EMAIL_DEFAULT = 'allenenriquez.ai@gmail.com'
 
 
 def load_env():

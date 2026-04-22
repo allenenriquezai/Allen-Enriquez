@@ -23,7 +23,7 @@ Usage:
     python3 tools/personal_crm.py update-note --tab "Paint | Emails Sent" --row 5 --field "Date Emailed" --value "2026-04-10"
 
 Requires:
-    projects/personal/token_personal.pickle: Google OAuth token with Sheets + Gmail + Calendar
+    projects/personal/token_personal_ai.pickle: Google OAuth token with Sheets + Gmail + Calendar
 """
 
 import argparse
@@ -42,7 +42,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 BASE_DIR = Path(__file__).parent.parent
-TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 TMP_DIR = BASE_DIR / '.tmp'
 OUTPUT_FILE = TMP_DIR / 'personal_crm.json'
 CLEANUP_LOG = TMP_DIR / 'personal_crm_cleanup.log'
@@ -72,7 +72,7 @@ OLD_TAB_TO_GROUP = {'Painting Companies': 'paint', 'Others': 'other'}
 TABS = ['Painting Companies', 'Others']  # kept for migration only
 
 BRIEFING_FROM = 'allenenriquez@gmail.com'
-BRIEFING_TO = 'allenenriquez006@gmail.com'
+BRIEFING_TO = 'allenenriquez.ai@gmail.com'
 
 # --- Column order ---
 # A-I = Allen's primary view (zoomed in)
@@ -1493,7 +1493,7 @@ def send_outreach_email(to_email, subject, body):
     service = get_gmail_service()
     msg = MIMEMultipart()
     msg['to'] = to_email
-    msg['from'] = 'Allen Enriquez <allenenriquez006@gmail.com>'
+    msg['from'] = 'Allen Enriquez <allenenriquez.ai@gmail.com>'
     msg['subject'] = subject
     msg.attach(MIMEText(body, 'plain'))
     raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()

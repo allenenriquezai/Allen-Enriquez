@@ -247,7 +247,7 @@ def _read_file(path='', **kwargs):
 
 
 def _send_personal_email(to='', subject='', body='', **kwargs):
-    """Send an email via personal Gmail (allenenriquez006@gmail.com)."""
+    """Send an email via personal Gmail (allenenriquez.ai@gmail.com)."""
     if not to or not subject or not body:
         return {'error': 'to, subject, and body are required'}
     from send_personal_email import send_email
@@ -259,13 +259,13 @@ def _send_personal_email(to='', subject='', body='', **kwargs):
 
 
 def _read_personal_gmail(max_results=10, query='is:unread', **kwargs):
-    """Read emails from personal Gmail (allenenriquez006@gmail.com)."""
+    """Read emails from personal Gmail (allenenriquez.ai@gmail.com)."""
     import pickle
     from pathlib import Path
     from google.auth.transport.requests import Request as GRequest
     from googleapiclient.discovery import build
 
-    token_path = Path(WORK_DIR) / 'projects' / 'personal' / 'token_personal.pickle'
+    token_path = Path(WORK_DIR) / 'projects' / 'personal' / 'token_personal_ai.pickle'
     if not token_path.exists():
         return {'error': 'Personal Gmail token not found'}
 
@@ -307,7 +307,7 @@ def _read_email_body(message_id='', **kwargs):
     from google.auth.transport.requests import Request as GRequest
     from googleapiclient.discovery import build
 
-    token_path = Path(WORK_DIR) / 'projects' / 'personal' / 'token_personal.pickle'
+    token_path = Path(WORK_DIR) / 'projects' / 'personal' / 'token_personal_ai.pickle'
     if not token_path.exists():
         return {'error': 'Personal Gmail token not found'}
 
@@ -499,7 +499,7 @@ TOOLS = [
     },
     {
         'name': 'send_personal_email',
-        'description': 'Send an email from Allen\'s personal Gmail (allenenriquez006@gmail.com). For personal brand outreach, follow-ups, networking. IMPORTANT: Show the draft to the user and get confirmation before sending.',
+        'description': 'Send an email from Allen\'s personal Gmail (allenenriquez.ai@gmail.com). For personal brand outreach, follow-ups, networking. IMPORTANT: Show the draft to the user and get confirmation before sending.',
         'input_schema': {
             'type': 'object',
             'properties': {
@@ -513,7 +513,7 @@ TOOLS = [
     },
     {
         'name': 'read_personal_gmail',
-        'description': 'Read emails from Allen\'s personal Gmail (allenenriquez006@gmail.com). Default: unread emails. Use the query parameter for custom Gmail search (e.g. "from:someone@email.com", "subject:invoice", "is:starred", "newer_than:2d").',
+        'description': 'Read emails from Allen\'s personal Gmail (allenenriquez.ai@gmail.com). Default: unread emails. Use the query parameter for custom Gmail search (e.g. "from:someone@email.com", "subject:invoice", "is:starred", "newer_than:2d").',
         'input_schema': {
             'type': 'object',
             'properties': {

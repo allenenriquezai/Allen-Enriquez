@@ -6,7 +6,7 @@ Usage:
     python3 tools/qa_quote.py \\
         --template "quotes/builders_cleaning" \\
         --first-name "Allen" \\
-        --to "allenenriquez006@gmail.com" \\
+        --to "allenenriquez.ai@gmail.com" \\
         --situation "7-townhouse project nearing completion, builder needs 3-stage clean before handover" \\
         --opener "Good talking to you earlier." \\
         --bonus "Window and glass cleaning across all 7 townhouses is included." \\

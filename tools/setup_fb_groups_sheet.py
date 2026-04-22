@@ -15,7 +15,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 BASE_DIR = Path(__file__).parent.parent
-TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 
 PROSPECTS_FOLDER_ID = '1cJvLBKnSwO_zfoZhE9m_aEs70XTn1Hx2'
 

@@ -10,7 +10,7 @@ Send this when a lead says yes. Copy into Google Doc, fill placeholders, attach 
 
 **FROM**
 Allen Enriquez
-allenenriquez006@gmail.com
+allenenriquez.ai@gmail.com
 +63 945 420 3195
 
 **TO**

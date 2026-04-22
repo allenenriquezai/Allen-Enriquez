@@ -20,7 +20,7 @@ TMP_DIR = os.path.join(BASE_DIR, '.tmp')
 OUTPUT_FILE = os.path.join(TMP_DIR, 'review_data.json')
 
 EPS_TOKEN = os.path.join(BASE_DIR, 'projects', 'eps', 'token_eps.pickle')
-PERSONAL_TOKEN = os.path.join(BASE_DIR, 'projects', 'personal', 'token_personal.pickle')
+PERSONAL_TOKEN = os.path.join(BASE_DIR, 'projects', 'personal', 'token_personal_ai.pickle')
 EPS_ENV = os.path.join(BASE_DIR, 'projects', 'eps', '.env')
 
 os.makedirs(TMP_DIR, exist_ok=True)

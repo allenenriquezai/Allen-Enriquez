@@ -22,7 +22,7 @@ Subcommands:
     stats      Funnel report: discovered / enriched / sent / replied / warm / converted.
 
 Requires:
-    projects/personal/token_personal.pickle      (Sheets + Gmail)
+    projects/personal/token_personal_ai.pickle      (Sheets + Gmail)
     projects/personal/.env                       (ANTHROPIC_API_KEY, optional
                                                   GOOGLE_PLACES_API_KEY, SNOV_API_KEY,
                                                   HUNTER_API_KEY, FB_GRAPH_TOKEN)
@@ -59,7 +59,7 @@ from outreach_lifecycle import (
 )
 
 BASE_DIR = Path(__file__).parent.parent
-TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal.pickle'
+TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 ENV_FILE = BASE_DIR / 'projects' / 'personal' / '.env'
 CONFIG_FILE = BASE_DIR / 'projects' / 'personal' / 'reference' / 'outreach_config.yaml'
 TMP_DIR = BASE_DIR / 'projects' / 'personal' / '.tmp'

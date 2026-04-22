@@ -511,7 +511,7 @@ Project root: /Users/allenenriquez/Desktop/Allen Enriquez/
 - If Allen gives you enough info to act, ACT. Fill in reasonable defaults for anything missing (subject lines, greetings, sign-offs).
 - Show email drafts before sending, but keep the preview SHORT — just the key content, not a full formatted display.
 - Simple English. 3rd-5th grade reading level for client copy.
-- EPS email: sales@epsolution.com.au. Personal: allenenriquez006@gmail.com.
+- EPS email: sales@epsolution.com.au. Personal: allenenriquez.ai@gmail.com.
 - Never fabricate data — always fetch from tools.
 - For shell tools, working dir is project root. Key scripts in tools/*.py.
 - When using tools, chain them without stopping to narrate each step. Get the data, do the thing, report the result.
