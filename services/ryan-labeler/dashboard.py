@@ -1,7 +1,7 @@
 """Ryan app — 3-tab: Today, Projects, Calendar."""
 from __future__ import annotations
 import time
-from datetime import datetime, timezone, date as _date
+from datetime import datetime, timezone, timedelta, date as _date
 
 from briefer import (
     fetch_overnight_messages,
@@ -53,10 +53,28 @@ def _fetch_inbox_data() -> dict:
 
 
 def _fetch_calendar_data() -> dict:
-    return {"events": fetch_upcoming_calendar(days_ahead=7)}
+    return {"events": fetch_upcoming_calendar(days_ahead=28)}
 
 
 # ── HTML helpers ──────────────────────────────────────────────────────────────
+
+def _fmt_rel_time(ts_ms: int) -> str:
+    if not ts_ms:
+        return ""
+    dt = datetime.fromtimestamp(ts_ms / 1000, tz=timezone.utc)
+    now_pt = _pt_now()
+    dt_pt = dt.astimezone(now_pt.tzinfo)
+    today = now_pt.date()
+    msg_date = dt_pt.date()
+    if msg_date == today:
+        return dt_pt.strftime("%-I:%M %p")
+    elif msg_date == today - timedelta(days=1):
+        return "Yesterday"
+    elif (today - msg_date).days < 7:
+        return dt_pt.strftime("%a")
+    else:
+        return dt_pt.strftime("%b %-d")
+
 
 def _fmt_time(start: str) -> str:
     if "T" not in start:
@@ -199,6 +217,52 @@ header{background:rgba(10,18,32,0.92);backdrop-filter:blur(12px);-webkit-backdro
   .ts{display:none;}
   .logo-text h1{font-size:12px;}
 }
+/* Thread-row list (Gmail-style) */
+.thread-list{background:var(--navy-2);border:1px solid var(--blue-border);border-radius:14px;overflow:hidden;}
+.thread-row{display:flex;align-items:center;gap:10px;padding:9px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);text-decoration:none;transition:background .12s;}
+.thread-row:last-child{border-bottom:none;}
+.thread-row:hover{background:rgba(2,179,233,0.06);}
+.thread-row.unread .tr-sender,.thread-row.unread .tr-subj{font-weight:700;color:var(--white);}
+.tr-star{font-size:13px;color:var(--grey-dim);flex-shrink:0;opacity:0.4;}
+.tr-sender{font-size:12px;font-weight:600;color:var(--grey);
+  width:120px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tr-body{flex:1;min-width:0;display:flex;align-items:center;gap:5px;overflow:hidden;}
+.tr-subj{font-size:12px;font-weight:600;color:var(--grey);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;max-width:200px;}
+.tr-sep{font-size:12px;color:rgba(255,255,255,0.18);flex-shrink:0;}
+.tr-snippet{font-size:12px;font-weight:300;color:var(--grey-dim);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tr-time{font-family:var(--mono);font-size:10px;color:var(--grey-dim);
+  flex-shrink:0;text-align:right;min-width:50px;}
+.tr-proj-hdr{padding:6px 14px 5px;font-family:var(--mono);font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);
+  background:rgba(2,179,233,0.06);border-bottom:1px solid rgba(2,179,233,0.12);}
+/* Calendar grid */
+.cgrid{width:100%;border:1px solid var(--blue-border);border-radius:14px;overflow:hidden;background:var(--navy-2);}
+.cgrid-row{display:grid;grid-template-columns:repeat(7,1fr);}
+.cgrid-hdr-row{border-bottom:1px solid var(--blue-border);background:rgba(2,179,233,0.04);}
+.cgrid-hdr{padding:7px 4px;text-align:center;font-family:var(--mono);font-size:9px;
+  font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--grey-dim);}
+.cgrid-row:not(.cgrid-hdr-row){border-bottom:1px solid rgba(255,255,255,0.04);}
+.cgrid-row:last-child{border-bottom:none;}
+.cgrid-cell{min-height:80px;padding:6px 4px;border-right:1px solid rgba(255,255,255,0.04);overflow:hidden;}
+.cgrid-cell:last-child{border-right:none;}
+.cgrid-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--grey-dim);
+  margin-bottom:3px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.cgrid-past .cgrid-num{opacity:0.3;}
+.cgrid-today .cgrid-num{background:var(--blue);color:var(--navy);border-radius:50%;}
+.cevt,.cevt-bid{display:block;font-size:8px;font-weight:600;border-radius:3px;
+  padding:1px 3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cevt{background:var(--blue-soft);color:var(--blue);}
+.cevt-bid{background:rgba(255,138,61,0.15);color:var(--orange);}
+.cevt-more{font-size:8px;color:var(--grey-dim);padding:0 2px;}
+@media(max-width:480px){
+  .cgrid-cell{min-height:56px;padding:4px 2px;}
+  .cevt,.cevt-bid{display:none;}
+  .tr-body{display:none;}
+  .tr-sender{width:auto;flex:1;}
+}
 """
 
 _JS_STABS = """
@@ -336,60 +400,46 @@ def render_inbox(token: str = "ryan-sc") -> str:
     team    = data["team"]
     vendors = data["vendors"]
 
-    def _msg_card(m: dict, css_extra: str = "") -> str:
+    def _row(m: dict) -> str:
         sender = m["from"].split("<")[0].strip() or m["from"][:50]
         link = _gmail_link(m.get("thread_id", ""))
+        unread_cls = " unread" if "UNREAD" in m.get("label_ids", []) else ""
+        t = _fmt_rel_time(m.get("ts_ms", 0))
+        snippet = m.get("snippet", "")
         return (
-            f'<a class="card {css_extra}" href="{link}" target="_blank" rel="noopener">'
-            f'<div class="card-subj">{_esc(m["subject"][:90]) or "(no subject)"}</div>'
-            f'<div class="card-meta">{_esc(sender[:60])}</div>'
+            f'<a class="thread-row{unread_cls}" href="{link}" target="_blank" rel="noopener">'
+            f'<span class="tr-star">&#9734;</span>'
+            f'<span class="tr-sender">{_esc(sender[:30])}</span>'
+            f'<span class="tr-body">'
+            f'<span class="tr-subj">{_esc(m["subject"][:70]) or "(no subject)"}</span>'
+            f'<span class="tr-sep"> &mdash; </span>'
+            f'<span class="tr-snippet">{_esc(snippet)}</span>'
+            f'</span>'
+            f'<span class="tr-time">{_esc(t)}</span>'
             f'</a>'
         )
 
-    bid_cls = "warn" if bids else ""
-    bids_html = "".join(_msg_card(m, "card-urgent") for m in bids[:20]) or \
-        '<div class="empty">No bid invites in the last 7 days</div>'
+    def _thread_list(msgs: list, limit: int = 25, empty: str = "") -> str:
+        if not msgs:
+            return f'<div class="empty">{empty}</div>'
+        return '<div class="thread-list">' + "".join(_row(m) for m in msgs[:limit]) + '</div>'
+
+    bids_html = _thread_list(bids, 25, "No bid invites in the last 7 days")
 
     if ongoing:
-        proj_html = ""
+        rows = '<div class="thread-list">'
         for name, msgs in sorted(ongoing.items(), key=lambda x: -len(x[1])):
-            msgs_inner = ""
-            for m in msgs[:4]:
-                sender = m["from"].split("<")[0].strip() or m["from"][:40]
-                link = _gmail_link(m.get("thread_id", ""))
-                msgs_inner += (
-                    f'<a class="proj-link" href="{link}" target="_blank" rel="noopener">'
-                    f'<div class="proj-msg">'
-                    f'<div class="proj-msg-subj">{_esc(m["subject"][:90]) or "(no subject)"}</div>'
-                    f'<div class="proj-msg-from">{_esc(sender[:55])}</div>'
-                    f'</div></a>'
-                )
-            proj_html += (
-                f'<div class="proj-card">'
-                f'<div class="proj-hdr">'
-                f'<span class="proj-name">{_esc(name)}</span>'
-                f'<span class="proj-count">{len(msgs)} email{"s" if len(msgs) != 1 else ""}</span>'
-                f'</div>{msgs_inner}</div>'
-            )
+            rows += f'<div class="tr-proj-hdr">{_esc(name)} &middot; {len(msgs)}</div>'
+            rows += "".join(_row(m) for m in msgs[:6])
+        proj_html = rows + '</div>'
     else:
         proj_html = '<div class="empty">No ongoing project emails in the last 7 days</div>'
 
-    team_items = []
-    for m in team[:20]:
-        sender = m["from"].split("<")[0].strip() or m["from"][:40]
-        link = _gmail_link(m.get("thread_id", ""))
-        team_items.append(
-            f'<a class="card card-team" href="{link}" target="_blank" rel="noopener">'
-            f'<div class="team-sender">{_esc(sender[:30])}</div>'
-            f'<div class="card-subj">{_esc(m["subject"][:80])}</div>'
-            f'</a>'
-        )
-    team_html = "".join(team_items) or '<div class="empty">No team reports in the last 7 days</div>'
+    team_html    = _thread_list(team, 20, "No team reports in the last 7 days")
+    vendors_html = _thread_list(vendors, 20, "No vendor emails in the last 7 days")
 
-    vendors_html = "".join(_msg_card(m) for m in vendors[:20]) or \
-        '<div class="empty">No vendor emails in the last 7 days</div>'
-
-    n_proj = len(ongoing)
+    bid_cls = "warn" if bids else ""
+    n_proj  = sum(len(v) for v in ongoing.values())
     body = f"""
 <div class="stabs">
   <button class="stab" data-stab="bids" onclick="showStab('bids','INBOX_TAB')">
@@ -413,6 +463,45 @@ def render_inbox(token: str = "ryan-sc") -> str:
     return _page_shell(token, "inbox", "Inbox", body, extra_js="initStabs('INBOX_TAB','bids');")
 
 
+def _render_cal_grid(events: list[dict], today_ds: str) -> str:
+    today = _date.fromisoformat(today_ds)
+    week_start = today - timedelta(days=today.weekday())  # Monday
+
+    by_date: dict[str, list] = {}
+    for e in events:
+        if e["date"]:
+            by_date.setdefault(e["date"], []).append(e)
+
+    hdr = '<div class="cgrid-row cgrid-hdr-row">' + "".join(
+        f'<div class="cgrid-cell cgrid-hdr">{d}</div>'
+        for d in ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
+    ) + '</div>'
+
+    rows_html = ""
+    for week in range(4):
+        row = '<div class="cgrid-row">'
+        for day in range(7):
+            d = week_start + timedelta(weeks=week, days=day)
+            ds = d.strftime("%Y-%m-%d")
+            is_today = ds == today_ds
+            is_past = d < today
+
+            cell_events = by_date.get(ds, [])
+            pills = ""
+            for ev in cell_events[:3]:
+                pill_cls = "cevt-bid" if ev["is_bid_due"] else "cevt"
+                t = ev["title"][:18] + ("…" if len(ev["title"]) > 18 else "")
+                pills += f'<div class="{pill_cls}">{_esc(t)}</div>'
+            if len(cell_events) > 3:
+                pills += f'<div class="cevt-more">+{len(cell_events) - 3}</div>'
+
+            cell_cls = "cgrid-cell" + (" cgrid-today" if is_today else " cgrid-past" if is_past else "")
+            row += f'<div class="{cell_cls}"><div class="cgrid-num">{d.day}</div>{pills}</div>'
+        rows_html += row + '</div>'
+
+    return f'<div class="cgrid">{hdr}{rows_html}</div>'
+
+
 # ── Calendar page ─────────────────────────────────────────────────────────────
 
 def render_calendar(token: str = "ryan-sc") -> str:
@@ -424,58 +513,36 @@ def render_calendar(token: str = "ryan-sc") -> str:
     events   = cal_data["events"]
     pt       = _pt_now()
     today_ds = pt.strftime("%Y-%m-%d")
-
-    by_date: dict[str, list] = {}
-    for e in events:
-        by_date.setdefault(e["date"], []).append(e)
     bid_dues = [e for e in events if e["is_bid_due"]]
 
-    def _day_label(ds: str) -> str:
-        try:
-            d = _date.fromisoformat(ds)
-            lbl = d.strftime("%A, %B %-d")
-            return f"Today — {lbl}" if ds == today_ds else lbl
-        except Exception:
-            return ds
+    grid_html = _render_cal_grid(events, today_ds)
 
     def _cal_card(e: dict) -> str:
         t = _fmt_time(e["start"])
-        loc = f'<div class="event-loc">{_esc(e["location"])}</div>' if e["location"] else ""
         assignee = f'<div class="event-assignee">&#9654; {_esc(e["assignee"])}</div>' if e.get("assignee") else ""
         cls = "cal-card bid-due" if e["is_bid_due"] else "cal-card"
-        return f"""<div class="{cls}">
-  <div class="event-time">{t}</div>
-  <div class="event-body">
-    <div class="event-title">{_esc(e['title'])}</div>
-    {loc}{assignee}
-  </div>
-</div>"""
+        return (
+            f'<div class="{cls}">'
+            f'<div class="event-time">{t}</div>'
+            f'<div class="event-body">'
+            f'<div class="event-title">{_esc(e["title"])}</div>'
+            f'{assignee}</div></div>'
+        )
 
-    # This Week tab
-    if by_date:
-        week_html = ""
-        for ds in sorted(by_date):
-            day_cls = "cal-day-hdr today" if ds == today_ds else "cal-day-hdr"
-            cards = "".join(_cal_card(e) for e in by_date[ds])
-            week_html += f'<div class="cal-day"><div class="{day_cls}">{_day_label(ds)}</div>{cards}</div>'
-    else:
-        week_html = '<div class="empty">No events in the next 7 days</div>'
-
-    # Bid Due Dates tab
     bids_html = "".join(_cal_card(e) for e in bid_dues) if bid_dues else \
-        '<div class="empty">No bid due dates in the next 7 days</div>'
+        '<div class="empty">No bid due dates in the next 4 weeks</div>'
 
     bid_cls = "warn" if bid_dues else ""
     body = f"""
 <div class="stabs">
-  <button class="stab" data-stab="week" onclick="showStab('week','CAL_TAB')">
-    This Week <span class="stab-n">{len(events)}</span>
+  <button class="stab" data-stab="grid" onclick="showStab('grid','CAL_TAB')">
+    Calendar <span class="stab-n">{len(events)}</span>
   </button>
   <button class="stab" data-stab="bids" onclick="showStab('bids','CAL_TAB')">
-    Bid Due Dates <span class="stab-n {bid_cls}">{len(bid_dues)}</span>
+    Bid Dues <span class="stab-n {bid_cls}">{len(bid_dues)}</span>
   </button>
 </div>
-<div data-tab="week">{week_html}</div>
+<div data-tab="grid">{grid_html}</div>
 <div data-tab="bids" style="display:none">{bids_html}</div>
 """
-    return _page_shell(token, "calendar", "Calendar", body, extra_js="initStabs('CAL_TAB','week');")
+    return _page_shell(token, "calendar", "Calendar", body, extra_js="initStabs('CAL_TAB','grid');")

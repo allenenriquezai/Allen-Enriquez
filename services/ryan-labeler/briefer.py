@@ -407,6 +407,7 @@ def fetch_inbox_sections(hours_back: int = 168) -> dict:
                 "subject": headers.get("subject", ""),
                 "snippet": m.get("snippet", "")[:120],
                 "label_ids": m.get("labelIds", []),
+                "ts_ms": ts_ms,
             })
         return out
 
