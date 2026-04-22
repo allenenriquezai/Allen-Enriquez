@@ -12,6 +12,7 @@ Sends plain text from allenenriquez.ai@gmail.com to ryan@sc-incorporated.com.
 """
 from __future__ import annotations
 import base64
+import json
 from datetime import datetime, timedelta, timezone
 from email.mime.text import MIMEText
 from typing import Optional
@@ -201,17 +202,28 @@ def fetch_upcoming_calendar(days_ahead: int = 7) -> list[dict]:
             assignee = "Kharene" if "kharene" in desc else ("Kim" if "kim" in desc else None)
             is_bid_due = any(kw in title.lower() for kw in ["bid", "due", "deadline", "proposal"])
             event_date = start_val[:10] if start_val else ""
+            # Compute end_date
+            if e["end"].get("date"):
+                # All-day: end date is exclusive — subtract 1 day
+                end_d = datetime.strptime(e["end"]["date"], "%Y-%m-%d").date() - timedelta(days=1)
+                end_date = end_d.strftime("%Y-%m-%d")
+            else:
+                end_val = e["end"].get("dateTime", "")
+                end_date = end_val[:10] if end_val else event_date
+            color_id = e.get("colorId", "")
             events.append({
                 "title": title,
                 "start": start_val,
                 "date": event_date,
+                "end_date": end_date,
                 "location": e.get("location", ""),
                 "assignee": assignee,
                 "is_bid_due": is_bid_due,
+                "color": color_id,
             })
         return events
     except Exception as ex:
-        return [{"title": f"(calendar unavailable: {ex})", "start": "", "date": "", "location": "", "assignee": None, "is_bid_due": False}]
+        return [{"title": f"(calendar unavailable: {ex})", "start": "", "date": "", "end_date": "", "location": "", "assignee": None, "is_bid_due": False, "color": ""}]
 
 
 def find_urgent(messages: list[dict]) -> list[dict]:
@@ -667,3 +679,95 @@ def run_evening_brief(dry_run: bool = False) -> dict:
         },
         **send_result,
     }
+
+
+# ── Tasks ─────────────────────────────────────────────────────────────────────
+
+def _tasks_path():
+    import config
+    return config.CONFIG_DIR / "tasks.json"
+
+
+def fetch_tasks() -> list[dict]:
+    """Load tasks from disk. Returns list of {id, text, done, created_at}."""
+    p = _tasks_path()
+    if not p.exists():
+        return []
+    try:
+        return json.loads(p.read_text())
+    except Exception:
+        return []
+
+
+def add_task(text: str) -> dict:
+    """Add a new task. Returns the new task dict."""
+    import uuid
+    tasks = fetch_tasks()
+    task = {
+        "id": str(uuid.uuid4())[:8],
+        "text": text.strip()[:200],
+        "done": False,
+        "created_at": _pt_now().isoformat(),
+    }
+    tasks.append(task)
+    _tasks_path().write_text(json.dumps(tasks, indent=2))
+    return task
+
+
+def toggle_task(task_id: str) -> bool:
+    """Toggle done status of a task. Returns new done value."""
+    tasks = fetch_tasks()
+    for t in tasks:
+        if t["id"] == task_id:
+            t["done"] = not t["done"]
+            _tasks_path().write_text(json.dumps(tasks, indent=2))
+            return t["done"]
+    return False
+
+
+def delete_task(task_id: str) -> None:
+    """Delete a task by id."""
+    tasks = fetch_tasks()
+    tasks = [t for t in tasks if t["id"] != task_id]
+    _tasks_path().write_text(json.dumps(tasks, indent=2))
+
+
+def fetch_thread(thread_id: str) -> list[dict]:
+    """Fetch all messages in a Gmail thread. Returns list of message dicts."""
+    import base64
+    creds = config.ryan_gmail_creds()
+    service = build("gmail", "v1", credentials=creds, cache_discovery=False)
+    thread = service.users().threads().get(
+        userId="me", id=thread_id, format="full"
+    ).execute()
+
+    msgs = []
+    for m in thread.get("messages", []):
+        headers = {h["name"].lower(): h["value"] for h in m.get("payload", {}).get("headers", [])}
+        ts_ms = int(m.get("internalDate", 0))
+
+        # Extract text/plain body (walk MIME tree)
+        def _extract_plain(part):
+            if part.get("mimeType") == "text/plain":
+                data = part.get("body", {}).get("data", "")
+                if data:
+                    return base64.urlsafe_b64decode(data + "==").decode("utf-8", errors="replace")
+            for p in part.get("parts", []):
+                result = _extract_plain(p)
+                if result:
+                    return result
+            return ""
+
+        body = _extract_plain(m.get("payload", {}))
+
+        msgs.append({
+            "message_id": m["id"],
+            "from": headers.get("from", ""),
+            "to": headers.get("to", ""),
+            "subject": headers.get("subject", "(no subject)"),
+            "date_str": headers.get("date", ""),
+            "ts_ms": ts_ms,
+            "body": body[:8000],  # cap at 8KB
+            "label_ids": m.get("labelIds", []),
+        })
+    return msgs

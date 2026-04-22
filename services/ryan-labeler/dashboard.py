@@ -9,7 +9,9 @@ from briefer import (
     fetch_inbox_sections,
     fetch_upcoming_calendar,
     find_urgent,
+    fetch_thread,
     _pt_now,
+    fetch_tasks,
 )
 
 # ── In-memory cache ───────────────────────────────────────────────────────────
@@ -93,10 +95,10 @@ def _esc(s: str) -> str:
              .replace('"', "&quot;"))
 
 
-def _gmail_link(thread_id: str) -> str:
+def _thread_link(thread_id: str, token: str) -> str:
     if thread_id:
-        return f"https://mail.google.com/mail/u/0/#all/{thread_id}"
-    return "https://mail.google.com/mail/u/0/"
+        return f"/thread?id={thread_id}&token={token}"
+    return "#"
 
 
 # ── Shared CSS ────────────────────────────────────────────────────────────────
@@ -251,18 +253,46 @@ header{background:rgba(10,18,32,0.92);backdrop-filter:blur(12px);-webkit-backdro
 .cgrid-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--grey-dim);
   margin-bottom:3px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
 .cgrid-past .cgrid-num{opacity:0.3;}
+.cgrid-other-month .cgrid-num{opacity:0.25;}
+.cgrid-other-month{background:rgba(0,0,0,0.1);}
 .cgrid-today .cgrid-num{background:var(--blue);color:var(--navy);border-radius:50%;}
 .cevt,.cevt-bid{display:block;font-size:8px;font-weight:600;border-radius:3px;
   padding:1px 3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cevt{background:var(--blue-soft);color:var(--blue);}
 .cevt-bid{background:rgba(255,138,61,0.15);color:var(--orange);}
 .cevt-more{font-size:8px;color:var(--grey-dim);padding:0 2px;}
+.cal-month-hdr{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--white);
+  text-align:center;padding:14px 0 10px;letter-spacing:0.06em;}
 @media(max-width:480px){
   .cgrid-cell{min-height:56px;padding:4px 2px;}
   .cevt,.cevt-bid{display:none;}
   .tr-body{display:none;}
   .tr-sender{width:auto;flex:1;}
 }
+/* Tasks */
+.task-form{display:flex;gap:8px;margin-bottom:16px;}
+.task-input{flex:1;background:var(--navy-3);border:1px solid var(--blue-border);
+  border-radius:8px;padding:10px 14px;color:var(--white);font-family:var(--sans);font-size:13px;
+  outline:none;transition:border-color .15s;}
+.task-input:focus{border-color:var(--blue);}
+.task-input::placeholder{color:var(--grey-dim);}
+.task-add-btn{background:var(--blue-soft);border:1px solid var(--blue-border);
+  border-radius:8px;padding:10px 16px;color:var(--blue);font-family:var(--mono);font-size:11px;
+  font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;}
+.task-add-btn:hover{background:rgba(2,179,233,0.2);}
+.task-item{display:flex;align-items:center;gap:12px;padding:11px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);}
+.task-item:last-child{border-bottom:none;}
+.task-check{width:18px;height:18px;border:2px solid var(--blue-border);border-radius:4px;
+  cursor:pointer;flex-shrink:0;background:transparent;display:flex;align-items:center;
+  justify-content:center;transition:all .15s;}
+.task-check.done{background:var(--blue);border-color:var(--blue);}
+.task-check.done::after{content:"✓";font-size:11px;color:var(--navy);font-weight:700;}
+.task-text{flex:1;font-size:13px;color:var(--white);line-height:1.4;}
+.task-text.done{text-decoration:line-through;color:var(--grey-dim);}
+.task-del{background:none;border:none;color:var(--grey-dim);cursor:pointer;font-size:16px;
+  padding:0 4px;opacity:0.4;transition:opacity .15s;}
+.task-del:hover{opacity:1;color:#e74c3c;}
 """
 
 _JS_STABS = """
@@ -279,6 +309,32 @@ function initStabs(key,def){
   var s;try{s=localStorage.getItem(key);}catch(e){}
   showStab(s||def,key);
 }
+"""
+
+_JS_TASKS = """
+function taskAdd(token){
+  var inp=document.getElementById('task-input');
+  var text=inp.value.trim();
+  if(!text)return;
+  inp.value='';
+  fetch('/tasks/add?token='+token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text})})
+    .then(function(){refreshTasks(token);});
+}
+function taskToggle(id,token){
+  fetch('/tasks/toggle?token='+token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id})})
+    .then(function(){refreshTasks(token);});
+}
+function taskDelete(id,token){
+  fetch('/tasks/delete?token='+token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id})})
+    .then(function(){refreshTasks(token);});
+}
+function refreshTasks(token){
+  fetch('/tasks-html?token='+token).then(function(r){return r.text();}).then(function(html){
+    var el=document.getElementById('tasks-list');
+    if(el)el.innerHTML=html;
+  });
+}
+function taskEnter(e,token){if(e.key==='Enter')taskAdd(token);}
 """
 
 
@@ -343,6 +399,7 @@ def render_dashboard(token: str = "ryan-sc") -> str:
 
     urgent = data["urgent"]
     team   = data["team"]
+    tasks  = fetch_tasks()
 
     if urgent:
         urgent_html = ""
@@ -372,19 +429,64 @@ def render_dashboard(token: str = "ryan-sc") -> str:
         team_html = '<div class="empty">No team reports today</div>'
 
     u_cls = "warn" if urgent else ""
+    done_count = sum(1 for t in tasks if t["done"])
+    task_items = ""
+    for t in tasks:
+        done_cls = " done" if t["done"] else ""
+        check_cls = "task-check done" if t["done"] else "task-check"
+        task_items += (
+            f'<div class="task-item">'
+            f'<div class="{check_cls}" onclick="taskToggle(\'{t["id"]}\',\'{token}\')"></div>'
+            f'<span class="task-text{done_cls}">{_esc(t["text"])}</span>'
+            f'<button class="task-del" onclick="taskDelete(\'{t["id"]}\',\'{token}\')">&times;</button>'
+            f'</div>'
+        )
+    tasks_html = f"""
+<div class="task-form">
+  <input id="task-input" class="task-input" type="text" placeholder="Add a task..."
+    onkeydown="taskEnter(event,'{token}')">
+  <button class="task-add-btn" onclick="taskAdd('{token}')">+ Add</button>
+</div>
+<div class="thread-list" id="tasks-list">
+  {task_items if task_items else '<div class="empty">No tasks yet</div>'}
+</div>
+"""
     body = f"""
 <div class="stabs">
   <button class="stab" data-stab="urgent" onclick="showStab('urgent','TODAY_TAB')">
     Urgent <span class="stab-n {u_cls}">{len(urgent)}</span>
+  </button>
+  <button class="stab" data-stab="tasks" onclick="showStab('tasks','TODAY_TAB')">
+    Tasks <span class="stab-n">{len(tasks) - done_count}</span>
   </button>
   <button class="stab" data-stab="team" onclick="showStab('team','TODAY_TAB')">
     Team <span class="stab-n">{len(team)}</span>
   </button>
 </div>
 <div data-tab="urgent">{urgent_html}</div>
+<div data-tab="tasks" style="display:none">{tasks_html}</div>
 <div data-tab="team" style="display:none">{team_html}</div>
 """
-    return _page_shell(token, "today", "Today", body, extra_js="initStabs('TODAY_TAB','urgent');")
+    return _page_shell(token, "today", "Today", body, extra_js=_JS_TASKS + "initStabs('TODAY_TAB','urgent');")
+
+
+def render_tasks_html(token: str) -> str:
+    """Return just the task list HTML fragment for AJAX refresh."""
+    tasks = fetch_tasks()
+    if not tasks:
+        return '<div class="empty">No tasks yet</div>'
+    items = ""
+    for t in tasks:
+        done_cls = " done" if t["done"] else ""
+        check_cls = "task-check done" if t["done"] else "task-check"
+        items += (
+            f'<div class="task-item">'
+            f'<div class="{check_cls}" onclick="taskToggle(\'{t["id"]}\',\'{token}\')"></div>'
+            f'<span class="task-text{done_cls}">{_esc(t["text"])}</span>'
+            f'<button class="task-del" onclick="taskDelete(\'{t["id"]}\',\'{token}\')">&times;</button>'
+            f'</div>'
+        )
+    return items
 
 
 # ── Inbox page ────────────────────────────────────────────────────────────────
@@ -464,39 +566,89 @@ def render_inbox(token: str = "ryan-sc") -> str:
 
 
 def _render_cal_grid(events: list[dict], today_ds: str) -> str:
+    from calendar import monthrange
     today = _date.fromisoformat(today_ds)
-    week_start = today - timedelta(days=today.weekday())  # Monday
+    # Find the first and last day of the current month
+    first_of_month = today.replace(day=1)
+    last_day = monthrange(today.year, today.month)[1]
+    last_of_month = today.replace(day=last_day)
+    # Grid starts on the Sunday on or before the 1st of the month
+    # In Python, weekday() returns 0=Mon..6=Sun. For Sunday-start: Sunday=0
+    # Shift: Monday=1, Tuesday=2, ..., Sunday=0 in Sun-start week
+    start_offset = (first_of_month.weekday() + 1) % 7  # days back from first to find Sunday
+    grid_start = first_of_month - timedelta(days=start_offset)
+    # Grid ends on the Saturday on or after the last of the month
+    # Saturday in Python weekday() = 5. In our Sun-start week, Saturday is column 6.
+    end_offset = (6 - (last_of_month.weekday() + 1) % 7) % 7
+    grid_end = last_of_month + timedelta(days=end_offset)
 
+    # Build by_date index — multi-day events appear in every cell they span
     by_date: dict[str, list] = {}
     for e in events:
-        if e["date"]:
-            by_date.setdefault(e["date"], []).append(e)
+        if not e.get("date"):
+            continue
+        start_d = _date.fromisoformat(e["date"])
+        end_d = _date.fromisoformat(e.get("end_date") or e["date"])
+        cur = start_d
+        while cur <= end_d:
+            ds = cur.strftime("%Y-%m-%d")
+            by_date.setdefault(ds, []).append(e)
+            cur += timedelta(days=1)
+
+    # Google Calendar colorId → CSS color
+    COLOR_MAP = {
+        "11": "#e74c3c",   # Tomato red
+        "4":  "#e91e8c",   # Flamingo pink
+        "6":  "#f39c12",   # Tangerine orange
+        "5":  "#f1c40f",   # Banana yellow
+        "2":  "#27ae60",   # Sage green
+        "10": "#1e8449",   # Basil dark green
+        "7":  "#17a589",   # Peacock teal
+        "1":  "#7986cb",   # Lavender blue
+        "9":  "#1565c0",   # Blueberry dark blue
+        "3":  "#8e44ad",   # Grape purple
+        "8":  "#616161",   # Graphite grey
+    }
 
     hdr = '<div class="cgrid-row cgrid-hdr-row">' + "".join(
         f'<div class="cgrid-cell cgrid-hdr">{d}</div>'
-        for d in ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
+        for d in ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
     ) + '</div>'
 
     rows_html = ""
-    for week in range(4):
+    cur_day = grid_start
+    while cur_day <= grid_end:
         row = '<div class="cgrid-row">'
-        for day in range(7):
-            d = week_start + timedelta(weeks=week, days=day)
-            ds = d.strftime("%Y-%m-%d")
+        for _ in range(7):
+            ds = cur_day.strftime("%Y-%m-%d")
             is_today = ds == today_ds
-            is_past = d < today
+            is_past = cur_day < today
+            is_other_month = cur_day.month != today.month
 
             cell_events = by_date.get(ds, [])
             pills = ""
             for ev in cell_events[:3]:
-                pill_cls = "cevt-bid" if ev["is_bid_due"] else "cevt"
-                t = ev["title"][:18] + ("…" if len(ev["title"]) > 18 else "")
-                pills += f'<div class="{pill_cls}">{_esc(t)}</div>'
+                if ev["is_bid_due"]:
+                    color = "#FF8A3D"
+                else:
+                    color = COLOR_MAP.get(ev.get("color", ""), "#02B3E9")
+                bg = color + "22"  # ~13% opacity background
+                t = ev["title"][:16] + ("…" if len(ev["title"]) > 16 else "")
+                pills += f'<div class="cevt" style="background:{bg};color:{color}">{_esc(t)}</div>'
             if len(cell_events) > 3:
-                pills += f'<div class="cevt-more">+{len(cell_events) - 3}</div>'
+                pills += f'<div class="cevt-more">+{len(cell_events)-3}</div>'
 
-            cell_cls = "cgrid-cell" + (" cgrid-today" if is_today else " cgrid-past" if is_past else "")
-            row += f'<div class="{cell_cls}"><div class="cgrid-num">{d.day}</div>{pills}</div>'
+            num_cls = "cgrid-num"
+            cell_cls = "cgrid-cell"
+            if is_today:
+                cell_cls += " cgrid-today"
+            elif is_past:
+                cell_cls += " cgrid-past"
+            if is_other_month:
+                cell_cls += " cgrid-other-month"
+
+            row += f'<div class="{cell_cls}"><div class="{num_cls}">{cur_day.day}</div>{pills}</div>'
+            cur_day += timedelta(days=1)
         rows_html += row + '</div>'
 
     return f'<div class="cgrid">{hdr}{rows_html}</div>'
@@ -515,7 +667,10 @@ def render_calendar(token: str = "ryan-sc") -> str:
     today_ds = pt.strftime("%Y-%m-%d")
     bid_dues = [e for e in events if e["is_bid_due"]]
 
+    pt = _pt_now()
+    month_label = pt.strftime("%B %Y")
     grid_html = _render_cal_grid(events, today_ds)
+    grid_section = f'<div class="cal-month-hdr">{month_label}</div>{grid_html}'
 
     def _cal_card(e: dict) -> str:
         t = _fmt_time(e["start"])
@@ -542,7 +697,7 @@ def render_calendar(token: str = "ryan-sc") -> str:
     Bid Dues <span class="stab-n {bid_cls}">{len(bid_dues)}</span>
   </button>
 </div>
-<div data-tab="grid">{grid_html}</div>
+<div data-tab="grid">{grid_section}</div>
 <div data-tab="bids" style="display:none">{bids_html}</div>
 """
     return _page_shell(token, "calendar", "Calendar", body, extra_js="initStabs('CAL_TAB','grid');")
