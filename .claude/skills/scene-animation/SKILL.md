@@ -38,6 +38,7 @@ Build scene motion graphics in isolation, scrub-approve in browser, lock. THEN h
 
 Every reel has a beats file describing scene content + timing. Usually:
 - `projects/personal/videos/<reel>/beats.md`
+- `projects/personal/content/reels/<slug>/beats.md`
 - Or BRIEF.md / STORYBOARD.md from `/make-a-video` Gate 4
 
 Extract per scene:
@@ -46,7 +47,23 @@ Extract per scene:
 - `data-duration` (seconds, to 2 decimals)
 - concept / visuals / payoff moment
 
-If no beats file exists, ask Allen for the scene list before scaffolding.
+### No beats file? Derive from raw video
+
+If Allen hands over a CapCut export or reshoot .mov instead of a beats file,
+transcribe first — word-level timestamps give exact entrance cues. See
+[`TRANSCRIBE.md`](./TRANSCRIBE.md) for the full SOP. One-liner:
+
+```bash
+python3 tools/transcribe_video.py \
+  "<path/to/video.mov>" \
+  --out ".tmp/videos/<slug>/transcript"
+```
+
+Then read `transcript.srt` for a human scan and `transcript.json` for exact
+word start times. Ask Allen for the black-section start/end so you know which
+spoken range drives the animation.
+
+If there's no video either, ask Allen for the scene list before scaffolding.
 
 ## Step 2 — Scaffold scene HTML
 

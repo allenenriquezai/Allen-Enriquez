@@ -1,0 +1,18 @@
+--- Slide 1 ---
+4 LEVELS OF AI IN BUSINESS || Most people are stuck at Level 1.
+
+--- Slide 2 ---
+LEVEL 1: CHAT || You open ChatGPT. Ask a question. Copy the answer. But you're doing all the work.
+
+--- Slide 3 ---
+LEVEL 2: BUILT-IN AI || AI inside your tools. Gmail suggests replies. Your CRM tells you what to do next.
+
+--- Slide 4 ---
+LEVEL 3: AUTOMATION || Zapier, Make, n8n. Connect your software in a sequence. Scales — but building workflows is hard.
+
+--- Slide 5 ---
+LEVEL 4: AGENTIC WORKFLOWS || Tell AI what needs to happen. It builds the system. Fixes its own mistakes. You direct. It executes.
+
+--- Slide 6 ---
+Follow for more.
+

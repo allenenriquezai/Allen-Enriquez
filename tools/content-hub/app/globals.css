@@ -1,0 +1,166 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-montserrat);
+  --font-mono: var(--font-roboto-mono);
+  --font-heading: var(--font-montserrat);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-brand: var(--brand);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Allen Enriquez brand system: dark navy, blue #02B3E9, Roboto Mono labels, Montserrat body. */
+:root,
+.dark {
+  /* Deep navy, not pure black — matches brand reference */
+  --background: #06101a;
+  --foreground: #f7fbff;
+  --card: #0c1724;
+  --card-foreground: #f7fbff;
+  --popover: #0c1724;
+  --popover-foreground: #f7fbff;
+
+  --brand: #02B3E9;
+  --brand-deep: #0083ad;
+  --brand-teal: #14d4e6;
+  --dark-blue: #0a1628;
+  --medium-blue: #13304a;
+  --dark-grey: #1a2332;
+  --light-grey: #8a99ae;
+  --orange: #ff8c42;
+
+  --primary: #02B3E9;
+  --primary-foreground: #06101a;
+  --secondary: #13304a;
+  --secondary-foreground: #f7fbff;
+  --muted: #12202e;
+  --muted-foreground: #8a99ae;
+  --accent: #13304a;
+  --accent-foreground: #f7fbff;
+  --destructive: #ff8c42;
+  --border: rgba(2, 179, 233, 0.14);
+  --input: rgba(2, 179, 233, 0.2);
+  --ring: #02B3E9;
+  --chart-1: #02B3E9;
+  --chart-2: #14d4e6;
+  --chart-3: #ff8c42;
+  --chart-4: #8a99ae;
+  --chart-5: #13304a;
+  --radius: 0.875rem;
+  --sidebar: #08121e;
+  --sidebar-foreground: #f7fbff;
+  --sidebar-primary: #02B3E9;
+  --sidebar-primary-foreground: #06101a;
+  --sidebar-accent: #13304a;
+  --sidebar-accent-foreground: #02B3E9;
+  --sidebar-border: rgba(2, 179, 233, 0.12);
+  --sidebar-ring: #02B3E9;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(2, 179, 233, 0.08), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 100% 100%, rgba(20, 212, 230, 0.05), transparent 60%);
+    background-attachment: fixed;
+  }
+  html {
+    @apply font-sans;
+  }
+  /* UI labels / stats / numbers always mono per brand guidelines */
+  label,
+  .label,
+  [data-label],
+  kbd,
+  code,
+  th {
+    font-family: var(--font-roboto-mono), ui-monospace, monospace;
+    letter-spacing: 0.02em;
+  }
+}
+
+/* Brand utilities */
+@layer utilities {
+  .ae-glow {
+    box-shadow: 0 0 0 1px rgba(2, 179, 233, 0.5), 0 0 24px rgba(2, 179, 233, 0.25);
+  }
+  .ae-glow-text {
+    text-shadow: 0 0 12px rgba(2, 179, 233, 0.6), 0 0 2px rgba(2, 179, 233, 0.9);
+  }
+  .ae-pill {
+    border-radius: 9999px;
+    border: 1px solid rgba(2, 179, 233, 0.35);
+    background: rgba(6, 16, 26, 0.6);
+    transition: box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+  }
+  .ae-pill:hover {
+    border-color: rgba(2, 179, 233, 0.8);
+    box-shadow: 0 0 18px rgba(2, 179, 233, 0.3);
+  }
+  .ae-pill-active {
+    border-color: #02B3E9;
+    background: rgba(2, 179, 233, 0.08);
+    box-shadow: 0 0 0 1px rgba(2, 179, 233, 0.6), 0 0 20px rgba(2, 179, 233, 0.28);
+  }
+  .ae-card {
+    background: linear-gradient(160deg, rgba(19, 48, 74, 0.35) 0%, rgba(12, 23, 36, 0.85) 100%);
+    border: 1px solid rgba(2, 179, 233, 0.12);
+    border-radius: var(--radius);
+  }
+  .ae-mono-label {
+    font-family: var(--font-roboto-mono), ui-monospace, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.68rem;
+    color: var(--light-grey);
+  }
+  .ae-stat {
+    font-family: var(--font-roboto-mono), ui-monospace, monospace;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+}

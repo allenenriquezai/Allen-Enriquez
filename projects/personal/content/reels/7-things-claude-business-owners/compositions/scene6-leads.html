@@ -1,0 +1,203 @@
+<template id="scene6-leads-template">
+  <div
+    data-composition-id="scene6-leads"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="6.52"
+  >
+    <div class="wrap">
+      <div class="num-mono">
+        <span class="layer l-base">06</span>
+        <span class="layer l-magenta">06</span>
+        <span class="layer l-blue">06</span>
+      </div>
+
+      <div class="headline">200 LEADS<br/>SENT</div>
+      <div class="underline-sweep"></div>
+
+      <div class="counter-card">
+        <div class="cc-row">
+          <div class="cc-label">LEADS FOUND</div>
+          <div class="cc-num" id="leads-num">0</div>
+        </div>
+        <div class="cc-bar"><div class="cc-bar-fill" id="bar-found"></div></div>
+        <div class="cc-row">
+          <div class="cc-label">EMAILS WRITTEN</div>
+          <div class="cc-num" id="written-num">0</div>
+        </div>
+        <div class="cc-bar"><div class="cc-bar-fill" id="bar-written"></div></div>
+        <div class="cc-row">
+          <div class="cc-label">SENT</div>
+          <div class="cc-num sent" id="sent-num">0</div>
+        </div>
+        <div class="cc-bar"><div class="cc-bar-fill sent" id="bar-sent"></div></div>
+      </div>
+
+      <div class="mail-stack">
+        <div class="mail-card m1">📧</div>
+        <div class="mail-card m2">📧</div>
+        <div class="mail-card m3">📧</div>
+        <div class="mail-card m4">📧</div>
+        <div class="mail-card m5">📧</div>
+      </div>
+
+      <div class="sent-stamp">SENT ✓</div>
+
+      <div class="subtext">PERSONALIZED &nbsp;·&nbsp; AUTO-SENT</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene6-leads"] { position: absolute; inset: 0; background: #05080F; overflow: hidden; }
+      [data-composition-id="scene6-leads"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 20px; padding: 80px 60px;
+      }
+      [data-composition-id="scene6-leads"] .num-mono { position: relative; width: 300px; height: 280px; }
+      [data-composition-id="scene6-leads"] .num-mono .layer {
+        position: absolute; inset: 0;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 280px; line-height: 0.85; letter-spacing: -0.04em;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene6-leads"] .num-mono .l-base    { color: #fff; text-shadow: 0 0 40px rgba(2,179,233,0.7); }
+      [data-composition-id="scene6-leads"] .num-mono .l-magenta { color: #ff00a8; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene6-leads"] .num-mono .l-blue    { color: #02B3E9; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene6-leads"] .headline {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 96px; line-height: 0.95; color: #fff; text-align: center;
+        letter-spacing: -0.02em;
+        text-shadow: 0 0 30px rgba(2,179,233,0.35);
+      }
+      [data-composition-id="scene6-leads"] .underline-sweep {
+        width: 0; height: 8px;
+        background: linear-gradient(90deg, #02B3E9, #7de9ff);
+        box-shadow: 0 0 18px rgba(2,179,233,0.9);
+        border-radius: 4px;
+      }
+      [data-composition-id="scene6-leads"] .counter-card {
+        width: 780px;
+        background: rgba(5,10,18,0.9);
+        border: 1px solid rgba(2,179,233,0.45);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 0 30px rgba(2,179,233,0.25);
+        display: flex; flex-direction: column; gap: 10px;
+      }
+      [data-composition-id="scene6-leads"] .cc-row {
+        display: flex; justify-content: space-between; align-items: baseline;
+      }
+      [data-composition-id="scene6-leads"] .cc-label {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 24px; color: rgba(255,255,255,0.7);
+        letter-spacing: 0.16em;
+      }
+      [data-composition-id="scene6-leads"] .cc-num {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 56px; color: #fff;
+        letter-spacing: -0.02em;
+      }
+      [data-composition-id="scene6-leads"] .cc-num.sent { color: #22c55e; text-shadow: 0 0 20px rgba(34,197,94,0.8); }
+      [data-composition-id="scene6-leads"] .cc-bar {
+        height: 8px; border-radius: 4px;
+        background: rgba(2,179,233,0.15);
+        overflow: hidden;
+      }
+      [data-composition-id="scene6-leads"] .cc-bar-fill {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, #02B3E9, #7de9ff);
+        box-shadow: 0 0 10px rgba(2,179,233,0.8);
+      }
+      [data-composition-id="scene6-leads"] .cc-bar-fill.sent {
+        background: linear-gradient(90deg, #22c55e, #7dffa8);
+        box-shadow: 0 0 10px rgba(34,197,94,0.8);
+      }
+      [data-composition-id="scene6-leads"] .mail-stack {
+        position: relative; width: 300px; height: 80px;
+      }
+      [data-composition-id="scene6-leads"] .mail-card {
+        position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+        width: 90px; height: 60px;
+        background: rgba(2,179,233,0.20);
+        border: 1px solid rgba(2,179,233,0.55);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 32px;
+      }
+      [data-composition-id="scene6-leads"] .sent-stamp {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 60px; color: #22c55e;
+        letter-spacing: 0.08em;
+        padding: 14px 36px;
+        border: 3px solid #22c55e;
+        border-radius: 12px;
+        background: rgba(34,197,94,0.10);
+        box-shadow: 0 0 30px rgba(34,197,94,0.6);
+        text-shadow: 0 0 20px rgba(34,197,94,0.9);
+      }
+      [data-composition-id="scene6-leads"] .subtext {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 30px; letter-spacing: 0.22em;
+        color: rgba(255,255,255,0.85);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene6-leads"]';
+        const SLOT = 6.52;
+        const tl = gsap.timeline({ paused: true });
+
+        tl.from(sel + ' .num-mono', { scale: 0.25, opacity: 0, rotate: 8, duration: 0.38, ease: 'back.out(2.6)' }, 0.10);
+        tl.fromTo(sel + ' .num-mono .l-magenta', { x: -44, y: -22 }, { x: -7, y: -3, duration: 0.50, ease: 'expo.out' }, 0.10);
+        tl.fromTo(sel + ' .num-mono .l-blue',    { x: 44,  y: 22  }, { x: 7,  y: 3,  duration: 0.50, ease: 'expo.out' }, 0.10);
+
+        tl.from(sel + ' .headline', { y: 60, opacity: 0, duration: 0.42, ease: 'power3.out' }, 0.30);
+        tl.to(sel + ' .underline-sweep', { width: 420, duration: 0.40, ease: 'power2.out' }, 0.70);
+
+        tl.from(sel + ' .counter-card', { y: 40, opacity: 0, duration: 0.40, ease: 'power3.out' }, 0.95);
+
+        // Counters — leads 0 -> 200, written 0 -> 200, sent 0 -> 200
+        const mk = (id, end, start, dur) => {
+          const el = document.querySelector(sel + ' #' + id);
+          const o = { n: 0 };
+          tl.to(o, {
+            n: end, duration: dur, ease: 'power1.out',
+            onUpdate: () => { if (el) el.textContent = String(Math.round(o.n)); }
+          }, start);
+        };
+        mk('leads-num',   200, 1.35, 0.90);
+        mk('written-num', 200, 2.00, 0.90);
+        mk('sent-num',    200, 2.70, 0.90);
+
+        tl.to(sel + ' #bar-found',   { width: '100%', duration: 0.85, ease: 'power2.out' }, 1.35);
+        tl.to(sel + ' #bar-written', { width: '100%', duration: 0.85, ease: 'power2.out' }, 2.00);
+        tl.to(sel + ' #bar-sent',    { width: '100%', duration: 0.85, ease: 'power2.out' }, 2.70);
+
+        // Mail stack whoosh
+        tl.fromTo(sel + ' .mail-stack', { opacity: 0 }, { opacity: 1, duration: 0.2 }, 3.80);
+        tl.fromTo(sel + ' .mail-card',
+          { x: -20, y: 0, opacity: 0, rotate: -15 },
+          { x: 400, y: -10, opacity: 1, rotate: 15, duration: 0.6, stagger: 0.06, ease: 'power2.in' }, 3.85);
+        tl.to(sel + ' .mail-card', { opacity: 0, duration: 0.2 }, 4.50);
+
+        // SENT stamp slam
+        tl.fromTo(sel + ' .sent-stamp',
+          { scale: 2.5, opacity: 0, rotate: -6 },
+          { scale: 1, opacity: 1, rotate: 0, duration: 0.32, ease: 'power3.out' }, 4.70);
+        tl.to(sel + ' .sent-stamp', { scale: 1.06, duration: 0.28, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 5.05);
+
+        tl.from(sel + ' .subtext', { y: 20, opacity: 0, duration: 0.35, ease: 'power2.out' }, 5.55);
+
+        tl.to(sel + ' .num-mono .l-base', { textShadow: '0 0 60px rgba(2,179,233,1)', duration: 0.7, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 1.40);
+
+        tl.to(sel + ' .wrap', { y: -50, opacity: 0, duration: 0.30, ease: 'power2.in' }, SLOT - 0.35);
+        tl.to({}, { duration: SLOT }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene6-leads"] = tl;
+      })();
+    </script>
+  </div>
+</template>

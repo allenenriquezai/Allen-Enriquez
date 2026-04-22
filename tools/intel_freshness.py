@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-INTEL_DIR = PROJECT_ROOT / "projects" / "personal" / "reference" / "intel"
+INTEL_DIR = PROJECT_ROOT / "projects" / "personal" / "intel"
 
 # Max age before flagging as stale (days)
 STALE_THRESHOLDS = {

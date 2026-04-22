@@ -1,0 +1,208 @@
+<template id="scene3-chat-template">
+  <div
+    data-composition-id="scene3-chat"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="4.96"
+  >
+    <!-- Slot: 36.04 → 41.00 (local 0 → 4.96) -->
+    <div class="overlay">
+      <div class="chat-row">
+        <!-- Person side -->
+        <div class="chat-actor" id="you-actor">
+          <svg width="90" height="108" viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="26" r="20" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.80)" stroke-width="3.5"/>
+            <path d="M10 96 Q10 58 40 58 Q70 58 70 96" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.80)" stroke-width="3.5" stroke-linecap="round"/>
+          </svg>
+          <div class="speech-bubble you-bubble">You ask...</div>
+        </div>
+        <!-- Arrow -->
+        <div class="chat-arrow" id="chat-arrow">→</div>
+        <!-- Claw'd side -->
+        <div class="chat-actor" id="clawd-actor">
+          <svg id="clawd-s3" width="110" height="102" viewBox="0 0 100 92" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="0" width="20" height="16" rx="2" fill="#C4593A"/>
+            <rect x="70" y="0" width="20" height="16" rx="2" fill="#C4593A"/>
+            <rect x="4" y="14" width="92" height="48" rx="3" fill="#C4593A"/>
+            <rect id="s3-eye-left" x="18" y="24" width="16" height="16" rx="1" fill="#1a1a1a"/>
+            <rect id="s3-eye-right" x="66" y="24" width="16" height="16" rx="1" fill="#1a1a1a"/>
+            <rect x="5" y="60" width="18" height="26" rx="2" fill="#C4593A"/>
+            <rect x="27" y="60" width="16" height="26" rx="2" fill="#C4593A"/>
+            <rect x="57" y="60" width="16" height="26" rx="2" fill="#C4593A"/>
+            <rect x="77" y="60" width="18" height="26" rx="2" fill="#C4593A"/>
+          </svg>
+          <div class="speech-bubble clawd-bubble">It answers!</div>
+        </div>
+      </div>
+      <!-- Use cases -->
+      <div class="use-items">
+        <div class="use-item" id="use1">
+          <div class="icon-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <span class="use-label">Writing</span>
+        </div>
+        <div class="use-item" id="use2">
+          <div class="icon-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          <span class="use-label">Research</span>
+        </div>
+        <div class="use-item" id="use3">
+          <div class="icon-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <span class="use-label">Big Decisions</span>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      [data-composition-id="scene3-chat"] {
+        position: absolute; inset: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="scene3-chat"] .overlay {
+        position: absolute;
+        top: 420px; left: 0; right: 0;
+        height: 1080px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 56px;
+        opacity: 0; visibility: hidden;
+      }
+      [data-composition-id="scene3-chat"] .chat-row {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+      [data-composition-id="scene3-chat"] .chat-actor {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        opacity: 0;
+      }
+      [data-composition-id="scene3-chat"] .speech-bubble {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 36px;
+        padding: 14px 26px;
+        border-radius: 16px;
+        text-align: center;
+        max-width: 280px;
+      }
+      [data-composition-id="scene3-chat"] .you-bubble {
+        background: rgba(255,255,255,0.08);
+        border: 2px solid rgba(255,255,255,0.32);
+        color: #ffffff;
+        border-bottom-left-radius: 4px;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+      }
+      [data-composition-id="scene3-chat"] .clawd-bubble {
+        background: rgba(196,89,58,0.16);
+        border: 2px solid rgba(196,89,58,0.65);
+        color: #f07050;
+        border-bottom-right-radius: 4px;
+        box-shadow: 0 0 20px rgba(196,89,58,0.35);
+        text-shadow: 0 0 12px rgba(196,89,58,0.6);
+      }
+      [data-composition-id="scene3-chat"] .chat-arrow {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 56px;
+        color: #02B3E9;
+        opacity: 0;
+        text-shadow: 0 0 22px rgba(2,179,233,0.8);
+      }
+      [data-composition-id="scene3-chat"] .use-items {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+      }
+      [data-composition-id="scene3-chat"] .use-item {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      [data-composition-id="scene3-chat"] .icon-badge {
+        width: 78px;
+        height: 78px;
+        background: rgba(2,179,233,0.10);
+        border: 2px solid rgba(2,179,233,0.5);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 16px rgba(2,179,233,0.22);
+        flex-shrink: 0;
+      }
+      [data-composition-id="scene3-chat"] .use-label {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 62px;
+        color: #ffffff;
+        text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+    (function () {
+      const SLOT = 4.96;
+      const sel = '[data-composition-id="scene3-chat"]';
+      const tl = gsap.timeline({ paused: true });
+
+      tl.set(sel + ' .overlay', { autoAlpha: 1 }, 0);
+
+      // Person slides from left
+      tl.fromTo('#you-actor',
+        { x: -50, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.28, ease: 'expo.out' }, 0.0);
+
+      // Arrow pulses in
+      tl.fromTo('#chat-arrow',
+        { scale: 0.3, opacity: 0 },
+        { scale: 1.15, opacity: 1, duration: 0.22, ease: 'back.out(3)' }, 0.20);
+      tl.to('#chat-arrow', { scale: 1.0, duration: 0.12, ease: 'power2.out', overwrite: 'auto' }, 0.42);
+
+      // Claw'd bounces from right
+      tl.fromTo('#clawd-actor',
+        { x: 50, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.30, ease: 'back.out(2)' }, 0.28);
+
+      // Idle bob (finite: 4.96-0.70=4.26 / 0.95 cycle ≈ 4 full repeats)
+      tl.to('#clawd-s3', {
+        y: -10, duration: 0.95, yoyo: true, repeat: 4, ease: 'sine.inOut'
+      }, 0.70);
+
+      // Eye blink at t=1.80
+      tl.to(['#s3-eye-left', '#s3-eye-right'], {
+        scaleY: 0.08, transformOrigin: '50% 50%',
+        duration: 0.06, yoyo: true, repeat: 1, ease: 'power2.inOut'
+      }, 1.80);
+
+      // Use cases stagger (word-synced)
+      const useTimes = [2.52, 3.11, 4.10];
+      ['#use1','#use2','#use3'].forEach((id, i) => {
+        tl.to(id, { opacity: 1, y: 0, duration: 0.26, ease: 'expo.out' }, useTimes[i]);
+        tl.to(id, { scale: 1.05, duration: 0.08, ease: 'back.out(2)' }, useTimes[i]);
+        tl.to(id, { scale: 1.0, duration: 0.12, ease: 'power2.out' }, useTimes[i] + 0.08);
+        tl.to(id + ' .icon-badge', { boxShadow: '0 0 44px rgba(2,179,233,0.9)', duration: 0.01 }, useTimes[i] + 0.02);
+        tl.to(id + ' .icon-badge', { boxShadow: '0 0 16px rgba(2,179,233,0.22)', duration: 0.45, ease: 'power2.out' }, useTimes[i] + 0.03);
+      });
+
+      tl.set(sel + ' .overlay', { autoAlpha: 0 }, SLOT);
+      tl.to({}, { duration: SLOT }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines['scene3-chat'] = tl;
+    })();
+    </script>
+  </div>
+</template>

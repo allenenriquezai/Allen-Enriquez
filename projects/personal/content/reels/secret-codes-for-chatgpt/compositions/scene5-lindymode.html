@@ -1,0 +1,471 @@
+<template id="scene5-lindymode-template">
+  <div
+    data-composition-id="scene5-lindymode"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="8.21"
+  >
+    <div class="wrap">
+      <!-- Top chrome -->
+      <div class="chrome">
+        <span class="chrome-dot"></span>
+        <span class="chrome-title">ChatGPT</span>
+        <span class="chrome-badge">LINDYMODE</span>
+      </div>
+
+      <!-- User bubble -->
+      <div class="bubble user">
+        <div class="bubble-label">YOU</div>
+        <div class="prompt-line">
+          <span class="code-word">LINDYMODE</span>
+          <span class="prompt-body" id="s5-user-text"></span>
+          <span class="prompt-cursor">▋</span>
+        </div>
+      </div>
+
+      <!-- Response: two-column compare viz -->
+      <div class="compare">
+        <div class="column col-trending">
+          <div class="col-header">TRENDING 2024</div>
+          <ul class="col-list">
+            <li class="col-item t1"><span class="item-text">Meme coins</span><span class="mark mark-x">✗</span></li>
+            <li class="col-item t2"><span class="item-text">AI tokens</span><span class="mark mark-x">✗</span></li>
+            <li class="col-item t3"><span class="item-text">NFT drops</span><span class="mark mark-x">✗</span></li>
+          </ul>
+          <div class="col-footer col-footer-red">~1Y hype cycle</div>
+        </div>
+
+        <div class="col-divider"></div>
+
+        <div class="column col-timeless">
+          <div class="col-header">TIMELESS</div>
+          <ul class="col-list">
+            <li class="col-item ti1"><span class="item-text">Index funds</span><span class="mark mark-check">✓</span></li>
+            <li class="col-item ti2"><span class="item-text">Real estate</span><span class="mark mark-check">✓</span></li>
+            <li class="col-item ti3"><span class="item-text">Own a business</span><span class="mark mark-check">✓</span></li>
+          </ul>
+          <div class="col-footer col-footer-cyan">10Y+ track record</div>
+        </div>
+      </div>
+
+      <!-- Hourglass timeline bar -->
+      <div class="timeline-bar">
+        <span class="tb-left">~1Y</span>
+        <span class="tb-hourglass">⏳</span>
+        <span class="tb-right">10Y+</span>
+      </div>
+
+      <!-- Conclusion line -->
+      <div class="conclusion">
+        Pick what's worked for <span class="hl-decades">decades</span>.
+      </div>
+
+      <!-- Corner tag -->
+      <div class="corner-tag">TIMELESS MODE</div>
+
+      <!-- Ambient scanline -->
+      <div class="scanline"></div>
+    </div>
+
+    <style>
+      [data-composition-id="scene5-lindymode"] { position: absolute; inset: 0; background: #05080F; overflow: hidden; }
+      [data-composition-id="scene5-lindymode"] .wrap {
+        position: absolute;
+        top: 320px; left: 60px; right: 180px; bottom: 500px;
+        display: flex; flex-direction: column;
+        align-items: stretch; justify-content: center;
+        gap: 22px;
+      }
+      [data-composition-id="scene5-lindymode"] .chrome {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 22px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene5-lindymode"] .chrome-dot {
+        width: 14px; height: 14px; border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 10px rgba(34,197,94,0.7);
+      }
+      [data-composition-id="scene5-lindymode"] .chrome-title {
+        font-size: 24px; color: rgba(255,255,255,0.75);
+        letter-spacing: 0.08em; font-weight: 500;
+      }
+      [data-composition-id="scene5-lindymode"] .chrome-badge {
+        margin-left: auto;
+        font-size: 20px; font-weight: 700; letter-spacing: 0.18em;
+        color: #02B3E9; padding: 6px 14px;
+        background: rgba(2,179,233,0.12);
+        border: 1px solid rgba(2,179,233,0.5);
+        border-radius: 8px;
+      }
+
+      [data-composition-id="scene5-lindymode"] .bubble {
+        max-width: 880px;
+        padding: 28px 32px;
+        border-radius: 24px;
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene5-lindymode"] .bubble-label {
+        font-size: 18px; font-weight: 700;
+        letter-spacing: 0.26em;
+        margin-bottom: 10px; opacity: 0.55;
+      }
+      [data-composition-id="scene5-lindymode"] .bubble.user {
+        align-self: flex-end;
+        background: rgba(2,179,233,0.12);
+        border: 1px solid rgba(2,179,233,0.45);
+      }
+      [data-composition-id="scene5-lindymode"] .bubble.user .bubble-label { color: #02B3E9; }
+
+      [data-composition-id="scene5-lindymode"] .prompt-line {
+        display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px;
+        font-size: 34px; color: #ffffff; line-height: 1.35;
+      }
+      [data-composition-id="scene5-lindymode"] .code-word {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 52px; color: #02B3E9;
+        text-shadow: 0 0 24px rgba(2,179,233,0.8);
+        letter-spacing: 0.02em;
+      }
+      [data-composition-id="scene5-lindymode"] .prompt-body { color: rgba(255,255,255,0.92); white-space: pre; }
+      [data-composition-id="scene5-lindymode"] .pch { display: inline-block; opacity: 0; white-space: pre; }
+      [data-composition-id="scene5-lindymode"] .prompt-cursor { color: #02B3E9; }
+
+      /* Compare viz */
+      [data-composition-id="scene5-lindymode"] .compare {
+        display: flex; flex-direction: row; gap: 20px;
+        background: #1a1f2e;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 24px;
+        padding: 28px 24px;
+        font-family: 'Roboto Mono', monospace;
+        align-self: stretch;
+        opacity: 0;
+      }
+      [data-composition-id="scene5-lindymode"] .column {
+        flex: 1;
+        display: flex; flex-direction: column;
+        gap: 16px;
+      }
+      [data-composition-id="scene5-lindymode"] .col-divider {
+        width: 2px;
+        background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      }
+      [data-composition-id="scene5-lindymode"] .col-header {
+        font-size: 24px; font-weight: 700;
+        letter-spacing: 0.22em;
+        text-align: center;
+        padding: 10px 0;
+        border-radius: 10px;
+      }
+      [data-composition-id="scene5-lindymode"] .col-trending .col-header {
+        color: #ff4757;
+        background: rgba(255,71,87,0.10);
+        border: 1px solid rgba(255,71,87,0.35);
+      }
+      [data-composition-id="scene5-lindymode"] .col-timeless .col-header {
+        color: #02B3E9;
+        background: rgba(2,179,233,0.10);
+        border: 1px solid rgba(2,179,233,0.35);
+      }
+      [data-composition-id="scene5-lindymode"] .col-list {
+        list-style: none; display: flex; flex-direction: column; gap: 12px;
+        padding: 0; margin: 0;
+      }
+      [data-composition-id="scene5-lindymode"] .col-item {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px;
+        font-size: 28px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.03);
+        opacity: 0;
+      }
+      [data-composition-id="scene5-lindymode"] .col-trending .col-item .item-text {
+        color: rgba(255,255,255,0.92);
+        position: relative;
+        display: inline-block;
+      }
+      [data-composition-id="scene5-lindymode"] .col-trending .col-item .item-text::after {
+        content: '';
+        position: absolute;
+        left: 0; right: 0;
+        top: 50%;
+        height: 3px;
+        background: #ff4757;
+        box-shadow: 0 0 10px rgba(255,71,87,0.8);
+        transform: scaleX(0);
+        transform-origin: left center;
+      }
+      [data-composition-id="scene5-lindymode"] .col-timeless .col-item .item-text {
+        color: rgba(255,255,255,0.95);
+      }
+      [data-composition-id="scene5-lindymode"] .mark {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 34px;
+        width: 40px; text-align: center;
+        transform: scale(0);
+        display: inline-block;
+      }
+      [data-composition-id="scene5-lindymode"] .mark-x {
+        color: #ff4757;
+        text-shadow: 0 0 14px rgba(255,71,87,0.7);
+      }
+      [data-composition-id="scene5-lindymode"] .mark-check {
+        color: #02B3E9;
+        text-shadow: 0 0 14px rgba(2,179,233,0.8);
+      }
+      [data-composition-id="scene5-lindymode"] .col-footer {
+        margin-top: 6px;
+        text-align: center;
+        font-size: 18px; font-weight: 500;
+        letter-spacing: 0.12em;
+        padding: 8px 6px;
+        border-radius: 8px;
+        opacity: 0.85;
+      }
+      [data-composition-id="scene5-lindymode"] .col-footer-red {
+        color: #ff4757;
+        background: rgba(255,71,87,0.08);
+        border: 1px dashed rgba(255,71,87,0.3);
+      }
+      [data-composition-id="scene5-lindymode"] .col-footer-cyan {
+        color: #02B3E9;
+        background: rgba(2,179,233,0.08);
+        border: 1px dashed rgba(2,179,233,0.4);
+      }
+
+      /* Timeline bar */
+      [data-composition-id="scene5-lindymode"] .timeline-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 28px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 14px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 22px; letter-spacing: 0.14em;
+        opacity: 0;
+      }
+      [data-composition-id="scene5-lindymode"] .tb-left { color: #ff4757; font-weight: 700; }
+      [data-composition-id="scene5-lindymode"] .tb-right { color: #02B3E9; font-weight: 700; }
+      [data-composition-id="scene5-lindymode"] .tb-hourglass {
+        font-size: 32px;
+        filter: drop-shadow(0 0 10px rgba(2,179,233,0.6));
+      }
+
+      /* Conclusion */
+      [data-composition-id="scene5-lindymode"] .conclusion {
+        align-self: center;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 44px; color: #ffffff;
+        text-align: center;
+        padding: 18px 28px;
+        background: rgba(2,179,233,0.08);
+        border: 1px solid rgba(2,179,233,0.4);
+        border-radius: 16px;
+        opacity: 0;
+      }
+      [data-composition-id="scene5-lindymode"] .hl-decades {
+        color: #02B3E9;
+        text-shadow: 0 0 22px rgba(2,179,233,0.9);
+      }
+
+      [data-composition-id="scene5-lindymode"] .corner-tag {
+        position: absolute;
+        top: 260px; right: 200px;
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 18px; color: #02B3E9;
+        letter-spacing: 0.28em;
+        padding: 8px 14px;
+        border: 1px solid rgba(2,179,233,0.5);
+        border-radius: 6px;
+        background: rgba(2,179,233,0.08);
+        opacity: 0;
+      }
+
+      [data-composition-id="scene5-lindymode"] .scanline {
+        position: absolute; inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 3px,
+          rgba(2,179,233,0.025) 3px,
+          rgba(2,179,233,0.025) 4px
+        );
+        pointer-events: none;
+        z-index: 50;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene5-lindymode"]';
+        const SLOT = 8.21;
+
+        // Build prompt body char-by-char
+        const userText = ' Best investing strategy?';
+        const uEl = document.querySelector(sel + ' #s5-user-text');
+        if (uEl) {
+          uEl.innerHTML = '';
+          for (const ch of userText) {
+            const s = document.createElement('span');
+            s.className = 'pch';
+            s.textContent = ch;
+            uEl.appendChild(s);
+          }
+        }
+
+        const tl = gsap.timeline({ paused: true });
+
+        // t=0.10: chrome slides in
+        tl.from(sel + ' .chrome', { y: -30, opacity: 0, duration: 0.3, ease: 'power3.out' }, 0.10);
+        tl.from(sel + ' .corner-tag', { opacity: 0, duration: 0.2 }, 0.20);
+        tl.to(sel + ' .corner-tag', { opacity: 1, duration: 0.2 }, 0.20);
+
+        // t=0.30: user bubble pops
+        tl.from(sel + ' .bubble.user', { scale: 0.92, y: 40, opacity: 0, duration: 0.35, ease: 'back.out(1.6)' }, 0.30);
+
+        // t=0.45: code-word slam
+        tl.fromTo(sel + ' .code-word',
+          { scale: 0.6, opacity: 0 },
+          { scale: 1.0, opacity: 1, duration: 0.40, ease: 'back.out(2.2)' }, 0.45);
+        tl.to(sel + ' .code-word', { textShadow: '0 0 40px rgba(2,179,233,1)', duration: 0.15, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 1.00);
+
+        // t=0.95: prompt body types (25 chars * 0.045 ~= 1.12s)
+        tl.to(sel + ' .pch', { opacity: 1, duration: 0.02, stagger: 0.045, ease: 'none' }, 0.95);
+
+        // Cursor blink through scene
+        for (let i = 0; i < 12; i++) {
+          tl.set(sel + ' .prompt-cursor', { opacity: 0 }, 1.318 + i * 0.659);
+          tl.set(sel + ' .prompt-cursor', { opacity: 1 }, 1.318 + i * 0.659 + 0.3295);
+        }
+
+        // t=2.7678: compare viz slides in
+        tl.fromTo(sel + ' .compare',
+          { y: 40, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.5272, ease: 'power3.out' }, 2.7678);
+
+        // Column headers pulse-in
+        tl.fromTo(sel + ' .col-trending .col-header',
+          { scale: 0.85, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.3954, ease: 'back.out(1.8)' }, 3.0314);
+        tl.fromTo(sel + ' .col-timeless .col-header',
+          { scale: 0.85, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.3954, ease: 'back.out(1.8)' }, 3.1632);
+
+        // Staggered item reveal: trending item -> strike + X  |  timeless item -> highlight + ✓
+        // item1
+        tl.to(sel + ' .t1', { opacity: 1, duration: 0.2636, ease: 'power2.out' }, 3.295);
+        tl.to(sel + ' .t1 .item-text::after', {}, 3.295); // no-op anchor
+        tl.fromTo(sel + ' .t1 .item-text',
+          { '--strike': 0 },
+          { duration: 0.3954, ease: 'power3.out',
+            onStart: function () {
+              const el = document.querySelector(sel + ' .t1 .item-text');
+              if (el) el.style.setProperty('--strike', '1');
+            }
+          }, 3.4268);
+        // Actual strike animation via pseudo-element scaleX — drive via CSS var trick using style injection
+        tl.to({}, { duration: 0.3954, ease: 'power3.out',
+          onStart: function () {
+            const el = document.querySelector(sel + ' .t1 .item-text');
+            if (el) el.style.setProperty('text-decoration', 'line-through');
+            if (el) el.style.setProperty('text-decoration-color', '#ff4757');
+            if (el) el.style.setProperty('text-decoration-thickness', '3px');
+            if (el) el.style.setProperty('color', 'rgba(255,255,255,0.55)');
+          }
+        }, 3.4268);
+        tl.fromTo(sel + ' .t1 .mark-x',
+          { scale: 0, rotation: -20 },
+          { scale: 1, rotation: 0, duration: 0.3954, ease: 'back.out(2.2)' }, 3.5586);
+
+        // timeless item1
+        tl.to(sel + ' .ti1', { opacity: 1, duration: 0.2636, ease: 'power2.out' }, 3.6904);
+        tl.fromTo(sel + ' .ti1 .mark-check',
+          { scale: 0, rotation: -20 },
+          { scale: 1, rotation: 0, duration: 0.3954, ease: 'back.out(2.2)' }, 3.8222);
+
+        // item2
+        tl.to(sel + ' .t2', { opacity: 1, duration: 0.2636, ease: 'power2.out' }, 4.0199);
+        tl.to({}, { duration: 0.3954, ease: 'power3.out',
+          onStart: function () {
+            const el = document.querySelector(sel + ' .t2 .item-text');
+            if (el) el.style.setProperty('text-decoration', 'line-through');
+            if (el) el.style.setProperty('text-decoration-color', '#ff4757');
+            if (el) el.style.setProperty('text-decoration-thickness', '3px');
+            if (el) el.style.setProperty('color', 'rgba(255,255,255,0.55)');
+          }
+        }, 4.1517);
+        tl.fromTo(sel + ' .t2 .mark-x',
+          { scale: 0, rotation: -20 },
+          { scale: 1, rotation: 0, duration: 0.3954, ease: 'back.out(2.2)' }, 4.2835);
+
+        // timeless item2
+        tl.to(sel + ' .ti2', { opacity: 1, duration: 0.2636, ease: 'power2.out' }, 4.4153);
+        tl.fromTo(sel + ' .ti2 .mark-check',
+          { scale: 0, rotation: -20 },
+          { scale: 1, rotation: 0, duration: 0.3954, ease: 'back.out(2.2)' }, 4.5471);
+
+        // item3
+        tl.to(sel + ' .t3', { opacity: 1, duration: 0.2636, ease: 'power2.out' }, 4.7448);
+        tl.to({}, { duration: 0.3954, ease: 'power3.out',
+          onStart: function () {
+            const el = document.querySelector(sel + ' .t3 .item-text');
+            if (el) el.style.setProperty('text-decoration', 'line-through');
+            if (el) el.style.setProperty('text-decoration-color', '#ff4757');
+            if (el) el.style.setProperty('text-decoration-thickness', '3px');
+            if (el) el.style.setProperty('color', 'rgba(255,255,255,0.55)');
+          }
+        }, 4.8766);
+        tl.fromTo(sel + ' .t3 .mark-x',
+          { scale: 0, rotation: -20 },
+          { scale: 1, rotation: 0, duration: 0.3954, ease: 'back.out(2.2)' }, 5.0084);
+
+        // timeless item3
+        tl.to(sel + ' .ti3', { opacity: 1, duration: 0.2636, ease: 'power2.out' }, 5.1402);
+        tl.fromTo(sel + ' .ti3 .mark-check',
+          { scale: 0, rotation: -20 },
+          { scale: 1, rotation: 0, duration: 0.3954, ease: 'back.out(2.2)' }, 5.272);
+
+        // Column footers + timeline bar
+        tl.fromTo(sel + ' .col-footer-red',
+          { y: 14, opacity: 0 },
+          { y: 0, opacity: 0.85, duration: 0.3954, ease: 'power3.out' }, 5.6674);
+        tl.fromTo(sel + ' .col-footer-cyan',
+          { y: 14, opacity: 0 },
+          { y: 0, opacity: 0.85, duration: 0.3954, ease: 'power3.out' }, 5.7992);
+
+        tl.fromTo(sel + ' .timeline-bar',
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.4613, ease: 'power3.out' }, 5.9969);
+        tl.to(sel + ' .tb-hourglass', { rotation: 180, duration: 0.7908, ease: 'power2.inOut' }, 6.1946);
+
+        // t=6.3923: conclusion slides up — payoff freeze through 8.21
+        tl.fromTo(sel + ' .conclusion',
+          { y: 40, scale: 0.9, opacity: 0 },
+          { y: 0, scale: 1, opacity: 1, duration: 0.5931, ease: 'back.out(1.6)' }, 6.3923);
+        tl.to(sel + ' .hl-decades', { textShadow: '0 0 36px rgba(2,179,233,1)', duration: 0.3295, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 6.9854);
+
+        // Subtle column pulse through hold
+        tl.to(sel + ' .col-timeless .col-header', { scale: 1.03, duration: 0.7908, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 6.59);
+        tl.to(sel + ' .conclusion', { scale: 1.02, duration: 0.659, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 7.5126);
+
+        // Corner-tag ambient pulse
+        tl.to(sel + ' .corner-tag', { opacity: 0.6, duration: 1.5816, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 1.977);
+
+        // Scanline drift (ambient)
+        tl.to(sel + ' .scanline', { backgroundPositionY: '+=40px', duration: SLOT, ease: 'none' }, 0);
+
+        // Anchor
+        tl.to({}, { duration: SLOT }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene5-lindymode"] = tl;
+      })();
+    </script>
+  </div>
+</template>

@@ -1,0 +1,213 @@
+<template id="scene5-hire-template">
+  <div
+    data-composition-id="scene5-hire"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="5.52"
+  >
+    <div class="wrap">
+      <div class="num-mono">
+        <span class="layer l-base">05</span>
+        <span class="layer l-magenta">05</span>
+        <span class="layer l-blue">05</span>
+      </div>
+
+      <div class="headline">FINDS YOUR<br/>NEXT HIRE</div>
+      <div class="underline-sweep"></div>
+
+      <div class="profile-card">
+        <div class="pc-head">
+          <div class="pc-avatar">MT</div>
+          <div class="pc-meta">
+            <div class="pc-name">Maya T.</div>
+            <div class="pc-role">Ops Lead · 4y experience</div>
+          </div>
+          <div class="pc-match">
+            <div class="match-ring"></div>
+            <div class="match-num"><span id="match-val">0</span>%</div>
+          </div>
+        </div>
+        <div class="pc-tags">
+          <span class="pc-tag">Remote</span>
+          <span class="pc-tag">SaaS</span>
+          <span class="pc-tag">B2B</span>
+          <span class="pc-tag">Async</span>
+        </div>
+        <div class="pc-dm">
+          <span class="dm-chrome">DRAFT · DM READY</span>
+          <span class="dm-text" id="dm-text"></span>
+          <span class="dm-cursor">▋</span>
+        </div>
+      </div>
+
+      <div class="subtext">OUTREACH WRITTEN &nbsp;·&nbsp; WHILE YOU SLEEP</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene5-hire"] { position: absolute; inset: 0; background: #05080F; overflow: hidden; }
+      [data-composition-id="scene5-hire"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 24px; padding: 80px 60px;
+      }
+      [data-composition-id="scene5-hire"] .num-mono { position: relative; width: 300px; height: 280px; }
+      [data-composition-id="scene5-hire"] .num-mono .layer {
+        position: absolute; inset: 0;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 280px; line-height: 0.85; letter-spacing: -0.04em;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene5-hire"] .num-mono .l-base    { color: #fff; text-shadow: 0 0 40px rgba(2,179,233,0.7); }
+      [data-composition-id="scene5-hire"] .num-mono .l-magenta { color: #ff00a8; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene5-hire"] .num-mono .l-blue    { color: #02B3E9; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene5-hire"] .headline {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 96px; line-height: 0.95; color: #fff; text-align: center;
+        letter-spacing: -0.02em;
+        text-shadow: 0 0 30px rgba(2,179,233,0.35);
+      }
+      [data-composition-id="scene5-hire"] .underline-sweep {
+        width: 0; height: 8px;
+        background: linear-gradient(90deg, #02B3E9, #7de9ff);
+        box-shadow: 0 0 18px rgba(2,179,233,0.9);
+        border-radius: 4px;
+      }
+      [data-composition-id="scene5-hire"] .profile-card {
+        width: 860px;
+        background: rgba(5,10,18,0.9);
+        border: 1px solid rgba(2,179,233,0.45);
+        border-radius: 20px; padding: 22px;
+        box-shadow: 0 0 40px rgba(2,179,233,0.25);
+        display: flex; flex-direction: column; gap: 16px;
+      }
+      [data-composition-id="scene5-hire"] .pc-head { display: flex; align-items: center; gap: 18px; }
+      [data-composition-id="scene5-hire"] .pc-avatar {
+        width: 78px; height: 78px; border-radius: 50%;
+        background: linear-gradient(135deg, #02B3E9, #7de9ff);
+        color: #05080F;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 32px; display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 0 18px rgba(2,179,233,0.6);
+      }
+      [data-composition-id="scene5-hire"] .pc-meta { flex: 1; }
+      [data-composition-id="scene5-hire"] .pc-name {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 40px; color: #fff;
+      }
+      [data-composition-id="scene5-hire"] .pc-role {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 22px; color: rgba(255,255,255,0.65);
+        margin-top: 4px;
+      }
+      [data-composition-id="scene5-hire"] .pc-match {
+        position: relative; width: 110px; height: 110px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene5-hire"] .match-ring {
+        position: absolute; inset: 0;
+        border-radius: 50%;
+        border: 6px solid rgba(2,179,233,0.25);
+        border-top-color: #02B3E9;
+        box-shadow: 0 0 16px rgba(2,179,233,0.6);
+      }
+      [data-composition-id="scene5-hire"] .match-num {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 32px; color: #fff;
+      }
+      [data-composition-id="scene5-hire"] .pc-tags {
+        display: flex; gap: 10px; flex-wrap: wrap;
+      }
+      [data-composition-id="scene5-hire"] .pc-tag {
+        padding: 8px 16px;
+        background: rgba(2,179,233,0.15);
+        border: 1px solid rgba(2,179,233,0.45);
+        border-radius: 999px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 22px; color: #fff;
+        letter-spacing: 0.06em;
+      }
+      [data-composition-id="scene5-hire"] .pc-dm {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+        padding: 16px 20px;
+        background: linear-gradient(90deg, rgba(2,179,233,0.20), rgba(2,179,233,0.06));
+        border: 1px solid rgba(2,179,233,0.55);
+        border-radius: 12px;
+      }
+      [data-composition-id="scene5-hire"] .dm-chrome {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 18px; color: #02B3E9;
+        letter-spacing: 0.22em; margin-right: 6px;
+      }
+      [data-composition-id="scene5-hire"] .dm-text {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 24px; color: #fff;
+      }
+      [data-composition-id="scene5-hire"] .dch { display: inline-block; opacity: 0; white-space: pre; }
+      [data-composition-id="scene5-hire"] .dm-cursor { color: #02B3E9; }
+      [data-composition-id="scene5-hire"] .subtext {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 30px; letter-spacing: 0.22em;
+        color: rgba(255,255,255,0.85);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene5-hire"]';
+        const SLOT = 5.52;
+
+        const dm = 'Hey Maya — saw your async ops work…';
+        const dEl = document.querySelector(sel + ' #dm-text');
+        if (dEl) {
+          dEl.innerHTML = '';
+          for (const ch of dm) {
+            const s = document.createElement('span');
+            s.className = 'dch'; s.textContent = ch;
+            dEl.appendChild(s);
+          }
+        }
+
+        const tl = gsap.timeline({ paused: true });
+
+        tl.from(sel + ' .num-mono', { scale: 0.25, opacity: 0, rotate: -6, duration: 0.38, ease: 'back.out(2.6)' }, 0.10);
+        tl.fromTo(sel + ' .num-mono .l-magenta', { x: -44, y: -22 }, { x: -7, y: -3, duration: 0.50, ease: 'expo.out' }, 0.10);
+        tl.fromTo(sel + ' .num-mono .l-blue',    { x: 44,  y: 22  }, { x: 7,  y: 3,  duration: 0.50, ease: 'expo.out' }, 0.10);
+
+        tl.from(sel + ' .headline', { y: 60, opacity: 0, duration: 0.42, ease: 'power3.out' }, 0.30);
+        tl.to(sel + ' .underline-sweep', { width: 480, duration: 0.40, ease: 'power2.out' }, 0.70);
+
+        tl.from(sel + ' .profile-card', { y: 40, opacity: 0, duration: 0.40, ease: 'power3.out' }, 0.95);
+        tl.from(sel + ' .pc-avatar', { scale: 0, duration: 0.35, ease: 'back.out(2.5)' }, 1.25);
+        tl.from(sel + ' .pc-meta', { x: -30, opacity: 0, duration: 0.35, ease: 'power2.out' }, 1.40);
+
+        // Match ring spins
+        tl.fromTo(sel + ' .match-ring', { rotate: 0 }, { rotate: 540, duration: 1.2, ease: 'power2.out' }, 1.30);
+
+        // Counter 0 -> 94
+        const counter = { n: 0 };
+        const mEl = document.querySelector(sel + ' #match-val');
+        tl.to(counter, {
+          n: 94, duration: 1.2, ease: 'power1.out',
+          onUpdate: () => { if (mEl) mEl.textContent = String(Math.round(counter.n)); }
+        }, 1.30);
+
+        tl.from(sel + ' .pc-tag', { y: 20, opacity: 0, stagger: 0.08, duration: 0.25, ease: 'power2.out' }, 2.30);
+
+        tl.from(sel + ' .pc-dm', { y: 20, opacity: 0, duration: 0.35, ease: 'power2.out' }, 2.90);
+        tl.to(sel + ' .dch', { opacity: 1, duration: 0.02, stagger: 0.035, ease: 'none' }, 3.10);
+
+        tl.from(sel + ' .subtext', { y: 20, opacity: 0, duration: 0.35, ease: 'power2.out' }, 4.50);
+
+        // Ambient
+        tl.to(sel + ' .num-mono .l-base', { textShadow: '0 0 60px rgba(2,179,233,1)', duration: 0.7, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 1.40);
+
+        tl.to(sel + ' .wrap', { y: -50, opacity: 0, duration: 0.30, ease: 'power2.in' }, SLOT - 0.35);
+        tl.to({}, { duration: SLOT }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene5-hire"] = tl;
+      })();
+    </script>
+  </div>
+</template>

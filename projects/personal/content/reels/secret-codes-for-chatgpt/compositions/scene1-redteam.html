@@ -1,0 +1,281 @@
+<template id="scene1-redteam-template">
+  <div
+    data-composition-id="scene1-redteam"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="4.35"
+  >
+    <div class="wrap">
+      <!-- Top chrome -->
+      <div class="chrome">
+        <span class="chrome-dot"></span>
+        <span class="chrome-title">ChatGPT</span>
+        <span class="chrome-badge">REDTEAM</span>
+      </div>
+
+      <!-- User bubble -->
+      <div class="bubble user">
+        <div class="bubble-label">YOU</div>
+        <div class="prompt-line">
+          <span class="code-word">REDTEAM</span>
+          <span class="prompt-body" id="s1-user-text"></span>
+          <span class="prompt-cursor">▋</span>
+        </div>
+      </div>
+
+      <!-- Response bubble -->
+      <div class="bubble bot">
+        <div class="bubble-label">CHATGPT</div>
+        <div class="stream">
+          <div class="stream-head" id="s1-stream-head"></div>
+          <ul class="reasons">
+            <li class="reason r1"><span class="x">✗</span><span class="r-text">You'll burn out before week 4</span></li>
+            <li class="reason r2"><span class="x">✗</span><span class="r-text">Quantity ≠ growth — signal &gt; noise</span></li>
+            <li class="reason r3"><span class="x">✗</span><span class="r-text">No feedback loop, no iteration</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Wrong stamp -->
+      <div class="wrong-stamp">WRONG</div>
+
+      <!-- Corner tag -->
+      <div class="corner-tag">RED TEAM MODE</div>
+
+      <!-- Ambient scanline -->
+      <div class="scanline"></div>
+    </div>
+
+    <style>
+      [data-composition-id="scene1-redteam"] { position: absolute; inset: 0; background: #05080F; overflow: hidden; }
+      [data-composition-id="scene1-redteam"] .wrap {
+        position: absolute;
+        top: 320px; left: 60px; right: 180px; bottom: 500px;
+        display: flex; flex-direction: column;
+        align-items: stretch; justify-content: center;
+        gap: 24px;
+      }
+      [data-composition-id="scene1-redteam"] .chrome {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 22px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene1-redteam"] .chrome-dot {
+        width: 14px; height: 14px; border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 10px rgba(34,197,94,0.7);
+      }
+      [data-composition-id="scene1-redteam"] .chrome-title {
+        font-size: 24px; color: rgba(255,255,255,0.75);
+        letter-spacing: 0.08em; font-weight: 500;
+      }
+      [data-composition-id="scene1-redteam"] .chrome-badge {
+        margin-left: auto;
+        font-size: 20px; font-weight: 700; letter-spacing: 0.18em;
+        color: #ff4757; padding: 6px 14px;
+        background: rgba(255,71,87,0.12);
+        border: 1px solid rgba(255,71,87,0.5);
+        border-radius: 8px;
+      }
+
+      [data-composition-id="scene1-redteam"] .bubble {
+        max-width: 880px;
+        padding: 28px 32px;
+        border-radius: 24px;
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene1-redteam"] .bubble-label {
+        font-size: 18px; font-weight: 700;
+        letter-spacing: 0.26em;
+        margin-bottom: 10px; opacity: 0.55;
+      }
+      [data-composition-id="scene1-redteam"] .bubble.user {
+        align-self: flex-end;
+        background: rgba(2,179,233,0.12);
+        border: 1px solid rgba(2,179,233,0.45);
+      }
+      [data-composition-id="scene1-redteam"] .bubble.user .bubble-label { color: #02B3E9; }
+      [data-composition-id="scene1-redteam"] .bubble.bot {
+        align-self: flex-start;
+        background: #1a1f2e;
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+      [data-composition-id="scene1-redteam"] .bubble.bot .bubble-label { color: rgba(255,255,255,0.55); }
+
+      [data-composition-id="scene1-redteam"] .prompt-line {
+        display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px;
+        font-size: 34px; color: #ffffff; line-height: 1.35;
+      }
+      [data-composition-id="scene1-redteam"] .code-word {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 52px; color: #02B3E9;
+        text-shadow: 0 0 24px rgba(2,179,233,0.8);
+        letter-spacing: 0.02em;
+      }
+      [data-composition-id="scene1-redteam"] .prompt-body { color: rgba(255,255,255,0.92); white-space: pre; }
+      [data-composition-id="scene1-redteam"] .pch { display: inline-block; opacity: 0; white-space: pre; }
+      [data-composition-id="scene1-redteam"] .prompt-cursor { color: #02B3E9; }
+
+      [data-composition-id="scene1-redteam"] .stream {
+        display: flex; flex-direction: column; gap: 16px;
+      }
+      [data-composition-id="scene1-redteam"] .stream-head {
+        font-size: 34px; font-weight: 700; color: #ffffff;
+        white-space: pre;
+      }
+      [data-composition-id="scene1-redteam"] .hch { display: inline-block; opacity: 0; white-space: pre; }
+
+      [data-composition-id="scene1-redteam"] .reasons {
+        list-style: none; display: flex; flex-direction: column; gap: 14px;
+      }
+      [data-composition-id="scene1-redteam"] .reason {
+        display: flex; align-items: center; gap: 18px;
+        font-size: 30px; color: rgba(255,255,255,0.90);
+        opacity: 0;
+      }
+      [data-composition-id="scene1-redteam"] .x {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 42px; color: #ff4757;
+        text-shadow: 0 0 14px rgba(255,71,87,0.7);
+        width: 44px; text-align: center;
+      }
+
+      [data-composition-id="scene1-redteam"] .wrong-stamp {
+        position: absolute;
+        top: 1180px; right: 240px;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 130px; color: #ff4757;
+        letter-spacing: 0.02em;
+        transform: rotate(-12deg) scale(0);
+        opacity: 0;
+        border: 8px solid #ff4757;
+        padding: 10px 30px 18px;
+        border-radius: 12px;
+        text-shadow: 0 0 30px rgba(255,71,87,0.6);
+        box-shadow: 0 0 40px rgba(255,71,87,0.4);
+      }
+
+      [data-composition-id="scene1-redteam"] .corner-tag {
+        position: absolute;
+        top: 260px; right: 200px;
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 18px; color: #ff4757;
+        letter-spacing: 0.28em;
+        padding: 8px 14px;
+        border: 1px solid rgba(255,71,87,0.5);
+        border-radius: 6px;
+        background: rgba(255,71,87,0.08);
+        opacity: 0;
+      }
+
+      [data-composition-id="scene1-redteam"] .scanline {
+        position: absolute; inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 3px,
+          rgba(2,179,233,0.025) 3px,
+          rgba(2,179,233,0.025) 4px
+        );
+        pointer-events: none;
+        z-index: 50;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene1-redteam"]';
+        const SLOT = 4.35;
+
+        // Build prompt body char-by-char
+        const userText = ': I should post every day';
+        const uEl = document.querySelector(sel + ' #s1-user-text');
+        if (uEl) {
+          uEl.innerHTML = '';
+          for (const ch of userText) {
+            const s = document.createElement('span');
+            s.className = 'pch';
+            s.textContent = ch;
+            uEl.appendChild(s);
+          }
+        }
+
+        // Stream head char-by-char
+        const headText = "3 reasons you're wrong:";
+        const hEl = document.querySelector(sel + ' #s1-stream-head');
+        if (hEl) {
+          hEl.innerHTML = '';
+          for (const ch of headText) {
+            const s = document.createElement('span');
+            s.className = 'hch';
+            s.textContent = ch;
+            hEl.appendChild(s);
+          }
+        }
+
+        const tl = gsap.timeline({ paused: true });
+
+        // t=0: chrome slides in
+        tl.from(sel + ' .chrome', { y: -30, opacity: 0, duration: 0.3, ease: 'power3.out' }, 0.10);
+        tl.from(sel + ' .corner-tag', { opacity: 0, duration: 0.2 }, 0.20);
+        tl.to(sel + ' .corner-tag', { opacity: 1, duration: 0.2 }, 0.20);
+
+        // t=0.3: user bubble pops
+        tl.from(sel + ' .bubble.user', { scale: 0.92, y: 40, opacity: 0, duration: 0.35, ease: 'back.out(1.6)' }, 0.30);
+
+        // t=0.45: code-word slam (Montserrat jaw-dropper)
+        tl.fromTo(sel + ' .code-word',
+          { scale: 0.6, opacity: 0 },
+          { scale: 1.0, opacity: 1, duration: 0.30, ease: 'back.out(2.2)' }, 0.45);
+        tl.to(sel + ' .code-word', { textShadow: '0 0 36px rgba(2,179,233,1)', duration: 0.25, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 0.75);
+
+        // t=0.9: prompt body types (27 chars × 0.04 = 1.08s)
+        tl.to(sel + ' .pch', { opacity: 1, duration: 0.02, stagger: 0.04, ease: 'none' }, 0.90);
+
+        // Cursor blink through scene
+        for (let i = 0; i < 10; i++) {
+          tl.set(sel + ' .prompt-cursor', { opacity: 0 }, 0.759 + i * 0.379);
+          tl.set(sel + ' .prompt-cursor', { opacity: 1 }, 0.759 + i * 0.379 + 0.19);
+        }
+
+        // t=1.59: bot bubble pops
+        tl.from(sel + ' .bubble.bot', { scale: 0.95, y: 30, opacity: 0, duration: 0.228, ease: 'power3.out' }, 1.59);
+
+        // t=1.78: stream-head types
+        tl.to(sel + ' .hch', { opacity: 1, duration: 0.015, stagger: 0.027, ease: 'none' }, 1.78);
+
+        // t=2.43: reasons slam in, one at a time with back.out
+        tl.fromTo(sel + ' .r1', { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.213, ease: 'back.out(1.8)' }, 2.43);
+        tl.fromTo(sel + ' .r2', { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.213, ease: 'back.out(1.8)' }, 2.69);
+        tl.fromTo(sel + ' .r3', { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.213, ease: 'back.out(1.8)' }, 2.96);
+
+        // Each ✗ flashes as its reason lands
+        tl.fromTo(sel + ' .r1 .x', { scale: 2.2 }, { scale: 1, duration: 0.19, ease: 'power3.out' }, 2.43);
+        tl.fromTo(sel + ' .r2 .x', { scale: 2.2 }, { scale: 1, duration: 0.19, ease: 'power3.out' }, 2.69);
+        tl.fromTo(sel + ' .r3 .x', { scale: 2.2 }, { scale: 1, duration: 0.19, ease: 'power3.out' }, 2.96);
+
+        // t=3.34: WRONG stamp slam (payoff moment — lands AFTER all reasons visible)
+        tl.to(sel + ' .wrong-stamp', { scale: 1.15, opacity: 1, duration: 0.228, ease: 'back.out(2.5)' }, 3.34);
+        tl.to(sel + ' .wrong-stamp', { scale: 1.0, duration: 0.152, ease: 'power2.out' }, 3.57);
+        // Stamp pulse through hold
+        tl.to(sel + ' .wrong-stamp', { scale: 1.04, duration: 0.266, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 3.76);
+
+        // Ambient: corner-tag subtle pulse across scene
+        tl.to(sel + ' .corner-tag', { opacity: 0.6, duration: 0.91, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 1.14);
+
+        // Scanline drift (ambient)
+        tl.to(sel + ' .scanline', { backgroundPositionY: '+=40px', duration: SLOT, ease: 'none' }, 0);
+
+        // Anchor
+        tl.to({}, { duration: SLOT }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene1-redteam"] = tl;
+      })();
+    </script>
+  </div>
+</template>

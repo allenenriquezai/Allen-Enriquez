@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ClipboardList,
   Lightbulb,
   FileText,
   Calendar,
@@ -15,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const NAV = [
+  { href: "/queue", label: "Queue", icon: ClipboardList },
   { href: "/ideation", label: "Ideation", icon: Lightbulb },
   { href: "/scripts", label: "Scripts", icon: FileText },
   { href: "/calendar", label: "Calendar", icon: Calendar },

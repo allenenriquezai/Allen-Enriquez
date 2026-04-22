@@ -1,0 +1,156 @@
+<template id="scene9-summary-template">
+  <div
+    data-composition-id="scene9-summary"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="4.19"
+  >
+    <!-- Slot: 71.94 → 76.13 (local 0 → 4.19) -->
+    <div class="overlay">
+      <div class="thats-it" id="thats-it">THAT'S IT.</div>
+      <div class="summary-panels" id="summary-panels">
+        <div class="panel" id="panel1">
+          <div class="p-icon-badge">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <span class="p-title">CHAT</span>
+          <span class="p-sub">Thinking</span>
+        </div>
+        <div class="p-divider"></div>
+        <div class="panel" id="panel2">
+          <div class="p-icon-badge">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M9 12h.01M15 12h.01M12 8V5M9 5h6"/><path d="M10 17h4"/></svg>
+          </div>
+          <span class="p-title">CO-WORK</span>
+          <span class="p-sub">Doing</span>
+        </div>
+        <div class="p-divider"></div>
+        <div class="panel" id="panel3">
+          <div class="p-icon-badge">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+          </div>
+          <span class="p-title">CODE</span>
+          <span class="p-sub">Building</span>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      [data-composition-id="scene9-summary"] {
+        position: absolute; inset: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="scene9-summary"] .overlay {
+        position: absolute;
+        top: 420px; left: 0; right: 0;
+        height: 1080px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 44px;
+        opacity: 0; visibility: hidden;
+      }
+      [data-composition-id="scene9-summary"] .thats-it {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 90px;
+        color: #ffffff;
+        text-shadow:
+          -4px -4px 0 #000, 4px -4px 0 #000,
+          -4px 4px 0 #000, 4px 4px 0 #000,
+          0 0 32px rgba(2,179,233,0.7);
+        opacity: 0;
+      }
+      [data-composition-id="scene9-summary"] .summary-panels {
+        display: flex;
+        align-items: stretch;
+        background: rgba(7,18,28,0.90);
+        border: 3px solid #02B3E9;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 0 44px rgba(2,179,233,0.25), 0 20px 44px rgba(0,0,0,0.7);
+        opacity: 0;
+      }
+      [data-composition-id="scene9-summary"] .panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 36px 44px;
+        opacity: 0;
+      }
+      [data-composition-id="scene9-summary"] .p-divider {
+        width: 3px;
+        background: rgba(2,179,233,0.35);
+        flex-shrink: 0;
+        align-self: stretch;
+      }
+      [data-composition-id="scene9-summary"] .p-icon-badge {
+        width: 80px;
+        height: 80px;
+        background: rgba(2,179,233,0.10);
+        border: 2px solid rgba(2,179,233,0.5);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 16px rgba(2,179,233,0.22);
+      }
+      [data-composition-id="scene9-summary"] .p-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 40px;
+        color: #02B3E9;
+        text-transform: uppercase;
+        text-shadow: 0 0 16px rgba(2,179,233,0.55);
+      }
+      [data-composition-id="scene9-summary"] .p-sub {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 34px;
+        color: rgba(255,255,255,0.80);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+    (function () {
+      const SLOT = 4.19;
+      const sel = '[data-composition-id="scene9-summary"]';
+      const tl = gsap.timeline({ paused: true });
+
+      tl.set(sel + ' .overlay', { autoAlpha: 1 }, 0);
+
+      tl.fromTo('#thats-it',
+        { scale: 0.45, opacity: 0 },
+        { scale: 1.10, opacity: 1, duration: 0.26, ease: 'back.out(3)' }, 0.0);
+      tl.to('#thats-it', { scale: 1.0, duration: 0.15, ease: 'power2.out' }, 0.26);
+      tl.to('#thats-it', { opacity: 0, duration: 0.16, ease: 'power1.in' }, 0.54);
+
+      tl.to('#summary-panels', { opacity: 1, duration: 0.20, ease: 'power1.out' }, 0.60);
+
+      const panelTimes = [0.84, 1.98, 3.24];
+      ['#panel1','#panel2','#panel3'].forEach((id, i) => {
+        tl.fromTo(id,
+          { scale: 0.65, opacity: 0 },
+          { scale: 1.07, opacity: 1, duration: 0.24, ease: 'back.out(2.5)' }, panelTimes[i]);
+        tl.to(id, { scale: 1.0, duration: 0.14, ease: 'power2.out' }, panelTimes[i] + 0.24);
+        tl.to(id + ' .p-icon-badge', { boxShadow: '0 0 50px rgba(2,179,233,0.95)', duration: 0.01 }, panelTimes[i] + 0.04);
+        tl.to(id + ' .p-icon-badge', { boxShadow: '0 0 16px rgba(2,179,233,0.22)', duration: 0.5, ease: 'power2.out' }, panelTimes[i] + 0.05);
+      });
+
+      tl.to(sel + ' .summary-panels', {
+        boxShadow: '0 0 70px rgba(2,179,233,0.5), 0 20px 44px rgba(0,0,0,0.7)',
+        duration: 0.4, yoyo: true, repeat: 1, ease: 'sine.inOut'
+      }, 3.60);
+
+      tl.set(sel + ' .overlay', { autoAlpha: 0 }, SLOT);
+      tl.to({}, { duration: SLOT }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines['scene9-summary'] = tl;
+    })();
+    </script>
+  </div>
+</template>

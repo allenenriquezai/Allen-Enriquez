@@ -11,9 +11,10 @@ Usage:
 """
 
 import json
+import re
 import sys
 import time
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
@@ -80,7 +81,7 @@ OUTCOME_TO_STAGE = {
 
 # Reverse: when dragging to a stage, what outcome to set
 STAGE_TO_DEFAULT_OUTCOME = {
-    'call_queue': None,                    # keep existing outcome
+    'call_queue': 'New / No Label',        # reset to uncalled
     'no_answer': 'No Answer 1',
     'not_interested': 'Not Interested - Convo',
     'callbacks': 'Call Back',
@@ -90,6 +91,12 @@ STAGE_TO_DEFAULT_OUTCOME = {
     'warm_interest': 'Warm Interest',
     'meeting_booked': 'Meeting Booked',
 }
+
+
+def col_letter(idx):
+    if idx < 26:
+        return chr(65 + idx)
+    return chr(64 + idx // 26) + chr(65 + idx % 26)
 
 
 def get_sheets_meta():
@@ -163,6 +170,18 @@ def load_board(group='paint'):
             padded = list(row) + [''] * (len(headers) - len(row))
             lead['_row_data'] = padded[:len(TARGET_HEADERS)]
 
+            # Extract last NOTE entry for card snippet (skip CALL entries)
+            notes_raw = lead.get('notes', '') or ''
+            last_note = ''
+            for line in reversed(notes_raw.split('\n')):
+                m = re.search(r'\[NOTE\] (.+)$', line.strip())
+                if m:
+                    last_note = m.group(1)
+                    break
+            if not last_note and notes_raw and not re.match(r'^\[', notes_raw.strip()):
+                last_note = notes_raw[:80]
+            lead['last_note'] = last_note
+
             # Assign to Kanban column by outcome, not by Sheet tab
             stage = stage_for_lead(lead)
             columns[stage].append(lead)
@@ -207,6 +226,13 @@ def load_board(group='paint'):
 
 def invalidate_cache():
     _cache['data'] = None
+    _stats_cache['data'] = None
+
+
+def today_label():
+    from datetime import datetime
+    now = datetime.now()
+    return f"{now.day} {now.strftime('%B')}"
 
 
 # --- Routes ---
@@ -275,6 +301,15 @@ def api_move_card():
                 'values': [[new_outcome]],
             })
 
+        # Stamp Date Called = today when outcome changes (so top-bar stats count the call)
+        if new_outcome and new_outcome != 'New / No Label' and 'Date Called' in col_map:
+            col_idx = col_map['Date Called']
+            col_letter = chr(65 + col_idx) if col_idx < 26 else chr(64 + col_idx // 26) + chr(65 + col_idx % 26)
+            batch_data.append({
+                'range': f"'{tab}'!{col_letter}{row_num}",
+                'values': [[today_label()]],
+            })
+
         # If moving to "Awaiting Reply", set Date Emailed to today
         if target_stage == 'awaiting_reply' and 'Date Emailed' in col_map:
             from datetime import datetime
@@ -300,6 +335,10 @@ def api_move_card():
                 idx = col_map['Call Outcome']
                 if idx < len(row_data):
                     row_data[idx] = new_outcome
+            if new_outcome and new_outcome != 'New / No Label' and 'Date Called' in col_map:
+                idx = col_map['Date Called']
+                if idx < len(row_data):
+                    row_data[idx] = today_label()
             if target_stage == 'awaiting_reply' and 'Date Emailed' in col_map:
                 idx = col_map['Date Emailed']
                 if idx < len(row_data):
@@ -355,11 +394,78 @@ def api_update_card():
                     'values': [[value]],
                 })
 
+        # Auto-stamp Date Called when outcome changes (unless caller already set it)
+        outcome_val = updates.get('Call Outcome')
+        if (outcome_val and outcome_val != 'New / No Label'
+                and 'Date Called' in col_map
+                and 'Date Called' not in updates):
+            col_idx = col_map['Date Called']
+            col_letter = chr(65 + col_idx) if col_idx < 26 else chr(64 + col_idx // 26) + chr(65 + col_idx % 26)
+            batch_data.append({
+                'range': f"'{tab}'!{col_letter}{row_num}",
+                'values': [[today_label()]],
+            })
+
         if batch_data:
             service.spreadsheets().values().batchUpdate(
                 spreadsheetId=SPREADSHEET_ID,
                 body={'valueInputOption': 'RAW', 'data': batch_data},
             ).execute()
+
+        invalidate_cache()
+        return jsonify({'ok': True})
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 500
+
+
+@app.route('/api/append-log', methods=['POST'])
+def api_append_log():
+    """Append a timestamped note or call entry to the Notes column."""
+    data = request.json
+    tab = data.get('tab')
+    row_num = data.get('row_num')
+    entry = data.get('entry')
+    call_outcome = data.get('call_outcome')  # set only for CALL entries
+
+    if not tab or not row_num or not entry:
+        return jsonify({'ok': False, 'error': 'Missing fields'}), 400
+
+    try:
+        service = get_sheets_service()
+        result = service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID, range=f"'{tab}'!1:1"
+        ).execute()
+        headers = result.get('values', [[]])[0]
+        col_map = {h: i for i, h in enumerate(headers)}
+
+        if 'Notes' not in col_map:
+            return jsonify({'ok': False, 'error': 'Notes column not found'}), 400
+
+        notes_letter = col_letter(col_map['Notes'])
+        curr = service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID,
+            range=f"'{tab}'!{notes_letter}{row_num}"
+        ).execute()
+        curr_notes = (curr.get('values') or [['']])[0][0] if curr.get('values') else ''
+        new_notes = (curr_notes.strip() + '\n' + entry).strip() if curr_notes.strip() else entry
+
+        batch_data = [{'range': f"'{tab}'!{notes_letter}{row_num}", 'values': [[new_notes]]}]
+
+        if call_outcome and 'Call Outcome' in col_map:
+            batch_data.append({
+                'range': f"'{tab}'!{col_letter(col_map['Call Outcome'])}{row_num}",
+                'values': [[call_outcome]],
+            })
+            if 'Date Called' in col_map:
+                batch_data.append({
+                    'range': f"'{tab}'!{col_letter(col_map['Date Called'])}{row_num}",
+                    'values': [[today_label()]],
+                })
+
+        service.spreadsheets().values().batchUpdate(
+            spreadsheetId=SPREADSHEET_ID,
+            body={'valueInputOption': 'RAW', 'data': batch_data},
+        ).execute()
 
         invalidate_cache()
         return jsonify({'ok': True})

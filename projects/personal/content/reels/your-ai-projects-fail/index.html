@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Your AI Projects Fail — preview</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Roboto+Mono:wght@400;500;700&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #05080F;
+        font-family: "Montserrat", sans-serif;
+        color: #ffffff;
+      }
+      #face-video {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+        object-position: center center;
+        z-index: 0;
+      }
+      .scene-layer {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1080px;
+        height: 1920px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="46.53"
+      data-width="1080"
+      data-height="1920"
+    >
+      <video
+        id="face-video"
+        data-start="0"
+        data-duration="46.53"
+        data-clip-type="video"
+        src="assets/source.mov"
+        preload="auto"
+        muted
+        playsinline
+      ></video>
+
+      <audio
+        id="face-audio"
+        data-start="0"
+        data-duration="46.53"
+        data-clip-type="audio"
+        data-volume="1"
+        src="assets/source.mov"
+      ></audio>
+
+      <div class="scene-layer"
+        data-composition-id="middle-animation"
+        data-composition-src="compositions/middle-animation.html"
+        data-start="5.47" data-duration="34.77" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Header sticker — over hook face (0-5.47) -->
+      <div class="scene-layer"
+        data-composition-id="header-sticker"
+        data-composition-src="compositions/header-sticker.html"
+        data-start="0" data-duration="5.47" data-track-index="8"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Header sticker — over CTA face (40.23-46.53) -->
+      <div class="scene-layer"
+        data-composition-id="header-sticker"
+        data-composition-src="compositions/header-sticker.html"
+        data-start="40.23" data-duration="6.30" data-track-index="8"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Karaoke captions — full reel -->
+      <div class="scene-layer"
+        data-composition-id="captions"
+        data-composition-src="compositions/captions.html"
+        data-start="0" data-duration="46.53" data-track-index="20"
+        data-width="1080" data-height="1920"></div>
+    </div>
+
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        tl.to({}, { duration: 46.53 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

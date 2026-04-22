@@ -7,7 +7,7 @@ Usage:
     python3 tools/generate_carousel.py --topic "4 Levels of AI" --slides 6 --handle "@allenenriquez"
     python3 tools/generate_carousel.py --topic "Stop chasing leads" --slides 5 --copy-file copy.txt
 
-Output: .tmp/carousels/<topic-slug>/slide_01.png, slide_02.png, ...
+Output: projects/personal/content/carousels/<topic-slug>/slide_01.png, slide_02.png, ...
 
 Copy file format (one section per slide, separated by --- Slide N ---):
     Use || to split header from body text on any slide.
@@ -266,7 +266,7 @@ def render_title_slide(text: str, slide_num: int, total: int, handle: str, show_
         subtitle = ""
 
     if show_profile:
-        profile_bottom = draw_profile_header(img, draw, y_start=PADDING_TOP)
+        profile_bottom = draw_profile_header(img, draw, y_start=PADDING_TOP + 60)
         safe_top = profile_bottom + 40
     else:
         # Accent bar at top
@@ -356,7 +356,7 @@ def render_cta_slide(text: str, slide_num: int, total: int, handle: str, show_pr
     draw = ImageDraw.Draw(img)
 
     if show_profile:
-        profile_bottom = draw_profile_header(img, draw, y_start=PADDING_TOP)
+        profile_bottom = draw_profile_header(img, draw, y_start=PADDING_TOP + 60)
         safe_top = profile_bottom + 40
     else:
         draw.rectangle([0, 0, WIDTH, 12], fill=ACCENT)
@@ -365,9 +365,9 @@ def render_cta_slide(text: str, slide_num: int, total: int, handle: str, show_pr
     safe_bottom = HEIGHT - 160
     safe_h = safe_bottom - safe_top
 
-    cta_font = load_font(FONT_HEADER_PATHS, 72, bold=True)
+    cta_font = load_font(FONT_HEADER_PATHS, 84, bold=True)
     total_h = measure_text_block(draw, text, cta_font, MAX_TEXT_WIDTH, 16)
-    y_start = safe_top + (safe_h - total_h) // 2
+    y_start = safe_top + (safe_h - total_h) // 4
     draw_text_block(draw, text, cta_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, y_start, line_spacing=16, align="left")
 
     draw_swipe_dots(draw, slide_num, total)
@@ -384,9 +384,9 @@ def generate_carousel(
     copy: list[str] | None = None,
     show_profile: bool = True,
 ) -> Path:
-    """Generate all carousel slides and save to .tmp/carousels/<slug>/."""
+    """Generate all carousel slides and save to projects/personal/content/carousels/<slug>/."""
     slug = slugify(topic)
-    base = Path(__file__).resolve().parent.parent / ".tmp" / "carousels" / slug
+    base = Path(__file__).resolve().parent.parent / "projects" / "personal" / "content" / "carousels" / slug
     base.mkdir(parents=True, exist_ok=True)
 
     if copy is None:

@@ -1,0 +1,135 @@
+<template id="scene8-summary-template">
+  <div
+    data-composition-id="scene8-summary"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="8.04"
+  >
+    <div class="wrap">
+      <div class="top-label">ANY OF THESE</div>
+      <div class="top-sub">USED TO TAKE WEEKS · COST THOUSANDS</div>
+
+      <div class="item-list">
+        <div class="item i1"><span class="i-num">01</span><span class="i-text">BUILDS A FULL WEBSITE</span><span class="i-check">✓</span></div>
+        <div class="item i2"><span class="i-num">02</span><span class="i-text">BUILDS A WORKING APP</span><span class="i-check">✓</span></div>
+        <div class="item i3"><span class="i-num">03</span><span class="i-text">30 DAYS OF CONTENT</span><span class="i-check">✓</span></div>
+        <div class="item i4"><span class="i-num">04</span><span class="i-text">SPIES ON COMPETITORS</span><span class="i-check">✓</span></div>
+        <div class="item i5"><span class="i-num">05</span><span class="i-text">FINDS YOUR NEXT HIRE</span><span class="i-check">✓</span></div>
+        <div class="item i6"><span class="i-num">06</span><span class="i-text">200 LEADS · PERSONAL EMAILS</span><span class="i-check">✓</span></div>
+        <div class="item i7"><span class="i-num">07</span><span class="i-text">REVIVES DEAD CRM DEALS</span><span class="i-check">✓</span></div>
+      </div>
+
+      <div class="pick-stamp">PICK THE ONE</div>
+      <div class="pick-sub">THAT COSTS YOU MOST TIME + MONEY</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene8-summary"] { position: absolute; inset: 0; background: #05080F; overflow: hidden; }
+      [data-composition-id="scene8-summary"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 22px; padding: 80px 60px;
+      }
+      [data-composition-id="scene8-summary"] .top-label {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 60px; color: #fff;
+        letter-spacing: 0.04em;
+        text-shadow: 0 0 22px rgba(2,179,233,0.5);
+      }
+      [data-composition-id="scene8-summary"] .top-sub {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 24px; color: rgba(255,255,255,0.7);
+        letter-spacing: 0.2em; text-align: center;
+      }
+      [data-composition-id="scene8-summary"] .item-list {
+        width: 920px;
+        display: flex; flex-direction: column; gap: 10px;
+        margin: 10px 0;
+      }
+      [data-composition-id="scene8-summary"] .item {
+        display: flex; align-items: center; gap: 18px;
+        padding: 14px 20px;
+        background: rgba(5,10,18,0.9);
+        border: 1px solid rgba(2,179,233,0.35);
+        border-radius: 12px;
+        box-shadow: 0 0 16px rgba(2,179,233,0.15);
+      }
+      [data-composition-id="scene8-summary"] .i-num {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 42px; color: #02B3E9;
+        min-width: 72px;
+        text-shadow: 0 0 14px rgba(2,179,233,0.8);
+      }
+      [data-composition-id="scene8-summary"] .i-text {
+        flex: 1;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 32px; color: #fff;
+        letter-spacing: -0.01em;
+      }
+      [data-composition-id="scene8-summary"] .i-check {
+        width: 44px; height: 44px; border-radius: 50%;
+        background: rgba(34,197,94,0.18);
+        border: 2px solid #22c55e;
+        color: #22c55e;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 28px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 0 12px rgba(34,197,94,0.5);
+      }
+      [data-composition-id="scene8-summary"] .pick-stamp {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 110px; color: #02B3E9;
+        letter-spacing: -0.02em;
+        text-shadow:
+          -4px -4px 0 #000, 4px -4px 0 #000,
+          -4px 4px 0 #000, 4px 4px 0 #000,
+          0 0 40px rgba(2,179,233,0.9);
+        margin-top: 12px;
+      }
+      [data-composition-id="scene8-summary"] .pick-sub {
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 28px; color: rgba(255,255,255,0.9);
+        letter-spacing: 0.16em; text-align: center;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene8-summary"]';
+        const SLOT = 8.04;
+        const tl = gsap.timeline({ paused: true });
+
+        // Top label slides in
+        tl.from(sel + ' .top-label', { y: 40, opacity: 0, duration: 0.40, ease: 'power3.out' }, 0.10);
+        tl.from(sel + ' .top-sub', { y: 20, opacity: 0, duration: 0.35, ease: 'power2.out' }, 0.35);
+
+        // All 7 items slide in fast stagger
+        tl.from(sel + ' .item', { x: -40, opacity: 0, stagger: 0.08, duration: 0.30, ease: 'power2.out' }, 0.70);
+
+        // Checks pop one by one
+        tl.from(sel + ' .i-check', { scale: 0, opacity: 0, stagger: 0.09, duration: 0.25, ease: 'back.out(2.5)' }, 1.50);
+
+        // Hold the list, then PICK slam
+        tl.fromTo(sel + ' .pick-stamp',
+          { scale: 2.5, opacity: 0, rotate: -4 },
+          { scale: 1, opacity: 1, rotate: 0, duration: 0.35, ease: 'power3.out' }, 5.00);
+        tl.to(sel + ' .pick-stamp', { scale: 1.06, duration: 0.30, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 5.40);
+
+        tl.from(sel + ' .pick-sub', { y: 20, opacity: 0, duration: 0.35, ease: 'power2.out' }, 5.85);
+
+        // Subtle list shimmer to keep motion alive in final seconds
+        tl.to(sel + ' .item', {
+          borderColor: 'rgba(2,179,233,0.8)',
+          duration: 0.6, yoyo: true, repeat: 1, stagger: 0.08, ease: 'sine.inOut'
+        }, 6.20);
+
+        tl.to(sel + ' .wrap', { y: -40, opacity: 0, duration: 0.30, ease: 'power2.in' }, SLOT - 0.35);
+        tl.to({}, { duration: SLOT }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene8-summary"] = tl;
+      })();
+    </script>
+  </div>
+</template>

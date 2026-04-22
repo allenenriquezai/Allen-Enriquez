@@ -1,0 +1,209 @@
+<template id="scene4-spy-template">
+  <div
+    data-composition-id="scene4-spy"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="6.48"
+  >
+    <div class="wrap">
+      <div class="num-mono">
+        <span class="layer l-base">04</span>
+        <span class="layer l-magenta">04</span>
+        <span class="layer l-blue">04</span>
+      </div>
+
+      <div class="headline">SPIES ON<br/>COMPETITORS</div>
+      <div class="underline-sweep"></div>
+
+      <div class="targets">
+        <div class="target t1">
+          <div class="t-label">PRICING</div>
+          <div class="t-rows">
+            <div class="t-row"><span class="t-dot"></span><span>$49/mo</span></div>
+            <div class="t-row"><span class="t-dot"></span><span>$89/mo</span></div>
+            <div class="t-row"><span class="t-dot"></span><span>$149/mo</span></div>
+          </div>
+          <div class="t-scan"></div>
+        </div>
+        <div class="target t2">
+          <div class="t-label">ADS</div>
+          <div class="t-rows">
+            <div class="t-row"><span class="t-dot"></span><span>Hook: "save 10h"</span></div>
+            <div class="t-row"><span class="t-dot"></span><span>CTA: "free trial"</span></div>
+            <div class="t-row"><span class="t-dot"></span><span>Budget: $3k/mo</span></div>
+          </div>
+          <div class="t-scan"></div>
+        </div>
+        <div class="target t3">
+          <div class="t-label">REVIEWS</div>
+          <div class="t-rows">
+            <div class="t-row"><span class="t-dot"></span><span>★★★★★ 4.2</span></div>
+            <div class="t-row"><span class="t-dot"></span><span>"slow support"</span></div>
+            <div class="t-row"><span class="t-dot"></span><span>"too expensive"</span></div>
+          </div>
+          <div class="t-scan"></div>
+        </div>
+      </div>
+
+      <div class="timer-stamp">
+        <span class="ts-dot"></span>
+        <span class="ts-time" id="ts-time">00:00</span>
+        <span class="ts-label">MINUTES</span>
+      </div>
+
+      <div class="subtext">10 MINUTES &nbsp;·&nbsp; NOT 10 DAYS</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene4-spy"] { position: absolute; inset: 0; background: #05080F; overflow: hidden; }
+      [data-composition-id="scene4-spy"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 22px; padding: 80px 60px;
+      }
+      [data-composition-id="scene4-spy"] .num-mono { position: relative; width: 300px; height: 280px; }
+      [data-composition-id="scene4-spy"] .num-mono .layer {
+        position: absolute; inset: 0;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 280px; line-height: 0.85; letter-spacing: -0.04em;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene4-spy"] .num-mono .l-base    { color: #fff; text-shadow: 0 0 40px rgba(2,179,233,0.7); }
+      [data-composition-id="scene4-spy"] .num-mono .l-magenta { color: #ff00a8; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene4-spy"] .num-mono .l-blue    { color: #02B3E9; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene4-spy"] .headline {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 96px; line-height: 0.95; color: #fff; text-align: center;
+        letter-spacing: -0.02em;
+        text-shadow: 0 0 30px rgba(2,179,233,0.35);
+      }
+      [data-composition-id="scene4-spy"] .underline-sweep {
+        width: 0; height: 8px;
+        background: linear-gradient(90deg, #02B3E9, #7de9ff);
+        box-shadow: 0 0 18px rgba(2,179,233,0.9);
+        border-radius: 4px;
+      }
+      [data-composition-id="scene4-spy"] .targets {
+        display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;
+        width: 920px;
+      }
+      [data-composition-id="scene4-spy"] .target {
+        position: relative;
+        background: rgba(5,10,18,0.9);
+        border: 1px solid rgba(2,179,233,0.45);
+        border-radius: 16px; padding: 18px;
+        overflow: hidden;
+        box-shadow: 0 0 24px rgba(2,179,233,0.2);
+      }
+      [data-composition-id="scene4-spy"] .t-label {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 30px; color: #02B3E9;
+        letter-spacing: 0.14em; margin-bottom: 10px;
+      }
+      [data-composition-id="scene4-spy"] .t-rows { display: flex; flex-direction: column; gap: 10px; }
+      [data-composition-id="scene4-spy"] .t-row {
+        display: flex; align-items: center; gap: 10px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 22px; color: rgba(255,255,255,0.85);
+      }
+      [data-composition-id="scene4-spy"] .t-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: #02B3E9;
+        box-shadow: 0 0 8px rgba(2,179,233,0.8);
+      }
+      [data-composition-id="scene4-spy"] .t-scan {
+        position: absolute; left: 0; right: 0; top: -10px;
+        height: 16px;
+        background: linear-gradient(180deg, transparent, rgba(2,179,233,0.9), transparent);
+        filter: blur(3px);
+        pointer-events: none;
+      }
+      [data-composition-id="scene4-spy"] .timer-stamp {
+        display: inline-flex; align-items: center; gap: 14px;
+        padding: 14px 26px;
+        border: 2px solid rgba(2,179,233,0.7);
+        border-radius: 12px;
+        background: rgba(2,179,233,0.10);
+        box-shadow: 0 0 20px rgba(2,179,233,0.3);
+      }
+      [data-composition-id="scene4-spy"] .ts-dot {
+        width: 12px; height: 12px; border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 10px rgba(34,197,94,0.9);
+      }
+      [data-composition-id="scene4-spy"] .ts-time {
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 42px; color: #fff;
+        letter-spacing: 0.08em;
+      }
+      [data-composition-id="scene4-spy"] .ts-label {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 22px; color: rgba(255,255,255,0.7);
+        letter-spacing: 0.18em;
+      }
+      [data-composition-id="scene4-spy"] .subtext {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 30px; letter-spacing: 0.22em;
+        color: rgba(255,255,255,0.85);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene4-spy"]';
+        const SLOT = 6.48;
+        const tl = gsap.timeline({ paused: true });
+
+        tl.from(sel + ' .num-mono', { scale: 0.25, opacity: 0, rotate: 8, duration: 0.38, ease: 'back.out(2.6)' }, 0.10);
+        tl.fromTo(sel + ' .num-mono .l-magenta', { x: -44, y: -22 }, { x: -7, y: -3, duration: 0.50, ease: 'expo.out' }, 0.10);
+        tl.fromTo(sel + ' .num-mono .l-blue',    { x: 44,  y: 22  }, { x: 7,  y: 3,  duration: 0.50, ease: 'expo.out' }, 0.10);
+
+        tl.from(sel + ' .headline', { y: 60, opacity: 0, duration: 0.42, ease: 'power3.out' }, 0.30);
+        tl.to(sel + ' .underline-sweep', { width: 560, duration: 0.40, ease: 'power2.out' }, 0.70);
+
+        // Targets slide in from left, stagger
+        tl.from(sel + ' .target', { y: 50, opacity: 0, stagger: 0.14, duration: 0.40, ease: 'power3.out' }, 0.95);
+
+        // Rows populate per target
+        tl.from(sel + ' .t1 .t-row', { x: 20, opacity: 0, stagger: 0.08, duration: 0.25, ease: 'power2.out' }, 1.30);
+        tl.from(sel + ' .t2 .t-row', { x: 20, opacity: 0, stagger: 0.08, duration: 0.25, ease: 'power2.out' }, 1.60);
+        tl.from(sel + ' .t3 .t-row', { x: 20, opacity: 0, stagger: 0.08, duration: 0.25, ease: 'power2.out' }, 1.90);
+
+        // Scanlines pulse through each target
+        tl.fromTo(sel + ' .t1 .t-scan', { y: -20, opacity: 0 }, { y: 220, opacity: 0.9, duration: 0.9, ease: 'power1.inOut' }, 1.30);
+        tl.fromTo(sel + ' .t2 .t-scan', { y: -20, opacity: 0 }, { y: 220, opacity: 0.9, duration: 0.9, ease: 'power1.inOut' }, 1.60);
+        tl.fromTo(sel + ' .t3 .t-scan', { y: -20, opacity: 0 }, { y: 220, opacity: 0.9, duration: 0.9, ease: 'power1.inOut' }, 1.90);
+        tl.to(sel + ' .t-scan', { opacity: 0, duration: 0.3, ease: 'power2.out' }, 3.00);
+
+        // Timer stamp + tick from 00:00 -> 10:00
+        tl.fromTo(sel + ' .timer-stamp',
+          { scale: 2.0, opacity: 0, rotate: -4 },
+          { scale: 1, opacity: 1, rotate: 0, duration: 0.30, ease: 'power3.out' }, 3.60);
+
+        const timer = { s: 0 };
+        const tEl = document.querySelector(sel + ' #ts-time');
+        const fmt = (s) => {
+          const m = Math.floor(s / 60);
+          const r = Math.floor(s % 60);
+          return String(m).padStart(2, '0') + ':' + String(r).padStart(2, '0');
+        };
+        tl.to(timer, {
+          s: 600, duration: 1.5, ease: 'power1.inOut',
+          onUpdate: () => { if (tEl) tEl.textContent = fmt(timer.s); }
+        }, 3.90);
+
+        tl.from(sel + ' .subtext', { y: 20, opacity: 0, duration: 0.35, ease: 'power2.out' }, 5.50);
+
+        // Ambient
+        tl.to(sel + ' .num-mono .l-base', { textShadow: '0 0 60px rgba(2,179,233,1)', duration: 0.7, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 1.40);
+
+        tl.to(sel + ' .wrap', { y: -50, opacity: 0, duration: 0.30, ease: 'power2.in' }, SLOT - 0.35);
+        tl.to({}, { duration: SLOT }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene4-spy"] = tl;
+      })();
+    </script>
+  </div>
+</template>

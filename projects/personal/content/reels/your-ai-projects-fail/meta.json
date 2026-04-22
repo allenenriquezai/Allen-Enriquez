@@ -1,0 +1,18 @@
+{
+  "title": "Your AI Projects Fail",
+  "source": "/Users/allenenriquez/Desktop/Personal Brand - Contents/Animation Ready From Capcut/YOUR AI PROJECTS FAIL.mov",
+  "source_duration": 46.53,
+  "source_dimensions": "4320x7680",
+  "source_fps": 60,
+  "render_dimensions": "1080x1920",
+  "overlay_window": {
+    "start": 5.47,
+    "end": 40.23,
+    "duration": 34.77
+  },
+  "segments": {
+    "hook_face": { "start": 0.0, "end": 5.47, "duration": 5.47 },
+    "middle_animation": { "start": 5.47, "end": 40.23, "duration": 34.77 },
+    "cta_face": { "start": 40.23, "end": 46.53, "duration": 6.30 }
+  }
+}

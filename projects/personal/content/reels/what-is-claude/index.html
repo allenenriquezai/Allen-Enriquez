@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>What Is Claude</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Roboto+Mono:wght@400;500;700&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #05080F;
+        font-family: "Montserrat", sans-serif;
+        color: #ffffff;
+      }
+      .scene-layer {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1080px;
+        height: 1920px;
+      }
+      #face-video {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+        object-position: center center;
+        z-index: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="79.96"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- Face video (full-frame cover) -->
+      <video
+        id="face-video"
+        data-start="0"
+        data-duration="79.96"
+        data-clip-type="video"
+        src="assets/source.mov"
+        preload="auto"
+        muted
+        playsinline
+      ></video>
+
+      <!-- Audio -->
+      <audio
+        id="face-audio"
+        data-start="0"
+        data-duration="79.96"
+        data-clip-type="audio"
+        data-volume="1"
+        src="assets/source.mov"
+      ></audio>
+
+      <!-- Header sticker — hook window (0 → 7.96s) -->
+      <div class="scene-layer"
+        data-composition-id="header-sticker"
+        data-composition-src="compositions/header-sticker.html"
+        data-start="0" data-duration="7.96" data-track-index="8"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Header sticker — CTA window (76.26 → 79.96s) -->
+      <div class="scene-layer"
+        data-composition-id="header-sticker"
+        data-composition-src="compositions/header-sticker.html"
+        data-start="76.26" data-duration="3.70" data-track-index="8"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Scene 1: 4 ways to use Claude (22.42 → 29.74) -->
+      <div class="scene-layer"
+        data-composition-id="scene1-4ways"
+        data-composition-src="compositions/scene1-4ways.html"
+        data-start="22.42" data-duration="7.32" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Scene 2: What's inside? (30.02 → 31.52) -->
+      <div class="scene-layer"
+        data-composition-id="scene2-inside"
+        data-composition-src="compositions/scene2-inside.html"
+        data-start="30.02" data-duration="1.50" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Scene 3: Chat — you ask it answers (36.04 → 41.00) -->
+      <div class="scene-layer"
+        data-composition-id="scene3-chat"
+        data-composition-src="compositions/scene3-chat.html"
+        data-start="36.04" data-duration="4.96" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Scene 4: Co-work — give goal, capabilities (42.66 → 49.79) -->
+      <div class="scene-layer"
+        data-composition-id="scene4-cowork"
+        data-composition-src="compositions/scene4-cowork.html"
+        data-start="42.66" data-duration="7.13" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Scene 5: N8N + Make logos (49.86 → 53.68) -->
+      <div class="scene-layer"
+        data-composition-id="scene5-n8nmake"
+        data-composition-src="compositions/scene5-n8nmake.html"
+        data-start="49.86" data-duration="3.82" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Scene 6: Problem (53.74 → 59.13) -->
+      <div class="scene-layer"
+        data-composition-id="scene6-problem"
+        data-composition-src="compositions/scene6-problem.html"
+        data-start="53.74" data-duration="5.39" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Scene 7: Claude Code (59.14 → 63.80) -->
+      <div class="scene-layer"
+        data-composition-id="scene7-code"
+        data-composition-src="compositions/scene7-code.html"
+        data-start="59.14" data-duration="4.66" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Scene 8: Deliverables (63.86 → 67.61) -->
+      <div class="scene-layer"
+        data-composition-id="scene8-deliverables"
+        data-composition-src="compositions/scene8-deliverables.html"
+        data-start="63.86" data-duration="3.75" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Scene 9: Summary (71.94 → 76.13) -->
+      <div class="scene-layer"
+        data-composition-id="scene9-summary"
+        data-composition-src="compositions/scene9-summary.html"
+        data-start="71.94" data-duration="4.19" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <!-- Captions (full duration) -->
+      <div class="scene-layer"
+        data-composition-id="captions"
+        data-composition-src="compositions/captions.html"
+        data-start="0" data-duration="79.96" data-track-index="20"
+        data-width="1080" data-height="1920"></div>
+    </div>
+
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        tl.to({}, { duration: 79.96 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

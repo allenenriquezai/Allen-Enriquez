@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""
-Daily token-cost audit. Runs ccusage, writes report, flags anomalies.
-
-Triggers WhatsApp digest only if a threshold is crossed. Silent otherwise.
-"""
+"""Daily token-cost audit. Runs ccusage, writes report, flags anomalies."""
 
 import json
 import subprocess
@@ -19,7 +15,7 @@ SKILLS_DIR = ROOT / ".claude" / "skills"
 # PH timezone
 PH_TZ = timezone(timedelta(hours=8))
 
-# Thresholds that trigger a WhatsApp alert
+# Thresholds that trigger report alerts
 DAILY_SPEND_ALERT = 80.00       # $USD
 OPUS_PCT_ALERT = 90             # Opus > this % of spend
 SPEND_DOUBLED_VS_YESTERDAY = 1.8  # multiplier
@@ -163,45 +159,6 @@ def write_report(result: dict, oversized_skills: list, memory_count: int) -> Pat
     return report_path
 
 
-def send_whatsapp_if_alerts(result: dict, report_path: Path) -> None:
-    if not result.get("alerts"):
-        return
-
-    message_lines = [
-        f"Token audit — {result['date']}",
-        f"Spend: ${result['total_cost']:.2f} ({result['spend_ratio']:.1f}x avg)",
-        f"Opus: {result['opus_pct']:.0f}%",
-        "",
-        "Alerts:",
-    ]
-    message_lines.extend(f"- {a}" for a in result["alerts"])
-    message_lines.append("")
-    message_lines.append(f"Report: {report_path}")
-
-    message = "\n".join(message_lines)
-
-    whatsapp_number = "639454203195"
-    try:
-        proc = subprocess.run(
-            [
-                sys.executable,
-                str(ROOT / "tools" / "whatsapp.py"),
-                "send",
-                "--to",
-                whatsapp_number,
-                "--message",
-                message,
-            ],
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        if proc.returncode != 0:
-            print(f"WhatsApp send failed (token likely expired): {proc.stderr[:200]}", file=sys.stderr)
-    except Exception as e:
-        print(f"WhatsApp send exception: {e}", file=sys.stderr)
-
-
 def main() -> int:
     try:
         data = run_ccusage(days_back=8)
@@ -220,8 +177,6 @@ def main() -> int:
 
     print(f"Report: {report_path}")
     print(f"Spend: ${result['total_cost']:.2f} | Opus: {result['opus_pct']:.0f}% | Alerts: {len(result['alerts'])}")
-
-    send_whatsapp_if_alerts(result, report_path)
     return 0
 
 

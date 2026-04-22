@@ -1,0 +1,699 @@
+<template id="middle-animation-template">
+  <div data-composition-id="middle-animation"
+       data-start="0"
+       data-width="1080"
+       data-height="1920"
+       data-duration="34.77">
+    <style>
+      [data-composition-id="middle-animation"] { position: absolute; inset: 0; background: transparent; overflow: hidden; font-family: 'Montserrat', sans-serif; color: #fff; }
+      [data-composition-id="middle-animation"] .stage { position: absolute; inset: 0; }
+      [data-composition-id="middle-animation"] .card {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 120px 40px;
+        opacity: 0;
+        will-change: opacity, transform;
+      }
+      [data-composition-id="middle-animation"] .kicker {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 500;
+        font-size: 34px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.45);
+        margin-bottom: 40px;
+      }
+      [data-composition-id="middle-animation"] .headline {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 172px;
+        line-height: 0.95;
+        letter-spacing: -0.01em;
+        color: #ffffff;
+        text-transform: uppercase;
+        max-width: 960px;
+        word-break: keep-all;
+        overflow-wrap: normal;
+        white-space: normal;
+      }
+      [data-composition-id="middle-animation"] .headline.sm { font-size: 124px; }
+      [data-composition-id="middle-animation"] .headline.xl { font-size: 140px; }
+      [data-composition-id="middle-animation"] .headline { max-width: 1000px; }
+      [data-composition-id="middle-animation"] .accent { color: #02B3E9; text-shadow: 0 0 36px rgba(2,179,233,0.65); }
+      [data-composition-id="middle-animation"] .red    { color: #ff4757; text-shadow: 0 0 32px rgba(255,71,87,0.65); }
+      [data-composition-id="middle-animation"] .green  { color: #22c55e; text-shadow: 0 0 38px rgba(34,197,94,0.65); }
+      [data-composition-id="middle-animation"] .strike { position: relative; display: inline-block; }
+      [data-composition-id="middle-animation"] .strike::after {
+        content: '';
+        position: absolute;
+        left: -6%; right: -6%;
+        top: 50%;
+        height: 12px;
+        background: #ff4757;
+        box-shadow: 0 0 18px rgba(255,71,87,0.8);
+        transform: scaleX(0);
+        transform-origin: left center;
+      }
+      [data-composition-id="middle-animation"] .sub {
+        margin-top: 48px;
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 500;
+        font-size: 48px;
+        color: rgba(255,255,255,0.78);
+        letter-spacing: 0.02em;
+        line-height: 1.3;
+      }
+
+      /* Stack pills (for beat 2: ChatGPT / Zapier / Make) */
+      [data-composition-id="middle-animation"] .pill-stack {
+        display: flex; flex-direction: column; gap: 36px; align-items: center;
+      }
+      [data-composition-id="middle-animation"] .pill {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 88px;
+        letter-spacing: 0.08em;
+        color: #02B3E9;
+        padding: 32px 70px;
+        border: 5px solid #02B3E9;
+        border-radius: 28px;
+        background: rgba(2,179,233,0.08);
+        box-shadow: 0 0 40px rgba(2,179,233,0.35) inset, 0 0 30px rgba(2,179,233,0.25);
+        text-transform: uppercase;
+      }
+
+      /* Chat-UI mock (for beats 7/8 — hammer vs blueprint) */
+      [data-composition-id="middle-animation"] .chat {
+        width: 900px;
+        display: flex; flex-direction: column; gap: 28px;
+      }
+      [data-composition-id="middle-animation"] .bubble {
+        padding: 32px 40px;
+        border-radius: 28px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 52px;
+        line-height: 1.25;
+        letter-spacing: 0.01em;
+      }
+      [data-composition-id="middle-animation"] .bubble.u {
+        align-self: flex-end; max-width: 720px;
+        background: rgba(2,179,233,0.14);
+        border: 2px solid rgba(2,179,233,0.55);
+        color: #fff;
+      }
+      [data-composition-id="middle-animation"] .bubble.b {
+        align-self: flex-start; max-width: 780px;
+        background: #1a1f2e;
+        border: 2px solid rgba(255,255,255,0.10);
+      }
+      [data-composition-id="middle-animation"] .bubble .big {
+        display: block;
+        margin-top: 14px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 132px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: #02B3E9;
+        text-shadow: 0 0 34px rgba(2,179,233,0.7);
+      }
+
+      /* Numbered step chips (beat 15) */
+      [data-composition-id="middle-animation"] .steps { display: flex; gap: 32px; align-items: center; margin-top: 60px; }
+      [data-composition-id="middle-animation"] .step {
+        width: 180px; height: 180px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 132px; color: #02B3E9;
+        border: 6px solid #02B3E9;
+        border-radius: 32px;
+        background: rgba(2,179,233,0.1);
+        box-shadow: 0 0 30px rgba(2,179,233,0.4) inset;
+      }
+      [data-composition-id="middle-animation"] .step-arrow {
+        font-size: 80px; color: rgba(2,179,233,0.55); font-weight: 700;
+      }
+
+      /* Flowchart (beats 10/11) */
+      [data-composition-id="middle-animation"] .flow { display: flex; align-items: center; gap: 28px; margin-top: 60px; }
+      [data-composition-id="middle-animation"] .node {
+        width: 220px; height: 140px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 44px;
+        color: #02B3E9;
+        border: 4px solid #02B3E9;
+        border-radius: 20px;
+        background: rgba(2,179,233,0.08);
+        box-shadow: 0 0 24px rgba(2,179,233,0.3) inset;
+      }
+      [data-composition-id="middle-animation"] .arrow {
+        font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 72px;
+        color: rgba(2,179,233,0.7);
+      }
+      [data-composition-id="middle-animation"] .bot-chip {
+        display: inline-block;
+        margin-top: 60px;
+        padding: 20px 44px;
+        border-radius: 60px;
+        background: rgba(2,179,233,0.16);
+        border: 3px solid #02B3E9;
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 42px; color: #02B3E9;
+        letter-spacing: 0.14em;
+      }
+
+      /* Big stamp overlay (payoff beats) */
+      [data-composition-id="middle-animation"] .stamp {
+        display: inline-block;
+        padding: 20px 56px 32px;
+        margin-top: 48px;
+        border: 8px solid currentColor;
+        border-radius: 18px;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 104px; letter-spacing: 0.04em; text-transform: uppercase;
+        transform: rotate(-6deg);
+      }
+
+      /* Chaos word scatter (beat 6 / 19) */
+      [data-composition-id="middle-animation"] .chaos-words {
+        position: relative; width: 900px; height: 360px; margin-top: 20px;
+      }
+      [data-composition-id="middle-animation"] .chaos-words span {
+        position: absolute;
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 48px; color: rgba(255,71,87,0.85);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+      }
+
+      /* Ambient scanline */
+      [data-composition-id="middle-animation"] .scanline {
+        position: absolute; inset: 0; pointer-events: none; z-index: 100;
+        background: repeating-linear-gradient(0deg,
+          transparent 0, transparent 3px,
+          rgba(2,179,233,0.03) 3px, rgba(2,179,233,0.03) 4px);
+      }
+
+      /* Hero icons (Lucide) */
+      [data-composition-id="middle-animation"] .icon-hero {
+        width: 440px; height: 440px;
+        margin-bottom: 32px;
+        color: #02B3E9;
+        filter: drop-shadow(0 0 24px rgba(2,179,233,0.55));
+      }
+      [data-composition-id="middle-animation"] .icon-hero.xl {
+        width: 560px; height: 560px;
+      }
+      [data-composition-id="middle-animation"] .icon-hero.sm {
+        width: 260px; height: 260px;
+        margin-bottom: 20px;
+      }
+      [data-composition-id="middle-animation"] .icon-hero.red {
+        color: #ff4757;
+        filter: drop-shadow(0 0 24px rgba(255,71,87,0.55));
+      }
+      [data-composition-id="middle-animation"] .icon-hero.green {
+        color: #22c55e;
+        filter: drop-shadow(0 0 28px rgba(34,197,94,0.6));
+      }
+      [data-composition-id="middle-animation"] .icon-hero svg {
+        width: 100%; height: 100%;
+        overflow: visible;
+      }
+      [data-composition-id="middle-animation"] .icon-hero svg path,
+      [data-composition-id="middle-animation"] .icon-hero svg line,
+      [data-composition-id="middle-animation"] .icon-hero svg circle,
+      [data-composition-id="middle-animation"] .icon-hero svg rect,
+      [data-composition-id="middle-animation"] .icon-hero svg ellipse,
+      [data-composition-id="middle-animation"] .icon-hero svg polyline,
+      [data-composition-id="middle-animation"] .icon-hero svg polygon {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* Side-by-side (icon + text) */
+      [data-composition-id="middle-animation"] .icon-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 48px;
+        margin-bottom: 40px;
+      }
+
+      /* Corner tag */
+      [data-composition-id="middle-animation"] .corner {
+        position: absolute;
+        top: 180px; left: 50%; transform: translateX(-50%);
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 28px; letter-spacing: 0.32em; color: rgba(2,179,233,0.75);
+        padding: 10px 22px;
+        border: 1.5px solid rgba(2,179,233,0.4);
+        border-radius: 999px;
+        background: rgba(2,179,233,0.06);
+        text-transform: uppercase;
+        opacity: 0;
+      }
+    </style>
+
+    <div class="stage">
+      <div class="corner" id="m-corner">AI PROJECTS</div>
+
+      <!-- Beat 1 — People buy tools -->
+      <div class="card" id="b1" data-icon="shopping-cart" data-icon-color="cyan">
+        <div class="kicker">most people</div>
+        <div class="headline">BUY<br><span class="accent">TOOLS</span></div>
+      </div>
+
+      <!-- Beat 2 — ChatGPT / Zapier / Make -->
+      <div class="card" id="b2">
+        <div class="kicker">they stack</div>
+        <div class="pill-stack">
+          <div class="pill" id="b2p1">CHATGPT</div>
+          <div class="pill" id="b2p2">ZAPIER</div>
+          <div class="pill" id="b2p3">MAKE</div>
+        </div>
+      </div>
+
+      <!-- Beat 3 — They connect things -->
+      <div class="card" id="b3" data-icon="link-2" data-icon-color="cyan">
+        <div class="kicker">they try to</div>
+        <div class="headline">CONNECT<br><span class="accent">THINGS</span></div>
+      </div>
+
+      <!-- Beat 4 — When it breaks, they quit -->
+      <div class="card" id="b4" data-icon="x-circle" data-icon-color="red">
+        <div class="kicker">it breaks</div>
+        <div class="headline red"><span class="strike" id="b4-strike">THEY QUIT</span></div>
+      </div>
+
+      <!-- Beat 5 — Problem isn't the tool -->
+      <div class="card" id="b5" data-icon="wrench" data-icon-color="red" data-icon-with-ban="1">
+        <div class="kicker">the problem</div>
+        <div class="headline">NOT THE<br><span class="red strike" id="b5-strike">TOOL</span></div>
+      </div>
+
+      <!-- Beat 6 — No system -->
+      <div class="card" id="b6" data-icon="tornado" data-icon-color="red">
+        <div class="kicker">the real problem</div>
+        <div class="headline red">NO SYSTEM</div>
+      </div>
+
+      <!-- Beat 7 — A tool is a HAMMER (payoff) -->
+      <div class="card" id="b7" data-icon="hammer" data-icon-color="cyan" data-icon-size="xl">
+        <div class="chat">
+          <div class="bubble u">a tool is a...</div>
+          <div class="bubble b">
+            just a
+            <span class="big accent" id="b7-big">HAMMER</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beat 8 — A system is the BLUEPRINT for the house (payoff) -->
+      <div class="card" id="b8" data-icon="house" data-icon-color="cyan" data-icon-size="xl">
+        <div class="chat">
+          <div class="bubble u">a system is the...</div>
+          <div class="bubble b">
+            it's the
+            <span class="big accent" id="b8-big">BLUEPRINT</span>
+            <span style="display:block;margin-top:12px;font-size:42px;color:rgba(255,255,255,0.7);">for the house</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beat 9 — Stop chasing tools -->
+      <div class="card" id="b9" data-icon="ban" data-icon-color="red">
+        <div class="kicker">so I</div>
+        <div class="headline">STOPPED<br><span class="red strike" id="b9-strike">CHASING TOOLS</span></div>
+      </div>
+
+      <!-- Beat 10 — Mapped out processes -->
+      <div class="card" id="b10">
+        <div class="kicker">I mapped</div>
+        <div class="headline sm accent">MY PROCESS</div>
+        <div class="flow" id="b10-flow">
+          <div class="node" id="b10n1">STEP 1</div>
+          <div class="arrow" id="b10a1">→</div>
+          <div class="node" id="b10n2">STEP 2</div>
+          <div class="arrow" id="b10a2">→</div>
+          <div class="node" id="b10n3">STEP 3</div>
+        </div>
+      </div>
+
+      <!-- Beat 11 — Told AI to follow -->
+      <div class="card" id="b11">
+        <div class="kicker">then told</div>
+        <div class="headline sm accent">AI TO FOLLOW</div>
+        <div class="flow">
+          <div class="node">STEP 1</div>
+          <div class="arrow">→</div>
+          <div class="node">STEP 2</div>
+          <div class="arrow">→</div>
+          <div class="node">STEP 3</div>
+        </div>
+        <div class="bot-chip" id="b11-bot">🤖  AI WORKING</div>
+      </div>
+
+      <!-- Beat 12 — Everything changed (payoff) -->
+      <div class="card" id="b12" data-icon="circle-check" data-icon-color="green">
+        <div class="kicker">and then</div>
+        <div class="headline green xl">EVERYTHING<br>CHANGED</div>
+        <div class="stamp green" id="b12-stamp" style="color:#22c55e;">✓ WORKS</div>
+      </div>
+
+      <!-- Beat 13 — Before you touch AI -->
+      <div class="card" id="b13" data-icon="hand" data-icon-color="cyan">
+        <div class="kicker">before you</div>
+        <div class="headline">TOUCH<br><span class="accent">ANY AI TOOL</span></div>
+      </div>
+
+      <!-- Beat 14 — Write down your process -->
+      <div class="card" id="b14" data-icon="pencil-line" data-icon-color="cyan">
+        <div class="kicker">first</div>
+        <div class="headline">WRITE DOWN<br><span class="accent">YOUR PROCESS</span></div>
+      </div>
+
+      <!-- Beat 15 — Step by step -->
+      <div class="card" id="b15">
+        <div class="headline accent">STEP BY STEP</div>
+        <div class="steps">
+          <div class="step" id="b15s1">1</div>
+          <div class="step-arrow">→</div>
+          <div class="step" id="b15s2">2</div>
+          <div class="step-arrow">→</div>
+          <div class="step" id="b15s3">3</div>
+        </div>
+      </div>
+
+      <!-- Beat 16 — As detailed as you can -->
+      <div class="card" id="b16" data-icon="search" data-icon-color="cyan">
+        <div class="kicker">as detailed as</div>
+        <div class="headline xl accent">YOU CAN</div>
+      </div>
+
+      <!-- Beat 17 — That's the system (payoff) -->
+      <div class="card" id="b17" data-icon="settings-2" data-icon-color="cyan" data-icon-size="xl">
+        <div class="kicker">that's</div>
+        <div class="headline xl">THE<br><span class="accent">SYSTEM</span></div>
+      </div>
+
+      <!-- Beat 18 — AI follows systems -->
+      <div class="card" id="b18" data-icon="bot" data-icon-color="cyan">
+        <div class="kicker">AI</div>
+        <div class="headline">FOLLOWS<br><span class="green">SYSTEMS</span></div>
+      </div>
+
+      <!-- Beat 19 — Not chaos -->
+      <div class="card" id="b19" data-icon="tornado" data-icon-color="red" data-icon-size="xl">
+        <div class="kicker">but it can't follow</div>
+        <div class="headline xl red">CHAOS</div>
+      </div>
+
+      <div class="scanline"></div>
+    </div>
+
+    <script>
+      (function(){
+        const SEL = '[data-composition-id="middle-animation"]';
+        function start(){
+          const root = document.querySelector(SEL);
+          if (!root) { setTimeout(start, 50); return; }
+          if (typeof gsap === 'undefined') { setTimeout(start, 50); return; }
+          if (root.dataset.built === '1') return;
+          root.dataset.built = '1';
+          build(root);
+        }
+
+        function build(root){
+          const SLOT = 34.77;
+          const $ = (s) => root.querySelector(s);
+          const tl = gsap.timeline({ paused: true });
+
+          // Lucide icon path data (24x24 viewBox) — inlined, no network fetch
+          const ICONS = {"ban":[{"t":"circle","a":{"cx":"12","cy":"12","r":"10"}},{"t":"path","a":{"d":"M4.929 4.929 19.07 19.071"}}],"bot":[{"t":"path","a":{"d":"M12 8V4H8"}},{"t":"rect","a":{"width":"16","height":"12","x":"4","y":"8","rx":"2"}},{"t":"path","a":{"d":"M2 14h2"}},{"t":"path","a":{"d":"M20 14h2"}},{"t":"path","a":{"d":"M15 13v2"}},{"t":"path","a":{"d":"M9 13v2"}}],"circle-check":[{"t":"circle","a":{"cx":"12","cy":"12","r":"10"}},{"t":"path","a":{"d":"m9 12 2 2 4-4"}}],"hammer":[{"t":"path","a":{"d":"m15 12-9.373 9.373a1 1 0 0 1-3.001-3L12 9"}},{"t":"path","a":{"d":"m18 15 4-4"}},{"t":"path","a":{"d":"m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172v-.344a2 2 0 0 0-.586-1.414l-1.657-1.657A6 6 0 0 0 12.516 3H9l1.243 1.243A6 6 0 0 1 12 8.485V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5"}}],"hand":[{"t":"path","a":{"d":"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"}},{"t":"path","a":{"d":"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"}},{"t":"path","a":{"d":"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"}},{"t":"path","a":{"d":"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"}}],"house":[{"t":"path","a":{"d":"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"}},{"t":"path","a":{"d":"M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"}}],"link-2":[{"t":"path","a":{"d":"M9 17H7A5 5 0 0 1 7 7h2"}},{"t":"path","a":{"d":"M15 7h2a5 5 0 1 1 0 10h-2"}},{"t":"line","a":{"x1":"8","x2":"16","y1":"12","y2":"12"}}],"pencil-line":[{"t":"path","a":{"d":"M13 21h8"}},{"t":"path","a":{"d":"m15 5 4 4"}},{"t":"path","a":{"d":"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"}}],"search":[{"t":"path","a":{"d":"m21 21-4.34-4.34"}},{"t":"circle","a":{"cx":"11","cy":"11","r":"8"}}],"settings-2":[{"t":"path","a":{"d":"M14 17H5"}},{"t":"path","a":{"d":"M19 7h-9"}},{"t":"circle","a":{"cx":"17","cy":"17","r":"3"}},{"t":"circle","a":{"cx":"7","cy":"7","r":"3"}}],"shopping-cart":[{"t":"circle","a":{"cx":"8","cy":"21","r":"1"}},{"t":"circle","a":{"cx":"19","cy":"21","r":"1"}},{"t":"path","a":{"d":"M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"}}],"tornado":[{"t":"path","a":{"d":"M21 4H3"}},{"t":"path","a":{"d":"M18 8H6"}},{"t":"path","a":{"d":"M19 12H9"}},{"t":"path","a":{"d":"M16 16h-6"}},{"t":"path","a":{"d":"M11 20H9"}}],"wrench":[{"t":"path","a":{"d":"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"}}],"x-circle":[{"t":"circle","a":{"cx":"12","cy":"12","r":"10"}},{"t":"path","a":{"d":"m15 9-6 6"}},{"t":"path","a":{"d":"m9 9 6 6"}}]};
+
+          function renderIcon(card){
+            const name = card.dataset.icon;
+            if (!name || !ICONS[name]) return null;
+            const size = card.dataset.iconSize || '';
+            const color = card.dataset.iconColor || '';
+            const wrap = document.createElement('div');
+            wrap.className = 'icon-hero' + (size ? ' ' + size : '') + (color === 'red' ? ' red' : color === 'green' ? ' green' : '');
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const svg = document.createElementNS(svgNS, 'svg');
+            svg.setAttribute('viewBox', '0 0 24 24');
+            for (const spec of ICONS[name]){
+              const el = document.createElementNS(svgNS, spec.t);
+              for (const k in spec.a) el.setAttribute(k, spec.a[k]);
+              svg.appendChild(el);
+            }
+            wrap.appendChild(svg);
+            // Insert as first child so it sits above kicker/headline
+            card.insertBefore(wrap, card.firstChild);
+            return wrap;
+          }
+
+          function prepIconDraw(wrap){
+            if (!wrap) return [];
+            const els = Array.from(wrap.querySelectorAll('path, line, circle, rect, ellipse, polyline, polygon'));
+            const info = [];
+            for (const el of els){
+              let len = 0;
+              try { len = el.getTotalLength ? el.getTotalLength() : 0; } catch(e) {}
+              if (!len || !isFinite(len)) { el.style.opacity = '0'; info.push({ el, type: 'fade' }); continue; }
+              el.style.strokeDasharray = len + ' ' + len;
+              el.style.strokeDashoffset = len;
+              info.push({ el, type: 'draw', len });
+            }
+            return info;
+          }
+
+          // Render + prep all icons before timeline build
+          const iconMap = {};
+          root.querySelectorAll('.card[data-icon]').forEach(card => {
+            const wrap = renderIcon(card);
+            iconMap[card.id] = { wrap, info: prepIconDraw(wrap) };
+          });
+
+
+          const beats = [
+            { id: 'b1',  t0: 0.14,  t1: 1.66 },
+            { id: 'b2',  t0: 1.66,  t1: 4.25 },
+            { id: 'b3',  t0: 4.25,  t1: 5.39 },
+            { id: 'b4',  t0: 5.39,  t1: 6.64 },
+            { id: 'b5',  t0: 6.64,  t1: 8.45 },
+            { id: 'b6',  t0: 8.45,  t1: 10.88 },
+            { id: 'b7',  t0: 10.88, t1: 12.96, payoff: true },
+            { id: 'b8',  t0: 12.96, t1: 15.40, payoff: true },
+            { id: 'b9',  t0: 15.40, t1: 17.11 },
+            { id: 'b10', t0: 17.11, t1: 19.16 },
+            { id: 'b11', t0: 19.16, t1: 21.02 },
+            { id: 'b12', t0: 21.02, t1: 23.40, payoff: true },
+            { id: 'b13', t0: 23.40, t1: 25.05 },
+            { id: 'b14', t0: 25.05, t1: 27.00 },
+            { id: 'b15', t0: 27.00, t1: 28.16 },
+            { id: 'b16', t0: 28.16, t1: 29.82 },
+            { id: 'b17', t0: 29.82, t1: 31.28, payoff: true },
+            { id: 'b18', t0: 31.28, t1: 32.90 },
+            { id: 'b19', t0: 32.90, t1: SLOT }
+          ];
+
+          // Corner tag pulses gently whole composition
+          tl.to('#m-corner', { opacity: 0.9, duration: 0.5, ease: 'power2.out' }, 0.2);
+          tl.to('#m-corner', { opacity: 0.55, duration: 1.0, yoyo: true, repeat: Math.floor(SLOT / 2.0), ease: 'sine.inOut' }, 0.8);
+
+          // Generic card in/out + per-beat specials
+          beats.forEach((b, i) => {
+            const card = '#' + b.id;
+            const dur = b.t1 - b.t0;
+
+            // Card enter
+            tl.fromTo(card,
+              { opacity: 0, y: 40, scale: 0.94 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.28, ease: 'back.out(1.8)' },
+              b.t0);
+
+            // Default inner elements (kicker, headline) staggered
+            tl.from(card + ' .kicker',
+              { opacity: 0, y: -14, duration: 0.22, ease: 'power2.out' },
+              b.t0 + 0.05);
+            tl.from(card + ' .headline',
+              { opacity: 0, scale: 0.85, duration: 0.32, ease: 'back.out(2.1)' },
+              b.t0 + 0.14);
+
+            // Icon draw-on (for beats with data-icon)
+            const ic = iconMap[b.id];
+            if (ic && ic.info.length){
+              const drawEls = ic.info.filter(x => x.type === 'draw').map(x => x.el);
+              const fadeEls = ic.info.filter(x => x.type === 'fade').map(x => x.el);
+              const drawDur = Math.min(0.9, Math.max(0.5, dur * 0.45));
+              if (drawEls.length){
+                tl.to(drawEls, {
+                  strokeDashoffset: 0,
+                  duration: drawDur,
+                  ease: 'power2.inOut',
+                  stagger: drawDur / Math.max(drawEls.length, 1) * 0.6
+                }, b.t0 + 0.08);
+              }
+              if (fadeEls.length){
+                tl.to(fadeEls, { opacity: 1, duration: 0.3, ease: 'power2.out' }, b.t0 + drawDur * 0.5);
+              }
+              tl.fromTo(ic.wrap, { scale: 0.88 }, { scale: 1, duration: 0.35, ease: 'back.out(2.0)' }, b.t0 + 0.08);
+              if (b.payoff){
+                tl.to(ic.wrap, { scale: 1.05, duration: 0.4, yoyo: true, repeat: 1, ease: 'sine.inOut' },
+                  b.t0 + drawDur + 0.2);
+              }
+            }
+
+            // Payoff hold pulse
+            if (b.payoff){
+              tl.to(card, { scale: 1.04, duration: 0.45, ease: 'sine.inOut', yoyo: true, repeat: 1 },
+                b.t0 + 0.55);
+            } else {
+              // Non-payoff: subtle drift so frames aren't static
+              tl.to(card + ' .headline', { y: '+=10', duration: Math.max(0.5, dur - 0.6), yoyo: true, repeat: 1, ease: 'sine.inOut' },
+                b.t0 + 0.5);
+            }
+
+            // Card exit
+            if (i < beats.length - 1){
+              tl.to(card,
+                { opacity: 0, y: -26, scale: 1.02, duration: 0.22, ease: 'power2.in' },
+                b.t1 - 0.18);
+            }
+          });
+
+          // ----- Per-beat specials -----
+
+          // Beat 2: 3 pills pop on accurate word hits
+          const pillHits = [1.66, 2.70, 3.57]; // ChatGPT / Zapier / Make (middle-local starts from transcript)
+          ['#b2p1','#b2p2','#b2p3'].forEach((sel, i) => {
+            tl.set(sel, { opacity: 0, scale: 0.6 }, 1.66);
+            tl.to(sel, { opacity: 1, scale: 1, duration: 0.28, ease: 'back.out(2.4)' }, pillHits[i]);
+            tl.to(sel, { scale: 1.06, duration: 0.2, yoyo: true, repeat: 1, ease: 'sine.inOut' }, pillHits[i] + 0.28);
+          });
+
+          // Beat 4/5/9: strike-through sweep after word lands
+          ['#b4-strike','#b5-strike','#b9-strike'].forEach((sel, i) => {
+            const beatStart = [5.39, 6.64, 15.40][i];
+            tl.fromTo(sel + '::after', { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: 'power3.out' }, beatStart + 0.55);
+            // Can't animate ::after directly via GSAP (pseudo-elements). Use CSS var trick instead:
+          });
+          // Proper strike — animate a real element inside the span
+          // Use CSS approach: at beat start + delay, add `.slashed` class which triggers scaleX(1).
+          // Simpler: animate via a real overlay we add in JS
+          function addSlash(selId, atTime){
+            const span = root.querySelector(selId);
+            if (!span) return;
+            const overlay = document.createElement('span');
+            overlay.style.cssText = 'position:absolute;left:-6%;right:-6%;top:52%;height:12px;background:#ff4757;box-shadow:0 0 18px rgba(255,71,87,0.8);transform-origin:left center;transform:scaleX(0);pointer-events:none;';
+            span.style.position = 'relative';
+            span.appendChild(overlay);
+            tl.to(overlay, { scaleX: 1, duration: 0.4, ease: 'power3.out' }, atTime);
+          }
+          addSlash('#b4-strike', 5.39 + 0.55);
+          addSlash('#b5-strike', 6.64 + 0.7);
+          addSlash('#b9-strike', 15.40 + 0.55);
+
+          // Beat 6: chaos words jitter in
+          const b6chaos = Array.from(root.querySelectorAll('#b6-chaos span'));
+          b6chaos.forEach((el, i) => {
+            tl.fromTo(el,
+              { opacity: 0, scale: 0.6, x: (i % 2 ? -30 : 30) },
+              { opacity: 1, scale: 1, x: 0, duration: 0.35, ease: 'back.out(2.2)' },
+              8.45 + 0.4 + i * 0.15);
+            tl.to(el, { y: '+=10', duration: 0.6, yoyo: true, repeat: 2, ease: 'sine.inOut' },
+              8.45 + 0.8 + i * 0.15);
+          });
+
+          // Beat 7: HAMMER slam with extra oomph
+          tl.fromTo('#b7-big',
+            { scale: 0.4, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.38, ease: 'back.out(2.8)' },
+            10.88 + 0.6);
+          tl.to('#b7-big', { scale: 1.08, duration: 0.25, yoyo: true, repeat: 1, ease: 'sine.inOut' },
+            10.88 + 1.0);
+
+          // Beat 8: BLUEPRINT slam
+          tl.fromTo('#b8-big',
+            { scale: 0.4, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.38, ease: 'back.out(2.8)' },
+            12.96 + 0.65);
+          tl.to('#b8-big', { scale: 1.06, duration: 0.3, yoyo: true, repeat: 1, ease: 'sine.inOut' },
+            12.96 + 1.05);
+
+          // Beat 10: flow nodes + arrows pop sequentially
+          ['#b10n1','#b10a1','#b10n2','#b10a2','#b10n3'].forEach((sel, i) => {
+            tl.fromTo(sel, { opacity: 0, scale: 0.6 },
+              { opacity: 1, scale: 1, duration: 0.25, ease: 'back.out(2.2)' },
+              17.11 + 0.6 + i * 0.18);
+          });
+
+          // Beat 11: bot chip slides in + glow
+          tl.fromTo('#b11-bot',
+            { opacity: 0, x: -60 },
+            { opacity: 1, x: 0, duration: 0.45, ease: 'power3.out' },
+            19.16 + 0.5);
+          tl.to('#b11-bot', { boxShadow: '0 0 40px rgba(2,179,233,0.8)', duration: 0.4, yoyo: true, repeat: 2, ease: 'sine.inOut' },
+            19.16 + 1.0);
+
+          // Beat 12: WORKS stamp slam (payoff)
+          tl.fromTo('#b12-stamp',
+            { scale: 0, opacity: 0, rotate: -30 },
+            { scale: 1, opacity: 1, rotate: -6, duration: 0.4, ease: 'back.out(2.5)' },
+            21.02 + 0.7);
+          tl.to('#b12-stamp', { scale: 1.08, duration: 0.3, yoyo: true, repeat: 1, ease: 'sine.inOut' },
+            21.02 + 1.1);
+
+          // Beat 15: step numbers pop on each word ("step", "by", "step")
+          ['#b15s1','#b15s2','#b15s3'].forEach((sel, i) => {
+            tl.fromTo(sel,
+              { opacity: 0, scale: 0.4 },
+              { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2.6)' },
+              27.00 + 0.3 + i * 0.36);
+          });
+
+          // Beat 19: chaos words frantic jitter
+          const b19chaos = Array.from(root.querySelectorAll('#b19-chaos span'));
+          b19chaos.forEach((el, i) => {
+            tl.fromTo(el,
+              { opacity: 0, scale: 0.5 },
+              { opacity: 1, scale: 1, duration: 0.25, ease: 'back.out(2.4)' },
+              32.90 + 0.3 + i * 0.1);
+            tl.to(el, { x: '+=12', y: '+=8', duration: 0.3, yoyo: true, repeat: 3, ease: 'sine.inOut' },
+              32.90 + 0.6 + i * 0.1);
+          });
+
+          // Ambient scanline drift
+          tl.to(SEL + ' .scanline', { backgroundPositionY: '+=50px', duration: SLOT, ease: 'none' }, 0);
+
+          // Hard fade-out for entire stage in last 0.3s — prevents bleed into CTA talking head
+          tl.to(root.querySelector('.stage'),
+            { opacity: 0, duration: 0.25, ease: 'power2.in' },
+            SLOT - 0.30);
+
+          // Anchor — Motion Law 11
+          tl.to({}, { duration: SLOT }, 0);
+
+          window.__timelines = window.__timelines || {};
+          window.__timelines['middle-animation'] = tl;
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', start);
+        } else {
+          start();
+        }
+      })();
+    </script>
+  </div>
+</template>

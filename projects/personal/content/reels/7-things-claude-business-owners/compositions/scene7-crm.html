@@ -1,0 +1,195 @@
+<template id="scene7-crm-template">
+  <div
+    data-composition-id="scene7-crm"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="5.36"
+  >
+    <div class="wrap">
+      <div class="num-mono">
+        <span class="layer l-base">07</span>
+        <span class="layer l-magenta">07</span>
+        <span class="layer l-blue">07</span>
+      </div>
+
+      <div class="headline">REVIVES DEAD<br/>CRM DEALS</div>
+      <div class="underline-sweep"></div>
+
+      <div class="crm-board">
+        <div class="crm-chrome">CRM · DEAL PIPELINE</div>
+        <div class="deal d1"><span class="d-status dead">DEAD</span><span class="d-name">Acme Inc</span><span class="d-val">$4,800</span></div>
+        <div class="deal d2"><span class="d-status dead">DEAD</span><span class="d-name">TileCo</span><span class="d-val">$12,300</span></div>
+        <div class="deal d3"><span class="d-status dead">DEAD</span><span class="d-name">NorthRiver</span><span class="d-val">$7,500</span></div>
+        <div class="deal d4"><span class="d-status dead">DEAD</span><span class="d-name">Paintly</span><span class="d-val">$9,200</span></div>
+      </div>
+
+      <div class="money-stamp">
+        <div class="ms-label">REVIVED</div>
+        <div class="ms-val">$<span id="rev-val">0</span></div>
+      </div>
+
+      <div class="subtext">MONEY YOU ALREADY EARNED</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene7-crm"] { position: absolute; inset: 0; background: #05080F; overflow: hidden; }
+      [data-composition-id="scene7-crm"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 22px; padding: 80px 60px;
+      }
+      [data-composition-id="scene7-crm"] .num-mono { position: relative; width: 300px; height: 280px; }
+      [data-composition-id="scene7-crm"] .num-mono .layer {
+        position: absolute; inset: 0;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 280px; line-height: 0.85; letter-spacing: -0.04em;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene7-crm"] .num-mono .l-base    { color: #fff; text-shadow: 0 0 40px rgba(2,179,233,0.7); }
+      [data-composition-id="scene7-crm"] .num-mono .l-magenta { color: #ff00a8; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene7-crm"] .num-mono .l-blue    { color: #02B3E9; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene7-crm"] .headline {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 96px; line-height: 0.95; color: #fff; text-align: center;
+        letter-spacing: -0.02em;
+        text-shadow: 0 0 30px rgba(2,179,233,0.35);
+      }
+      [data-composition-id="scene7-crm"] .underline-sweep {
+        width: 0; height: 8px;
+        background: linear-gradient(90deg, #02B3E9, #7de9ff);
+        box-shadow: 0 0 18px rgba(2,179,233,0.9);
+        border-radius: 4px;
+      }
+      [data-composition-id="scene7-crm"] .crm-board {
+        width: 820px;
+        background: rgba(5,10,18,0.9);
+        border: 1px solid rgba(2,179,233,0.45);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 0 30px rgba(2,179,233,0.25);
+        display: flex; flex-direction: column; gap: 10px;
+      }
+      [data-composition-id="scene7-crm"] .crm-chrome {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 22px; color: rgba(255,255,255,0.65);
+        letter-spacing: 0.2em; text-align: center;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      [data-composition-id="scene7-crm"] .deal {
+        display: flex; align-items: center; gap: 16px;
+        padding: 16px 18px;
+        background: rgba(255,255,255,0.04);
+        border-radius: 10px;
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene7-crm"] .d-status {
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 16px; font-weight: 700;
+        letter-spacing: 0.2em;
+      }
+      [data-composition-id="scene7-crm"] .d-status.dead {
+        background: rgba(255,71,87,0.20);
+        color: #ff4757;
+        border: 1px solid rgba(255,71,87,0.6);
+      }
+      [data-composition-id="scene7-crm"] .d-status.alive {
+        background: rgba(34,197,94,0.20);
+        color: #22c55e;
+        border: 1px solid rgba(34,197,94,0.6);
+        box-shadow: 0 0 12px rgba(34,197,94,0.5);
+      }
+      [data-composition-id="scene7-crm"] .d-name {
+        flex: 1; color: #fff; font-size: 26px; font-weight: 700;
+      }
+      [data-composition-id="scene7-crm"] .d-val {
+        color: #02B3E9; font-size: 26px; font-weight: 700;
+      }
+      [data-composition-id="scene7-crm"] .money-stamp {
+        display: inline-flex; align-items: baseline; gap: 14px;
+        padding: 14px 28px;
+        border: 3px solid #22c55e;
+        border-radius: 14px;
+        background: rgba(34,197,94,0.10);
+        box-shadow: 0 0 30px rgba(34,197,94,0.5);
+      }
+      [data-composition-id="scene7-crm"] .ms-label {
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 22px; color: #22c55e;
+        letter-spacing: 0.22em;
+      }
+      [data-composition-id="scene7-crm"] .ms-val {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 64px; color: #22c55e;
+        letter-spacing: -0.02em;
+        text-shadow: 0 0 20px rgba(34,197,94,0.9);
+      }
+      [data-composition-id="scene7-crm"] .subtext {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 30px; letter-spacing: 0.22em;
+        color: rgba(255,255,255,0.85);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene7-crm"]';
+        const SLOT = 5.36;
+        const tl = gsap.timeline({ paused: true });
+
+        tl.from(sel + ' .num-mono', { scale: 0.25, opacity: 0, rotate: -6, duration: 0.38, ease: 'back.out(2.6)' }, 0.10);
+        tl.fromTo(sel + ' .num-mono .l-magenta', { x: -44, y: -22 }, { x: -7, y: -3, duration: 0.50, ease: 'expo.out' }, 0.10);
+        tl.fromTo(sel + ' .num-mono .l-blue',    { x: 44,  y: 22  }, { x: 7,  y: 3,  duration: 0.50, ease: 'expo.out' }, 0.10);
+
+        tl.from(sel + ' .headline', { y: 60, opacity: 0, duration: 0.42, ease: 'power3.out' }, 0.30);
+        tl.to(sel + ' .underline-sweep', { width: 500, duration: 0.40, ease: 'power2.out' }, 0.70);
+
+        tl.from(sel + ' .crm-board', { y: 40, opacity: 0, duration: 0.40, ease: 'power3.out' }, 0.95);
+        tl.from(sel + ' .deal', { x: 40, opacity: 0, stagger: 0.10, duration: 0.30, ease: 'power2.out' }, 1.25);
+
+        // Flip DEAD -> ALIVE in sequence
+        const flips = [
+          { sel: '.d1 .d-status', at: 2.40 },
+          { sel: '.d2 .d-status', at: 2.70 },
+          { sel: '.d3 .d-status', at: 3.00 },
+          { sel: '.d4 .d-status', at: 3.30 },
+        ];
+        flips.forEach(f => {
+          tl.to(sel + ' ' + f.sel, {
+            onStart: () => {
+              const el = document.querySelector(sel + ' ' + f.sel);
+              if (el) { el.textContent = 'ALIVE'; el.classList.remove('dead'); el.classList.add('alive'); }
+            },
+            scale: 1.25, duration: 0.18, yoyo: true, repeat: 1, ease: 'back.out(2.5)'
+          }, f.at);
+        });
+
+        // Revived counter $0 -> $33,800
+        tl.fromTo(sel + ' .money-stamp',
+          { scale: 2.0, opacity: 0, rotate: -4 },
+          { scale: 1, opacity: 1, rotate: 0, duration: 0.32, ease: 'power3.out' }, 3.70);
+
+        const counter = { n: 0 };
+        const el = document.querySelector(sel + ' #rev-val');
+        tl.to(counter, {
+          n: 33800, duration: 1.0, ease: 'power1.out',
+          onUpdate: () => { if (el) el.textContent = Math.round(counter.n).toLocaleString(); }
+        }, 4.00);
+
+        tl.to(sel + ' .money-stamp', { scale: 1.06, duration: 0.28, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 4.30);
+
+        tl.from(sel + ' .subtext', { y: 20, opacity: 0, duration: 0.35, ease: 'power2.out' }, 4.70);
+
+        tl.to(sel + ' .num-mono .l-base', { textShadow: '0 0 60px rgba(2,179,233,1)', duration: 0.7, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 1.40);
+
+        tl.to(sel + ' .wrap', { y: -50, opacity: 0, duration: 0.30, ease: 'power2.in' }, SLOT - 0.35);
+        tl.to({}, { duration: SLOT }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene7-crm"] = tl;
+      })();
+    </script>
+  </div>
+</template>

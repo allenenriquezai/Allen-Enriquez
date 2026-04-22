@@ -1,0 +1,154 @@
+<template id="scene3-content-template">
+  <div
+    data-composition-id="scene3-content"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="5.16"
+  >
+    <div class="wrap">
+      <div class="num-mono">
+        <span class="layer l-base">03</span>
+        <span class="layer l-magenta">03</span>
+        <span class="layer l-blue">03</span>
+      </div>
+
+      <div class="headline">30 DAYS OF<br/>CONTENT</div>
+      <div class="underline-sweep"></div>
+
+      <div class="cal-wrap">
+        <div class="cal-chrome">CONTENT CALENDAR &nbsp;·&nbsp; DAY <span id="day-counter">1</span>/30</div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+
+      <div class="subtext">FROM COMPETITOR'S TOP POSTS</div>
+    </div>
+
+    <style>
+      [data-composition-id="scene3-content"] { position: absolute; inset: 0; background: #05080F; overflow: hidden; }
+      [data-composition-id="scene3-content"] .wrap {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 24px; padding: 80px 60px;
+      }
+      [data-composition-id="scene3-content"] .num-mono { position: relative; width: 300px; height: 280px; }
+      [data-composition-id="scene3-content"] .num-mono .layer {
+        position: absolute; inset: 0;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 280px; line-height: 0.85; letter-spacing: -0.04em;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scene3-content"] .num-mono .l-base    { color: #fff; text-shadow: 0 0 40px rgba(2,179,233,0.7); }
+      [data-composition-id="scene3-content"] .num-mono .l-magenta { color: #ff00a8; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene3-content"] .num-mono .l-blue    { color: #02B3E9; mix-blend-mode: screen; opacity: 0.85; }
+      [data-composition-id="scene3-content"] .headline {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 96px; line-height: 0.95; color: #fff; text-align: center;
+        letter-spacing: -0.02em;
+        text-shadow: 0 0 30px rgba(2,179,233,0.35);
+      }
+      [data-composition-id="scene3-content"] .underline-sweep {
+        width: 0; height: 8px;
+        background: linear-gradient(90deg, #02B3E9, #7de9ff);
+        box-shadow: 0 0 18px rgba(2,179,233,0.9);
+        border-radius: 4px;
+      }
+      [data-composition-id="scene3-content"] .cal-wrap {
+        width: 820px;
+        background: rgba(5,10,18,0.9);
+        border: 1px solid rgba(2,179,233,0.45);
+        border-radius: 20px; padding: 22px;
+        box-shadow: 0 0 40px rgba(2,179,233,0.25);
+      }
+      [data-composition-id="scene3-content"] .cal-chrome {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 24px; color: rgba(255,255,255,0.7);
+        letter-spacing: 0.16em; text-align: center;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      [data-composition-id="scene3-content"] #day-counter { color: #02B3E9; font-weight: 700; }
+      [data-composition-id="scene3-content"] .cal-grid {
+        display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;
+        margin-top: 14px;
+      }
+      [data-composition-id="scene3-content"] .cal-cell {
+        aspect-ratio: 1 / 1;
+        border-radius: 10px;
+        background: rgba(2,179,233,0.10);
+        border: 1px solid rgba(2,179,233,0.30);
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 22px; font-weight: 500;
+        color: rgba(255,255,255,0.6);
+        opacity: 0;
+      }
+      [data-composition-id="scene3-content"] .cal-cell.filled {
+        background: linear-gradient(135deg, rgba(2,179,233,0.45), rgba(125,233,255,0.15));
+        border-color: #02B3E9;
+        color: #fff;
+        box-shadow: 0 0 12px rgba(2,179,233,0.6);
+      }
+      [data-composition-id="scene3-content"] .subtext {
+        font-family: 'Roboto Mono', monospace; font-weight: 500;
+        font-size: 30px; letter-spacing: 0.22em;
+        color: rgba(255,255,255,0.85);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene3-content"]';
+        const SLOT = 5.16;
+
+        const grid = document.querySelector(sel + ' #cal-grid');
+        if (grid) {
+          grid.innerHTML = '';
+          for (let i = 1; i <= 30; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cal-cell';
+            cell.dataset.day = String(i);
+            cell.textContent = String(i);
+            grid.appendChild(cell);
+          }
+        }
+
+        const tl = gsap.timeline({ paused: true });
+
+        tl.from(sel + ' .num-mono', { scale: 0.25, opacity: 0, rotate: -6, duration: 0.38, ease: 'back.out(2.6)' }, 0.10);
+        tl.fromTo(sel + ' .num-mono .l-magenta', { x: -44, y: -22 }, { x: -7, y: -3, duration: 0.50, ease: 'expo.out' }, 0.10);
+        tl.fromTo(sel + ' .num-mono .l-blue',    { x: 44,  y: 22  }, { x: 7,  y: 3,  duration: 0.50, ease: 'expo.out' }, 0.10);
+
+        tl.from(sel + ' .headline', { y: 60, opacity: 0, duration: 0.42, ease: 'power3.out' }, 0.30);
+        tl.to(sel + ' .underline-sweep', { width: 460, duration: 0.40, ease: 'power2.out' }, 0.70);
+
+        tl.from(sel + ' .cal-wrap', { y: 40, opacity: 0, duration: 0.40, ease: 'power3.out' }, 0.95);
+
+        // Cells fill in — rapid stagger across ~1.8s, then flip to "filled" look
+        tl.to(sel + ' .cal-cell', { opacity: 1, duration: 0.05, stagger: 0.06, ease: 'none' }, 1.30);
+
+        // Counter ticks from 1 -> 30
+        const counter = { n: 1 };
+        const dc = document.querySelector(sel + ' #day-counter');
+        tl.to(counter, {
+          n: 30, duration: 1.8, ease: 'power1.inOut',
+          onUpdate: () => { if (dc) dc.textContent = String(Math.round(counter.n)); }
+        }, 1.30);
+
+        // "Filled" flip — all cells light up cyan after fill complete
+        tl.to(sel + ' .cal-cell', { className: 'cal-cell filled', duration: 0.01, stagger: 0.02 }, 3.20);
+
+        tl.from(sel + ' .subtext', { y: 20, opacity: 0, duration: 0.35, ease: 'power2.out' }, 3.70);
+
+        // Ambient glow
+        tl.to(sel + ' .num-mono .l-base', { textShadow: '0 0 60px rgba(2,179,233,1)', duration: 0.7, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 1.40);
+
+        tl.to(sel + ' .wrap', { y: -50, opacity: 0, duration: 0.30, ease: 'power2.in' }, SLOT - 0.35);
+        tl.to({}, { duration: SLOT }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene3-content"] = tl;
+      })();
+    </script>
+  </div>
+</template>

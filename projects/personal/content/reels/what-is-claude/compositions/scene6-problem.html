@@ -1,0 +1,124 @@
+<template id="scene6-problem-template">
+  <div
+    data-composition-id="scene6-problem"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="5.39"
+  >
+    <!-- Slot: 53.74 → 59.13 (local 0 → 5.39) -->
+    <div class="overlay">
+      <div class="prob-label" id="prob-label">But the problem?</div>
+      <div class="prob-items">
+        <div class="prob-item" id="prob1">
+          <div class="x-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ff4040" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </div>
+          <span class="prob-text">YOU BUILT IT</span>
+        </div>
+        <div class="prob-item" id="prob2">
+          <div class="x-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ff4040" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </div>
+          <span class="prob-text">YOU FIXED ERRORS</span>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      [data-composition-id="scene6-problem"] {
+        position: absolute; inset: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="scene6-problem"] .overlay {
+        position: absolute;
+        top: 420px; left: 0; right: 0;
+        height: 1080px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 52px;
+        opacity: 0; visibility: hidden;
+      }
+      [data-composition-id="scene6-problem"] .prob-label {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-style: italic;
+        font-size: 72px;
+        color: rgba(255,255,255,0.9);
+        text-align: center;
+        text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+        opacity: 0;
+      }
+      [data-composition-id="scene6-problem"] .prob-items {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        align-items: flex-start;
+      }
+      [data-composition-id="scene6-problem"] .prob-item {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        opacity: 0;
+      }
+      [data-composition-id="scene6-problem"] .x-badge {
+        width: 80px;
+        height: 80px;
+        background: rgba(255,40,40,0.12);
+        border: 2px solid rgba(255,60,60,0.55);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 20px rgba(255,60,60,0.3);
+        flex-shrink: 0;
+      }
+      [data-composition-id="scene6-problem"] .prob-text {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 68px;
+        color: #ff4040;
+        text-shadow:
+          -2px -2px 0 #000, 2px -2px 0 #000,
+          -2px 2px 0 #000, 2px 2px 0 #000,
+          0 0 24px rgba(255,60,60,0.7);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+    (function () {
+      const SLOT = 5.39;
+      const sel = '[data-composition-id="scene6-problem"]';
+      const tl = gsap.timeline({ paused: true });
+
+      tl.set(sel + ' .overlay', { autoAlpha: 1 }, 0);
+
+      tl.fromTo('#prob-label',
+        { y: -12, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.24, ease: 'power2.out' }, 0.05);
+
+      tl.fromTo('#prob1',
+        { scale: 0.45, opacity: 0 },
+        { scale: 1.12, opacity: 1, duration: 0.24, ease: 'back.out(2.5)' }, 3.10);
+      tl.to('#prob1', { scale: 1.0, duration: 0.13, ease: 'power2.out', overwrite: 'auto' }, 3.34);
+      tl.to('#prob1 .x-badge', { boxShadow: '0 0 60px rgba(255,60,60,0.95)', duration: 0.01 }, 3.12);
+      tl.to('#prob1 .x-badge', { boxShadow: '0 0 20px rgba(255,60,60,0.3)', duration: 0.5, ease: 'power2.out' }, 3.13);
+
+      tl.fromTo('#prob2',
+        { scale: 0.45, opacity: 0 },
+        { scale: 1.12, opacity: 1, duration: 0.24, ease: 'back.out(2.5)' }, 4.18);
+      tl.to('#prob2', { scale: 1.0, duration: 0.13, ease: 'power2.out', overwrite: 'auto' }, 4.42);
+      tl.to('#prob2 .x-badge', { boxShadow: '0 0 60px rgba(255,60,60,0.95)', duration: 0.01 }, 4.20);
+      tl.to('#prob2 .x-badge', { boxShadow: '0 0 20px rgba(255,60,60,0.3)', duration: 0.5, ease: 'power2.out' }, 4.21);
+
+      tl.set(sel + ' .overlay', { autoAlpha: 0 }, SLOT);
+      tl.to({}, { duration: SLOT }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines['scene6-problem'] = tl;
+    })();
+    </script>
+  </div>
+</template>

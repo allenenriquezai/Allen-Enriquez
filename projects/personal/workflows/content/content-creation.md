@@ -30,6 +30,16 @@ Drafts output to `.tmp/content_drafts.json`.
 
 ---
 
+## Format: Reels / Vertical Animations
+
+**Aspect ratio:** 9:16 (1080×1920px) — mandatory for all reels, short-form clips, and vertical animations posted to IG, TikTok, YT Shorts, and FB Reels.
+
+- Never deliver or export in 1:1 or 16:9 for these platforms.
+- When building animations in HTML/canvas, set canvas to 1080×1920px before any other styling.
+- When exporting from CapCut or any editor, confirm 9:16 before render.
+
+---
+
 ## Format: Carousel (5-10 slides)
 
 **Dimensions:** 1080x1080px

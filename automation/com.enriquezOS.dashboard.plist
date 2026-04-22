@@ -8,7 +8,8 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/allenenriquez/Desktop/Allen Enriquez/tools/dashboard/start.sh</string>
+        <string>-c</string>
+        <string>cd /Users/allenenriquez/Desktop/Allen\ Enriquez/tools/dashboard &amp;&amp; exec /Library/Developer/CommandLineTools/usr/bin/python3 -m gunicorn -c gunicorn.conf.py app:app</string>
     </array>
 
     <key>RunAtLoad</key>
@@ -17,13 +18,16 @@
     <key>KeepAlive</key>
     <true/>
 
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/dashboard.log</string>
+    <string>/tmp/enriquez-dashboard.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/dashboard-error.log</string>
+    <string>/tmp/enriquez-dashboard-error.log</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/tools/dashboard</string>
+    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
 </dict>
 </plist>

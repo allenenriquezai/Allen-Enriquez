@@ -1,0 +1,308 @@
+<template id="scene3-eli10-template">
+  <div
+    data-composition-id="scene3-eli10"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="5.50"
+  >
+    <div class="wrap">
+      <!-- Top chrome -->
+      <div class="chrome">
+        <span class="chrome-dot"></span>
+        <span class="chrome-title">ChatGPT</span>
+        <span class="chrome-badge">ELI10</span>
+      </div>
+
+      <!-- User bubble -->
+      <div class="bubble user">
+        <div class="bubble-label">YOU</div>
+        <div class="prompt-line">
+          <span class="code-word">ELI10:</span>
+          <span class="prompt-body" id="s3-user-text"></span>
+          <span class="prompt-cursor">▋</span>
+        </div>
+      </div>
+
+      <!-- Response bubble -->
+      <div class="bubble bot">
+        <div class="bubble-label">CHATGPT</div>
+        <div class="stream">
+          <div class="complex-line" id="s3-complex-line"></div>
+          <div class="simple-line" id="s3-simple-line">
+            <span class="simple-word">Money</span>
+            <span class="simple-word">makes</span>
+            <span class="simple-word glow">more money</span>
+            <span class="simple-word">over</span>
+            <span class="simple-word">time.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Corner tag -->
+      <div class="corner-tag">KID MODE</div>
+
+      <!-- Ambient scanline -->
+      <div class="scanline"></div>
+    </div>
+
+    <style>
+      [data-composition-id="scene3-eli10"] { position: absolute; inset: 0; background: #05080F; overflow: hidden; }
+      [data-composition-id="scene3-eli10"] .wrap {
+        position: absolute;
+        top: 320px; left: 60px; right: 180px; bottom: 500px;
+        display: flex; flex-direction: column;
+        align-items: stretch; justify-content: center;
+        gap: 24px;
+      }
+      [data-composition-id="scene3-eli10"] .chrome {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 22px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene3-eli10"] .chrome-dot {
+        width: 14px; height: 14px; border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 10px rgba(34,197,94,0.7);
+      }
+      [data-composition-id="scene3-eli10"] .chrome-title {
+        font-size: 24px; color: rgba(255,255,255,0.75);
+        letter-spacing: 0.08em; font-weight: 500;
+      }
+      [data-composition-id="scene3-eli10"] .chrome-badge {
+        margin-left: auto;
+        font-size: 20px; font-weight: 700; letter-spacing: 0.18em;
+        color: #02B3E9; padding: 6px 14px;
+        background: rgba(2,179,233,0.12);
+        border: 1px solid rgba(2,179,233,0.5);
+        border-radius: 8px;
+      }
+
+      [data-composition-id="scene3-eli10"] .bubble {
+        max-width: 880px;
+        padding: 28px 32px;
+        border-radius: 24px;
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene3-eli10"] .bubble-label {
+        font-size: 18px; font-weight: 700;
+        letter-spacing: 0.26em;
+        margin-bottom: 10px; opacity: 0.55;
+      }
+      [data-composition-id="scene3-eli10"] .bubble.user {
+        align-self: flex-end;
+        background: rgba(2,179,233,0.12);
+        border: 1px solid rgba(2,179,233,0.45);
+      }
+      [data-composition-id="scene3-eli10"] .bubble.user .bubble-label { color: #02B3E9; }
+      [data-composition-id="scene3-eli10"] .bubble.bot {
+        align-self: flex-start;
+        background: #1a1f2e;
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+      [data-composition-id="scene3-eli10"] .bubble.bot .bubble-label { color: rgba(255,255,255,0.55); }
+
+      [data-composition-id="scene3-eli10"] .prompt-line {
+        display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px;
+        font-size: 34px; color: #ffffff; line-height: 1.35;
+      }
+      [data-composition-id="scene3-eli10"] .code-word {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 52px; color: #02B3E9;
+        text-shadow: 0 0 24px rgba(2,179,233,0.8);
+        letter-spacing: 0.02em;
+      }
+      [data-composition-id="scene3-eli10"] .prompt-body { color: rgba(255,255,255,0.92); white-space: pre; }
+      [data-composition-id="scene3-eli10"] .pch { display: inline-block; opacity: 0; white-space: pre; }
+      [data-composition-id="scene3-eli10"] .prompt-cursor { color: #02B3E9; }
+
+      [data-composition-id="scene3-eli10"] .stream {
+        display: flex; flex-direction: column; gap: 28px;
+        position: relative;
+      }
+
+      [data-composition-id="scene3-eli10"] .complex-line {
+        font-size: 28px; color: rgba(255,255,255,0.82);
+        line-height: 1.45; white-space: normal;
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene3-eli10"] .cword {
+        display: inline-block; opacity: 0;
+        margin-right: 0.3em;
+        transition: none;
+      }
+      [data-composition-id="scene3-eli10"] .cword.struck {
+        color: #ff4757;
+        text-decoration: line-through;
+        text-decoration-color: #ff4757;
+        text-decoration-thickness: 3px;
+      }
+
+      [data-composition-id="scene3-eli10"] .simple-line {
+        display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 64px; color: #ffffff;
+        line-height: 1.15; letter-spacing: 0.01em;
+        opacity: 0;
+      }
+      [data-composition-id="scene3-eli10"] .simple-word { display: inline-block; }
+      [data-composition-id="scene3-eli10"] .simple-word.glow {
+        color: #02B3E9;
+        text-shadow: 0 0 0 rgba(2,179,233,0);
+      }
+
+      [data-composition-id="scene3-eli10"] .corner-tag {
+        position: absolute;
+        top: 260px; right: 200px;
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 18px; color: #02B3E9;
+        letter-spacing: 0.28em;
+        padding: 8px 14px;
+        border: 1px solid rgba(2,179,233,0.5);
+        border-radius: 6px;
+        background: rgba(2,179,233,0.08);
+        opacity: 0;
+      }
+
+      [data-composition-id="scene3-eli10"] .scanline {
+        position: absolute; inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 3px,
+          rgba(2,179,233,0.025) 3px,
+          rgba(2,179,233,0.025) 4px
+        );
+        pointer-events: none;
+        z-index: 50;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene3-eli10"]';
+        const SLOT = 5.50;
+
+        // Build user prompt body char-by-char
+        const userText = ' What is compound interest?';
+        const uEl = document.querySelector(sel + ' #s3-user-text');
+        if (uEl) {
+          uEl.innerHTML = '';
+          for (const ch of userText) {
+            const s = document.createElement('span');
+            s.className = 'pch';
+            s.textContent = ch;
+            uEl.appendChild(s);
+          }
+        }
+
+        // Build complex sentence word-by-word; mark jargon words as strike targets
+        // Sentence: "The exponential accrual of capital through reinvested interest compounded over temporal intervals."
+        const complexWords = [
+          { t: 'The',          strike: false },
+          { t: 'exponential',  strike: true  },
+          { t: 'accrual',      strike: true  },
+          { t: 'of',           strike: false },
+          { t: 'capital',      strike: true  },
+          { t: 'through',      strike: false },
+          { t: 'reinvested',   strike: true  },
+          { t: 'interest',     strike: true  },
+          { t: 'compounded',   strike: true  },
+          { t: 'over',         strike: false },
+          { t: 'temporal',     strike: true  },
+          { t: 'intervals.',   strike: true  }
+        ];
+        const cEl = document.querySelector(sel + ' #s3-complex-line');
+        const strikeTargets = [];
+        if (cEl) {
+          cEl.innerHTML = '';
+          complexWords.forEach((w, i) => {
+            const s = document.createElement('span');
+            s.className = 'cword';
+            s.dataset.strike = w.strike ? '1' : '0';
+            s.dataset.idx = i;
+            s.textContent = w.t;
+            cEl.appendChild(s);
+            if (w.strike) strikeTargets.push(s);
+          });
+        }
+
+        const tl = gsap.timeline({ paused: true });
+
+        // t=0.10: chrome slides in
+        tl.from(sel + ' .chrome', { y: -30, opacity: 0, duration: 0.3, ease: 'power3.out' }, 0.10);
+        tl.fromTo(sel + ' .corner-tag', { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power2.out' }, 0.20);
+
+        // t=0.30: user bubble pops
+        tl.from(sel + ' .bubble.user', { scale: 0.92, y: 40, opacity: 0, duration: 0.35, ease: 'back.out(1.6)' }, 0.30);
+
+        // t=0.45: code-word slam (ELI10)
+        tl.fromTo(sel + ' .code-word',
+          { scale: 0.6, opacity: 0 },
+          { scale: 1.0, opacity: 1, duration: 0.30, ease: 'back.out(2.2)' }, 0.45);
+        tl.to(sel + ' .code-word', { textShadow: '0 0 36px rgba(2,179,233,1)', duration: 0.15, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 0.75);
+
+        // t=0.90: prompt body types ("What is compound interest?" ~26 chars × 0.035 = 0.91s)
+        tl.to(sel + ' .pch', { opacity: 1, duration: 0.02, stagger: 0.035, ease: 'none' }, 0.90);
+
+        // Cursor blink through scene (scaled × 0.902)
+        for (let i = 0; i < 11; i++) {
+          tl.set(sel + ' .prompt-cursor', { opacity: 0 }, 0.902 + i * 0.451);
+          tl.set(sel + ' .prompt-cursor', { opacity: 1 }, 0.902 + i * 0.451 + 0.226);
+        }
+
+        // t=1.804: bot bubble pops
+        tl.from(sel + ' .bubble.bot', { scale: 0.95, y: 30, opacity: 0, duration: 0.271, ease: 'power3.out' }, 1.804);
+
+        // t=2.030: complex words fade in word-by-word (scaled)
+        tl.to(sel + ' .cword', { opacity: 1, duration: 0.072, stagger: 0.081, ease: 'power2.out' }, 2.030);
+
+        // t=3.337: rapid strike-through on all jargon words (scaled)
+        strikeTargets.forEach((el, i) => {
+          tl.call(() => { el.classList.add('struck'); }, null, 3.337 + i * 0.072);
+          tl.fromTo(el,
+            { scale: 1.0 },
+            { scale: 1.08, duration: 0.108, yoyo: true, repeat: 1, ease: 'power3.out' },
+            3.337 + i * 0.072);
+        });
+
+        // t=3.969: complex line dims (loses dominance)
+        tl.to(sel + ' .complex-line', { opacity: 0.35, duration: 0.271, ease: 'power2.out' }, 3.969);
+
+        // t=4.104: simple sentence fades in with scale back.out
+        tl.fromTo(sel + ' .simple-line',
+          { opacity: 0, scale: 0.95, y: 10 },
+          { opacity: 1, scale: 1.0, y: 0, duration: 0.451, ease: 'back.out(1.4)' }, 4.104);
+
+        // Stagger individual simple words for extra punch
+        tl.fromTo(sel + ' .simple-word',
+          { y: 14, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.316, stagger: 0.054, ease: 'back.out(1.6)' }, 4.149);
+
+        // t=4.600: cyan glow pulse on "more money" — holds through to end
+        tl.to(sel + ' .simple-word.glow', {
+          textShadow: '0 0 28px rgba(2,179,233,0.95)',
+          duration: 0.496, yoyo: true, repeat: 1, ease: 'sine.inOut'
+        }, 4.600);
+
+        // Payoff hold: simple sentence freezes through to 5.50
+        // (no further transforms on .simple-line after glow starts)
+
+        // Ambient: corner-tag subtle pulse (scaled)
+        tl.to(sel + ' .corner-tag', { opacity: 0.6, duration: 1.082, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 1.353);
+
+        // Scanline drift (ambient)
+        tl.to(sel + ' .scanline', { backgroundPositionY: '+=40px', duration: SLOT, ease: 'none' }, 0);
+
+        // Anchor
+        tl.to({}, { duration: SLOT }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene3-eli10"] = tl;
+      })();
+    </script>
+  </div>
+</template>

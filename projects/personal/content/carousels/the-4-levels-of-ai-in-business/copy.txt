@@ -1,0 +1,21 @@
+--- Slide 1 ---
+THE 4 LEVELS OF AI IN BUSINESS
+
+--- Slide 2 ---
+LEVEL 1: CHAT || You copy-paste between ChatGPT and your apps. It works. But you're still doing all the work.
+
+--- Slide 3 ---
+LEVEL 2: BUILT-IN AI || Your tools have AI inside. Gmail writes replies. Your CRM suggests next steps. Faster, but limited.
+
+--- Slide 4 ---
+LEVEL 3: AUTOMATION || Your tools talk to each other. Zapier, Make, n8n. No more copy-paste. Things run without you.
+
+--- Slide 5 ---
+LEVEL 4: AGENTIC WORKFLOWS || AI agents handle marketing, lead gen, sales, and delivery end to end. They learn from unlimited data and do the actual work. You set the direction.
+
+--- Slide 6 ---
+Most people are stuck at Level 1. || The money is at Level 4. I went from Level 1 to Level 4 in less than a month. I'm not a developer.
+
+--- Slide 7 ---
+Follow for more.
+

@@ -1,0 +1,127 @@
+<template id="scene3-chat-template">
+  <div
+    data-composition-id="scene3-chat"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="4.96"
+  >
+    <!-- Slot: 36.04 → 41.00 (local 0 → 4.96) -->
+    <div class="overlay">
+      <div class="ask-answer" id="ask-answer">You ask → It answers</div>
+      <div class="use-items">
+        <div class="use-item" id="use1">
+          <div class="icon-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <span class="use-label">Writing</span>
+        </div>
+        <div class="use-item" id="use2">
+          <div class="icon-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          <span class="use-label">Research</span>
+        </div>
+        <div class="use-item" id="use3">
+          <div class="icon-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#02B3E9"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <span class="use-label">Big Decisions</span>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      [data-composition-id="scene3-chat"] {
+        position: absolute; inset: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="scene3-chat"] .overlay {
+        position: absolute;
+        top: 420px; left: 0; right: 0;
+        height: 1080px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 56px;
+        opacity: 0; visibility: hidden;
+      }
+      [data-composition-id="scene3-chat"] .ask-answer {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 82px;
+        color: #ffffff;
+        text-align: center;
+        text-shadow:
+          -3px -3px 0 #000, 3px -3px 0 #000,
+          -3px 3px 0 #000, 3px 3px 0 #000,
+          0 0 30px rgba(2,179,233,0.7);
+        opacity: 0;
+        padding: 0 40px;
+      }
+      [data-composition-id="scene3-chat"] .use-items {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+      }
+      [data-composition-id="scene3-chat"] .use-item {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      [data-composition-id="scene3-chat"] .icon-badge {
+        width: 78px;
+        height: 78px;
+        background: rgba(2,179,233,0.10);
+        border: 2px solid rgba(2,179,233,0.5);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 16px rgba(2,179,233,0.22);
+        flex-shrink: 0;
+      }
+      [data-composition-id="scene3-chat"] .use-label {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 62px;
+        color: #ffffff;
+        text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+    (function () {
+      const SLOT = 4.96;
+      const sel = '[data-composition-id="scene3-chat"]';
+      const tl = gsap.timeline({ paused: true });
+
+      tl.set(sel + ' .overlay', { autoAlpha: 1 }, 0);
+
+      tl.fromTo('#ask-answer',
+        { scale: 0.55, opacity: 0 },
+        { scale: 1.06, opacity: 1, duration: 0.26, ease: 'back.out(2.5)' }, 0.0);
+      tl.to('#ask-answer', { scale: 1.0, duration: 0.14, ease: 'power2.out' }, 0.26);
+
+      const useTimes = [2.52, 3.11, 4.10];
+      ['#use1','#use2','#use3'].forEach((id, i) => {
+        tl.to(id, { opacity: 1, y: 0, duration: 0.26, ease: 'expo.out' }, useTimes[i]);
+        tl.to(id, { scale: 1.05, duration: 0.08, ease: 'back.out(2)' }, useTimes[i]);
+        tl.to(id, { scale: 1.0, duration: 0.12, ease: 'power2.out' }, useTimes[i] + 0.08);
+        tl.to(id + ' .icon-badge', { boxShadow: '0 0 44px rgba(2,179,233,0.9)', duration: 0.01 }, useTimes[i] + 0.02);
+        tl.to(id + ' .icon-badge', { boxShadow: '0 0 16px rgba(2,179,233,0.22)', duration: 0.45, ease: 'power2.out' }, useTimes[i] + 0.03);
+      });
+
+      tl.set(sel + ' .overlay', { autoAlpha: 0 }, SLOT);
+      tl.to({}, { duration: SLOT }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines['scene3-chat'] = tl;
+    })();
+    </script>
+  </div>
+</template>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>5 Secret Codes for ChatGPT</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Roboto+Mono:wght@400;500;700&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #05080F;
+        font-family: "Montserrat", sans-serif;
+        color: #ffffff;
+      }
+      .scene-layer {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1080px;
+        height: 1920px;
+      }
+      #face-video {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+        object-position: center center;
+        z-index: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="41.47"
+      data-width="1080"
+      data-height="1920"
+    >
+      <video
+        id="face-video"
+        data-start="0"
+        data-duration="41.47"
+        data-clip-type="video"
+        src="assets/source.mov"
+        preload="auto"
+        muted
+        playsinline
+      ></video>
+
+      <audio
+        id="face-audio"
+        data-start="0"
+        data-duration="41.47"
+        data-clip-type="audio"
+        data-volume="1"
+        src="assets/source.mov"
+      ></audio>
+
+      <div class="scene-layer"
+        data-composition-id="header-sticker"
+        data-composition-src="compositions/header-sticker.html"
+        data-start="0" data-duration="3.27" data-track-index="8"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="header-sticker"
+        data-composition-src="compositions/header-sticker.html"
+        data-start="34.33" data-duration="7.14" data-track-index="8"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene1-redteam"
+        data-composition-src="compositions/scene1-redteam.html"
+        data-start="3.61" data-duration="4.35" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene2-pareto"
+        data-composition-src="compositions/scene2-pareto.html"
+        data-start="7.96" data-duration="6.26" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene3-eli10"
+        data-composition-src="compositions/scene3-eli10.html"
+        data-start="14.22" data-duration="5.50" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene4-socrates"
+        data-composition-src="compositions/scene4-socrates.html"
+        data-start="19.72" data-duration="6.42" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="scene5-lindymode"
+        data-composition-src="compositions/scene5-lindymode.html"
+        data-start="26.14" data-duration="8.21" data-track-index="5"
+        data-width="1080" data-height="1920"></div>
+
+      <div class="scene-layer"
+        data-composition-id="captions"
+        data-composition-src="compositions/captions.html"
+        data-start="0" data-duration="41.47" data-track-index="20"
+        data-width="1080" data-height="1920"></div>
+    </div>
+
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        tl.to({}, { duration: 41.47 }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

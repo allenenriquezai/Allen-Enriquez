@@ -1,0 +1,109 @@
+<template id="mascot-template">
+  <div
+    data-composition-id="mascot"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="7.96"
+  >
+    <!-- Claw'd — Claude's pixel-art crab mascot -->
+    <div class="overlay">
+      <div class="mascot-wrap" id="mascot-wrap">
+        <svg id="clawd" width="160" height="148" viewBox="0 0 100 92" xmlns="http://www.w3.org/2000/svg">
+          <!-- Left pincer -->
+          <rect x="10" y="0" width="20" height="16" rx="2" fill="#C4593A"/>
+          <!-- Right pincer -->
+          <rect x="70" y="0" width="20" height="16" rx="2" fill="#C4593A"/>
+          <!-- Body -->
+          <rect x="4" y="14" width="92" height="48" rx="3" fill="#C4593A"/>
+          <!-- Eyes -->
+          <rect id="eye-left" x="18" y="24" width="16" height="16" rx="1" fill="#1a1a1a"/>
+          <rect id="eye-right" x="66" y="24" width="16" height="16" rx="1" fill="#1a1a1a"/>
+          <!-- Leg 1 -->
+          <rect x="5" y="60" width="18" height="26" rx="2" fill="#C4593A"/>
+          <!-- Leg 2 -->
+          <rect x="27" y="60" width="16" height="26" rx="2" fill="#C4593A"/>
+          <!-- Leg 3 -->
+          <rect x="57" y="60" width="16" height="26" rx="2" fill="#C4593A"/>
+          <!-- Leg 4 -->
+          <rect x="77" y="60" width="18" height="26" rx="2" fill="#C4593A"/>
+        </svg>
+        <div class="mascot-label" id="mascot-label">Claw'd</div>
+      </div>
+    </div>
+
+    <style>
+      [data-composition-id="mascot"] {
+        position: absolute; inset: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="mascot"] .overlay {
+        position: absolute;
+        top: 420px; left: 0; right: 0;
+        height: 1080px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0; visibility: hidden;
+      }
+      [data-composition-id="mascot"] .mascot-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        opacity: 0;
+      }
+      [data-composition-id="mascot"] .mascot-label {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 52px;
+        color: #C4593A;
+        text-shadow:
+          -2px -2px 0 #000, 2px -2px 0 #000,
+          -2px 2px 0 #000, 2px 2px 0 #000;
+        opacity: 0;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+    (function () {
+      const SLOT = 7.96;
+      const sel = '[data-composition-id="mascot"]';
+      const tl = gsap.timeline({ paused: true });
+
+      tl.set(sel + ' .overlay', { autoAlpha: 1 }, 0);
+
+      // Drop in from above + bounce
+      tl.fromTo('#mascot-wrap',
+        { y: -160, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.50, ease: 'back.out(2)' }, 0.35);
+
+      // Scale slam settle
+      tl.fromTo('#clawd',
+        { scale: 1.15 },
+        { scale: 1.0, duration: 0.20, ease: 'elastic.out(1, 0.4)' }, 0.85);
+
+      // Label fades in
+      tl.to('#mascot-label', { opacity: 1, duration: 0.22, ease: 'power1.out' }, 0.95);
+
+      // Idle bob — finite repeat: SLOT=7.96, bob starts at 1.20, remaining=6.76, cycleDuration=1.2
+      // repeat = Math.floor(6.76 / 1.2) - 1 = 5 - 1 = 4
+      tl.to('#mascot-wrap', {
+        y: -14, duration: 1.2, yoyo: true, repeat: 4, ease: 'sine.inOut'
+      }, 1.20);
+
+      // Eye blink at t=2.8 (finite: repeat:1 = one blink cycle)
+      tl.to(['#eye-left', '#eye-right'], {
+        scaleY: 0.08, transformOrigin: '50% 50%',
+        duration: 0.06, yoyo: true, repeat: 1, ease: 'power2.inOut'
+      }, 2.80);
+
+      tl.set(sel + ' .overlay', { autoAlpha: 0 }, SLOT);
+      tl.to({}, { duration: SLOT }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines['mascot'] = tl;
+    })();
+    </script>
+  </div>
+</template>

@@ -1,3 +1,259 @@
+## 2026-04-22 — Ryan labeler: 4-bucket label structure (A. Upcoming added)
+**Problem:** Gmail project labels had 3 buckets (a. Ongoing / b. Completed / c. Unknown); new auto-created projects defaulted to Ongoing immediately, skipping a "not yet started" state Ryan needed
+**Change:**
+- `services/ryan-labeler/config/routing_rules.json` — added `label_prefix_upcoming`, renamed B/C/D prefixes
+- `services/ryan-labeler/registry.py` — new `"upcoming"` branch in `project_label_name()`; `create_project()` default changed from `"active"` to `"upcoming"`
+- `services/ryan-labeler/fix_label_prefixes_v2.py` — one-time migration: renamed 97 Gmail labels + moved all messages
+**Why:** Ryan wanted to distinguish awarded-not-started (Upcoming) from active work (Ongoing). Auto-created projects should land in Upcoming so Ryan can manually promote when work begins, rather than cluttering Ongoing with bids.
+**Criteria:** Speed: = | Cost: = | Accuracy: + | Scale: =
+**Next:** `/reclassify` endpoint so Ryan can bulk-move D. Unknown projects to correct bucket without touching JSON files directly
+
+---
+
+## 2026-04-22 — Content Hub Queue tab + 9:16 reel SOP
+**Problem:** No single place to see upcoming posts + copy captions before posting. Aspect ratio for reels was undocumented.
+**Change:**
+- `tools/content-hub/app/queue/page.tsx` + `queue-client.tsx` — Queue tab with per-slot cards, platform caption tabs, copy buttons
+- `tools/content-hub/components/tab-nav.tsx` — Queue added as first nav item
+- `projects/personal/workflows/content/content-creation.md` — 9:16 (1080×1920px) SOP for all reels/vertical animations
+**Why:** Queue tab removes friction at posting time — captions are already written, one click to copy. 9:16 rule prevents future exports at wrong dimensions.
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: =
+**Next:** Seed 4th reel into DB once title confirmed; add "mark as posted" action to Queue cards
+
+## 2026-04-22 — Token audit — remove WhatsApp notifications
+**Problem:** WhatsApp token expired (401), Allen said not needed
+**Change:** `tools/daily_token_audit.py` — removed `send_whatsapp_if_alerts` function and call site
+**Why:** Report file at `.tmp/token-audit/YYYY-MM-DD.md` is sufficient; WhatsApp adds fragile external dependency
+**Criteria:** Speed: = | Cost: = | Accuracy: = | Scale: +
+**Next:** none — audit system complete
+
+## 2026-04-22 — Creator Feed Watcher — daily auto-fetch of Justyn + Sabrina posts
+
+**Problem:** Allen wanted daily visibility into what content-model creators (Justyn.ai, Sabrina Ramonov) post — URLs, hooks, optional breakdown — to spot format + topic trends. Not sales-competitor intel. Cheap, ideally zero ongoing cost.
+
+**Change:**
+- `tools/creator_feed.py` — orchestrator: yt-dlp (metadata + audio) + local `tools/transcribe_video.py` (whisper.cpp) + Claude Haiku breakdown (hook/topic/why-it-works) → content_hub.db
+- `projects/personal/creator_config.yaml` — creator seed list with per-platform URLs + `breakdown_with_claude` + `max_posts_per_run`
+- `tools/content-hub/lib/schema.sql` — new `creator_posts` table
+- `tools/content-hub/app/creator-feed/page.tsx` — dashboard card view (thumbnail, hook, topic, why-it-works, expandable transcript)
+- `tools/content-hub/app/api/creator-feed/route.ts` — JSON API
+- `tools/content-hub/components/tab-nav.tsx` — "Creator Feed" nav (Rss icon)
+- `automation/com.enriquezOS.creator-feed.plist` — daily 7am PH LaunchAgent
+- `automation/run_creator_feed.sh` — retry-wrapping shell runner
+- TikTok workaround: scrape profile HTML for `secUid` → `tiktokuser:<secUid>` (yt-dlp default user extractor broken 2025.10)
+- New deps installed via `pip install --user`: `curl_cffi` (chrome impersonation — TikTok blocks default UA)
+
+**Why:**
+- Reused existing `transcribe_video.py` (whisper.cpp local = free) instead of Whisper API
+- Haiku for breakdown ~$0.40/mo — cheap, acceptable
+- Rejected tikwm.com (Cloudflare-gated, untrusted 3P) and Playwright (adds node dep)
+- Rejected `/gsd-plan-phase` — no ROADMAP.md scaffolding, overkill for single feature
+- Rejected /brief integration — dashboard is primary surface, simpler to ship v1 without
+
+**Criteria:** Speed: + | Cost: = (~$0.40/mo API) | Accuracy: + (local whisper accurate) | Scale: + (YAML-driven creator list)
+
+**Next:**
+- Verify Sabrina YouTube handle (0 posts fetched from YT path)
+- Seed Substack for Sabrina newsletter
+- Consider local LLM (Ollama) if Haiku cost grows with more creators
+- If TikTok secUid scrape breaks, try Playwright + cookies
+
+---
+
+## 2026-04-22 — Folder structure cleanup — one home per concept
+
+**Problem:** Root and `projects/personal/` accumulated inconsistencies: duplicate brand PNG, loose third-party logos with typos, empty orphan dirs (org/, projects/projects/), split sales dirs (sales-assets/, templates/, landing-page/, landing-page-brand/), mixed reference/ with living intel docs.
+
+**Change:**
+- Root: deleted dup brand PNG, moved 3P logos → `personal/content/assets/third-party-logos/` (fixed gmail typo), moved Video Edit Reference.mov → `personal/reference/`, merged root `brand-assets/` → `personal/brand/`, removed empty `projects/projects/`
+- `personal/`: promoted `reference/intel/` → `intel/` (8 living docs); promoted `reference/brand/` → `brand/` + added profile.png + carousel-style.md; consolidated `sales-assets/` + `templates/` + landing pages → `sales/`; outreach templates → `outreach/templates/`; `.tmp/clients/ryan/` → `clients/ryan/` (real client work, not cache)
+- Carousel archives: deleted superseded `_archive/4-levels-of-ai-in-business/` + `_archive/ai-wont-replace-you/`
+- `.tmp/`: removed 31 old cron logs + temp build scripts + dup content docs
+- Updated path references across: CONTEXT.md, INDEX.md, 4 intel workflows, video-editing workflow, ph-outreach-system, 2 campaign assets, 5 skills, 5 tools, 5 memory files, EPS create-quote.md typo fix
+
+**Why:**
+- One home per concept; living docs don't belong under `reference/`
+- Third-party logos used IN content → content/assets/, not brand/ (not Allen's brand)
+- Kept INDEX.md-documented planned slots (library/, files/, outreach/) even when empty — design intent preserved
+- DECISIONS.md historical refs left unchanged (don't rewrite log)
+
+**Criteria:** Speed: + (fewer dirs to scan) | Cost: = | Accuracy: + (no more stale paths) | Scale: + (new work has obvious home)
+
+**Next:**
+- Sabrina YT handle verification
+- Merge `brand-assets/` learnings — excalidraw skill now points to `personal/brand/excalidraw-style-reference.png`
+
+---
+
+## 2026-04-22 — Personal CRM Kanban: auto-stamp Date Called on outcome change
+
+**Problem:** Allen logged a call as "Asked For Email" via the board. Card moved to Send Email column, but top-bar TODAY counters (CONVOS, email, conv rate) stayed at 0. Root cause: move/edit endpoints changed `Call Outcome` but never stamped `Date Called`. Stats endpoint filters today's outcomes by `dc == today_label` → no date → no count. Also `_stats_cache` (60s TTL) wasn't busted on mutations, so even correctly-stamped rows could show stale top-bar numbers for up to a minute.
+
+**Change:**
+- `tools/crm_kanban/app.py:208-216` — added `today_label()` helper; `invalidate_cache()` now also clears `_stats_cache`
+- `tools/crm_kanban/app.py:285-292` — `api_move_card` stamps Date Called = today when outcome changes (skipped for `New / No Label`)
+- `tools/crm_kanban/app.py:317-320` — mirrors stamp into `row_data` so tab routing post-move sees current state
+- `tools/crm_kanban/app.py:374-383` — `api_update_card` stamps Date Called when `Call Outcome` is in updates (respects explicit Date Called if caller sent one)
+
+**Why:**
+- Root cause was invariant violation (outcome set without date) — fix at mutation boundary instead of backfilling on read
+- Alternative: have stats endpoint treat any row with a non-New outcome as "today" — rejected, would lie about historical calls logged days ago
+- Alternative: require user to manually set Date Called in edit dialog — rejected, Allen moves cards in flow; extra click breaks the dialing rhythm
+- Skipped migration for existing orphan rows — one card (Shades of Gray) affected; re-drag fixes it
+
+**Criteria:** Speed: + (no manual date entry) | Cost: = | Accuracy: + (top-bar matches reality immediately) | Scale: =
+
+**Next:**
+- If orphan rows recur → add read-time warning badge on cards with outcome + no Date Called
+- Consider: light WebSocket / Server-Sent-Events push so browser auto-refreshes instead of cache-then-poll
+
+---
+
+## 2026-04-22 — Personal CRM Kanban: added launchd plist so it auto-starts
+
+**Problem:** `tools/crm_kanban/app.py` (Personal CRM Kanban, port 5001) had no launchd plist. Allen hit "CRM dashboard not working" because connection refused — service wasn't running, required manual start, died on reboot. Main dashboard button linked to :5001 but nothing served it.
+
+**Change:**
+- `automation/com.enriquezOS.crm-kanban.plist` — new plist matching `eps-dashboard` pattern (RunAtLoad + KeepAlive + ThrottleInterval 10)
+- Copied to `~/Library/LaunchAgents/` + bootstrapped via `launchctl bootstrap gui/501`
+- Logs: `.tmp/crm-kanban.log` + `.tmp/crm-kanban-error.log`
+- Also restarted `com.enriquezOS.dashboard` earlier to clear a poisoned gunicorn worker from transient `ssl.SSLError: WRONG_VERSION_NUMBER` hitting sheets.googleapis.com
+
+**Why:**
+- Matched existing eps-dashboard plist pattern for consistency — not gunicorn-ified since Flask dev server is acceptable for single-user localhost
+- Alternative (systemd-like approach / a wrapper script) rejected — launchd is already the convention across all 15 Enriquez OS automations
+- Did not add retry/backoff around Google Sheets calls in routes_command.py/sync.py despite the SSL blip — restart cleared it; monitor before adding complexity
+
+**Criteria:** Speed: + (boot → CRM board live, zero manual steps) | Cost: = | Accuracy: + (no more "service dead" false negatives) | Scale: =
+
+**Next:**
+- If SSL `WRONG_VERSION_NUMBER` recurs on main dashboard → investigate VPN/firewall intercepting googleapis.com at network layer
+- Optional: wrap Sheets calls in `routes_command.py:146` + `sync.py:62` with retry+backoff for graceful degradation on transient TLS failures
+
+---
+
+## 2026-04-21 — Content Hub v1 shipped: unified local app for scattered content ops
+
+**Problem:** Allen + wife managed content across 5+ platforms (FB, IG, TikTok, YT, X) using scattered tools: Google Docs for scripts, Google Sheets for tracking, `.tmp/content_tracker.json` for campaign state, `projects/personal/videos/` for produced files, `content-research.md` for viral refs. Pain = organization, not features. Context-switching drag; "I don't like most of them" friction on ideas because review happens in disconnected files.
+
+**Change:**
+- `tools/content-hub/` — new Next.js 16 + TS + Tailwind v4 + shadcn/ui + better-sqlite3 app, dev server on `localhost:3100`
+- 7 tabs: Ideation (22 seeded from `/content-research` skill + `content_drafts.json`), Scripts (14 scripts, platform variants, inline edit), Calendar (monthly grid, drag-drop, 3 seeded days), Library (10 assets scanned from `videos/ready/`, per-platform posted checkboxes), Analytics (manual-entry metrics + recharts), Inbox (manual-entry threads), Learning (viral refs + trending + competitors, convert-to-idea)
+- `app/globals.css` — brand tokens: #02B3E9 primary, dark navy #06101a bg, radial blue glow, `.ae-glow` / `.ae-pill` / `.ae-card` / `.ae-mono-label` utilities
+- `app/layout.tsx` + `components/tab-nav.tsx` + `components/ae-monogram.tsx` — AE monogram sidebar, Roboto Mono + Montserrat via next/font, pill nav with blue-glow active state
+- `lib/schema.sql` — 8 tables (ideas, scripts, schedule, assets, posts, metrics, inbox, learning_refs)
+- `lib/importers/*.ts` — read-only seeders for `content_tracker.json`, `content_drafts.json`, `content-research.md`, `projects/personal/videos/`
+- `app/api/ideas/route.ts` — POST dual-branch: `{id, action}` updates status, `{title, ...}` creates new idea (unblocks Learning→Ideation)
+- `app/scripts/[id]/send-to-calendar-button.tsx` — Dialog → `/api/schedule` POST (was a console.log stub after Agent B handoff)
+
+**Why:**
+- SQLite over Postgres/Supabase: zero-setup local, single-user + wife (no concurrency), free
+- Local-only v1 over deploy: no auth overhead, no hosting cost, instant iteration. Tailscale/Vercel = Phase 2
+- Custom Meta/YT/TikTok APIs over Blotato ($29/mo): Allen chose ownership over speed. Tradeoff: 2-4 wk Meta wait + 2-8 wk TikTok wait vs instant Blotato. YT Data API is the fast win (1 wk, no verification).
+- `/content-research` skill as ideation seed (not YT Studio): Allen corrected mid-build — his existing skill already scans FB+IG+TT+YT for ICP-relevant viral content
+- Separate `content_hub.db` from `dashboard.db`: prevents table collision, lets each app own its schema
+- Parallel 4-agent build pattern: 1 scaffold agent (blocking) → 3 tab-builder agents (parallel) landed all routes in ~2 hr
+- Python tools (content_tracker, generate_content, generate_carousel) untouched: app reads their JSON outputs as seed. Python keeps generation ownership.
+- Brand system applied via CSS vars: single `globals.css` edit propagates to every tab
+
+**Criteria:** Speed: + (single-surface review replaces doc/sheet/folder hopping) | Cost: = (local, free) | Accuracy: + (SQLite source of truth after first edit, no drift across JSON copies) | Scale: + (Phase 2 posting layer slots in via `/api/schedule` + `/api/posts`, no UI rewrite)
+
+**Next:**
+- Phase 2 posting + analytics layer (Allen approved custom APIs path):
+  - YouTube Data API — 1 wk, no verification, build this week
+  - Meta Graph API — start Business Verification today (2-4 wk wait), build after approval
+  - TikTok Content Posting + Research API — start app submission today (2-8 wk), ~60% first-attempt rejection rate
+  - Skip X — $100/mo Basic tier required to post
+- Prereqs pending from Allen: Meta Business docs (ABN/sole-trader/ID/utility bill), privacy+terms URL, brand website URL, confirm IG=Business linked to FB Page
+- Wife remote access deferred — Tailscale (5 min) when she starts using it
+- Auth deferred — only when deploying remotely
+
+---
+
+## 2026-04-21 — Carousel tool tuning: profile placement + CTA prominence + ASCII arrow fallback
+
+**Problem:** Shipping a 9-slide carousel ("5 things AI Automations can do for business owners & professionals") surfaced three gaps in `tools/generate_carousel.py`: (1) profile header too tight to top edge, (2) CTA slide font too small and vertically mid-low, (3) Unicode arrows `→` and emoji `👉` rendered as tofu boxes.
+
+**Change:**
+- `tools/generate_carousel.py` — `draw_profile_header` y_start `PADDING_TOP` → `PADDING_TOP + 60` (both title + CTA slides).
+- CTA font `72pt` → `84pt` (+1 step, more visual weight).
+- CTA vertical anchor `y_start = safe_top + (safe_h - total_h) // 2` → `// 4` (raises CTA to upper third).
+- Copy template convention: use `»` (U+00BB) as swipe indicator. Helvetica.ttc doesn't ship color emoji and bold index lacks U+2192; `»` renders cleanly without needing multi-font fallback.
+- Desktop organisation: `~/Desktop/Personal Brand - Contents/Carousels - Ready To Post/_archive/` created; orphan slides, duplicate folders, and test folders parked there non-destructively.
+
+**Why:**
+- Font-fallback rewrite (Apple Color Emoji via `embedded_color=True` + per-glyph font switching) would take hours for a cosmetic arrow. `»` solves it in one character change.
+- Layout tweaks requested by Allen directly — low-risk, visible improvements, no refactor needed.
+- Non-destructive archive beats deleting ambiguous duplicates (e.g., `ai-wont-replace-you/` vs `ai-wont-replace-you-a-person-using-ai-will/` — same mtime, same slide count; can't safely pick a winner without user input).
+
+**Criteria:** Speed: = | Cost: = | Accuracy: + (CTA readability, profile breathing room) | Scale: + (future carousels inherit the fix; `»` convention avoids per-carousel arrow debugging).
+
+**Next:**
+- Save `»` as default swipe indicator inside the tool itself (placeholder copy + docstring) so future copy files don't repeat the `→` mistake.
+- Consider patching `render_cta_slide` to honour `||` split (sub-title below headline) — current single-block CTA forced the whole sentence into one big block on slide 9.
+- If emoji-in-text becomes a repeated need, swap to Montserrat 900 + Apple Color Emoji layered render (one text pass per font) or migrate carousel rendering to the Hyperframes HTML stack.
+
+---
+
+## 2026-04-21 — Reel 5 shipped: "5 Secret Codes for ChatGPT" — preview-first pipeline validated
+
+**Problem:** New reel (41.47s, ChatGPT prompt tutorials: REDTEAM / PARETO / ELI10 / SOCRATES / LINDYMODE). Source had 31s black overlay window between face-on hook + CTA. Needed motion graphics that literally dramatize each code's effect, plus karaoke captions + header sticker timed to voice onsets.
+
+**Change:**
+- New reel project: `projects/personal/videos/reel-5-secret-codes/` — hyperframes HTML+GSAP stack, 5 scene compositions + header-sticker + captions.
+- Scene-first workflow via `/scene-animation`: scaffolded 5 scenes in isolation, previewed at `localhost:3002?comp=<id>` with hot reload, locked each before adding face/audio/captions. First iteration needed vertical re-center (clear TikTok top status + right-column + bottom caption UI) — locked safe zone = `y=320-1420`, `right: 180px+`.
+- v1 render had scenes misaligned with voice (silence-gap heuristic was off). v2 retimed each scene: `data-start` shifted to `voice_code_onset − 0.45s`, internal GSAP timelines scaled proportionally (factors 0.76 / 0.93 / 0.90 / 1.02 / 1.32) so code-word slam stays anchored at local 0.45s and syncs with Allen saying the word.
+- Header sticker enlarged: two-line Montserrat 900 at 96px ("5 SECRET CODES" cyan / "FOR CHATGPT" white), on both hook (0→3.27s) and CTA (34.33→41.47s).
+- Karaoke captions via whisper-cpp (`ggml-small.en.bin` from hyperframes cache) — 135 words, word-level timing, code-word sub-tokens merged (red|team → REDTEAM, P|are|to → PARETO, Eli|10 → ELI10, Lind|y|Mode → LINDYMODE), chunked to 6 words/segment, Montserrat 900 68px yellow→cyan active word with scale 1.16 pop.
+- Shipped symlink to `projects/personal/videos/ready/reel-5-secret-codes-for-chatgpt.mp4` (20 MB, 3m 38s render time).
+
+**Why:**
+- Preview-first saves render cost: animations iterated in browser (seconds), not through 3–8min full renders. v1→v2 fixes still required re-render but scene tuning itself was free.
+- Literal dramatization rule (Allen's explicit correction): visual payoff must show exactly what he says AFTER the code name — not an abstract icon of the concept. REDTEAM shows "3 reasons you're wrong" with red ✗; PARETO shows 2-of-10 tasks highlighted; ELI10 strikes jargon → plain sentence; SOCRATES cycles Q1→Q2→Q3 one at a time; LINDYMODE compares TRENDING ✗ vs TIMELESS ✓.
+- Voice-sync via whisper word timings beats silence-gap heuristics by ~0.5–1.5s per scene. Silence gaps drift; "Number N is..." onsets from actual transcription are ground truth.
+- TikTok/Reels UI safe-zone discipline: right column `x=880+` and bottom caption area `y=1470+` must stay clear of accent elements (stamps, corner tags, columns). Caught in v1 preview, fixed before render.
+
+**Criteria:** Speed: + (scene iteration = seconds; two renders total including v2 retime). Cost: + ($0 — local whisper, local render, no API spend). Accuracy: + (code-word slam syncs with voice to <0.15s). Quality: + (animations literal-to-script, lint 0/0, TikTok-safe framing).
+
+**Next:**
+- Post to personal brand channels (IG / TikTok / YT Shorts / FB / Blotato).
+- Reuse the scene-first preview workflow for reel-6+ — `/scene-animation` before `/short-form-video` now the default ordering.
+- Consider caching the word-tokenizer code-merge patterns (`red|team → REDTEAM` etc) into a reusable whisper post-processor if future reels follow similar "Number N is [CODE]" formats.
+
+---
+
+## 2026-04-21 — Ryan Canton / SC-Incorporated: first paid client onboarded; client-audit flow established; personal email flipped to .ai
+
+**Problem:** First AI consultancy engagement kicked off (Ryan Canton, SC-Incorporated, CA tile/stone/countertop sub — close friend). Free build → paid after it works. Three systems requested: Gmail auto-labeling, calendar, website. Needed: (a) a way to scope client automation without 40-question blind discovery emails; (b) per-client OAuth architecture that scales past Ryan; (c) ability to draft/send from Allen's new public email `.ai` instead of `.006`.
+
+**Change:**
+- New tool: `tools/gmail_inbox_audit.py` — reusable per-client audit. OAuth (`gmail.readonly`), 60-day pull, batch metadata fetch with 429 backoff + resume-from-cache, Haiku-4.5 classification into 9 buckets (project / team_daily / bid_invite / vendor / client_inbound / admin_ops / promo / personal / other), markdown report with volume, top senders/domains, per-category domains, detected project names. Run with `--client <slug> --days 60 --classify`.
+- New tool: `tools/auth_personal_ai.py` — OAuth for `allenenriquez.ai@gmail.com` against Enriquez OS GCP project. Saves `projects/personal/token_personal_ai.pickle`. Scopes: gmail.readonly/send/compose/modify/labels + calendar + drive + spreadsheets.
+- Refactored `tools/send_personal_email.py` — added `--draft` mode (creates Gmail draft), `--attach PATH` (repeatable, MIMEMultipart), `--from {ai,006}` (default `ai`). Preserves `--send` and `--dry-run`.
+- GCP architecture: single project "Allen Enriquez" under Allen's Google account hosts OAuth consent for all future clients. Testing mode. Test users: ryan@sc-incorporated.com, allenenriquez.ai@gmail.com. OAuth client JSON at `projects/personal/credentials_enriquez_os.json`. Ryan's readonly token at `projects/personal/.tmp/clients/ryan/token_ryan.pickle`.
+- Client artifacts under `projects/personal/.tmp/clients/ryan/`: `raw-messages.jsonl` (1,695 msgs, 61 days), `classifications.json`, `inbox-audit.md` (grounded audit), `gmail-mockup.png` (PIL-rendered Gmail sidebar + inbox preview), `discovery-email.md` v6 + `.html` (white-bg render), `make_mockup.py`.
+- Drafted the discovery email as a Gmail draft in Allen's `.ai` account (draft_id r-5447097554322100409, PNG attached).
+- Memory: added `project_client_ryan_sc_incorporated.md` (engagement + team + 3-phase scope) and `feedback_client_email_tone.md` (warm-direct, no "free build / pay after" in body, checkboxes don't render in plain email).
+
+**Why:**
+- Reading the inbox first turns a 40-question generic discovery email into a 14-question grounded one: real senders, real projects, real domains. Flips the dynamic from "tell me everything" to "confirm what I found."
+- Single GCP project scales: 100 test users per consent screen is enough runway to 100 clients before needing production verification. Per-client projects would be admin nightmare.
+- `.ai` email flip matches Allen's public brand rebuild — going forward every outbound client email is from `.ai`. `.006` kept for internal legacy tools until they migrate.
+- Bids default to skip-inbox because Ryan specifically flagged bids clutter the main view — his business is 10% bids by volume but 100% critical to quote velocity; filtering lets Kharene work the backlog while Ryan sees only priority GCs + urgent ones.
+- Haiku classification at ~$0.20 for 1,695 messages is trivial vs. the signal density (projects, priority GCs, priority vendors auto-surfaced).
+
+**Criteria:** Speed: + (audit → grounded email in ~45 min wall clock; future client onboard ≤ 1 hour) | Cost: + (~$0.20 per audit, one-time GCP setup, zero recurring) | Accuracy: + (inbox-grounded questions cut round-trips 3–4× vs generic discovery) | Scale: + (per-client audit, shared GCP project, shared audit tool — adds a client in ≈10 min).
+
+**Next:**
+- Allen reviews draft in `.ai` Gmail → sends.
+- When Ryan replies, process answers → scope phase 1 (labeling automation). Ryan's token needs `gmail.modify` + `gmail.labels` scopes before any label run — re-auth with expanded scopes.
+- Build phase 1 labeler: Gmail Push notifications or scheduled poll → Haiku classifier → `users.messages.modify` add label + removeLabelIds:INBOX for skip-inbox buckets.
+- Calendar + website specs flow from Q11 and Q12–Q14 respectively.
+- When second client signs, reuse `tools/gmail_inbox_audit.py` verbatim with new `--client <slug>`; add their email as test user on "Allen Enriquez" consent screen. Nothing else to set up.
+- Pre-verification: submit Google OAuth consent screen for production before client #4 or so (100 test user cap). Requires privacy policy URL — Ryan's website (when built) can carry it.
+
+---
+
 ## 2026-04-20 — Ken Fokart Builders Clean quote built (Deal 1374, 2 docs, 1-stage)
 **Problem:** Ken Fokart requested 2 separate quotes — upstairs + downstairs — for 1-stage final builders clean on Ryno Fencing Office Renovation (584 Old Gympie Rd, Narangba). Window cleaning to be billed hourly. Needed 2 docs in same deal folder with full scope + line items.
 **Change:**
@@ -807,4 +1063,46 @@ Consolidated from all entries. Remove when done.
 
 ---
 
+## 2026-04-21 — Reel 8 middle-section animation: scrapped Rough.js, reverted to default slam style
+
+**Problem:** New reel "YOUR AI PROJECTS FAIL" has 34.77s of black+VO middle that needs visual overlay. First attempt used Rough.js (hand-drawn blueprint sketches) — Allen rejected it ("I don't like it, just give me the animation using our default style").
+
+**Change:** Rewrote `projects/personal/videos/reel-8-your-ai-projects-fail/compositions/middle-animation.html` as 19 type-slam cards (Montserrat 900 headlines + Roboto Mono kickers + chat-UI bubbles for payoff beats 7/8 + pill stack for beat 2 + step chips for beat 15 + ✓ WORKS green stamp for beat 12) — same vocabulary as reel-4/reel-5. Used whisper.cpp small.en for word-level VO timestamps → per-word sync (ChatGPT/Zapier/Make pills pop on their exact syllables).
+
+**Why:** Hand-drawn aesthetic conflicts with Allen's established brand (dark + cyan-glow + bold slabs from `project_brand_visual_system.md`). Viewer recognition matters more than novelty at this stage — consistent style across reels = channel identity. Default style also faster to iterate and renders in a single Hyperframes pass.
+
+**Criteria:** Speed: + (no SVG generation, hot-reload seconds) | Cost: = (same stack) | Accuracy: + (frame-accurate via whisper word timestamps, matches existing brand) | Scale: + (pattern reusable for future reels — same component system)
+
+**Next:** Allen scrubs preview, flags beats to tweak, then handoff to `/short-form-video` for captions + stickers + MP4 render. Memorialize "default style = type-slam + chat-UI + brand tokens" so future reels skip the experimentation detour.
+
+---
+
+## 2026-04-21 — Reel 8 shipped: Lucide icons as default reel illustration vocabulary
+
+**Problem:** Type-slam default landed but Allen flagged it was "mainly just texts" and asked for actual illustrations that look good. Rough.js hand-drawn attempt had already been rejected. Needed polished per-beat illustrations that match the dark+cyan brand system and animate cleanly.
+
+**Change:** Added Lucide icons (outline SVG, 24×24 viewBox) as hero illustrations per beat in reel 8's `middle-animation.html`. Inlined 18 icon path-data definitions. `renderIcon()` builds SVG at init; `prepDash()` sets stroke-dasharray/offset for draw-on reveal; GSAP animates dashoffset→0 per beat + scale pop on payoff beats. Full reel also got header sticker ("YOUR AI / PROJECTS FAIL") + karaoke captions (56pt, 35 groups, word-level highlight) + 1080×1920 hero-face thumbnail template. Rendered 28MB MP4 in 7min 46s; shipped to `~/Desktop/Personal Brand - Contents/Post Ready/Your AI Projects Fail/`.
+
+**Why:** Lucide is the de-facto SaaS/tech icon standard (Vercel, shadcn, every modern dashboard) — line weight and aesthetic match Allen's brand without custom illustration work. Stroke-dashoffset reveal gives the "drawing in" feel without paid DrawSVG plugin. Inline path data = no CDN dependency inside Hyperframes iframe sandbox. Rejected alternatives: Rough.js (ugly), emoji (cross-platform inconsistent), custom hand-authored SVG per beat (too slow), undraw.co (off-brand cartoon).
+
+**Criteria:** Speed: + (icon render instant, no generator call) | Cost: = (free library) | Accuracy: + (on-brand line weight, stroke-draw reveal intentional) | Scale: + (18 icons reusable across all future reels)
+
+**Next:** Promote Lucide-icon pattern into shared helper so reel-9+ can `data-icon="hammer"` without re-copying the 6KB path-data blob. Thumbnail template (`thumbnails/thumbnail.html`) also reusable — clone into future reels with new face + headline swap. Add more Lucide icons to the library as future scripts demand them.
+
+---
+
 > Entries before 2026-04-10 archived in [DECISIONS-archive.md](DECISIONS-archive.md)
+
+---
+
+## 2026-04-23 — Ryan Gmail labeler: label restructure + onboarding delivery
+
+**Problem:** Label numbering was wrong after initial build (Office at 6, Archive at 5, Bids at 3 — priority order didn't match Ryan's workflow). No onboarding doc existed. Personal brand tools still pointed at legacy 006 Gmail account.
+
+**Change:** Two migration scripts (fix_label_order_v3 → fix_label_final_v4) moved labels to final order: 1. Projects / 2. Team (Daily + Office sub-folders) / 3. Vendors / 4. Bids / 5. Archive. Built 9-slide HTML/PDF onboarding deck with embedded screenshots. Switched all 24 personal tools to token_personal_ai.pickle + allenenriquez.ai@gmail.com. Created Gmail draft to ryan@sc-incorporated.com with PDF attached.
+
+**Why:** Each migration pass left orphan parent labels (Gmail API creates containers automatically) — required dedicated cleanup scripts each time. HTML→PDF chosen over Hyperframes for onboarding because it's a reference doc, not a motion graphic. Chrome headless `--paper-width=8.34` gives square slides matching the 800×800 CSS layout. allenenriquez.ai is the active personal brand account — 006 was legacy from OAuth setup.
+
+**Criteria:** Speed: + (Chrome headless PDF in 3s, no render pipeline) | Cost: = (no new services) | Accuracy: + (label structure now matches routing_rules.json exactly) | Scale: + (token swap is a one-time fix; all future tools inherit correct account)
+
+**Next:** Calendar automation for Ryan. Move config/state.json to persistent volume before that. Split ryan-labeler into labeler + briefer services when calendar module lands.

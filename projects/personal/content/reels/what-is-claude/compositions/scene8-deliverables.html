@@ -1,0 +1,112 @@
+<template id="scene8-deliverables-template">
+  <div
+    data-composition-id="scene8-deliverables"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="3.75"
+  >
+    <!-- Slot: 63.86 → 67.61 (local 0 → 3.75) -->
+    <div class="overlay">
+      <div class="del-items">
+        <div class="del-item" id="del1">
+          <div class="icon-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          </div>
+          <span class="del-label">Websites</span>
+        </div>
+        <div class="del-item" id="del2">
+          <div class="icon-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10 17h4"/></svg>
+          </div>
+          <span class="del-label">Apps</span>
+        </div>
+        <div class="del-item" id="del3">
+          <div class="icon-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M17.66 6.34l2.12-2.12M4.22 19.78l2.12-2.12"/></svg>
+          </div>
+          <span class="del-label">Automations</span>
+        </div>
+        <div class="del-item" id="del4">
+          <div class="icon-badge">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#02B3E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2l4 4-14 14H4v-4L18 2z"/><path d="M4 20c0 1.5.5 2 2 2s2-.5 2-2"/></svg>
+          </div>
+          <span class="del-label">Design</span>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      [data-composition-id="scene8-deliverables"] {
+        position: absolute; inset: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="scene8-deliverables"] .overlay {
+        position: absolute;
+        top: 420px; left: 0; right: 0;
+        height: 1080px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0; visibility: hidden;
+      }
+      [data-composition-id="scene8-deliverables"] .del-items {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+        align-items: flex-start;
+      }
+      [data-composition-id="scene8-deliverables"] .del-item {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        opacity: 0;
+        transform: translateY(28px);
+      }
+      [data-composition-id="scene8-deliverables"] .icon-badge {
+        width: 82px;
+        height: 82px;
+        background: rgba(2,179,233,0.10);
+        border: 2px solid rgba(2,179,233,0.5);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 18px rgba(2,179,233,0.22);
+        flex-shrink: 0;
+      }
+      [data-composition-id="scene8-deliverables"] .del-label {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 70px;
+        color: #ffffff;
+        text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+    (function () {
+      const SLOT = 3.75;
+      const sel = '[data-composition-id="scene8-deliverables"]';
+      const tl = gsap.timeline({ paused: true });
+
+      tl.set(sel + ' .overlay', { autoAlpha: 1 }, 0);
+
+      const delTimes = [0.0, 0.91, 1.52, 2.44];
+      ['#del1','#del2','#del3','#del4'].forEach((id, i) => {
+        tl.to(id, { opacity: 1, y: 0, duration: 0.26, ease: 'expo.out' }, delTimes[i]);
+        tl.to(id, { scale: 1.06, duration: 0.08, ease: 'back.out(2)' }, delTimes[i]);
+        tl.to(id, { scale: 1.0, duration: 0.12, ease: 'power2.out' }, delTimes[i] + 0.08);
+        tl.to(id + ' .icon-badge', { boxShadow: '0 0 48px rgba(2,179,233,0.95)', duration: 0.01 }, delTimes[i] + 0.02);
+        tl.to(id + ' .icon-badge', { boxShadow: '0 0 18px rgba(2,179,233,0.22)', duration: 0.5, ease: 'power2.out' }, delTimes[i] + 0.03);
+      });
+
+      tl.set(sel + ' .overlay', { autoAlpha: 0 }, SLOT);
+      tl.to({}, { duration: SLOT }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines['scene8-deliverables'] = tl;
+    })();
+    </script>
+  </div>
+</template>

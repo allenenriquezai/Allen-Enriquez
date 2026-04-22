@@ -1,0 +1,312 @@
+<template id="scene2-pareto-template">
+  <div
+    data-composition-id="scene2-pareto"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="6.26"
+  >
+    <div class="wrap">
+      <!-- Top chrome -->
+      <div class="chrome">
+        <span class="chrome-dot"></span>
+        <span class="chrome-title">ChatGPT</span>
+        <span class="chrome-badge">PARETO</span>
+      </div>
+
+      <!-- User bubble -->
+      <div class="bubble user">
+        <div class="bubble-label">YOU</div>
+        <div class="prompt-line">
+          <span class="code-word">PARETO</span>
+          <span class="prompt-body" id="s2-user-text"></span>
+          <span class="prompt-cursor">▋</span>
+        </div>
+      </div>
+
+      <!-- Response bubble -->
+      <div class="bubble bot">
+        <div class="bubble-label">CHATGPT</div>
+        <div class="stream">
+          <div class="stream-head" id="s2-stream-head"></div>
+          <ul class="tasks">
+            <li class="task" data-i="1"><span class="dot">•</span><span class="t-text">Reply to emails</span></li>
+            <li class="task" data-i="2"><span class="dot">•</span><span class="t-text">Update pitch deck</span></li>
+            <li class="task hit" data-i="3"><span class="dot">•</span><span class="t-text">Team standup</span></li>
+            <li class="task" data-i="4"><span class="dot">•</span><span class="t-text">Review contracts</span></li>
+            <li class="task" data-i="5"><span class="dot">•</span><span class="t-text">File expenses</span></li>
+            <li class="task" data-i="6"><span class="dot">•</span><span class="t-text">Client follow-up</span></li>
+            <li class="task hit" data-i="7"><span class="dot">•</span><span class="t-text">Call prospect back</span></li>
+            <li class="task" data-i="8"><span class="dot">•</span><span class="t-text">Post on LinkedIn</span></li>
+            <li class="task" data-i="9"><span class="dot">•</span><span class="t-text">Read industry news</span></li>
+            <li class="task" data-i="10"><span class="dot">•</span><span class="t-text">Plan next quarter</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 80% RESULT stamp -->
+      <div class="result-stamp">80% RESULT</div>
+
+      <!-- Corner tag -->
+      <div class="corner-tag">PARETO MODE</div>
+
+      <!-- Ambient scanline -->
+      <div class="scanline"></div>
+    </div>
+
+    <style>
+      [data-composition-id="scene2-pareto"] { position: absolute; inset: 0; background: #05080F; overflow: hidden; }
+      [data-composition-id="scene2-pareto"] .wrap {
+        position: absolute;
+        top: 320px; left: 60px; right: 180px; bottom: 500px;
+        display: flex; flex-direction: column;
+        align-items: stretch; justify-content: center;
+        gap: 22px;
+      }
+      [data-composition-id="scene2-pareto"] .chrome {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 22px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene2-pareto"] .chrome-dot {
+        width: 14px; height: 14px; border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 10px rgba(34,197,94,0.7);
+      }
+      [data-composition-id="scene2-pareto"] .chrome-title {
+        font-size: 24px; color: rgba(255,255,255,0.75);
+        letter-spacing: 0.08em; font-weight: 500;
+      }
+      [data-composition-id="scene2-pareto"] .chrome-badge {
+        margin-left: auto;
+        font-size: 20px; font-weight: 700; letter-spacing: 0.18em;
+        color: #02B3E9; padding: 6px 14px;
+        background: rgba(2,179,233,0.12);
+        border: 1px solid rgba(2,179,233,0.5);
+        border-radius: 8px;
+      }
+
+      [data-composition-id="scene2-pareto"] .bubble {
+        max-width: 880px;
+        padding: 28px 32px;
+        border-radius: 24px;
+        font-family: 'Roboto Mono', monospace;
+      }
+      [data-composition-id="scene2-pareto"] .bubble-label {
+        font-size: 18px; font-weight: 700;
+        letter-spacing: 0.26em;
+        margin-bottom: 10px; opacity: 0.55;
+      }
+      [data-composition-id="scene2-pareto"] .bubble.user {
+        align-self: flex-end;
+        background: rgba(2,179,233,0.12);
+        border: 1px solid rgba(2,179,233,0.45);
+      }
+      [data-composition-id="scene2-pareto"] .bubble.user .bubble-label { color: #02B3E9; }
+      [data-composition-id="scene2-pareto"] .bubble.bot {
+        align-self: flex-start;
+        background: #1a1f2e;
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+      [data-composition-id="scene2-pareto"] .bubble.bot .bubble-label { color: rgba(255,255,255,0.55); }
+
+      [data-composition-id="scene2-pareto"] .prompt-line {
+        display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px;
+        font-size: 34px; color: #ffffff; line-height: 1.35;
+      }
+      [data-composition-id="scene2-pareto"] .code-word {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 52px; color: #02B3E9;
+        text-shadow: 0 0 24px rgba(2,179,233,0.8);
+        letter-spacing: 0.02em;
+      }
+      [data-composition-id="scene2-pareto"] .prompt-body { color: rgba(255,255,255,0.92); white-space: pre; }
+      [data-composition-id="scene2-pareto"] .pch { display: inline-block; opacity: 0; white-space: pre; }
+      [data-composition-id="scene2-pareto"] .prompt-cursor { color: #02B3E9; }
+
+      [data-composition-id="scene2-pareto"] .stream {
+        display: flex; flex-direction: column; gap: 16px;
+      }
+      [data-composition-id="scene2-pareto"] .stream-head {
+        font-size: 34px; font-weight: 700; color: #ffffff;
+        white-space: pre;
+      }
+      [data-composition-id="scene2-pareto"] .hch { display: inline-block; opacity: 0; white-space: pre; }
+
+      [data-composition-id="scene2-pareto"] .tasks {
+        list-style: none; display: flex; flex-direction: column; gap: 10px;
+        margin-top: 6px;
+      }
+      [data-composition-id="scene2-pareto"] .task {
+        display: flex; align-items: center; gap: 18px;
+        font-size: 28px; color: rgba(255,255,255,0.88);
+        opacity: 0;
+        transform-origin: left center;
+        padding: 4px 10px;
+        border-radius: 8px;
+      }
+      [data-composition-id="scene2-pareto"] .task .dot {
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 34px; color: rgba(255,255,255,0.55);
+        width: 28px; text-align: center;
+      }
+      [data-composition-id="scene2-pareto"] .task.hit .dot {
+        color: #02B3E9;
+      }
+
+      [data-composition-id="scene2-pareto"] .result-stamp {
+        position: absolute;
+        top: 1200px; right: 240px;
+        font-family: 'Montserrat', sans-serif; font-weight: 900;
+        font-size: 110px; color: #02B3E9;
+        letter-spacing: 0.02em;
+        transform: rotate(-8deg) scale(0);
+        opacity: 0;
+        border: 8px solid #02B3E9;
+        padding: 10px 26px 18px;
+        border-radius: 12px;
+        text-shadow: 0 0 30px rgba(2,179,233,0.6);
+        box-shadow: 0 0 40px rgba(2,179,233,0.4);
+        background: rgba(5,8,15,0.65);
+      }
+
+      [data-composition-id="scene2-pareto"] .corner-tag {
+        position: absolute;
+        top: 260px; right: 200px;
+        font-family: 'Roboto Mono', monospace; font-weight: 700;
+        font-size: 18px; color: #02B3E9;
+        letter-spacing: 0.28em;
+        padding: 8px 14px;
+        border: 1px solid rgba(2,179,233,0.5);
+        border-radius: 6px;
+        background: rgba(2,179,233,0.08);
+        opacity: 0;
+      }
+
+      [data-composition-id="scene2-pareto"] .scanline {
+        position: absolute; inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 3px,
+          rgba(2,179,233,0.025) 3px,
+          rgba(2,179,233,0.025) 4px
+        );
+        pointer-events: none;
+        z-index: 50;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sel = '[data-composition-id="scene2-pareto"]';
+        const SLOT = 6.26;
+
+        // Build prompt body char-by-char
+        const userText = ": today's to-do list";
+        const uEl = document.querySelector(sel + ' #s2-user-text');
+        if (uEl) {
+          uEl.innerHTML = '';
+          for (const ch of userText) {
+            const s = document.createElement('span');
+            s.className = 'pch';
+            s.textContent = ch;
+            uEl.appendChild(s);
+          }
+        }
+
+        // Stream head char-by-char
+        const headText = 'Your 10 tasks — the 2 that matter:';
+        const hEl = document.querySelector(sel + ' #s2-stream-head');
+        if (hEl) {
+          hEl.innerHTML = '';
+          for (const ch of headText) {
+            const s = document.createElement('span');
+            s.className = 'hch';
+            s.textContent = ch;
+            hEl.appendChild(s);
+          }
+        }
+
+        const tl = gsap.timeline({ paused: true });
+
+        // t=0.10: chrome slides in
+        tl.from(sel + ' .chrome', { y: -30, opacity: 0, duration: 0.3, ease: 'power3.out' }, 0.10);
+        tl.from(sel + ' .corner-tag', { opacity: 0, duration: 0.2 }, 0.20);
+        tl.to(sel + ' .corner-tag', { opacity: 1, duration: 0.2 }, 0.20);
+
+        // t=0.30: user bubble pops
+        tl.from(sel + ' .bubble.user', { scale: 0.92, y: 40, opacity: 0, duration: 0.35, ease: 'back.out(1.6)' }, 0.30);
+
+        // t=0.45: code-word slam (Montserrat jaw-dropper)
+        tl.fromTo(sel + ' .code-word',
+          { scale: 0.6, opacity: 0 },
+          { scale: 1.0, opacity: 1, duration: 0.30, ease: 'back.out(2.2)' }, 0.45);
+        tl.to(sel + ' .code-word', { textShadow: '0 0 36px rgba(2,179,233,1)', duration: 0.25, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 0.75);
+
+        // t=0.90: prompt body types (20 chars × 0.035 = 0.70s)
+        tl.to(sel + ' .pch', { opacity: 1, duration: 0.02, stagger: 0.035, ease: 'none' }, 0.90);
+
+        // Cursor blink through scene (scaled × 0.934)
+        for (let i = 0; i < 12; i++) {
+          tl.set(sel + ' .prompt-cursor', { opacity: 0 }, 0.934 + i * 0.467);
+          tl.set(sel + ' .prompt-cursor', { opacity: 1 }, 0.934 + i * 0.467 + 0.2335);
+        }
+
+        // t=1.6812: bot bubble pops (scaled × 0.934)
+        tl.from(sel + ' .bubble.bot', { scale: 0.95, y: 30, opacity: 0, duration: 0.2802, ease: 'power3.out' }, 1.6812);
+
+        // t=1.9147: stream-head types (scaled × 0.934)
+        tl.to(sel + ' .hch', { opacity: 1, duration: 0.01868, stagger: 0.02615, ease: 'none' }, 1.9147);
+
+        // t=2.8954: all 10 tasks stagger in (scaled × 0.934)
+        tl.fromTo(sel + ' .task',
+          { x: -30, opacity: 0 },
+          { x: 0, opacity: 0.9, duration: 0.20548, stagger: 0.0934, ease: 'power2.out' },
+          2.8954);
+
+        // t=4.0162: the payoff — non-hit fade + hit pop (scaled × 0.934)
+        tl.to(sel + ' .task:not(.hit)', { opacity: 0.20, duration: 0.3736, ease: 'power2.out' }, 4.0162);
+        tl.to(sel + ' .task.hit', {
+          opacity: 1,
+          scale: 1.08,
+          color: '#02B3E9',
+          backgroundColor: 'rgba(2,179,233,0.14)',
+          boxShadow: '0 0 24px rgba(2,179,233,0.45)',
+          duration: 0.4203,
+          ease: 'back.out(2.2)'
+        }, 4.0162);
+        tl.to(sel + ' .task.hit .dot', {
+          textShadow: '0 0 18px rgba(2,179,233,0.95)',
+          duration: 0.2802,
+          yoyo: true, repeat: 1, ease: 'sine.inOut'
+        }, 4.1096);
+
+        // t=4.670: 80% RESULT stamp slam (scaled × 0.934)
+        tl.to(sel + ' .result-stamp', { scale: 1.15, opacity: 1, duration: 0.2802, ease: 'back.out(2.5)' }, 4.670);
+        tl.to(sel + ' .result-stamp', { scale: 1.0, duration: 0.1868, ease: 'power2.out' }, 4.9502);
+
+        // Stamp pulse through hold (scaled × 0.934)
+        tl.to(sel + ' .result-stamp', { scale: 1.04, duration: 0.3736, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 5.1837);
+
+        // Hit tasks gentle pulse through hold (scaled × 0.934)
+        tl.to(sel + ' .task.hit', { scale: 1.12, duration: 0.4203, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 5.2304);
+
+        // Ambient: corner-tag subtle pulse (scaled × 0.934)
+        tl.to(sel + ' .corner-tag', { opacity: 0.6, duration: 1.1208, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 1.401);
+
+        // Scanline drift (ambient, full SLOT)
+        tl.to(sel + ' .scanline', { backgroundPositionY: '+=40px', duration: SLOT, ease: 'none' }, 0);
+
+        // Anchor
+        tl.to({}, { duration: SLOT }, 0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene2-pareto"] = tl;
+      })();
+    </script>
+  </div>
+</template>
