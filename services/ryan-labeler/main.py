@@ -21,9 +21,10 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 import config
-from briefer import run_brief, run_evening_brief, run_brief_preview, run_evening_brief_preview
+from briefer import run_brief, run_evening_brief
 from classifier import classify
-from dashboard import render_dashboard, render_inbox, render_calendar
+from dashboard import render_dashboard, render_projects, render_calendar, warm_all_caches
+from bid_extractor import extract_bid_due
 from labeler import fetch_message, route_and_label
 
 log = logging.getLogger(__name__)
@@ -52,8 +53,10 @@ async def lifespan(app: FastAPI):
     scheduler.add_job(_fire_morning_brief, CronTrigger(hour=6, minute=30, timezone="America/Los_Angeles"))
     # 6:00 PM PT
     scheduler.add_job(_fire_evening_brief, CronTrigger(hour=18, minute=0, timezone="America/Los_Angeles"))
+    # Cache warm-up every 5 min so page loads are instant
+    scheduler.add_job(warm_all_caches, "interval", minutes=5)
     scheduler.start()
-    log.info("scheduler started — morning 06:30 PT, evening 18:00 PT")
+    log.info("scheduler started — morning 06:30 PT, evening 18:00 PT, cache warm every 5 min")
     yield
     scheduler.shutdown()
 
@@ -140,6 +143,18 @@ def label(req: LabelRequest) -> LabelResponse:
 
     routing = route_and_label(req.message_id, result, dry_run=req.dry_run)
 
+    # Bid due date extraction — runs async-ish after labeling, never blocks response
+    if result["category"] == "bid_invite" and routing.get("applied") and not req.dry_run:
+        try:
+            extract_bid_due(
+                msg_id=req.message_id,
+                from_addr=msg["from"],
+                subject=msg["subject"],
+                snippet=msg["snippet"],
+            )
+        except Exception as e:
+            log.warning("bid extraction failed: %s", e)
+
     audit_entry = {
         "ts": start.isoformat(),
         "message_id": req.message_id,
@@ -196,13 +211,13 @@ def dashboard(token: str = "") -> HTMLResponse:
         raise HTTPException(status_code=500, detail=f"dashboard failed: {e}")
 
 
-@app.get("/inbox", response_class=HTMLResponse)
-def inbox(token: str = "") -> HTMLResponse:
+@app.get("/projects", response_class=HTMLResponse)
+def projects(token: str = "") -> HTMLResponse:
     _check_token(token)
     try:
-        return HTMLResponse(content=render_inbox(token=token))
+        return HTMLResponse(content=render_projects(token=token))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"inbox failed: {e}")
+        raise HTTPException(status_code=500, detail=f"projects failed: {e}")
 
 
 @app.get("/calendar", response_class=HTMLResponse)
@@ -213,23 +228,6 @@ def calendar_view(token: str = "") -> HTMLResponse:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"calendar failed: {e}")
 
-
-@app.get("/brief-preview", response_class=HTMLResponse)
-def brief_preview(token: str = "") -> HTMLResponse:
-    _check_token(token)
-    try:
-        return HTMLResponse(content=run_brief_preview(token=token))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"brief preview failed: {e}")
-
-
-@app.get("/evening-brief-preview", response_class=HTMLResponse)
-def evening_brief_preview(token: str = "") -> HTMLResponse:
-    _check_token(token)
-    try:
-        return HTMLResponse(content=run_evening_brief_preview(token=token))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"evening brief preview failed: {e}")
 
 
 if __name__ == "__main__":
