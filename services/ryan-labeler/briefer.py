@@ -102,6 +102,118 @@ def fetch_calendar_today() -> list[dict]:
         return [{"title": f"(calendar unavailable: {e})", "start": "", "location": ""}]
 
 
+def _get_ryan_label_map() -> dict:
+    """Returns {label_id: label_name} for Ryan's Gmail."""
+    service = get_gmail_service()
+    resp = service.users().labels().list(userId="me").execute()
+    return {l["id"]: l["name"] for l in resp["labels"]}
+
+
+_URGENT_PATTERNS = [
+    "change order", "rfi", "punchlist", "walk through", "site visit",
+    "purchase order", "awarded", "accepted", "approved", "urgent", "asap",
+]
+
+
+def fetch_inbox_grouped(hours_back: int = 48) -> dict:
+    """Fetch recent inbox messages grouped into {urgent, projects, bids, team, other}."""
+    service = get_gmail_service()
+    label_map = _get_ryan_label_map()
+
+    since = _pt_now() - timedelta(hours=hours_back)
+    after = since.strftime("%Y/%m/%d")
+
+    resp = service.users().messages().list(
+        userId="me",
+        q=f"after:{after} (label:inbox OR label:important) -category:promotions",
+        maxResults=100,
+    ).execute()
+
+    urgent, bids, team, other = [], [], [], []
+    projects: dict[str, list] = {}
+
+    for mid in [m["id"] for m in resp.get("messages", [])]:
+        m = service.users().messages().get(
+            userId="me", id=mid, format="metadata",
+            metadataHeaders=["From", "Subject", "Date"],
+        ).execute()
+        headers = {h["name"].lower(): h["value"] for h in m.get("payload", {}).get("headers", [])}
+        ts_ms = int(m.get("internalDate", 0))
+        if ts_ms and datetime.fromtimestamp(ts_ms / 1000, tz=timezone.utc) < since.astimezone(timezone.utc):
+            continue
+
+        subj_lower = (headers.get("subject") or "").lower()
+        msg_labels = [label_map.get(lid, "") for lid in m.get("labelIds", [])]
+        msg = {
+            "id": m["id"],
+            "thread_id": m.get("threadId", ""),
+            "from": headers.get("from", ""),
+            "subject": headers.get("subject", ""),
+            "snippet": m.get("snippet", "")[:120],
+            "label_ids": m.get("labelIds", []),
+        }
+
+        is_urgent = any(p in subj_lower for p in _URGENT_PATTERNS)
+        project_label = next(
+            (l for l in msg_labels if "/B. Ongoing/" in l or "/C. Completed/" in l), None
+        )
+        is_bid = any("Bids" in l or "Invites" in l for l in msg_labels)
+        is_team = any("Daily Accomplishments" in l or "2. Team" in l for l in msg_labels)
+
+        if is_urgent:
+            msg["reasons"] = [p for p in _URGENT_PATTERNS if p in subj_lower][:2]
+            urgent.append(msg)
+        elif project_label:
+            projects.setdefault(project_label.split("/")[-1], []).append(msg)
+        elif is_bid:
+            bids.append(msg)
+        elif is_team:
+            team.append(msg)
+        else:
+            other.append(msg)
+
+    return {"urgent": urgent, "projects": projects, "bids": bids, "team": team, "other": other}
+
+
+def fetch_upcoming_calendar(days_ahead: int = 7) -> list[dict]:
+    """Fetch events for today + next N days, with bid-due and assignee detection."""
+    creds = config.ryan_calendar_creds()
+    if creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+    try:
+        svc = build("calendar", "v3", credentials=creds, cache_discovery=False)
+        pt = _pt_now()
+        start = pt.replace(hour=0, minute=0, second=0, microsecond=0)
+        end = start + timedelta(days=days_ahead)
+        res = svc.events().list(
+            calendarId="primary",
+            timeMin=start.isoformat(),
+            timeMax=end.isoformat(),
+            maxResults=60,
+            singleEvents=True,
+            orderBy="startTime",
+        ).execute()
+        events = []
+        for e in res.get("items", []):
+            title = e.get("summary", "(no title)")
+            start_val = e["start"].get("dateTime", e["start"].get("date", ""))
+            desc = (e.get("description") or "").lower()
+            assignee = "Kharene" if "kharene" in desc else ("Kim" if "kim" in desc else None)
+            is_bid_due = any(kw in title.lower() for kw in ["bid", "due", "deadline", "proposal"])
+            event_date = start_val[:10] if start_val else ""
+            events.append({
+                "title": title,
+                "start": start_val,
+                "date": event_date,
+                "location": e.get("location", ""),
+                "assignee": assignee,
+                "is_bid_due": is_bid_due,
+            })
+        return events
+    except Exception as ex:
+        return [{"title": f"(calendar unavailable: {ex})", "start": "", "date": "", "location": "", "assignee": None, "is_bid_due": False}]
+
+
 def find_urgent(messages: list[dict]) -> list[dict]:
     """Flag anything smelling like a change order, priority GC, or new project activation."""
     rules = config.load_routing_rules()
@@ -368,6 +480,8 @@ def _brief_nav_html(active: str, token: str) -> str:
         '</div>'
         '<div class="nav-tabs">'
         + _tab("Dashboard", "/dashboard", "dashboard")
+        + _tab("Inbox", "/inbox", "inbox")
+        + _tab("Calendar", "/calendar", "calendar")
         + _tab("Morning Brief", "/brief-preview", "morning")
         + _tab("Evening Brief", "/evening-brief-preview", "evening")
         + '</div></nav>'
