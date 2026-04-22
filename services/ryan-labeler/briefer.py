@@ -69,6 +69,7 @@ def fetch_overnight_messages(hours_back: int = 14) -> list[dict]:
             "subject": headers.get("subject", ""),
             "snippet": m.get("snippet", "")[:120],
             "label_ids": m.get("labelIds", []),
+            "ts_ms": ts_ms,
         })
     return out
 

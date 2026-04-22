@@ -208,28 +208,28 @@ def _check_token(token: str) -> None:
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
-def dashboard(token: str = "") -> HTMLResponse:
+def dashboard(token: str = "", refresh: bool = False) -> HTMLResponse:
     _check_token(token)
     try:
-        return HTMLResponse(content=render_dashboard(token=token))
+        return HTMLResponse(content=render_dashboard(token=token, refresh=refresh))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"dashboard failed: {e}")
 
 
 @app.get("/inbox", response_class=HTMLResponse)
-def inbox(token: str = "") -> HTMLResponse:
+def inbox(token: str = "", refresh: bool = False) -> HTMLResponse:
     _check_token(token)
     try:
-        return HTMLResponse(content=render_inbox(token=token))
+        return HTMLResponse(content=render_inbox(token=token, refresh=refresh))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"inbox failed: {e}")
 
 
 @app.get("/calendar", response_class=HTMLResponse)
-def calendar_view(token: str = "") -> HTMLResponse:
+def calendar_view(token: str = "", refresh: bool = False) -> HTMLResponse:
     _check_token(token)
     try:
-        return HTMLResponse(content=render_calendar(token=token))
+        return HTMLResponse(content=render_calendar(token=token, refresh=refresh))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"calendar failed: {e}")
 

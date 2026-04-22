@@ -43,11 +43,15 @@ def warm_all_caches() -> None:
             pass
 
 
+def _cache_bust(key: str) -> None:
+    _cache.pop(key, None)
+
+
 def _fetch_today_data() -> dict:
     msgs = fetch_overnight_messages(hours_back=14)
     urgent = find_urgent(msgs)
     team = fetch_team_daily_today(hours_back=14)
-    return {"urgent": urgent, "team": team, "total": len(msgs)}
+    return {"urgent": urgent, "team": team, "all": msgs, "total": len(msgs)}
 
 
 def _fetch_inbox_data() -> dict:
@@ -264,8 +268,8 @@ header{background:rgba(10,18,32,0.92);backdrop-filter:blur(12px);-webkit-backdro
 .cal-month-hdr{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--white);
   text-align:center;padding:14px 0 10px;letter-spacing:0.06em;}
 @media(max-width:480px){
-  .cgrid-cell{min-height:56px;padding:4px 2px;}
-  .cevt,.cevt-bid{display:none;}
+  .cgrid-cell{min-height:64px;padding:4px 2px;}
+  .cevt,.cevt-bid{font-size:7px;padding:1px 2px;}
   .tr-body{display:none;}
   .tr-sender{width:auto;flex:1;}
 }
@@ -309,6 +313,10 @@ header{background:rgba(10,18,32,0.92);backdrop-filter:blur(12px);-webkit-backdro
 .msg-body{font-size:13px;font-weight:300;color:var(--grey);line-height:1.7;}
 .msg-para{margin-bottom:12px;}
 .msg-para:last-child{margin-bottom:0;}
+/* Refresh button */
+.refresh-btn{font-size:20px;color:var(--grey-dim);text-decoration:none;line-height:1;
+  transition:color .15s,transform .2s;}
+.refresh-btn:hover{color:var(--blue);transform:rotate(180deg);}
 """
 
 _JS_STABS = """
@@ -324,6 +332,12 @@ function showStab(name,key){
 function initStabs(key,def){
   var s;try{s=localStorage.getItem(key);}catch(e){}
   showStab(s||def,key);
+}
+function bustRefresh(e){
+  e.preventDefault();
+  var url=window.location.href.replace(/[&?]refresh=1/,'');
+  url+=url.indexOf('?')>=0?'&refresh=1':'?refresh=1';
+  window.location.href=url;
 }
 """
 
@@ -396,7 +410,7 @@ def _page_shell(token: str, active: str, title: str, body_html: str, extra_js: s
       <div class="logo-sub"><span class="pulse"></span>{date_str} &middot; {time_str}</div>
     </div>
   </div>
-  <span class="ts">auto-refresh 5 min</span>
+  <a id="refresh-btn" href="#" onclick="bustRefresh(event)" class="refresh-btn" title="Refresh now">&#8635;</a>
 </header>
 {nav}
 <div class="page-body">{body_html}</div>
@@ -407,15 +421,18 @@ def _page_shell(token: str, active: str, title: str, body_html: str, extra_js: s
 
 # ── Today page ────────────────────────────────────────────────────────────────
 
-def render_dashboard(token: str = "ryan-sc") -> str:
+def render_dashboard(token: str = "ryan-sc", refresh: bool = False) -> str:
+    if refresh:
+        _cache_bust("today")
     data = _cache_get("today")
     if data is None:
         data = _fetch_today_data()
         _cache_set("today", data)
 
-    urgent = data["urgent"]
-    team   = data["team"]
-    tasks  = fetch_tasks()
+    urgent   = data["urgent"]
+    team     = data["team"]
+    all_msgs = data.get("all", [])
+    tasks    = fetch_tasks()
 
     if urgent:
         urgent_html = ""
@@ -443,6 +460,28 @@ def render_dashboard(token: str = "ryan-sc") -> str:
             )
     else:
         team_html = '<div class="empty">No team reports today</div>'
+
+    def _all_row(m: dict) -> str:
+        sender = m["from"].split("<")[0].strip() or m["from"][:50]
+        link = _thread_link(m.get("thread_id", ""), token)
+        unread_cls = " unread" if "UNREAD" in m.get("label_ids", []) else ""
+        t = _fmt_rel_time(m.get("ts_ms", 0))
+        return (
+            f'<a class="thread-row{unread_cls}" href="{link}">'
+            f'<span class="tr-sender">{_esc(sender[:30])}</span>'
+            f'<span class="tr-body">'
+            f'<span class="tr-subj">{_esc(m["subject"][:70]) or "(no subject)"}</span>'
+            f'<span class="tr-sep"> &mdash; </span>'
+            f'<span class="tr-snippet">{_esc(m.get("snippet",""))}</span>'
+            f'</span>'
+            f'<span class="tr-time">{_esc(t)}</span>'
+            f'</a>'
+        )
+
+    if all_msgs:
+        all_html = '<div class="thread-list">' + "".join(_all_row(m) for m in all_msgs) + '</div>'
+    else:
+        all_html = '<div class="empty">No emails in the last 14 hours</div>'
 
     u_cls = "warn" if urgent else ""
     done_count = sum(1 for t in tasks if t["done"])
@@ -472,6 +511,9 @@ def render_dashboard(token: str = "ryan-sc") -> str:
   <button class="stab" data-stab="urgent" onclick="showStab('urgent','TODAY_TAB')">
     Urgent <span class="stab-n {u_cls}">{len(urgent)}</span>
   </button>
+  <button class="stab" data-stab="all" onclick="showStab('all','TODAY_TAB')">
+    All <span class="stab-n">{len(all_msgs)}</span>
+  </button>
   <button class="stab" data-stab="tasks" onclick="showStab('tasks','TODAY_TAB')">
     Tasks <span class="stab-n">{len(tasks) - done_count}</span>
   </button>
@@ -480,6 +522,7 @@ def render_dashboard(token: str = "ryan-sc") -> str:
   </button>
 </div>
 <div data-tab="urgent">{urgent_html}</div>
+<div data-tab="all" style="display:none">{all_html}</div>
 <div data-tab="tasks" style="display:none">{tasks_html}</div>
 <div data-tab="team" style="display:none">{team_html}</div>
 """
@@ -507,7 +550,9 @@ def render_tasks_html(token: str) -> str:
 
 # ── Inbox page ────────────────────────────────────────────────────────────────
 
-def render_inbox(token: str = "ryan-sc") -> str:
+def render_inbox(token: str = "ryan-sc", refresh: bool = False) -> str:
+    if refresh:
+        _cache_bust("inbox")
     data = _cache_get("inbox")
     if data is None:
         data = _fetch_inbox_data()
@@ -672,7 +717,9 @@ def _render_cal_grid(events: list[dict], today_ds: str) -> str:
 
 # ── Calendar page ─────────────────────────────────────────────────────────────
 
-def render_calendar(token: str = "ryan-sc") -> str:
+def render_calendar(token: str = "ryan-sc", refresh: bool = False) -> str:
+    if refresh:
+        _cache_bust("calendar")
     cal_data = _cache_get("calendar")
     if cal_data is None:
         cal_data = _fetch_calendar_data()
