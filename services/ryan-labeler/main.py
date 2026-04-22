@@ -23,7 +23,7 @@ from pydantic import BaseModel
 import config
 from briefer import run_brief, run_evening_brief
 from classifier import classify
-from dashboard import render_dashboard, render_projects, render_calendar, warm_all_caches
+from dashboard import render_dashboard, render_inbox, render_calendar, warm_all_caches
 from bid_extractor import extract_bid_due
 from labeler import fetch_message, route_and_label
 
@@ -211,13 +211,13 @@ def dashboard(token: str = "") -> HTMLResponse:
         raise HTTPException(status_code=500, detail=f"dashboard failed: {e}")
 
 
-@app.get("/projects", response_class=HTMLResponse)
-def projects(token: str = "") -> HTMLResponse:
+@app.get("/inbox", response_class=HTMLResponse)
+def inbox(token: str = "") -> HTMLResponse:
     _check_token(token)
     try:
-        return HTMLResponse(content=render_projects(token=token))
+        return HTMLResponse(content=render_inbox(token=token))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"projects failed: {e}")
+        raise HTTPException(status_code=500, detail=f"inbox failed: {e}")
 
 
 @app.get("/calendar", response_class=HTMLResponse)

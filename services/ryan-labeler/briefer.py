@@ -374,6 +374,61 @@ def fetch_team_daily_today(hours_back: int = 12) -> list[dict]:
     return out
 
 
+def fetch_inbox_sections(hours_back: int = 168) -> dict:
+    """Fetch messages by Gmail label for the Inbox tab.
+
+    Queries directly by label (not inbox status) so archived emails show up.
+    Returns {bids, ongoing: {project_name: [msgs]}, team, vendors}.
+    """
+    service = get_gmail_service()
+    since = _pt_now() - timedelta(hours=hours_back)
+    after = since.strftime("%Y/%m/%d")
+
+    def _fetch_label(label_q: str, max_results: int = 20) -> list[dict]:
+        resp = service.users().messages().list(
+            userId="me",
+            q=f'after:{after} label:"{label_q}"',
+            maxResults=max_results,
+        ).execute()
+        out = []
+        for mid in [m["id"] for m in resp.get("messages", [])]:
+            m = service.users().messages().get(
+                userId="me", id=mid, format="metadata",
+                metadataHeaders=["From", "Subject", "Date"],
+            ).execute()
+            headers = {h["name"].lower(): h["value"] for h in m.get("payload", {}).get("headers", [])}
+            ts_ms = int(m.get("internalDate", 0))
+            if ts_ms and datetime.fromtimestamp(ts_ms / 1000, tz=timezone.utc) < since.astimezone(timezone.utc):
+                continue
+            out.append({
+                "id": m["id"],
+                "thread_id": m.get("threadId", ""),
+                "from": headers.get("from", ""),
+                "subject": headers.get("subject", ""),
+                "snippet": m.get("snippet", "")[:120],
+                "label_ids": m.get("labelIds", []),
+            })
+        return out
+
+    bids = _fetch_label("3. Bids/Invites", 25)
+    team = _fetch_label("2. Team", 20)
+    vendors = _fetch_label("4. Vendors/Pricing", 20)
+
+    label_map = _get_ryan_label_map()
+    ongoing_raw = _fetch_label("1. Projects/B. Ongoing", 40)
+    ongoing: dict[str, list] = {}
+    for msg in ongoing_raw:
+        proj_label = next(
+            (label_map.get(lid, "") for lid in msg["label_ids"]
+             if "B. Ongoing/" in label_map.get(lid, "")),
+            None,
+        )
+        name = proj_label.split("/")[-1] if proj_label else "Other"
+        ongoing.setdefault(name, []).append(msg)
+
+    return {"bids": bids, "ongoing": ongoing, "team": team, "vendors": vendors}
+
+
 def fetch_calendar_tomorrow() -> list[dict]:
     creds = config.ryan_calendar_creds()
     if creds.expired and creds.refresh_token:

@@ -5,9 +5,8 @@ from datetime import datetime, timezone, date as _date
 
 from briefer import (
     fetch_overnight_messages,
-    fetch_calendar_today,
     fetch_team_daily_today,
-    fetch_inbox_grouped,
+    fetch_inbox_sections,
     fetch_upcoming_calendar,
     find_urgent,
     _pt_now,
@@ -33,7 +32,7 @@ def warm_all_caches() -> None:
     """Pre-populate all 3 page data caches. Called by APScheduler every 5 min."""
     for key, fn in [
         ("today", _fetch_today_data),
-        ("projects", _fetch_projects_data),
+        ("inbox", _fetch_inbox_data),
         ("calendar", _fetch_calendar_data),
     ]:
         try:
@@ -45,13 +44,12 @@ def warm_all_caches() -> None:
 def _fetch_today_data() -> dict:
     msgs = fetch_overnight_messages(hours_back=14)
     urgent = find_urgent(msgs)
-    events = fetch_calendar_today()
     team = fetch_team_daily_today(hours_back=14)
-    return {"urgent": urgent, "events": events, "team": team, "total": len(msgs)}
+    return {"urgent": urgent, "team": team, "total": len(msgs)}
 
 
-def _fetch_projects_data() -> dict:
-    return fetch_inbox_grouped(hours_back=168)["projects"]  # 7-day window
+def _fetch_inbox_data() -> dict:
+    return fetch_inbox_sections(hours_back=168)
 
 
 def _fetch_calendar_data() -> dict:
@@ -229,7 +227,7 @@ def _nav_html(token: str, active: str) -> str:
     return (
         '<div class="tabs-bar">'
         + _tab("Today", "/dashboard", "today")
-        + _tab("Projects", "/projects", "projects")
+        + _tab("Inbox", "/inbox", "inbox")
         + _tab("Calendar", "/calendar", "calendar")
         + '</div>'
     )
@@ -280,46 +278,32 @@ def render_dashboard(token: str = "ryan-sc") -> str:
         _cache_set("today", data)
 
     urgent = data["urgent"]
-    events = data["events"]
     team   = data["team"]
 
-    # Urgent tab content
     if urgent:
         urgent_html = ""
         for u in urgent[:15]:
             reasons = "; ".join(u.get("reasons", []))
             link = _gmail_link(u.get("thread_id", ""))
             tag = f'<div class="card-tag">{_esc(reasons)}</div>' if reasons else ""
-            urgent_html += f"""<a class="card card-urgent" href="{link}" target="_blank" rel="noopener">
-  <div class="card-subj">{_esc(u['subject'][:90]) or '(no subject)'}</div>
-  <div class="card-meta">{_esc(u['from'][:65])}</div>{tag}
-</a>"""
+            urgent_html += (
+                f'<a class="card card-urgent" href="{link}" target="_blank" rel="noopener">'
+                f'<div class="card-subj">{_esc(u["subject"][:90]) or "(no subject)"}</div>'
+                f'<div class="card-meta">{_esc(u["from"][:65])}</div>{tag}</a>'
+            )
     else:
         urgent_html = '<div class="empty">Nothing urgent right now</div>'
 
-    # Schedule tab content
-    if events:
-        sched_html = ""
-        for e in events[:15]:
-            t = _fmt_time(e["start"])
-            loc = f'<div class="event-loc">{_esc(e["location"])}</div>' if e["location"] else ""
-            sched_html += f"""<div class="cal-card">
-  <div class="event-time">{t}</div>
-  <div class="event-body"><div class="event-title">{_esc(e['title'])}</div>{loc}</div>
-</div>"""
-    else:
-        sched_html = '<div class="empty">Nothing on the calendar today</div>'
-
-    # Team tab content
     if team:
         team_html = ""
         for t in team[:10]:
             sender = t["from"].split("<")[0].strip() or t["from"][:40]
             link = _gmail_link(t.get("thread_id", ""))
-            team_html += f"""<a class="card card-team" href="{link}" target="_blank" rel="noopener">
-  <div class="team-sender">{_esc(sender[:30])}</div>
-  <div class="card-subj">{_esc(t['subject'][:80])}</div>
-</a>"""
+            team_html += (
+                f'<a class="card card-team" href="{link}" target="_blank" rel="noopener">'
+                f'<div class="team-sender">{_esc(sender[:30])}</div>'
+                f'<div class="card-subj">{_esc(t["subject"][:80])}</div></a>'
+            )
     else:
         team_html = '<div class="empty">No team reports today</div>'
 
@@ -329,52 +313,104 @@ def render_dashboard(token: str = "ryan-sc") -> str:
   <button class="stab" data-stab="urgent" onclick="showStab('urgent','TODAY_TAB')">
     Urgent <span class="stab-n {u_cls}">{len(urgent)}</span>
   </button>
-  <button class="stab" data-stab="schedule" onclick="showStab('schedule','TODAY_TAB')">
-    Schedule <span class="stab-n">{len(events)}</span>
-  </button>
   <button class="stab" data-stab="team" onclick="showStab('team','TODAY_TAB')">
     Team <span class="stab-n">{len(team)}</span>
   </button>
 </div>
 <div data-tab="urgent">{urgent_html}</div>
-<div data-tab="schedule" style="display:none">{sched_html}</div>
 <div data-tab="team" style="display:none">{team_html}</div>
 """
     return _page_shell(token, "today", "Today", body, extra_js="initStabs('TODAY_TAB','urgent');")
 
 
-# ── Projects page ─────────────────────────────────────────────────────────────
+# ── Inbox page ────────────────────────────────────────────────────────────────
 
-def render_projects(token: str = "ryan-sc") -> str:
-    projects = _cache_get("projects")
-    if projects is None:
-        projects = _fetch_projects_data()
-        _cache_set("projects", projects)
+def render_inbox(token: str = "ryan-sc") -> str:
+    data = _cache_get("inbox")
+    if data is None:
+        data = _fetch_inbox_data()
+        _cache_set("inbox", data)
 
-    if projects:
-        body = ""
-        for proj_name, msgs in sorted(projects.items(), key=lambda x: -len(x[1])):
-            msgs_html = ""
-            for m in msgs[:5]:
+    bids    = data["bids"]
+    ongoing = data["ongoing"]
+    team    = data["team"]
+    vendors = data["vendors"]
+
+    def _msg_card(m: dict, css_extra: str = "") -> str:
+        sender = m["from"].split("<")[0].strip() or m["from"][:50]
+        link = _gmail_link(m.get("thread_id", ""))
+        return (
+            f'<a class="card {css_extra}" href="{link}" target="_blank" rel="noopener">'
+            f'<div class="card-subj">{_esc(m["subject"][:90]) or "(no subject)"}</div>'
+            f'<div class="card-meta">{_esc(sender[:60])}</div>'
+            f'</a>'
+        )
+
+    bid_cls = "warn" if bids else ""
+    bids_html = "".join(_msg_card(m, "card-urgent") for m in bids[:20]) or \
+        '<div class="empty">No bid invites in the last 7 days</div>'
+
+    if ongoing:
+        proj_html = ""
+        for name, msgs in sorted(ongoing.items(), key=lambda x: -len(x[1])):
+            msgs_inner = ""
+            for m in msgs[:4]:
                 sender = m["from"].split("<")[0].strip() or m["from"][:40]
                 link = _gmail_link(m.get("thread_id", ""))
-                msgs_html += f"""<a class="proj-link" href="{link}" target="_blank" rel="noopener">
-  <div class="proj-msg">
-    <div class="proj-msg-subj">{_esc(m['subject'][:90]) or '(no subject)'}</div>
-    <div class="proj-msg-from">{_esc(sender[:55])}</div>
-  </div>
-</a>"""
-            body += f"""<div class="proj-card">
-  <div class="proj-hdr">
-    <span class="proj-name">{_esc(proj_name)}</span>
-    <span class="proj-count">{len(msgs)} email{'s' if len(msgs) != 1 else ''}</span>
-  </div>
-  {msgs_html}
-</div>"""
+                msgs_inner += (
+                    f'<a class="proj-link" href="{link}" target="_blank" rel="noopener">'
+                    f'<div class="proj-msg">'
+                    f'<div class="proj-msg-subj">{_esc(m["subject"][:90]) or "(no subject)"}</div>'
+                    f'<div class="proj-msg-from">{_esc(sender[:55])}</div>'
+                    f'</div></a>'
+                )
+            proj_html += (
+                f'<div class="proj-card">'
+                f'<div class="proj-hdr">'
+                f'<span class="proj-name">{_esc(name)}</span>'
+                f'<span class="proj-count">{len(msgs)} email{"s" if len(msgs) != 1 else ""}</span>'
+                f'</div>{msgs_inner}</div>'
+            )
     else:
-        body = '<div class="empty">No project emails in the last 7 days</div>'
+        proj_html = '<div class="empty">No ongoing project emails in the last 7 days</div>'
 
-    return _page_shell(token, "projects", "Projects", body)
+    team_items = []
+    for m in team[:20]:
+        sender = m["from"].split("<")[0].strip() or m["from"][:40]
+        link = _gmail_link(m.get("thread_id", ""))
+        team_items.append(
+            f'<a class="card card-team" href="{link}" target="_blank" rel="noopener">'
+            f'<div class="team-sender">{_esc(sender[:30])}</div>'
+            f'<div class="card-subj">{_esc(m["subject"][:80])}</div>'
+            f'</a>'
+        )
+    team_html = "".join(team_items) or '<div class="empty">No team reports in the last 7 days</div>'
+
+    vendors_html = "".join(_msg_card(m) for m in vendors[:20]) or \
+        '<div class="empty">No vendor emails in the last 7 days</div>'
+
+    n_proj = len(ongoing)
+    body = f"""
+<div class="stabs">
+  <button class="stab" data-stab="bids" onclick="showStab('bids','INBOX_TAB')">
+    Bids <span class="stab-n {bid_cls}">{len(bids)}</span>
+  </button>
+  <button class="stab" data-stab="projects" onclick="showStab('projects','INBOX_TAB')">
+    Projects <span class="stab-n">{n_proj}</span>
+  </button>
+  <button class="stab" data-stab="team" onclick="showStab('team','INBOX_TAB')">
+    Team <span class="stab-n">{len(team)}</span>
+  </button>
+  <button class="stab" data-stab="vendors" onclick="showStab('vendors','INBOX_TAB')">
+    Vendors <span class="stab-n">{len(vendors)}</span>
+  </button>
+</div>
+<div data-tab="bids">{bids_html}</div>
+<div data-tab="projects" style="display:none">{proj_html}</div>
+<div data-tab="team" style="display:none">{team_html}</div>
+<div data-tab="vendors" style="display:none">{vendors_html}</div>
+"""
+    return _page_shell(token, "inbox", "Inbox", body, extra_js="initStabs('INBOX_TAB','bids');")
 
 
 # ── Calendar page ─────────────────────────────────────────────────────────────
