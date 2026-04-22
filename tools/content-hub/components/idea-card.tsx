@@ -1,11 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bookmark, Check, X } from "lucide-react";
+import { Bookmark, Check, ExternalLink, X } from "lucide-react";
 
 export interface IdeaCardData {
   id: number;
@@ -50,7 +51,12 @@ export function IdeaCard({ idea }: { idea: IdeaCardData }) {
     <Card className="flex flex-col gap-3">
       <CardHeader className="pb-0">
         <CardTitle className="text-base font-semibold leading-snug">
-          {idea.title}
+          <Link
+            href={`/scripts/${idea.id}`}
+            className="hover:text-primary transition-colors"
+          >
+            {idea.title}
+          </Link>
         </CardTitle>
         <div className="flex flex-wrap gap-1.5 pt-1">
           {idea.pillar && <Badge variant="secondary">{idea.pillar}</Badge>}
@@ -85,7 +91,7 @@ export function IdeaCard({ idea }: { idea: IdeaCardData }) {
         {preview && (
           <p className="text-sm text-foreground/80 line-clamp-3">{preview}</p>
         )}
-        <div className="flex gap-1.5 pt-1">
+        <div className="flex gap-1.5 pt-1 flex-wrap">
           <Button
             size="sm"
             variant="default"
@@ -110,6 +116,11 @@ export function IdeaCard({ idea }: { idea: IdeaCardData }) {
           >
             <X /> Skip
           </Button>
+          <Link href={`/scripts/${idea.id}`} className="ml-auto">
+            <Button size="sm" variant="ghost" title="Open script">
+              <ExternalLink />
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
