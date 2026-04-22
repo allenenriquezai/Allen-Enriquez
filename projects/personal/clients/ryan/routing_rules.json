@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "client": "ryan",
+  "notes": "Bucket routing derived from Ryan's reply 2026-04-21. skip_inbox=true removes INBOX label (stays accessible via sidebar). Priority buckets kept in inbox. Classifier decides category; this table says what label + whether to skip inbox.",
+
+  "buckets": {
+    "project": {
+      "label_prefix": "1. Projects/",
+      "skip_inbox": false,
+      "description": "Emails tied to a specific active project. Uses project_registry.json for label name. Auto-creates new label if classifier returns project_hint not in registry and confidence >= 0.7."
+    },
+    "team_daily": {
+      "label": "2. Team/Daily Accomplishments PH",
+      "skip_inbox": false,
+      "description": "Kharene + Kim daily accomplishment threads. In-inbox per Q5."
+    },
+    "bid_invite": {
+      "label": "3. Bids/Invites",
+      "skip_inbox": true,
+      "description": "GC bid invites + Joseph's FWD bid invites. Out of main inbox per Q2."
+    },
+    "vendor": {
+      "label": "4. Vendors/Pricing",
+      "skip_inbox": true,
+      "description": "Supplier pricing for bid prep. Out of main inbox. If project_hint present, ALSO apply project label."
+    },
+    "promo": {
+      "label": "5. Archive/Promos",
+      "skip_inbox": true,
+      "description": "Lowes marketing, newsletters, low-signal promos."
+    },
+    "admin_ops": {
+      "label": null,
+      "skip_inbox": false,
+      "description": "Banking, insurance, licensing. Stays in inbox."
+    },
+    "client_inbound": {
+      "label": null,
+      "skip_inbox": false,
+      "description": "Brand-new customer inquiries. Stays in inbox for Ryan visibility."
+    },
+    "personal": {
+      "label": null,
+      "skip_inbox": false,
+      "description": "Non-business. Left alone."
+    },
+    "other": {
+      "label": "5. Archive/Review",
+      "skip_inbox": false,
+      "description": "Classifier confidence low or doesn't fit above. Stays in inbox with faint label so Allen can spot drift."
+    }
+  },
+
+  "priority_overrides": {
+    "description": "Overlays on top of bucket routing. Apply additional IMPORTANT flag to ring Ryan's phone. Per Q9 he wants ring on everything EXCEPT bid_invite + vendor/pricing requests from PH estimators.",
+    "rules": [
+      {
+        "id": "mark_important_everything",
+        "description": "Default-mark as IMPORTANT unless in the 2 quiet buckets.",
+        "applies_unless_category_in": ["bid_invite", "vendor"],
+        "action": "add_label_important"
+      }
+    ]
+  },
+
+  "sender_hints": {
+    "description": "Override classifier when sender is an obvious pattern. Applied AFTER classification as a sanity check.",
+    "rules": [
+      {"match_from_domain": "lowes.com", "force_bucket": "promo"},
+      {"match_subject_contains": ["newsletter", "weekly digest", "unsubscribe"], "hint_bucket": "promo"},
+      {"match_from_email": "noreply@autodesk.com", "hint_bucket": "project", "note": "Autodesk Construction Cloud pings — classifier must extract project name from subject/body."},
+      {"match_from_domain_contains": "daltile.com,bedrosians.com,caesarstone.com,lxhausys.com,cosentino.com,emser.com,arizonatile.com,coronadostone.com", "hint_bucket": "vendor"}
+    ]
+  },
+
+  "gc_priority_senders": {
+    "description": "Ryan flagged these GCs (Q2 dodge = treat all equal). Keep list for future priority tuning. Not used in v1 routing.",
+    "senders": [
+      "RCI Builders", "ITX Construction", "Patterson", "4Willis", "EB Bradley",
+      "HBI", "PAG", "Fullmer", "WE O'Neil", "Kondor", "Oltmans", "Trinity Surfaces"
+    ]
+  }
+}

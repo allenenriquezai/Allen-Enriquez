@@ -1,0 +1,990 @@
+{
+  "schema_version": 1,
+  "client": "ryan",
+  "notes": "Seeded from Ryan's reply 2026-04-21. Aliases cover common variants surfaced by classifier (city/builder tags). label_id populated on first apply. status: active|archived.",
+  "projects": [
+    {
+      "id": "pura-vida-miami",
+      "display_name": "Pura Vida Miami",
+      "aliases": [
+        "Pura Vida Miami",
+        "Pura Vida",
+        "Pura Vida Miami - Long Beach",
+        "Pura Vida Long Beach"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Long Beach, CA"
+    },
+    {
+      "id": "deckers-cafe",
+      "display_name": "Deckers Cafe",
+      "aliases": [
+        "Deckers Cafe",
+        "Deckers Brands",
+        "Decker Brand Cafe",
+        "Decker Cafe",
+        "Deckers"
+      ],
+      "label_id": null,
+      "status": "active",
+      "created_at": "2026-04-22",
+      "city": "Goleta / Ventura, CA"
+    },
+    {
+      "id": "colony-parc-ii",
+      "display_name": "Colony Parc II",
+      "aliases": [
+        "Colony Parc II",
+        "Colony Parc",
+        "CP II",
+        "CP II Project",
+        "CP II - Ventura",
+        "CP II - Phase 2",
+        "CP II - Unit B3"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Ventura, CA"
+    },
+    {
+      "id": "portos-bakery",
+      "display_name": "Porto's Bakery",
+      "aliases": [
+        "Porto's Bakery",
+        "Portos Bakery",
+        "Porto's",
+        "Portos"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Anaheim, CA"
+    },
+    {
+      "id": "whole-foods-ti",
+      "display_name": "Whole Foods TI",
+      "aliases": [
+        "Whole Foods TI",
+        "Whole Foods Tenant Improvement",
+        "Whole Foods LA",
+        "Whole Food Market TI - SSW (Los Angeles, CA)",
+        "Whole Food Market TI - Los Angeles, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "LA, CA"
+    },
+    {
+      "id": "angel-city-fc",
+      "display_name": "Angel City FC TI",
+      "aliases": [
+        "Angel City Football Club TI",
+        "Angel City FC",
+        "Angel City Football Club T.I.",
+        "Angel City FC Santa Monica"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Santa Monica, CA"
+    },
+    {
+      "id": "poly-plaza",
+      "display_name": "Poly Plaza",
+      "aliases": [
+        "Poly Plaza",
+        "Poly Plaza Long Beach",
+        "Project building #1"
+      ],
+      "label_id": null,
+      "status": "active",
+      "created_at": "2026-04-22",
+      "city": "Long Beach, CA"
+    },
+    {
+      "id": "lounge-1888",
+      "display_name": "Lounge 1888",
+      "aliases": [
+        "Lounge 1888",
+        "1888 Lounge"
+      ],
+      "label_id": null,
+      "status": "active",
+      "created_at": "2026-04-22",
+      "city": "Inglewood, CA"
+    },
+    {
+      "id": "500-thousand-oaks-blvd",
+      "display_name": "500 Thousand Oaks Blvd Apartments",
+      "aliases": [
+        "500 Thousand Oaks Blvd",
+        "500 Thousand Oaks",
+        "Thousand Oaks Blvd Apartments"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Thousand Oaks, CA"
+    },
+    {
+      "id": "mga-warehouse",
+      "display_name": "MGA Warehouse",
+      "aliases": [
+        "MGA Warehouse",
+        "MGA Apple Valley"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Apple Valley, CA"
+    },
+    {
+      "id": "omp-gardena",
+      "display_name": "OMP Gardena",
+      "aliases": [
+        "OMP Gardena",
+        "OMP"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Gardena, CA"
+    },
+    {
+      "id": "macarthur-court",
+      "display_name": "MacArthur Court",
+      "aliases": [
+        "MacArthur Court",
+        "Macarthur Court",
+        "MacArthur"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null
+    },
+    {
+      "id": "anaheim-plaza-2a-2b",
+      "display_name": "Anaheim Plaza 2A/2B",
+      "aliases": [
+        "Anaheim Plaza 2A",
+        "Anaheim Plaza 2B",
+        "Anaheim Plaza 2A/2B",
+        "Anaheim Plaza",
+        "Anaheim 2A / 2B"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Long Beach, CA"
+    },
+    {
+      "id": "club-studio",
+      "display_name": "Club Studio",
+      "aliases": [
+        "Club Studio",
+        "Club Studio Long Beach"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Long Beach, CA"
+    },
+    {
+      "id": "davids-place",
+      "display_name": "David's Place",
+      "aliases": [
+        "David's Place",
+        "Davids Place"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Norwalk, CA"
+    },
+    {
+      "id": "bridge-kurv",
+      "display_name": "Bridge/Kurv",
+      "aliases": [
+        "Bridge/Kurv",
+        "Bridge Kurv",
+        "Kurv",
+        "9010 Aviation Blvd",
+        "Bridge/Kurv 9010 Aviation"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Inglewood, CA"
+    },
+    {
+      "id": "transwestern-berry-way",
+      "display_name": "Transwestern Berry Way",
+      "aliases": [
+        "Transwestern Berry Way",
+        "Transwestern Brea",
+        "Berry Way"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Brea, CA"
+    },
+    {
+      "id": "trojan-self-storage",
+      "display_name": "Trojan Self Storage",
+      "aliases": [
+        "Trojan Self Storage",
+        "Trojan Storage"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Inglewood, CA"
+    },
+    {
+      "id": "logistic-center-valencia",
+      "display_name": "Logistic Center Valencia",
+      "aliases": [
+        "Logistic Center Valencia",
+        "Valencia Logistic Center"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Valencia, CA"
+    },
+    {
+      "id": "hesperia-truck-warehouse",
+      "display_name": "Hesperia Truck Warehouse",
+      "aliases": [
+        "Hesperia Truck Warehouse",
+        "Hesperia Warehouse",
+        "Hesperia Truck"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "Hesperia, CA"
+    },
+    {
+      "id": "apex-space-ti",
+      "display_name": "Apex Space TI",
+      "aliases": [
+        "Apex Space TI",
+        "Apex Space",
+        "Apex TI"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": "LA, CA"
+    },
+    {
+      "id": "the-bar-method-geleonoaks-plaza-burbank-ca",
+      "display_name": "The Bar Method, Geleonoaks Plaza - Burbank, CA",
+      "aliases": [
+        "The Bar Method, Geleonoaks Plaza - Burbank, CA",
+        "The Bar Method - Burbank, CA",
+        "The Bar Method - Glenoaks Plaza"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "imi-critical-engineering-lake-forest-ca",
+      "display_name": "IMI Critical Engineering - Lake Forest, CA",
+      "aliases": [
+        "IMI Critical Engineering - Lake Forest, CA",
+        "IMI Lake Forest",
+        "Breakroom Backsplash - Lake Forest, CA",
+        "Backsplash Location at Break Room 132 - Lake Forest, CA",
+        "Backsplash Tile @ Break Room 132 - Lake Forest, CA",
+        "Backsplash Tile @ Break Room 132 - IMI Critical Engineering"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "the-view-church-menifee-ca",
+      "display_name": "The View Church - Menifee, CA",
+      "aliases": [
+        "The View Church - Menifee, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "anaheim-82-anaheim-ca",
+      "display_name": "Anaheim 82 - Anaheim, CA",
+      "aliases": [
+        "Anaheim 82 - Anaheim, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "cafe-refresh-goleta-ca",
+      "display_name": "Cafe Refresh - Goleta, CA",
+      "aliases": [
+        "Cafe Refresh - Goleta, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "sce-santa-clara-substation-ventura-ca",
+      "display_name": "SCE Santa Clara Substation - Ventura, CA",
+      "aliases": [
+        "SCE Santa Clara Substation - Ventura, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "osteria-mozza-bar-countertop-replacement-los-angeles-ca",
+      "display_name": "Osteria Mozza (Bar Countertop Replacement) - Los Angeles, CA",
+      "aliases": [
+        "Osteria Mozza (Bar Countertop Replacement) - Los Angeles, CA",
+        "Osteria Mozza LA - Bar Countertop",
+        "Osteria Mozza - Bar top replacement",
+        "Osteria Mozza (Bar Countertop) - Los Angeles, CA",
+        "Osteria LA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "chick-fil-a-commerce-ca",
+      "display_name": "Chick Fil A - Commerce, CA",
+      "aliases": [
+        "Chick Fil A - Commerce, CA",
+        "Chik Fil A - Commerce, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "8901-melrose-t-i-west-hollywood-ca",
+      "display_name": "8901 Melrose T.I. - West Hollywood, CA",
+      "aliases": [
+        "8901 Melrose T.I. - West Hollywood, CA",
+        "8901 Melrose - West Hollywood, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "sancon-office-t-i-huntington-beach-ca",
+      "display_name": "Sancon Office T.I. - Huntington Beach, CA",
+      "aliases": [
+        "Sancon Office T.I. - Huntington Beach, CA",
+        "Sancon Office T.I. - Huntington Beach Beach, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "2811-san-marino-street-los-angeles-ca",
+      "display_name": "2811 San Marino Street - Los Angeles, CA",
+      "aliases": [
+        "2811 San Marino Street - Los Angeles, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "oakwell-apartments",
+      "display_name": "Oakwell Apartments",
+      "aliases": [
+        "Oakwell Apartments"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "the-melt-ucla-ti-westwood-village-los-angeles-ca",
+      "display_name": "The Melt UCLA TI (Westwood Village) - Los Angeles, CA",
+      "aliases": [
+        "The Melt UCLA TI (Westwood Village) - Los Angeles, CA",
+        "The Melt WestWood Village",
+        "The Melt UCLA TI - Los Angeles, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "2607-countertops",
+      "display_name": "2607 Countertops",
+      "aliases": [
+        "2607 Countertops",
+        "2607"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "pasadena-towers-refresh-pasadena-ca",
+      "display_name": "Pasadena Towers Refresh - Pasadena, CA",
+      "aliases": [
+        "Pasadena Towers Refresh - Pasadena, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "stuart-eureka-redlands-redlands-ca",
+      "display_name": "Stuart + Eureka Redlands - Redlands, CA",
+      "aliases": [
+        "Stuart + Eureka Redlands - Redlands, CA",
+        "Stuart + Eureka Apartments - Redlands, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "electric-pickle-rancho-cucamonga",
+      "display_name": "Electric Pickle - Rancho Cucamonga",
+      "aliases": [
+        "Electric Pickle - Rancho Cucamonga"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "assurance-learning-sunland-boulevard-los-angeles",
+      "display_name": "Assurance Learning Sunland Boulevard - Los Angeles",
+      "aliases": [
+        "Assurance Learning Sunland Boulevard - Los Angeles"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "suite-200-t-i-musik-peeler-westlake-village-ca",
+      "display_name": "Suite 200 T.I (Musik Peeler) - Westlake Village, CA",
+      "aliases": [
+        "Suite 200 T.I (Musik Peeler) - Westlake Village, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "suite-210-ti",
+      "display_name": "Suite 210 TI",
+      "aliases": [
+        "Suite 210 TI",
+        "Suite 210 T.I"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "beverly-hills-cheese-store-expansion-project-beverly-hills-ca",
+      "display_name": "Beverly Hills Cheese Store Expansion Project - Beverly Hills, CA",
+      "aliases": [
+        "Beverly Hills Cheese Store Expansion Project - Beverly Hills, CA",
+        "Beverly Hills Cheese Store - Beverly Hills, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "kidstrong-torrance-torrance-ca",
+      "display_name": "KidStrong Torrance - Torrance, CA",
+      "aliases": [
+        "KidStrong Torrance - Torrance, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "slover-corporate-center-bldg-1-2-fontana-ca",
+      "display_name": "Slover Corporate Center (Bldg 1&2) - Fontana, CA",
+      "aliases": [
+        "Slover Corporate Center (Bldg 1&2) - Fontana, CA",
+        "Slover Corporate Center - Fontana, CA",
+        "Slover Corporate Center Building 1 & 2 - Fontana, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "amazon-djt4-nl-brea-ca",
+      "display_name": "Amazon DJT4-NL - Brea, CA",
+      "aliases": [
+        "Amazon DJT4-NL - Brea, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "omp-223rd-st-carson",
+      "display_name": "OMP - 223rd St Carson",
+      "aliases": [
+        "OMP - 223rd St Carson"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "kramerwood-apartments-los-angeles-ca",
+      "display_name": "Kramerwood Apartments - Los Angeles, CA",
+      "aliases": [
+        "Kramerwood Apartments - Los Angeles, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "my-friend-s-place-los-angeles-ca",
+      "display_name": "My Friend's Place - Los Angeles, CA",
+      "aliases": [
+        "My Friend's Place - Los Angeles, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "omp-233rd-st",
+      "display_name": "OMP 233rd St",
+      "aliases": [
+        "OMP 233rd St"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "cajon-warehouse-ti",
+      "display_name": "Cajon Warehouse TI",
+      "aliases": [
+        "Cajon Warehouse TI"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "wcss-ontario-mills",
+      "display_name": "WCSS Ontario Mills",
+      "aliases": [
+        "WCSS Ontario Mills"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "brandy-melville-chill",
+      "display_name": "Brandy Melville & Chill",
+      "aliases": [
+        "Brandy Melville & Chill"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "genesco-journey-s-projects",
+      "display_name": "Genesco Journey's Projects",
+      "aliases": [
+        "Genesco Journey's Projects"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "cbu-film-broadcast-studio-riverside-ca",
+      "display_name": "CBU Film & Broadcast Studio - Riverside, CA",
+      "aliases": [
+        "CBU Film & Broadcast Studio - Riverside, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "pavilions-1911-newport-beach-ca",
+      "display_name": "Pavilions #1911 - Newport Beach, CA",
+      "aliases": [
+        "Pavilions #1911 - Newport Beach, CA",
+        "Pavillions #1911 - Newport Beach, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "walnut-lake-assisted-living-memory-care-facility",
+      "display_name": "Walnut & Lake - Assisted Living & Memory Care Facility",
+      "aliases": [
+        "Walnut & Lake - Assisted Living & Memory Care Facility"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "ontario-mills-self-storage-ontario-ca",
+      "display_name": "Ontario Mills Self Storage - Ontario, CA",
+      "aliases": [
+        "Ontario Mills Self Storage - Ontario, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "loop-fuel-station-perris-ca",
+      "display_name": "Loop Fuel Station - Perris, CA",
+      "aliases": [
+        "Loop Fuel Station - Perris, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "octapharma-plasma-hawthorne-ca",
+      "display_name": "Octapharma Plasma - Hawthorne, CA",
+      "aliases": [
+        "Octapharma Plasma - Hawthorne, CA",
+        "Octapharma Plasma - Hawthotne, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "first-industrial-columbia-torrance-ca",
+      "display_name": "First Industrial Columbia - Torrance, CA",
+      "aliases": [
+        "First Industrial Columbia - Torrance, CA",
+        "First Industrial 2610 Columbia - Torrance, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "234-e-colorado-blvd-suite-800-pasadena-ca",
+      "display_name": "234 E. Colorado Blvd. - Suite 800 - Pasadena, CA",
+      "aliases": [
+        "234 E. Colorado Blvd. - Suite 800 - Pasadena, CA",
+        "234 E. Colorado Blvd - Suite 800 (Trust Law Partners TI)"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "madhavi-t-i-thousand-oaks-ca",
+      "display_name": "Madhavi T.I - Thousand Oaks, CA",
+      "aliases": [
+        "Madhavi T.I - Thousand Oaks, CA",
+        "MAHDAVI TI"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "myo-detox-physical-therapy-service-manhattan-beach-ca",
+      "display_name": "Myo Detox Physical Therapy Service - Manhattan Beach, CA",
+      "aliases": [
+        "Myo Detox Physical Therapy Service - Manhattan Beach, CA",
+        "Myo Detox Physical Therapy Service Clinic",
+        "Myo Detox Physical Therapy Service Cilinic - Manhattan Beach, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "brookfield-locust-gateway-logistics-center-rialto-ca",
+      "display_name": "Brookfield Locust Gateway Logistics Center - Rialto, CA",
+      "aliases": [
+        "Brookfield Locust Gateway Logistics Center - Rialto, CA",
+        "Brookfield Locust Gateway Logistics Center, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "altadena-self-storage",
+      "display_name": "Altadena Self Storage",
+      "aliases": [
+        "Altadena Self Storage"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "manhattan-village-residential",
+      "display_name": "Manhattan Village Residential",
+      "aliases": [
+        "Manhattan Village Residential"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "915-goodman",
+      "display_name": "915 Goodman",
+      "aliases": [
+        "915 Goodman"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "rember",
+      "display_name": "Rember",
+      "aliases": [
+        "Rember"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "reda-690-knox",
+      "display_name": "REDA 690 Knox",
+      "aliases": [
+        "REDA 690 Knox"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "samohi-pbl-language-building-modernization-santa-monica-ca",
+      "display_name": "Samohi PBL Language Building Modernization - Santa Monica, CA",
+      "aliases": [
+        "Samohi PBL Language Building Modernization - Santa Monica, CA"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "pioneer-blvd",
+      "display_name": "Pioneer Blvd",
+      "aliases": [
+        "Pioneer Blvd"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "charles-schwab",
+      "display_name": "Charles Schwab",
+      "aliases": [
+        "Charles Schwab"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "long-beach-plaza",
+      "display_name": "Long Beach plaza",
+      "aliases": [
+        "Long Beach plaza"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "brookfield-locust-gateway-occo",
+      "display_name": "Brookfield Locust Gateway - OCCO",
+      "aliases": [
+        "Brookfield Locust Gateway - OCCO"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "intuit-dome",
+      "display_name": "Intuit Dome",
+      "aliases": [
+        "Intuit Dome"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "ventura-ca-backsplash-repair",
+      "display_name": "Ventura, CA - Backsplash Repair",
+      "aliases": [
+        "Ventura, CA - Backsplash Repair"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    },
+    {
+      "id": "plaza-repair-work-9-locations",
+      "display_name": "Plaza repair work (9 locations)",
+      "aliases": [
+        "Plaza repair work (9 locations)"
+      ],
+      "label_id": null,
+      "status": "unknown",
+      "created_at": "2026-04-22",
+      "city": null,
+      "auto_created": true
+    }
+  ]
+}

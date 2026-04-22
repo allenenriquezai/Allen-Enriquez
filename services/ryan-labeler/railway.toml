@@ -1,0 +1,23 @@
+# Railway config for ryan-labeler.
+# Dashboard: https://railway.app → project → service → this file is auto-read.
+#
+# Deploy:
+#   1. Install CLI once:  npm i -g @railway/cli
+#   2. Login:             railway login
+#   3. From this dir:     railway init  (pick "Empty Project", name "enriquez-os")
+#   4. Link service:      railway link
+#   5. Set env vars:      see deploy-railway.sh (prints values to paste)
+#   6. Deploy:            railway up
+#
+# After first deploy, set a custom domain in dashboard → ryan-labeler.up.railway.app
+# or attach enriquez.ai subdomain later.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+healthcheckPath = "/health"
+healthcheckTimeout = 30
