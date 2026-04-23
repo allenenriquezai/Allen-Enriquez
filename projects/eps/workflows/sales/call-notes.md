@@ -24,7 +24,7 @@ curl -s "https://${PIPEDRIVE_COMPANY_DOMAIN}/api/v1/deals/search?term=CLIENT_NAM
 ### Step 2 — Fetch transcript (MANDATORY)
 
 ```bash
-python3 tools/fetch_call_transcript.py --deal-id DEAL_ID --call-type CALL_TYPE
+python3 tools/eps/fetch_call_transcript.py --deal-id DEAL_ID --call-type CALL_TYPE
 ```
 
 Handle the status:

@@ -14,8 +14,8 @@ Read and write Pipedrive data for EPS deals. Fetch deal info, update fields, mov
 
 ### Key Paths
 - Env: `projects/eps/.env`
-- Update tool: `tools/update_pipedrive_deal.py`
-- Create tool: `tools/pipedrive_create.py` (orgs, persons, deals, leads)
+- Update tool: `tools/eps/update_pipedrive_deal.py`
+- Create tool: `tools/eps/pipedrive_create.py` (orgs, persons, deals, leads)
 
 ---
 
@@ -188,15 +188,15 @@ curl -s -X POST "https://${PIPEDRIVE_COMPANY_DOMAIN}/api/v1/notes?api_token=${PI
 
 ### Shortcut: update doc or folder URL
 ```bash
-python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field doc|folder --url "URL"
+python3 tools/eps/update_pipedrive_deal.py --deal-id "DEAL_ID" --field doc|folder --url "URL"
 ```
 
 ### Create organization, person, deal, or lead
 ```bash
-python3 tools/pipedrive_create.py --action create-org --name "Builder Name" --address "Brisbane QLD"
-python3 tools/pipedrive_create.py --action create-person --name "Contact" --org-id ORG_ID --phone "PHONE"
-python3 tools/pipedrive_create.py --action create-deal --title "Project - Painting" --org-id ORG_ID --pipeline-id 4 --stage-id STAGE_ID
-python3 tools/pipedrive_create.py --action create-lead --title "Builder - Cold Call" --org-id ORG_ID
+python3 tools/eps/pipedrive_create.py --action create-org --name "Builder Name" --address "Brisbane QLD"
+python3 tools/eps/pipedrive_create.py --action create-person --name "Contact" --org-id ORG_ID --phone "PHONE"
+python3 tools/eps/pipedrive_create.py --action create-deal --title "Project - Painting" --org-id ORG_ID --pipeline-id 4 --stage-id STAGE_ID
+python3 tools/eps/pipedrive_create.py --action create-lead --title "Builder - Cold Call" --org-id ORG_ID
 ```
 
 Organization creation auto-deduplicates by normalized name.

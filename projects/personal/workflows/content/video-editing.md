@@ -6,7 +6,7 @@ Edit raw footage into Hormozi-style videos. Reels (30-60s, 9:16) and YouTube (7-
 
 | Pipeline | When | Tool |
 |---|---|---|
-| **Python pipeline** (default) | Plain talking-head reels. Cuts, captions, zooms, music. Fast. | `tools/edit_video.py` (FFmpeg + Whisper) |
+| **Python pipeline** (default) | Plain talking-head reels. Cuts, captions, zooms, music. Fast. | `tools/personal/edit_video.py` (FFmpeg + Whisper) |
 | **Hyperframes** (motion-graphic overlays) | Brand intros/outros, scene transitions, animated stats, lower-thirds, karaoke captions, "Nate Herk" style | `npx hyperframes` (HTML + GSAP + Puppeteer) |
 
 Rule of thumb: if it's a straight talking-head → Python. If it needs branded motion graphics on top → Hyperframes (or Hyperframes does the whole thing).
@@ -18,8 +18,8 @@ Primary: Alex Hormozi -- raw, educational, value-first. Borrow punch-in zooms an
 ## Setup
 
 1. Read style guide: `projects/personal/reference/hormozi-style-guide.md`
-2. Check deps: `python3 tools/edit_video.py check-deps`
-3. If SFX missing: `python3 tools/edit_video.py generate-sfx`
+2. Check deps: `python3 tools/personal/edit_video.py check-deps`
+3. If SFX missing: `python3 tools/personal/edit_video.py generate-sfx`
 
 ## Workflow
 
@@ -28,7 +28,7 @@ Present options at each step. Never auto-decide without showing Allen.
 ### Step 1 -- Transcribe
 
 ```bash
-python3 tools/edit_video.py edit --input "<path>" --type <reel|youtube> --captions off --no-zoom 2>&1 | head -30
+python3 tools/personal/edit_video.py edit --input "<path>" --type <reel|youtube> --captions off --no-zoom 2>&1 | head -30
 ```
 Or transcribe only:
 ```bash
@@ -59,7 +59,7 @@ For approved concept moments:
 ### Step 4 -- Execute Edit
 
 ```bash
-python3 tools/edit_video.py edit \
+python3 tools/personal/edit_video.py edit \
   --input "<path>" \
   --type <reel|youtube> \
   --style hormozi \

@@ -113,7 +113,7 @@ print('Updated' if r.ok else f'ERROR: {r.status_code} {r.text}')
 ### Step 4 — Check calendars and suggest slots
 
 ```bash
-python3 tools/schedule_sm8_visit.py --deal-id ${DEAL_ID} --date ${DATE} --staff ${STAFF} --check-only
+python3 tools/eps/schedule_sm8_visit.py --deal-id ${DEAL_ID} --date ${DATE} --staff ${STAFF} --check-only
 ```
 
 Present to Allen:
@@ -126,7 +126,7 @@ Present to Allen:
 ### Step 5 — Book the visit
 
 ```bash
-python3 tools/schedule_sm8_visit.py --deal-id ${DEAL_ID} --date ${DATE} --time ${HH_MM} --staff ${STAFF}
+python3 tools/eps/schedule_sm8_visit.py --deal-id ${DEAL_ID} --date ${DATE} --time ${HH_MM} --staff ${STAFF}
 ```
 
 Report: job ID, staff, date, time, activity UUID.

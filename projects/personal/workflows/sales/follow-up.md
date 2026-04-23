@@ -53,7 +53,7 @@ Callbacks tabs: Touch 1 only. No reply after 48h = move to Late Follow Up.
 
 ### Step 1 -- Load CRM
 ```bash
-python3 tools/personal_crm.py review
+python3 tools/personal/personal_crm.py review
 ```
 Fallback: read `.tmp/personal_crm.json`.
 
@@ -84,14 +84,14 @@ Skip and log if any check fails.
 **Single/automation mode:** Send directly.
 
 ```bash
-python3 tools/send_personal_email.py --to "EMAIL" --subject "SUBJECT" --body "BODY"
-python3 tools/send_personal_email.py --to "EMAIL" --subject "SUBJECT" --body "BODY" --dry-run  # preview
+python3 tools/personal/send_personal_email.py --to "EMAIL" --subject "SUBJECT" --body "BODY"
+python3 tools/personal/send_personal_email.py --to "EMAIL" --subject "SUBJECT" --body "BODY" --dry-run  # preview
 ```
 
 ### Step 6 -- Update CRM
 After each send:
 ```bash
-python3 tools/personal_crm.py update-note --tab "TAB_NAME" --row ROW_NUM --append "[FU1 sent YYYY-MM-DD]"
+python3 tools/personal/personal_crm.py update-note --tab "TAB_NAME" --row ROW_NUM --append "[FU1 sent YYYY-MM-DD]"
 ```
 
 ### Step 7 -- Move Completed Leads

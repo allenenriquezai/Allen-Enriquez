@@ -8,11 +8,11 @@ Automated outbound pipeline for PH market. Discovers prospects, enriches them, g
 
 | File | Purpose |
 |---|---|
-| `tools/outreach.py` | Main CLI |
-| `tools/outreach_sources.py` | Discovery (Places, BusinessList, JobStreet, Kalibrr, FB inbox) |
-| `tools/outreach_enrich.py` | Website scrape, email finder, FB Graph, Haiku hook |
-| `tools/outreach_messages.py` | 12 templates + Haiku message generator |
-| `tools/outreach_lifecycle.py` | log-sent, follow-ups, reply drafting |
+| `tools/personal/outreach.py` | Main CLI |
+| `tools/personal/outreach_sources.py` | Discovery (Places, BusinessList, JobStreet, Kalibrr, FB inbox) |
+| `tools/personal/outreach_enrich.py` | Website scrape, email finder, FB Graph, Haiku hook |
+| `tools/personal/outreach_messages.py` | 12 templates + Haiku message generator |
+| `tools/personal/outreach_lifecycle.py` | log-sent, follow-ups, reply drafting |
 | `projects/personal/outreach/templates/*.md` | 12 message templates |
 | `projects/personal/reference/outreach_config.yaml` | Limits, segments, pain points |
 | `projects/personal/.tmp/fb_prospects_inbox.txt` | Where you drop FB URLs |
@@ -77,7 +77,7 @@ launchctl load /Users/allenenriquez/Desktop/Allen\ Enriquez/automation/com.enriq
 2. Open `projects/personal/.tmp/outreach_queue_YYYY-MM-DD.md`
 3. Send emails from Gmail (copy subject + body)
 4. Open each FB URL, paste DM, send
-5. Run: `python3 tools/outreach.py log-sent --ids 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15`
+5. Run: `python3 tools/personal/outreach.py log-sent --ids 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15`
 
 ## Weekly workflow (yours — 20 min)
 
@@ -89,28 +89,28 @@ launchctl load /Users/allenenriquez/Desktop/Allen\ Enriquez/automation/com.enriq
 
 ```bash
 # Add prospects from all sources
-python3 tools/outreach.py discover --segment recruitment --limit 50
+python3 tools/personal/outreach.py discover --segment recruitment --limit 50
 
 # Dry-run first
-python3 tools/outreach.py discover --segment recruitment --dry-run
+python3 tools/personal/outreach.py discover --segment recruitment --dry-run
 
 # Enrich new rows (fills email, FB URL, Haiku personal hook)
-python3 tools/outreach.py enrich --limit 10
+python3 tools/personal/outreach.py enrich --limit 10
 
 # Generate today's queue (5 emails + 10 DMs)
-python3 tools/outreach.py queue
+python3 tools/personal/outreach.py queue
 
 # Mark sent after you finish
-python3 tools/outreach.py log-sent --ids 1,2,3
+python3 tools/personal/outreach.py log-sent --ids 1,2,3
 
 # See the funnel
-python3 tools/outreach.py stats
+python3 tools/personal/outreach.py stats
 
 # Check for follow-ups manually
-python3 tools/outreach.py followups
+python3 tools/personal/outreach.py followups
 
 # Poll Gmail replies + draft responses
-python3 tools/outreach.py replies
+python3 tools/personal/outreach.py replies
 # Drafts land in projects/personal/.tmp/reply_drafts.md
 ```
 
@@ -135,16 +135,16 @@ python3 tools/outreach.py replies
 #    projects/personal/.tmp/fb_prospects_inbox.txt
 
 # 2. Ingest them
-python3 tools/outreach.py discover --source fb_inbox
+python3 tools/personal/outreach.py discover --source fb_inbox
 
 # 3. Enrich
-python3 tools/outreach.py enrich --limit 5
+python3 tools/personal/outreach.py enrich --limit 5
 
 # 4. Check sheet — personal hooks should be filled
-python3 tools/outreach.py stats
+python3 tools/personal/outreach.py stats
 
 # 5. Generate first queue
-python3 tools/outreach.py queue
+python3 tools/personal/outreach.py queue
 
 # 6. Review projects/personal/.tmp/outreach_queue_YYYY-MM-DD.md
 #    Send a couple. Run log-sent.

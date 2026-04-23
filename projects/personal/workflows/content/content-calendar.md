@@ -6,14 +6,14 @@ Plan content, track production, surface daily assignments. This is the command c
 
 | Tool | Command |
 |---|---|
-| Init campaign | `python3 tools/content_tracker.py init --days 30 --start YYYY-MM-DD` |
-| Today's assignments | `python3 tools/content_tracker.py today` |
-| Campaign status | `python3 tools/content_tracker.py status` |
-| Full report | `python3 tools/content_tracker.py report` |
-| Mark progress | `python3 tools/content_tracker.py mark --day <N> --type <reel\|youtube> --slot <1\|2> --status <filmed\|posted>` |
-| Set topic | `python3 tools/content_tracker.py topic --day <N> --type <youtube\|reel> --text "Topic"` |
-| Generate scripts | `python3 tools/generate_content.py --batch-day <N>` |
-| Generate carousel | `python3 tools/generate_carousel.py --topic "Hook text" --slides 5 --style dark --handle "@allenenriquez"` |
+| Init campaign | `python3 tools/personal/content_tracker.py init --days 30 --start YYYY-MM-DD` |
+| Today's assignments | `python3 tools/personal/content_tracker.py today` |
+| Campaign status | `python3 tools/personal/content_tracker.py status` |
+| Full report | `python3 tools/personal/content_tracker.py report` |
+| Mark progress | `python3 tools/personal/content_tracker.py mark --day <N> --type <reel\|youtube> --slot <1\|2> --status <filmed\|posted>` |
+| Set topic | `python3 tools/personal/content_tracker.py topic --day <N> --type <youtube\|reel> --text "Topic"` |
+| Generate scripts | `python3 tools/personal/generate_content.py --batch-day <N>` |
+| Generate carousel | `python3 tools/personal/generate_carousel.py --topic "Hook text" --slides 5 --style dark --handle "@allenenriquez"` |
 
 ## Campaign Init
 
@@ -43,8 +43,8 @@ Run `content_tracker.py status`. Show:
 
 When Allen says something is filmed or posted:
 ```bash
-python3 tools/content_tracker.py mark --day <N> --type reel --slot 1 --status filmed
-python3 tools/content_tracker.py mark --day <N> --type youtube --status posted
+python3 tools/personal/content_tracker.py mark --day <N> --type reel --slot 1 --status filmed
+python3 tools/personal/content_tracker.py mark --day <N> --type youtube --status posted
 ```
 
 ## Content Pillars (Rotate Daily)
@@ -80,7 +80,7 @@ Per video cross-post: TikTok (original) > FB Reels + IG Reels (same time) > YT S
 
 Every reel becomes a carousel. Same idea, reading format.
 ```bash
-python3 tools/generate_carousel.py --topic "Hook text" --slides 5-7 --style dark --handle "@allenenriquez"
+python3 tools/personal/generate_carousel.py --topic "Hook text" --slides 5-7 --style dark --handle "@allenenriquez"
 ```
 - Slide 1: Hook (bold, stop the scroll)
 - Slides 2-5: One point per slide. Max 15 words.
@@ -93,7 +93,7 @@ python3 tools/generate_carousel.py --topic "Hook text" --slides 5-7 --style dark
 - Best days: Tue, Thu, Sat (8-10 AM PH)
 - Post types: quick wins, result shares, questions, education
 - End every post with a question
-- Generate: `python3 tools/generate_content.py --type fb-group-post --topic "<topic>"`
+- Generate: `python3 tools/personal/generate_content.py --type fb-group-post --topic "<topic>"`
 
 ## Research Before Planning
 

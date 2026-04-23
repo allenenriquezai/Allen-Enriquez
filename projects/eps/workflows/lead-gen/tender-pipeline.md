@@ -8,13 +8,13 @@ Full E1 tender pipeline: scrape > filter > download docs > analyze > Gate 1 > CR
 
 | Tool | Purpose |
 |---|---|
-| `tools/estimateone_scraper.py` | Scrape E1 leads, open tenders, builders, docs |
-| `tools/tender_batch.py` | Daily automation — full pipeline in one command |
-| `tools/analyze_tender_docs.py` | Analyze specs > generate brief |
-| `tools/e1_to_sheet.py` | Push scrape data to Google Sheet |
-| `tools/pipedrive_create.py` | Create org, person, deal, lead |
-| `tools/calculate_quote.py` | Generate line items + pricing |
-| `tools/update_pipedrive_deal.py` | Link folder/doc to deal |
+| `tools/eps/estimateone_scraper.py` | Scrape E1 leads, open tenders, builders, docs |
+| `tools/eps/tender_batch.py` | Daily automation — full pipeline in one command |
+| `tools/eps/analyze_tender_docs.py` | Analyze specs > generate brief |
+| `tools/eps/e1_to_sheet.py` | Push scrape data to Google Sheet |
+| `tools/eps/pipedrive_create.py` | Create org, person, deal, lead |
+| `tools/eps/calculate_quote.py` | Generate line items + pricing |
+| `tools/eps/update_pipedrive_deal.py` | Link folder/doc to deal |
 
 ---
 
@@ -22,16 +22,16 @@ Full E1 tender pipeline: scrape > filter > download docs > analyze > Gate 1 > CR
 
 ```bash
 # Daily scrape — leads + open tenders filtered by trades
-python3 tools/estimateone_scraper.py --leads --open --filter-trades "Painting,Building Cleaning"
+python3 tools/eps/estimateone_scraper.py --leads --open --filter-trades "Painting,Building Cleaning"
 
 # Full scrape with doc download
-python3 tools/estimateone_scraper.py --leads --open --download-docs --auto-express-interest --filter-trades "Painting,Building Cleaning"
+python3 tools/eps/estimateone_scraper.py --leads --open --download-docs --auto-express-interest --filter-trades "Painting,Building Cleaning"
 
 # Full daily batch (scrape > analyze > CRM > sheet)
-python3 tools/tender_batch.py
+python3 tools/eps/tender_batch.py
 
 # Dry run
-python3 tools/tender_batch.py --dry-run
+python3 tools/eps/tender_batch.py --dry-run
 ```
 
 ---
@@ -63,7 +63,7 @@ Load from `e1_latest.json` by project_id. Extract: project name, builder, budget
 ### Stage 2 — Download documents
 
 ```bash
-python3 tools/estimateone_scraper.py --download-docs --project-ids PROJECT_ID --no-headless
+python3 tools/eps/estimateone_scraper.py --download-docs --project-ids PROJECT_ID --no-headless
 ```
 
 Output: PDFs in `projects/eps/.tmp/estimateone/docs/{project_id}/`
@@ -71,7 +71,7 @@ Output: PDFs in `projects/eps/.tmp/estimateone/docs/{project_id}/`
 ### Stage 3 — Analyze documents
 
 ```bash
-python3 tools/analyze_tender_docs.py --project-id PROJECT_ID --project-name "PROJECT_NAME"
+python3 tools/eps/analyze_tender_docs.py --project-id PROJECT_ID --project-name "PROJECT_NAME"
 ```
 
 Output: `projects/eps/.tmp/estimateone/briefs/{project_id}_brief.json`
@@ -91,21 +91,21 @@ Pursue = proceed with selected trades.
 
 ```bash
 # 4a — Org (builder)
-python3 tools/pipedrive_create.py --action create-org --name "BUILDER_NAME" --address "LOCATION"
+python3 tools/eps/pipedrive_create.py --action create-org --name "BUILDER_NAME" --address "LOCATION"
 
 # 4b — Person (if contact known)
-python3 tools/pipedrive_create.py --action create-person --name "CONTACT" --org-id ORG_ID --email "EMAIL" --phone "PHONE"
+python3 tools/eps/pipedrive_create.py --action create-person --name "CONTACT" --org-id ORG_ID --email "EMAIL" --phone "PHONE"
 
 # 4c — Deal(s) — one per trade
 # Painting > Pipeline 4 (Tenders - Paint)
-python3 tools/pipedrive_create.py --action create-deal \
+python3 tools/eps/pipedrive_create.py --action create-deal \
   --title "PROJECT_NAME - Painting" \
   --org-id ORG_ID --person-id PERSON_ID \
   --pipeline-id 4 --stage-id 35 \
   --value ESTIMATED_VALUE
 
 # Cleaning > Pipeline 3 (Tenders - Clean)
-python3 tools/pipedrive_create.py --action create-deal \
+python3 tools/eps/pipedrive_create.py --action create-deal \
   --title "PROJECT_NAME - Cleaning" \
   --org-id ORG_ID --person-id PERSON_ID \
   --pipeline-id 3 --stage-id 31 \
@@ -150,9 +150,9 @@ Ask: **Send? Revise? Adjust rates?**
 For new builders found on E1 — separate from quoting:
 
 ```bash
-python3 tools/pipedrive_create.py --action create-org --name "BUILDER_NAME" --address "LOCATION"
-python3 tools/pipedrive_create.py --action create-person --name "CONTACT" --org-id ORG_ID --phone "PHONE"
-python3 tools/pipedrive_create.py --action create-lead --title "BUILDER_NAME - E1 Builder" --org-id ORG_ID --person-id PERSON_ID
+python3 tools/eps/pipedrive_create.py --action create-org --name "BUILDER_NAME" --address "LOCATION"
+python3 tools/eps/pipedrive_create.py --action create-person --name "CONTACT" --org-id ORG_ID --phone "PHONE"
+python3 tools/eps/pipedrive_create.py --action create-lead --title "BUILDER_NAME - E1 Builder" --org-id ORG_ID --person-id PERSON_ID
 ```
 
 Leads go to Pipedrive Leads inbox for cold calling.

@@ -18,17 +18,17 @@ Built April 2026 to plug the leak between cold calls and booked meetings.
 
 | Tool | Purpose |
 |---|---|
-| `tools/cold_call_followup.py` | Tracks warm leads + auto-sends Day 0/2/5/10 emails with PDF attached |
+| `tools/personal/cold_call_followup.py` | Tracks warm leads + auto-sends Day 0/2/5/10 emails with PDF attached |
 
 ## Daily workflow
 
-1. After cold call → `python3 tools/cold_call_followup.py add --first-name "Mike" --company "Mike's Painting" --email mike@... --pain "slow quotes" --send-day0 --send`
-2. Cron daily run → `python3 tools/cold_call_followup.py run --send`
-3. When they reply → `python3 tools/cold_call_followup.py reply --email mike@...`
+1. After cold call → `python3 tools/personal/cold_call_followup.py add --first-name "Mike" --company "Mike's Painting" --email mike@... --pain "slow quotes" --send-day0 --send`
+2. Cron daily run → `python3 tools/personal/cold_call_followup.py run --send`
+3. When they reply → `python3 tools/personal/cold_call_followup.py reply --email mike@...`
 
 ## Before going live
 
-Edit these in `tools/cold_call_followup.py`:
+Edit these in `tools/personal/cold_call_followup.py`:
 - `CALENDAR_LINK` — real Google Calendar booking URL
 - `DEMO_VIDEO_LINK` — real Loom/YT link once recorded
 

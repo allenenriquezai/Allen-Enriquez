@@ -81,7 +81,7 @@ Extract: first name, email, service type, quote total, date sent, last activity.
 ### Step 2 — Draft (no send)
 
 ```bash
-python3 tools/draft_follow_up_email.py \
+python3 tools/eps/draft_follow_up_email.py \
   --deal-id "DEAL_ID" \
   --template "follow_ups/<key>" \
   --first-name "NAME" \
@@ -107,7 +107,7 @@ QA posts draft as pinned note on Pipedrive deal.
 ### Step 4 — Send (after Allen approves)
 
 ```bash
-python3 tools/draft_follow_up_email.py \
+python3 tools/eps/draft_follow_up_email.py \
   --deal-id "DEAL_ID" \
   --template "follow_ups/<key>" \
   --first-name "NAME" \

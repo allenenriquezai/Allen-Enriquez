@@ -13,11 +13,11 @@ Re-engage previous clients for repeat business, Google reviews, and referrals. W
 ## Tool
 
 ```bash
-python3 tools/reengage_campaign.py --mode all          # scan both
-python3 tools/reengage_campaign.py --mode clients       # repeat business only
-python3 tools/reengage_campaign.py --mode lost          # win-back only
-python3 tools/reengage_campaign.py --dry-run            # preview
-python3 tools/reengage_campaign.py --send               # send approved emails
+python3 tools/eps/reengage_campaign.py --mode all          # scan both
+python3 tools/eps/reengage_campaign.py --mode clients       # repeat business only
+python3 tools/eps/reengage_campaign.py --mode lost          # win-back only
+python3 tools/eps/reengage_campaign.py --dry-run            # preview
+python3 tools/eps/reengage_campaign.py --send               # send approved emails
 ```
 
 ## Pipeline

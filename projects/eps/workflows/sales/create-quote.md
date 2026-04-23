@@ -163,7 +163,7 @@ If floor plan provided, read the floor plan using vision and extract room measur
 
 **Single property — use `--scope`:**
 ```bash
-python3 tools/calculate_quote.py \
+python3 tools/eps/calculate_quote.py \
   --client "CLIENT_NAME" \
   --address "PROPERTY_ADDRESS" \
   --job-type "JOB_TYPE" \
@@ -175,7 +175,7 @@ python3 tools/calculate_quote.py \
 
 **Multi-unit (townhouses, levels, buildings) — use `--components`:**
 ```bash
-python3 tools/calculate_quote.py \
+python3 tools/eps/calculate_quote.py \
   --client "CLIENT_NAME" \
   --address "PROPERTY_ADDRESS" \
   --job-type "JOB_TYPE" \
@@ -201,7 +201,7 @@ Why: That's how EPS actually measures — wall centreline for the whole building
 
 ### After running calculator
 1. Add `"quote_title"` to `quote_data.json` — from the `<!-- quote_title: ... -->` comment in the job description template
-2. Run `python3 tools/qa_quote.py --data-only` to validate structure + math
+2. Run `python3 tools/eps/qa_quote.py --data-only` to validate structure + math
 3. If QA fails, fix before proceeding
 4. Print line items summary table and **STOP — wait for Allen's approval**
 
@@ -251,7 +251,7 @@ Window cleaning remains a separate line item per unit.
 
 GST = subtotal x 0.10. Verify math before proceeding.
 
-Run `python3 tools/qa_quote.py --data-only` → fix if fails → print summary → **STOP for Allen's approval**.
+Run `python3 tools/eps/qa_quote.py --data-only` → fix if fails → print summary → **STOP for Allen's approval**.
 
 ---
 
@@ -261,12 +261,12 @@ Only proceed after Allen approves line items.
 
 ### 4a — Check for existing folder
 ```bash
-python3 tools/get_deal_folder.py --deal-id "DEAL_ID"
+python3 tools/eps/get_deal_folder.py --deal-id "DEAL_ID"
 ```
 
 ### 4b — Create folder + copy template
 ```bash
-python3 tools/create_quote_folder.py \
+python3 tools/eps/create_quote_folder.py \
   --deal-id "DEAL_ID" \
   --service-type "Human Readable Service Type" \
   --client "CLIENT_FULL_NAME" \
@@ -277,15 +277,15 @@ Capture: DOC_ID, DOC_URL, FOLDER_URL, FOLDER_NEW
 
 ### 4c — Fill and export
 ```bash
-python3 tools/fill_quote_template.py --doc-id "DOC_ID" --data "projects/eps/.tmp/quote_data.json"
-python3 tools/export_quote_pdf.py --doc-id "DOC_ID"
+python3 tools/eps/fill_quote_template.py --doc-id "DOC_ID" --data "projects/eps/.tmp/quote_data.json"
+python3 tools/eps/export_quote_pdf.py --doc-id "DOC_ID"
 ```
 
 ### 4d — Write links + value to Pipedrive
 ```bash
-python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field folder --url "FOLDER_URL"  # only if new folder
-python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field doc --url "DOC_URL"          # always
-python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field value --value "SUBTOTAL"     # ex-GST value
+python3 tools/eps/update_pipedrive_deal.py --deal-id "DEAL_ID" --field folder --url "FOLDER_URL"  # only if new folder
+python3 tools/eps/update_pipedrive_deal.py --deal-id "DEAL_ID" --field doc --url "DOC_URL"          # always
+python3 tools/eps/update_pipedrive_deal.py --deal-id "DEAL_ID" --field value --value "SUBTOTAL"     # ex-GST value
 ```
 
 ---
@@ -326,7 +326,7 @@ python3 tools/update_pipedrive_deal.py --deal-id "DEAL_ID" --field value --value
 
 ### Draft command (no send)
 ```bash
-python3 tools/draft_quote_email.py \
+python3 tools/eps/draft_quote_email.py \
   --template "quotes/<key>" \
   --first-name "Name" \
   --to "email@example.com" \
@@ -347,7 +347,7 @@ python3 tools/draft_quote_email.py \
 **Draft email first (Stage 5), then QA.** QA checks doc + email together in one pass.
 
 ```bash
-python3 tools/qa_quote.py \
+python3 tools/eps/qa_quote.py \
   --template "quotes/<key>" \
   --first-name "Name" \
   --to "email@example.com" \
@@ -371,7 +371,7 @@ Full QA check details in `projects/eps/workflows/sales/qa.md`.
 
 After Allen approves:
 ```bash
-python3 tools/draft_quote_email.py [same args from Stage 5] --send
+python3 tools/eps/draft_quote_email.py [same args from Stage 5] --send
 ```
 
 PDF at `.tmp/quote_output.pdf` attached automatically.

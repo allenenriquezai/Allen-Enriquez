@@ -73,7 +73,7 @@ Fetch the deal from Pipedrive. Confirm:
 ## Step 2 — Push Job Description + Line Items to SM8
 
 ```bash
-python3 tools/push_sm8_job.py --deal-id <deal_id>
+python3 tools/eps/push_sm8_job.py --deal-id <deal_id>
 ```
 
 What it does:
@@ -92,11 +92,11 @@ Guard: Only runs on Pipeline 1 (EPS Clean) or Pipeline 2 (EPS Paint).
 ## Step 3 — Calculate Deposit Amount
 
 ```bash
-python3 tools/create_sm8_deposit.py --deal-id <deal_id>
+python3 tools/eps/create_sm8_deposit.py --deal-id <deal_id>
 # or with custom %:
-python3 tools/create_sm8_deposit.py --deal-id <deal_id> --pct 30
+python3 tools/eps/create_sm8_deposit.py --deal-id <deal_id> --pct 30
 # or with fixed amount:
-python3 tools/create_sm8_deposit.py --deal-id <deal_id> --amount 500
+python3 tools/eps/create_sm8_deposit.py --deal-id <deal_id> --amount 500
 ```
 
 Default deposit: **50% of quote total (inc GST)**

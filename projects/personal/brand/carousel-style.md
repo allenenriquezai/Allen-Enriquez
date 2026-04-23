@@ -22,7 +22,7 @@ Style: clean, minimal, massive text on white background.
 - @allenenriquez handle on title and CTA slides
 - Slide counter (e.g. 1/4) on content slides
 
-### Tool: `tools/generate_carousel.py`
+### Tool: `tools/personal/generate_carousel.py`
 - Default style matches this reference
 - 1080x1350px (4:5 ratio for IG/FB)
 - Helvetica Bold for all text

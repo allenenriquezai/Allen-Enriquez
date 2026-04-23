@@ -18,11 +18,11 @@ Never insert "I use [tool] to [result]" lines without verifying Allen has actual
 
 | Content Type | Command |
 |---|---|
-| Reel | `python3 tools/generate_content.py --type reel --topic "<topic>"` |
-| YouTube | `python3 tools/generate_content.py --type youtube --topic "<topic>"` |
-| FB group post | `python3 tools/generate_content.py --type fb-group-post --topic "<topic>"` |
-| LinkedIn | `python3 tools/generate_content.py --type linkedin --topic "<topic>"` |
-| Batch day | `python3 tools/generate_content.py --batch-day <N>` |
+| Reel | `python3 tools/personal/generate_content.py --type reel --topic "<topic>"` |
+| YouTube | `python3 tools/personal/generate_content.py --type youtube --topic "<topic>"` |
+| FB group post | `python3 tools/personal/generate_content.py --type fb-group-post --topic "<topic>"` |
+| LinkedIn | `python3 tools/personal/generate_content.py --type linkedin --topic "<topic>"` |
+| Batch day | `python3 tools/personal/generate_content.py --batch-day <N>` |
 
 Drafts output to `.tmp/content_drafts.json`.
 
@@ -46,7 +46,7 @@ Drafts output to `.tmp/content_drafts.json`.
 **Style:** White background, bold black text (Hormozi style). Use `--style light`.
 
 ```bash
-python3 tools/generate_carousel.py --topic "Hook text" --slides 7 --style light --handle "@allenenriquez"
+python3 tools/personal/generate_carousel.py --topic "Hook text" --slides 7 --style light --handle "@allenenriquez"
 ```
 
 - Slide 1: Hook. All caps. Stop the scroll.

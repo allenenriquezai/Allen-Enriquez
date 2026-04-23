@@ -58,7 +58,7 @@ Separate deals per division. Never put paint + clean on the same deal.
 
 ## Tools
 
-All Python scripts in `tools/`. Run `ls tools/*.py` to see current list.
+Python scripts in `tools/eps/` (EPS-specific) and `tools/shared/` (cross-domain). Run `ls tools/eps/*.py` to see current list.
 
 ## Environment
 

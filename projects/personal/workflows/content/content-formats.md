@@ -176,7 +176,7 @@ Follows existing `content-calendar.md` SOP. No changes.
 
 ### Production
 ```
-python3 tools/generate_carousel.py --topic "Your hook here" --slides 7 --style dark --handle "@allenenriquez"
+python3 tools/personal/generate_carousel.py --topic "Your hook here" --slides 7 --style dark --handle "@allenenriquez"
 ```
 - Generates PNGs to `.tmp/carousels/<topic-slug>/`
 - Also outputs `copy.txt` — edit this, then re-run with `--copy-file` to regenerate with custom text.

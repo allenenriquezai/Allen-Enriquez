@@ -11,7 +11,7 @@ Batch processor for after a cold calling session. Fetch > format > draft emails 
 ### Step 1 — Fetch the batch (MANDATORY)
 
 ```bash
-python3 tools/process_cold_calls.py fetch --verbose
+python3 tools/eps/process_cold_calls.py fetch --verbose
 ```
 
 If `count` is 0: "No recently called leads found." STOP.
@@ -121,7 +121,7 @@ cat > projects/eps/.tmp/cold_call_lead_LEAD_ID.json << 'JSONEOF'
 }
 JSONEOF
 
-python3 tools/process_cold_calls.py post --lead-id LEAD_ID
+python3 tools/eps/process_cold_calls.py post --lead-id LEAD_ID
 ```
 
 Omit `email_draft` if lead doesn't need one.

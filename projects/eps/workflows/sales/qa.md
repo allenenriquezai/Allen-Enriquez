@@ -13,7 +13,7 @@ Last line of defence before anything reaches a client. Nothing goes out without 
 
 For quote emails: run BOTH SOPs.
 
-**Tool:** `python3 tools/qa_quote.py`
+**Tool:** `python3 tools/eps/qa_quote.py`
 
 ---
 
@@ -22,7 +22,7 @@ For quote emails: run BOTH SOPs.
 Validates `quote_data.json` — data integrity, math, required sections.
 
 ```bash
-python3 tools/qa_quote.py --data-only
+python3 tools/eps/qa_quote.py --data-only
 ```
 
 ### Checks
@@ -70,7 +70,7 @@ Minimum: 100 characters total.
 Validates any client-facing email.
 
 ```bash
-python3 tools/qa_quote.py \
+python3 tools/eps/qa_quote.py \
   --template "quotes/<key>" \
   --first-name "Name" \
   --to "email@example.com" \
