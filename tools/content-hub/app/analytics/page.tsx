@@ -38,10 +38,27 @@ interface PostOption {
   asset_type: string | null;
 }
 
+interface YtStat {
+  video_id: string;
+  title: string;
+  url: string;
+  published_at: string;
+  views: number;
+  likes: number;
+  comments: number;
+  fetched_at: string;
+}
+
+type YtSortKey = "published_at" | "views" | "likes" | "comments";
+
 export default function AnalyticsPage() {
   const [platform, setPlatform] = useState("all");
   const [rows, setRows] = useState<MetricRow[]>([]);
   const [posts, setPosts] = useState<PostOption[]>([]);
+  const [ytStats, setYtStats] = useState<YtStat[]>([]);
+  const [ytLoading, setYtLoading] = useState(false);
+  const [ytSortKey, setYtSortKey] = useState<YtSortKey>("published_at");
+  const [ytSortDir, setYtSortDir] = useState<"asc" | "desc">("desc");
 
   const load = useCallback(async () => {
     const url =
@@ -59,12 +76,20 @@ export default function AnalyticsPage() {
     setPosts(json.posts ?? []);
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [load]);
-  useEffect(() => {
-    loadPosts();
-  }, [loadPosts]);
+  const loadYouTube = useCallback(async (refresh = false) => {
+    setYtLoading(true);
+    try {
+      const res = await fetch(`/api/analytics/youtube${refresh ? "?refresh=1" : ""}`, { cache: "no-store" });
+      const json = await res.json();
+      setYtStats(json.stats ?? []);
+    } finally {
+      setYtLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+  useEffect(() => { loadPosts(); }, [loadPosts]);
+  useEffect(() => { loadYouTube(); }, [loadYouTube]);
 
   const kpis = useMemo(() => {
     const totalViews = rows.reduce((a, r) => a + (r.views ?? 0), 0);
@@ -124,6 +149,82 @@ export default function AnalyticsPage() {
 
       <MetricsChart rows={rows} />
       <MetricsTable rows={rows} />
+
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold">YouTube Videos</h2>
+          <Button size="sm" variant="outline" disabled={ytLoading} onClick={() => loadYouTube(true)}>
+            {ytLoading ? "Refreshing…" : "Refresh from YouTube"}
+          </Button>
+        </div>
+        <YouTubeTable
+          stats={ytStats}
+          sortKey={ytSortKey}
+          sortDir={ytSortDir}
+          onSort={(key) => {
+            if (key === ytSortKey) setYtSortDir(d => d === "asc" ? "desc" : "asc");
+            else { setYtSortKey(key); setYtSortDir("desc"); }
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function YouTubeTable({ stats, sortKey, sortDir, onSort }: {
+  stats: YtStat[];
+  sortKey: YtSortKey;
+  sortDir: "asc" | "desc";
+  onSort: (key: YtSortKey) => void;
+}) {
+  const sorted = [...stats].sort((a, b) => {
+    const av = a[sortKey], bv = b[sortKey];
+    const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+    return sortDir === "asc" ? cmp : -cmp;
+  });
+
+  if (sorted.length === 0)
+    return <p className="text-sm text-muted-foreground">No YouTube data. Hit "Refresh from YouTube" to pull.</p>;
+
+  const cols: { key: YtSortKey; label: string }[] = [
+    { key: "published_at", label: "Published" },
+    { key: "views", label: "Views" },
+    { key: "likes", label: "Likes" },
+    { key: "comments", label: "Comments" },
+  ];
+
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-border bg-muted/20">
+            <th className="text-left px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">Title</th>
+            {cols.map(c => (
+              <th
+                key={c.key}
+                className="text-right px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide cursor-pointer select-none hover:text-foreground transition-colors"
+                onClick={() => onSort(c.key)}
+              >
+                {c.label}{sortKey === c.key ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map(v => (
+            <tr key={v.video_id} className="border-b border-border/40 hover:bg-muted/10 transition-colors">
+              <td className="px-4 py-2 max-w-xs truncate">
+                <a href={v.url} target="_blank" rel="noreferrer" className="hover:underline" style={{ color: "var(--brand)" }}>
+                  {v.title}
+                </a>
+              </td>
+              <td className="px-4 py-2 text-right font-mono">{v.views.toLocaleString()}</td>
+              <td className="px-4 py-2 text-right font-mono">{v.likes.toLocaleString()}</td>
+              <td className="px-4 py-2 text-right font-mono">{v.comments.toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
