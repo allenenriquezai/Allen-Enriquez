@@ -11,6 +11,7 @@ import {
   Sparkles,
   RotateCcw,
   Plus,
+  Link2,
 } from "lucide-react";
 import {
   DndContext,
@@ -332,19 +333,34 @@ function ScriptModal({
             <Button size="sm" onClick={handleSave} disabled={saving} className="min-w-[60px]">
               {saving ? "Saving…" : "Save"}
             </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleRewrite}
-              disabled={rewriting}
-            >
-              {rewriting ? (
-                <RotateCcw size={12} className="mr-1 animate-spin" />
-              ) : (
-                <Sparkles size={12} className="mr-1" />
-              )}
-              {rewriting ? "Rewriting…" : "Rewrite"}
-            </Button>
+            {reelBody ? (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleRewrite}
+                disabled={rewriting}
+              >
+                {rewriting ? (
+                  <RotateCcw size={12} className="mr-1 animate-spin" />
+                ) : (
+                  <Sparkles size={12} className="mr-1" />
+                )}
+                {rewriting ? "Rewriting…" : "Rewrite"}
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                onClick={handleRewrite}
+                disabled={rewriting}
+              >
+                {rewriting ? (
+                  <RotateCcw size={12} className="mr-1 animate-spin" />
+                ) : (
+                  <Sparkles size={12} className="mr-1" />
+                )}
+                {rewriting ? "Generating…" : "Generate Script"}
+              </Button>
+            )}
             {!hasCarousel && (
               <Button
                 size="sm"
@@ -725,6 +741,10 @@ export function ScriptsClient({
   const [generatingIdeas, setGeneratingIdeas] = useState(false);
   const [rewritingAll, setRewritingAll] = useState(false);
   const [genPopover, setGenPopover] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importUrl, setImportUrl] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -800,6 +820,28 @@ export function ScriptsClient({
     }
   }
 
+  async function handleImportLink() {
+    setImporting(true);
+    setImportError(null);
+    const res = await fetch("/api/ideas/import-link", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: importUrl }),
+    });
+    setImporting(false);
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      setImportError((j as { error?: string }).error ?? "Import failed");
+      return;
+    }
+    const j = await res.json();
+    if (j.idea) {
+      setLocalIdeas((prev) => [j.idea as KanbanIdea, ...prev]);
+    }
+    setImportUrl("");
+    setImportOpen(false);
+  }
+
   // Group ideas into columns
   const columnIdeas = COLUMNS.reduce(
     (acc, col) => {
@@ -826,6 +868,16 @@ export function ScriptsClient({
                 ? `${totalIdeas} ideas`
                 : `${totalScheduled} scheduled`}
             </p>
+            {/* Import Link */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs gap-1.5"
+              onClick={() => { setImportOpen((v) => !v); setImportError(null); }}
+            >
+              <Link2 className="h-3.5 w-3.5" />
+              Import Link
+            </Button>
             {/* View toggle */}
             <div className="flex rounded-lg border overflow-hidden text-xs">
               <button
@@ -851,6 +903,42 @@ export function ScriptsClient({
             </div>
           </div>
         </div>
+
+        {/* Import Link dialog */}
+        {importOpen && (
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2 p-3 rounded-lg border bg-muted/30">
+              <input
+                type="url"
+                placeholder="Paste TikTok, YouTube, or Facebook link…"
+                value={importUrl}
+                onChange={(e) => setImportUrl(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && !importing && handleImportLink()}
+                className="flex-1 text-sm bg-transparent outline-none placeholder:text-muted-foreground"
+                autoFocus
+              />
+              <Button
+                size="sm"
+                className="text-xs shrink-0"
+                onClick={handleImportLink}
+                disabled={importing || !importUrl.trim()}
+              >
+                {importing ? "Transcribing…" : "Import"}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="shrink-0"
+                onClick={() => { setImportOpen(false); setImportError(null); setImportUrl(""); }}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+            {importError && (
+              <p className="text-xs text-red-400 px-1">{importError}</p>
+            )}
+          </div>
+        )}
 
         {/* Kanban view */}
         {view === "kanban" && (
