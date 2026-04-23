@@ -21,6 +21,18 @@ import {
 } from "@/components/ui/select";
 import { MetricsTable, type MetricRow } from "@/components/metrics-table";
 import { MetricsChart } from "@/components/metrics-chart";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Legend,
+  Line,
+  ComposedChart,
+} from "recharts";
 
 const PLATFORMS = [
   { value: "all", label: "All" },
@@ -157,16 +169,70 @@ export default function AnalyticsPage() {
             {ytLoading ? "Refreshing…" : "Refresh from YouTube"}
           </Button>
         </div>
-        <YouTubeTable
-          stats={ytStats}
-          sortKey={ytSortKey}
-          sortDir={ytSortDir}
-          onSort={(key) => {
-            if (key === ytSortKey) setYtSortDir(d => d === "asc" ? "desc" : "asc");
-            else { setYtSortKey(key); setYtSortDir("desc"); }
-          }}
-        />
+        <YouTubeChart stats={ytStats} />
+        <div className="mt-4">
+          <YouTubeTable
+            stats={ytStats}
+            sortKey={ytSortKey}
+            sortDir={ytSortDir}
+            onSort={(key) => {
+              if (key === ytSortKey) setYtSortDir(d => d === "asc" ? "desc" : "asc");
+              else { setYtSortKey(key); setYtSortDir("desc"); }
+            }}
+          />
+        </div>
       </div>
+    </div>
+  );
+}
+
+function YouTubeChart({ stats }: { stats: YtStat[] }) {
+  if (stats.length === 0) return null;
+
+  const data = [...stats]
+    .sort((a, b) => a.published_at.localeCompare(b.published_at))
+    .map((v) => ({
+      label: v.published_at.slice(5, 10),
+      title: v.title.length > 40 ? v.title.slice(0, 38) + "…" : v.title,
+      views: v.views,
+      likes: v.likes,
+      comments: v.comments,
+      engRate: v.views > 0 ? +((v.likes + v.comments) / v.views * 100).toFixed(1) : 0,
+    }));
+
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payload: typeof data[0] }[] }) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0].payload;
+    return (
+      <div className="rounded-lg border border-border bg-[#1b1b1b] p-3 text-xs space-y-1 max-w-[220px]">
+        <p className="font-medium text-foreground leading-snug">{d.title}</p>
+        <p className="text-muted-foreground">{d.label}</p>
+        <div className="flex gap-3 pt-1">
+          <span style={{ color: "#02B3E9" }}>{d.views.toLocaleString()} views</span>
+          <span style={{ color: "#f59e0b" }}>{d.likes} likes</span>
+          <span style={{ color: "#a855f7" }}>{d.comments} comments</span>
+        </div>
+        <p className="text-muted-foreground">Eng rate: {d.engRate}%</p>
+      </div>
+    );
+  };
+
+  return (
+    <div className="h-64 rounded-xl ring-1 ring-foreground/10 p-3 mb-2">
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+          <XAxis dataKey="label" stroke="rgba(255,255,255,0.5)" fontSize={11} />
+          <YAxis yAxisId="left" stroke="rgba(255,255,255,0.5)" fontSize={11} />
+          <YAxis yAxisId="right" orientation="right" stroke="rgba(255,255,255,0.3)" fontSize={10}
+            tickFormatter={(v) => `${v}%`} domain={[0, "auto"]} />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend wrapperStyle={{ fontSize: 11 }} />
+          <Bar yAxisId="left" dataKey="views" fill="#02B3E9" opacity={0.85} radius={[3, 3, 0, 0]} name="Views" />
+          <Line yAxisId="right" type="monotone" dataKey="engRate" stroke="#f59e0b"
+            strokeWidth={2} dot={{ r: 3 }} name="Eng %" />
+        </ComposedChart>
+      </ResponsiveContainer>
     </div>
   );
 }
