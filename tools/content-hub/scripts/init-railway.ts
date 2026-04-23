@@ -20,6 +20,14 @@ const schema = fs.readFileSync(SCHEMA_PATH, "utf8");
 db.exec(schema);
 console.log(`[init] Schema applied → ${DB_PATH}`);
 
+// Column migrations — safe to run every boot
+type ColInfo = { name: string };
+const ideaCols = (db.prepare("PRAGMA table_info(ideas)").all() as ColInfo[]).map(c => c.name);
+if (!ideaCols.includes("notes")) {
+  db.prepare("ALTER TABLE ideas ADD COLUMN notes TEXT").run();
+  console.log("[init] Migration: added notes column to ideas");
+}
+
 // Seed only if ideas table is empty (first deploy on fresh volume)
 const count = (
   db.prepare("SELECT COUNT(*) as n FROM ideas").get() as { n: number }
