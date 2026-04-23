@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#06101a"/>
+  <rect width="32" height="32" rx="7" fill="none" stroke="#02B3E9" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text
+    x="16"
+    y="22"
+    text-anchor="middle"
+    font-family="monospace"
+    font-weight="700"
+    font-style="italic"
+    font-size="15"
+    fill="#02B3E9"
+    letter-spacing="-1"
+  >AE</text>
+</svg>
