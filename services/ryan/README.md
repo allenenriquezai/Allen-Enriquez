@@ -1,4 +1,4 @@
-# ryan-labeler
+# ryan
 
 Cloud service that auto-labels Ryan Canton's Gmail inbox (SC-Incorporated) and sends him a daily morning brief.
 
