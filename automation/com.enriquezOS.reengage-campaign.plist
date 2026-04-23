@@ -9,7 +9,7 @@
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>cd /Users/allenenriquez/Desktop/Allen\ Enriquez &amp;&amp; /usr/bin/python3 tools/reengage_campaign.py --mode all</string>
+        <string>/usr/bin/python3 tools/eps/reengage_campaign.py --mode all</string>
     </array>
 
     <!-- Weekly Monday at 7:00 AM AEST -->

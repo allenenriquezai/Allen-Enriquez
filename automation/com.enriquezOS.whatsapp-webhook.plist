@@ -8,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/whatsapp_start.sh</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/eps/whatsapp_start.sh</string>
     </array>
 
     <key>RunAtLoad</key>

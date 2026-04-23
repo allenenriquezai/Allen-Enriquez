@@ -9,8 +9,14 @@
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>cd /Users/allenenriquez/Desktop/Allen\ Enriquez/tools/dashboard &amp;&amp; exec /Library/Developer/CommandLineTools/usr/bin/python3 -m gunicorn -c gunicorn.conf.py app:app</string>
+        <string>cd /Users/allenenriquez/Developer/Allen-Enriquez/tools/dashboard &amp;&amp; exec /Library/Developer/CommandLineTools/usr/bin/python3 -m gunicorn -c gunicorn.conf.py app:app</string>
     </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PYTHONPATH</key>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/personal:/Users/allenenriquez/Developer/Allen-Enriquez/tools/eps:/Users/allenenriquez/Developer/Allen-Enriquez/tools/shared</string>
+    </dict>
 
     <key>RunAtLoad</key>
     <true/>

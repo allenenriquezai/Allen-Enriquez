@@ -3,16 +3,14 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.enriquezOS.tender-batch</string>
+    <string>com.enriquezOS.memory-audit</string>
 
     <key>ProgramArguments</key>
     <array>
-        <string>/bin/bash</string>
-        <string>-c</string>
-        <string>/usr/bin/python3 tools/eps/tender_batch.py</string>
+        <string>/usr/bin/python3</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/shared/memory_audit.py</string>
     </array>
 
-    <!-- Daily at 6:00 AM AEST -->
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
@@ -22,12 +20,12 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/tender-batch.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/memory-audit.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/tender-batch-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/memory-audit-error.log</string>
 
-    <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Developer/Allen-Enriquez</string>
+    <key>RunAtLoad</key>
+    <false/>
 </dict>
 </plist>

@@ -9,7 +9,7 @@
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>cd /Users/allenenriquez/Desktop/Allen\ Enriquez &amp;&amp; /usr/bin/python3 tools/eod_ops_manager.py &amp;&amp; /usr/bin/python3 tools/crm_sync.py &amp;&amp; /usr/bin/python3 tools/check_outcomes.py</string>
+        <string>/usr/bin/python3 tools/eps/eod_ops_manager.py &amp;&amp; /usr/bin/python3 tools/eps/crm_sync.py &amp;&amp; /usr/bin/python3 tools/eps/check_outcomes.py</string>
     </array>
 
     <!-- Daily at 5:00 PM AEST -->

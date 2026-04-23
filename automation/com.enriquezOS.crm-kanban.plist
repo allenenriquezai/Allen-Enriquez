@@ -9,8 +9,14 @@
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>cd /Users/allenenriquez/Desktop/Allen\ Enriquez &amp;&amp; exec /usr/bin/python3 tools/crm_kanban/app.py</string>
+        <string>exec /usr/bin/python3 tools/crm_kanban/app.py</string>
     </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PYTHONPATH</key>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/personal</string>
+    </dict>
 
     <key>RunAtLoad</key>
     <true/>

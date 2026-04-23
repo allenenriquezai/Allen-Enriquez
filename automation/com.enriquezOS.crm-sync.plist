@@ -8,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/usr/bin/python3</string>
-        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/crm_sync.py</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/eps/crm_sync.py</string>
     </array>
 
     <!-- Every 10 minutes -->
