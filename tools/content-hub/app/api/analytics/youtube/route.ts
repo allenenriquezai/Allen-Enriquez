@@ -6,7 +6,7 @@ import db from "@/lib/db";
 
 const execFileAsync = promisify(execFile);
 const REPO_ROOT = path.resolve(process.cwd(), "../../..");
-const SCRIPT = path.join(REPO_ROOT, "tools", "youtube_analytics.py");
+const SCRIPT = path.join(REPO_ROOT, "tools", "personal", "youtube_analytics.py");
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);

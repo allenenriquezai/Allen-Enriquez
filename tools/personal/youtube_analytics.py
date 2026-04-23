@@ -19,10 +19,11 @@ from pathlib import Path
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DB_FILE = BASE_DIR / "tools" / "content-hub" / "content_hub.db"
 TOKEN_FILE = BASE_DIR / "projects" / "personal" / "token_personal_ai.pickle"
 YOUTUBE_SCOPE = "https://www.googleapis.com/auth/youtube.readonly"
+CHANNEL_ID = "UCbxyZe-sodJxfgQzj1qoAcA"  # @allenenriquezz
 
 
 def get_credentials():
@@ -50,10 +51,10 @@ def get_credentials():
 
 def fetch_videos(youtube, limit: int) -> list[dict]:
     # Get uploads playlist ID
-    ch_res = youtube.channels().list(mine=True, part="contentDetails").execute()
+    ch_res = youtube.channels().list(id=CHANNEL_ID, part="contentDetails").execute()
     items = ch_res.get("items", [])
     if not items:
-        print("ERROR: No YouTube channel found for this account.", file=sys.stderr)
+        print("ERROR: Channel not found.", file=sys.stderr)
         sys.exit(1)
 
     uploads_id = items[0]["contentDetails"]["relatedPlaylists"]["uploads"]
