@@ -8,7 +8,7 @@ MAX_RETRIES=2
 RETRY_DELAY=60
 
 for attempt in $(seq 1 $MAX_RETRIES); do
-    $PYTHON tools/creator_feed.py && exit 0
+    $PYTHON tools/personal/creator_feed.py && exit 0
     echo "[$(date)] Attempt $attempt failed (exit $?). Retrying in ${RETRY_DELAY}s..." >&2
     sleep $RETRY_DELAY
 done

@@ -10,5 +10,5 @@ LOG_DIR="/Users/allenenriquez/Developer/Allen-Enriquez/.tmp"
 LOG="$LOG_DIR/ph_outreach_discover.log"
 
 echo "[$(date)] === PH Outreach weekly discover ===" >> "$LOG"
-$PYTHON tools/outreach.py discover --limit 50 >> "$LOG" 2>&1
+$PYTHON tools/personal/outreach.py discover --limit 50 >> "$LOG" 2>&1
 echo "[$(date)] === done ===" >> "$LOG"
