@@ -14,26 +14,29 @@ You are Allen's executive assistant and strategic advisor. Minimal input from Al
 |---|---|
 | `projects/eps/` | Day job — EPS Painting & Cleaning, Brisbane AU |
 | `projects/personal/` | Personal brand + AI consultancy |
-| `tools/` | Python scripts — check here before building new |
+| `tools/eps/` | EPS Python scripts |
+| `tools/personal/` | Personal brand Python scripts |
+| `tools/clients/` | Client maintenance scripts |
+| `tools/shared/` | Cross-domain / OS-level scripts |
 | `automation/` | launchd plists (zero-token background tasks) |
 | `.claude/skills/` | Skill entry points (read workflows, not spawn agents) |
 | `.tmp/` | Data handoff between tools and sessions |
 
 ## Tools & Access
 
-Python scripts in `tools/`. **Always check here first** before using WebFetch, MCP, or any external tool. Auth tokens and API keys are already configured.
+Python scripts in `tools/eps/`, `tools/personal/`, `tools/clients/`, `tools/shared/`. **Always check here first** before using WebFetch, MCP, or any external tool. Auth tokens and API keys are already configured.
 
 | Service | How to access | Auth | Location |
 |---|---|---|---|
 | Google Docs/Drive | `googleapiclient` via pickle token | OAuth 2.0 | EPS: `projects/eps/token_eps.pickle` / Personal: `projects/personal/token_personal.pickle` |
-| Gmail | `tools/send_email_gmail.py`, `tools/send_personal_email.py` | OAuth 2.0 | Same pickle tokens as above |
+| Gmail | `tools/eps/send_email_gmail.py`, `tools/personal/send_personal_email.py` | OAuth 2.0 | Same pickle tokens as above |
 | Google Sheets | `googleapiclient` via pickle token | OAuth 2.0 | Personal token for personal CRM sheet |
 | Google Calendar | `googleapiclient` via pickle token | OAuth 2.0 | EPS token for SM8 scheduling |
-| Pipedrive | `tools/update_pipedrive_deal.py`, `tools/deal_context.py`, etc. | API key | `projects/eps/.env` |
-| ServiceM8 | `tools/push_sm8_job.py`, `tools/schedule_sm8_visit.py`, etc. | API key | `projects/eps/.env` |
-| EstimateOne | `tools/estimateone_scraper.py` (Playwright) | Credentials | `projects/eps/.env` |
-| JustCall | `tools/fetch_call_transcript.py` | API key + secret | `projects/eps/.env` |
-| WhatsApp | `tools/whatsapp.py` | Access token | `projects/eps/.env` |
+| Pipedrive | `tools/eps/update_pipedrive_deal.py`, `tools/eps/deal_context.py`, etc. | API key | `projects/eps/.env` |
+| ServiceM8 | `tools/eps/push_sm8_job.py`, `tools/eps/schedule_sm8_visit.py`, etc. | API key | `projects/eps/.env` |
+| EstimateOne | `tools/eps/estimateone_scraper.py` (Playwright) | Credentials | `projects/eps/.env` |
+| JustCall | `tools/eps/fetch_call_transcript.py` | API key + secret | `projects/eps/.env` |
+| WhatsApp | `tools/eps/whatsapp.py` | Access token | `projects/eps/.env` |
 | Anthropic API | Used by analysis/AI tools | API key | Both `.env` files |
 
 **Rule:** To read a Google Doc → extract the document ID from the URL → use `googleapiclient` with the appropriate pickle token. Never use WebFetch or MCP for Google services.
