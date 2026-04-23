@@ -17,7 +17,7 @@ REPO_ROOT="$(cd "$HERE/../.." && pwd)"
 
 RYAN_TOKEN="$REPO_ROOT/projects/personal/clients/ryan/token_ryan.pickle"
 ALLEN_AI_TOKEN="$REPO_ROOT/projects/personal/token_personal_ai.pickle"
-ENV_FILE="$REPO_ROOT/projects/personal/.env"
+ENV_FILE="$REPO_ROOT/projects/.env"
 
 if [ ! -f "$RYAN_TOKEN" ]; then
   echo "ERROR: missing $RYAN_TOKEN" >&2
@@ -28,11 +28,10 @@ if [ ! -f "$ALLEN_AI_TOKEN" ]; then
   exit 1
 fi
 
-# Extract Anthropic key from projects/personal/.env
+# Extract Anthropic key from shared projects/.env or shell env
 ANTHROPIC_KEY="$(grep -E '^ANTHROPIC_API_KEY=' "$ENV_FILE" | head -1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")"
 if [ -z "$ANTHROPIC_KEY" ]; then
-  # Fallback: projects/eps/.env
-  ANTHROPIC_KEY="$(grep -E '^ANTHROPIC_API_KEY=' "$REPO_ROOT/projects/eps/.env" | head -1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")"
+  ANTHROPIC_KEY="${ANTHROPIC_API_KEY:-}"
 fi
 if [ -z "$ANTHROPIC_KEY" ]; then
   echo "ERROR: ANTHROPIC_API_KEY not found in any .env" >&2

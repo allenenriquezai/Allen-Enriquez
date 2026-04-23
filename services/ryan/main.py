@@ -110,7 +110,16 @@ def label(req: LabelRequest) -> LabelResponse:
     try:
         msg = fetch_message(req.message_id)
     except Exception as e:
-        raise HTTPException(status_code=404, detail=f"fetch_message failed: {e}")
+        took = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
+        return LabelResponse(
+            message_id=req.message_id,
+            bucket="skip",
+            skip_inbox=False,
+            confidence=1.0,
+            applied=False,
+            error=f"message_not_found: {e}",
+            took_ms=took,
+        )
 
     # Skip self-sent briefs — allenenriquez.ai@gmail.com is the brief sender
     if config.ALLEN_AI_EMAIL in msg["from"].lower():
@@ -277,6 +286,26 @@ def task_delete(req: TaskRequest, token: str = "") -> dict:
         raise HTTPException(status_code=400, detail="id required")
     delete_task(req.id)
     return {"ok": True}
+
+
+@app.get("/audit/export")
+def audit_export(token: str = "", days: int = 7, limit: int = 1000) -> list:
+    """Return recent audit entries for local persistence + self-improve analysis."""
+    _check_token(token)
+    from datetime import timedelta
+    entries = []
+    audit_path = config.audit_dir()
+    today = datetime.now(timezone.utc)
+    for i in range(days):
+        day = (today - timedelta(days=i)).strftime("%Y-%m-%d")
+        path = audit_path / f"{day}.jsonl"
+        if path.exists():
+            for line in path.read_text().splitlines():
+                try:
+                    entries.append(json.loads(line))
+                except Exception:
+                    pass
+    return entries[-limit:]
 
 
 if __name__ == "__main__":
