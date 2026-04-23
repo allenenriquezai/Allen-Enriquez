@@ -36,7 +36,7 @@ from pathlib import Path
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 SHARED_ENV = BASE_DIR / 'projects' / '.env'
 PERSONAL_ENV = BASE_DIR / 'projects' / 'personal' / '.env'
 PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
@@ -107,11 +107,19 @@ def fetch_failed_executions():
 
 
 def fetch_execution_detail(exec_id):
-    return n8n_get(f'/executions/{exec_id}')
+    return n8n_get(f'/executions/{exec_id}?includeData=true')
 
 
 def retry_execution(exec_id):
     return n8n_post(f'/executions/{exec_id}/retry')
+
+
+def build_workflow_name_map():
+    try:
+        data = n8n_get('/workflows?limit=250')
+        return {w['id']: w['name'] for w in data.get('data', [])}
+    except Exception:
+        return {}
 
 
 # --- State ---
@@ -212,13 +220,18 @@ def extract_error_info(detail):
             node_name = last_node
         top_error = result_data.get('error', {})
         if top_error:
-            error_msg = top_error.get('message', str(top_error))
+            # n8n cloud uses 'description' for body (may be HTML), 'message' as fallback
+            raw = top_error.get('message') or top_error.get('description') or str(top_error)
+            if raw.lstrip().startswith('<'):
+                raw = raw.split('\n')[0][:120] + ' [HTML — likely 404/5xx from downstream service]'
+            error_msg = raw
         else:
             for node, runs in result_data.get('runData', {}).items():
                 for run in (runs or []):
                     err = run.get('error', {})
                     if err:
-                        error_msg = err.get('message', str(err))
+                        raw = err.get('message') or err.get('description') or str(err)
+                        error_msg = raw
                         node_name = node
                         break
     except Exception:
@@ -228,12 +241,10 @@ def extract_error_info(detail):
 
 # --- Per-execution handler ---
 
-def process_execution(exec_info, dry_run=False):
+def process_execution(exec_info, name_map=None, dry_run=False):
     exec_id = str(exec_info.get('id', ''))
-    workflow_name = (
-        exec_info.get('workflowData', {}).get('name', '')
-        or exec_info.get('workflowId', 'unknown workflow')
-    )
+    workflow_id = exec_info.get('workflowId', '')
+    workflow_name = (name_map or {}).get(workflow_id) or workflow_id or 'unknown workflow'
     started_at = exec_info.get('startedAt', '')
 
     print(f"  [{exec_id}] {workflow_name} — {started_at}")
@@ -304,8 +315,11 @@ def main():
     args = parser.parse_args()
 
     state = load_state()
+    first_run = not STATE_FILE.exists() or not state.get('seen_ids')
+
     if args.reset:
         state = {'seen_ids': []}
+        first_run = True
         print("State reset — will re-alert all current failures.")
 
     seen = set(state.get('seen_ids', []))
@@ -313,6 +327,7 @@ def main():
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] Checking n8n for failed executions...")
     try:
         executions = fetch_failed_executions()
+        name_map = build_workflow_name_map()
     except Exception as e:
         print(f"ERROR: Could not reach n8n API — {e}", file=sys.stderr)
         sys.exit(1)
@@ -320,10 +335,26 @@ def main():
     new_failures = [e for e in executions if str(e.get('id', '')) not in seen]
     print(f"  Total errors on record: {len(executions)} | New since last run: {len(new_failures)}")
 
-    for exec_info in new_failures:
-        exec_id = process_execution(exec_info, dry_run=args.dry_run)
-        if not args.dry_run:
-            seen.add(exec_id)
+    # First run: send one digest instead of N individual emails, then mark all seen
+    if first_run and new_failures and not args.dry_run:
+        ts = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
+        lines = [f"n8n monitor started. {len(new_failures)} existing failure(s) found — marking as seen.", f"Detected: {ts}", ""]
+        for e in new_failures:
+            wid = e.get('workflowId', '')
+            wname = name_map.get(wid, wid)
+            lines.append(f"  [{e.get('id')}] {wname} — {e.get('startedAt', '')}")
+        lines += ["", "New failures from this point will trigger individual alerts + auto-retry."]
+        send_email("[n8n] Monitor active — existing errors catalogued", "\n".join(lines))
+        for e in new_failures:
+            seen.add(str(e.get('id', '')))
+        print(f"  First run digest sent. {len(new_failures)} errors marked as seen.")
+    elif first_run and new_failures and args.dry_run:
+        print(f"  DRY RUN first-run: would send digest of {len(new_failures)} existing errors.")
+    else:
+        for exec_info in new_failures:
+            exec_id = process_execution(exec_info, name_map=name_map, dry_run=args.dry_run)
+            if not args.dry_run:
+                seen.add(exec_id)
 
     if not args.dry_run:
         state['seen_ids'] = list(seen)
