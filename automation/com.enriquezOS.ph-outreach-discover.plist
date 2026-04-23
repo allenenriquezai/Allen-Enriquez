@@ -8,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/allenenriquez/Desktop/Allen Enriquez/automation/run_ph_outreach_discover.sh</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/automation/run_ph_outreach_discover.sh</string>
     </array>
 
     <key>StartCalendarInterval</key>
@@ -22,10 +22,10 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/ph-outreach-discover-cron.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/ph-outreach-discover-cron.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/ph-outreach-discover-cron-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/ph-outreach-discover-cron-error.log</string>
 
     <key>RunAtLoad</key>
     <false/>

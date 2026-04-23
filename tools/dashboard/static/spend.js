@@ -1,4 +1,4 @@
-// Spend Tracker — Quick-add + daily log
+// Spend Tracker — inline quick-add + daily log + weekly/monthly views
 // Depends on: showToast() from app.js, currentDate global
 
 let spendData = { entries: [], totals: { takeout: 0, general: 0, total: 0 } };
@@ -14,6 +14,8 @@ async function loadSpend() {
     } catch (err) {
         console.error('Failed to load spend:', err);
     }
+    loadSpendWeekly();
+    loadSpendMonthly();
 }
 
 function renderSpend() {
@@ -55,33 +57,20 @@ function renderSpend() {
     `).join('');
 }
 
-function openSpendModal(category) {
-    const modal = document.getElementById('spend-modal');
-    document.getElementById('spend-category').value = category;
-    document.getElementById('spend-amount').value = '';
-    document.getElementById('spend-desc').value = '';
-    modal.classList.remove('hidden');
-    // Focus amount input after animation
-    setTimeout(() => document.getElementById('spend-amount').focus(), 100);
-}
+// --- Inline quick-add ---
 
-function closeSpendModal() {
-    document.getElementById('spend-modal').classList.add('hidden');
-}
-
-async function saveSpend() {
-    const category = document.getElementById('spend-category').value;
-    const amount = document.getElementById('spend-amount').value;
-    const description = document.getElementById('spend-desc').value;
-
-    if (!amount || isNaN(parseFloat(amount))) {
-        showToast('Enter a valid amount', 'error');
+async function quickAddSpend(category) {
+    const input = document.getElementById('spend-quick-amount');
+    if (!input) return;
+    const amount = input.value.trim();
+    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+        showToast('Enter an amount first', 'error');
+        input.focus();
         return;
     }
 
-    const btn = document.getElementById('spend-save-btn');
-    btn.textContent = 'Saving...';
-    btn.disabled = true;
+    const btn = document.getElementById(`spend-quick-${category.toLowerCase()}`);
+    if (btn) { btn.disabled = true; btn.textContent = '...'; }
 
     try {
         const res = await fetch('/api/spend/add', {
@@ -91,14 +80,13 @@ async function saveSpend() {
                 date: currentDate,
                 category,
                 amount: parseFloat(amount).toFixed(2),
-                description,
+                description: '',
             }),
         });
         const data = await res.json();
-
         if (data.ok) {
             showToast(`₱${Math.round(parseFloat(amount)).toLocaleString()} ${category} logged`, 'success');
-            closeSpendModal();
+            input.value = '';
             loadSpend();
         } else {
             showToast(`Failed: ${data.error}`, 'error');
@@ -107,9 +95,68 @@ async function saveSpend() {
         showToast('Network error', 'error');
     }
 
-    btn.textContent = 'Save';
-    btn.disabled = false;
+    if (btn) { btn.disabled = false; btn.textContent = category; }
 }
+
+// --- Weekly bars ---
+
+async function loadSpendWeekly() {
+    const el = document.getElementById('spend-week-bars');
+    if (!el) return;
+    try {
+        const res = await fetch('/api/spend/weekly');
+        const data = await res.json();
+        if (!data.ok) return;
+
+        const days = data.days || [];
+        const max = Math.max(...days.map(d => d.total), 1);
+
+        const totalEl = document.getElementById('spend-week-total');
+        if (totalEl) totalEl.textContent = `₱${Math.round(data.week_total).toLocaleString()}`;
+
+        el.innerHTML = days.map(d => {
+            const pct = Math.round((d.total / max) * 100);
+            const isToday = d.is_today;
+            const barColor = isToday ? 'bg-blue-500' : 'bg-gray-600';
+            const labelColor = isToday ? 'text-blue-400 font-semibold' : 'text-gray-500';
+            const amtColor = isToday ? 'text-white' : 'text-gray-400';
+            return `
+                <div class="flex-1 flex flex-col items-center gap-1">
+                    <div class="text-[10px] ${amtColor}">${d.total > 0 ? Math.round(d.total / 1000) + 'k' : ''}</div>
+                    <div class="w-full flex flex-col justify-end" style="height:40px">
+                        <div class="${barColor} rounded-t w-full transition-all" style="height:${Math.max(pct, d.total > 0 ? 8 : 2)}%"></div>
+                    </div>
+                    <div class="text-[10px] ${labelColor}">${d.day}</div>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error('Weekly spend failed:', err);
+    }
+}
+
+// --- Monthly summary ---
+
+async function loadSpendMonthly() {
+    const el = document.getElementById('spend-month-summary');
+    if (!el) return;
+    try {
+        const res = await fetch('/api/spend/monthly');
+        const data = await res.json();
+        if (!data.ok) return;
+
+        el.innerHTML = `
+            <span class="text-gray-400 text-xs">${data.month}</span>
+            <span class="text-white font-medium">₱${Math.round(data.month_total).toLocaleString()}</span>
+            <span class="text-gray-600 mx-1">·</span>
+            <span class="text-gray-400 text-xs">avg ₱${Math.round(data.daily_avg).toLocaleString()}/day</span>
+        `;
+    } catch (err) {
+        console.error('Monthly spend failed:', err);
+    }
+}
+
+// --- Delete ---
 
 async function deleteSpend(index) {
     try {

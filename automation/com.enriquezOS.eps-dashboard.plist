@@ -19,12 +19,12 @@
     <true/>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/eps-dashboard.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/eps-dashboard.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/eps-dashboard-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/eps-dashboard-error.log</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/tools/eps-dashboard</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/eps-dashboard</string>
 </dict>
 </plist>

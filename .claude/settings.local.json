@@ -1,11 +1,10 @@
 {
-  "model": "sonnet",
   "permissions": {
     "allow": [
       "WebSearch",
       "Bash(python scraper.py)",
-      "Bash(find '/Users/allenenriquez/Desktop/Allen Enriquez' -type f -name *[Ss]ervice[Mm]8*)",
-      "Bash(find /Users/allenenriquez/Desktop/Allen Enriquez -type f \\\\\\(-name *.json -o -name *.js -o -name *.ts -o -name *.py -o -name *.yaml -o -name *.yml -o -name *.md \\\\\\))",
+      "Bash(find '/Users/allenenriquez/Developer/Allen-Enriquez' -type f -name *[Ss]ervice[Mm]8*)",
+      "Bash(find /Users/allenenriquez/Developer/Allen-Enriquez -type f \\\\\\(-name *.json -o -name *.js -o -name *.ts -o -name *.py -o -name *.yaml -o -name *.yml -o -name *.md \\\\\\))",
       "WebFetch(domain:developer.servicem8.com)",
       "mcp__mcp-registry__search_mcp_registry",
       "Bash(grep -oh 'tools/[a-z_]*\\\\.py' .claude/agents/*.md)",
@@ -20,9 +19,16 @@
       "Bash(python3 -c ':*)",
       "Bash(mv projects/personal/token_personal.pickle projects/personal/token_personal.pickle.bak)",
       "Bash(python3 tools/auth_personal.py)",
-      "Bash(python3 tools/gate_check.py --help)"
-    ]
+      "Bash(python3 tools/gate_check.py --help)",
+      "Bash(python3 -c \" import sys, json for line in sys.stdin: try: d = json.loads\\(line.strip\\(\\)\\) msg = d.get\\('message', ''\\) if 'ideation' in msg.lower\\(\\) or 'suspense' in msg.lower\\(\\) or 'searchparam' in msg.lower\\(\\) or \\('error' in msg.lower\\(\\) and 'chart' not in msg.lower\\(\\) and 'width' not in msg.lower\\(\\)\\): print\\(d.get\\('timestamp',''\\), d.get\\('level',''\\), msg[:300]\\) except: pass \")",
+      "Bash(curl -s \"http://localhost:3000/api/ideas\" -X POST -H \"content-type: application/json\" -d '{\"id\": 1, \"action\": \"bookmark\"}')",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s \"http://localhost:3000/scripts/1\")",
+      "Bash(curl -s \"http://localhost:3000/ideation\")"
+    ],
+    "defaultMode": "bypassPermissions"
   },
+  "model": "sonnet",
   "hooks": {
     "Stop": [
       {

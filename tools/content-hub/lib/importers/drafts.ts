@@ -19,7 +19,7 @@ export interface DraftRow {
 
 // Default location — Allen's .tmp dir outside this repo.
 export const DEFAULT_DRAFTS_PATH =
-  "/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/content_drafts.json";
+  "/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/content_drafts.json";
 
 export function readDrafts(filePath: string = DEFAULT_DRAFTS_PATH): DraftRow[] {
   const resolved = path.resolve(filePath);

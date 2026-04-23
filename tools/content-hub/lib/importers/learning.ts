@@ -17,8 +17,8 @@ export interface LearningParse {
 }
 
 export const DEFAULT_RESEARCH_FILES = [
-  "/Users/allenenriquez/Desktop/Allen Enriquez/projects/personal/.tmp/content-research.md",
-  "/Users/allenenriquez/Desktop/Allen Enriquez/projects/personal/.tmp/content-research-apr12.md",
+  "/Users/allenenriquez/Developer/Allen-Enriquez/projects/personal/.tmp/content-research.md",
+  "/Users/allenenriquez/Developer/Allen-Enriquez/projects/personal/.tmp/content-research-apr12.md",
 ];
 
 // Public entrypoint — read one or many research files and merge.

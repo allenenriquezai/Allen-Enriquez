@@ -1,0 +1,8 @@
+**/.env
+**/.env.*
+**/*.pickle
+**/*token*.json
+**/*token*.pickle
+**/credentials.json
+**/*secret*
+**/*apikey*

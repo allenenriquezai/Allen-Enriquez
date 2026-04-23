@@ -22,7 +22,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 # ── Config ──────────────────────────────────────────────────────────────────
-TOKEN_FILE   = Path("/Users/allenenriquez/Desktop/Allen Enriquez/token.pickle")
+TOKEN_FILE   = Path("/Users/allenenriquez/Developer/Allen-Enriquez/token.pickle")
 SPREADSHEET_ID = "1G5ATV3g22TVXdaBHfRTkbXthuvnRQuDbx-eI7bUNNz8"
 
 CHARLOTTE_XLSX = Path.home() / "Downloads" / "Charlotte & Nearby Painting Prospects.xlsx"

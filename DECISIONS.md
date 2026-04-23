@@ -1,3 +1,29 @@
+## 2026-04-23 — OS Dashboard: spend overhaul + links tab + error visibility
+
+**Problem:** Spend tab required a modal for every entry (slow on mobile); no weekly/monthly overview. Vault > Links tab was a Phase 2 stub despite backend being fully built. Today queue and Brand outreach failed silently when data sources were unavailable.
+
+**Change:** `routes_spend.py` — `/api/spend/weekly` + `/api/spend/monthly`; `spend.js` — inline quick-add, weekly bars, monthly summary, removed modal; `index.html` — spend subpill redesign, links tab UI, links modal, removed spend modal; `library.js` — links collection handling (API contract fix: `data.links` not `data.items`); `routes_today.py` — `_safe_collect` wrapper surfaces collector failures as queue items; `outreach_hub.js` — amber banner for sheet errors; `base.html` — cache bust v13
+
+**Why:** Inline add is faster on mobile than modal (2 taps vs 5). Links backend was already production-ready in `routes_notes.py` — only frontend was missing. Silent failures in Today queue looked identical to an empty queue, making it impossible to distinguish working vs broken.
+
+**Criteria:** Speed: + | Cost: = | Accuracy: + | Scale: =
+
+**Next:** Test app at http://localhost:5002; fix Google Sheets auth if outreach/Today error banners fire
+
+## 2026-04-23 — Content hub: ideation cards → script navigation
+
+**Problem:** Idea cards in `/ideation` had no way to open a script without clicking "Pick", which mutated the idea's status as a side effect. Users couldn't browse scripts without accidentally changing statuses.
+
+**Change:** `tools/content-hub/components/idea-card.tsx` — wrapped card title in `<Link href="/scripts/[id]">` and added an `ExternalLink` icon button at end of action row. Both navigate without status change.
+
+**Why:** Minimal change — no new routes, no API changes. Separates "view script" (read) from "pick idea" (mutate). Pick still navigates after mutating, preserving the fast pick→write workflow.
+
+**Criteria:** Speed: = | Cost: = | Accuracy: + (status no longer polluted by browsing) | Scale: =
+
+**Next:** Add script count badge to cards using existing `script_count` field. Wire up "Run research" button (currently stubbed).
+
+---
+
 ## 2026-04-22 — Ryan labeler: 4-bucket label structure (A. Upcoming added)
 **Problem:** Gmail project labels had 3 buckets (a. Ongoing / b. Completed / c. Unknown); new auto-created projects defaulted to Ongoing immediately, skipping a "not yet started" state Ryan needed
 **Change:**

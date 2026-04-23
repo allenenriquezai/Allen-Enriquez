@@ -329,11 +329,32 @@ def api_today_queue():
             return jsonify(cached)
     try:
         items = []
-        items.extend(_collect_workflow_flags())
-        items.extend(_collect_outreach())
-        items.extend(_collect_cold_calls())
-        items.extend(_collect_eps())
-        items.extend(_collect_content())
+        _errors = []
+
+        def _safe_collect(fn, label):
+            try:
+                return fn()
+            except Exception as exc:
+                traceback.print_exc()
+                _errors.append(label)
+                return []
+
+        items.extend(_safe_collect(_collect_workflow_flags, 'workflow'))
+        items.extend(_safe_collect(_collect_outreach, 'outreach'))
+        items.extend(_safe_collect(_collect_cold_calls, 'cold-calls'))
+        items.extend(_safe_collect(_collect_eps, 'eps'))
+        items.extend(_safe_collect(_collect_content, 'content'))
+
+        if _errors:
+            items.append({
+                'id': f'collector_errors:{",".join(_errors)}',
+                'domain': 'system',
+                'icon': '⚠️',
+                'title': f'Data unavailable: {", ".join(_errors)}',
+                'context': 'Check server logs — sheet auth or import error',
+                'cta': '',
+                'priority': 1,
+            })
 
         items.sort(key=lambda x: (-int(x.get('priority', 0)), x.get('domain', '')))
         items = items[:10]

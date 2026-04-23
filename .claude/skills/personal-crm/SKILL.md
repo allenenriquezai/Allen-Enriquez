@@ -56,7 +56,7 @@ python3 tools/personal_crm.py dedupe-phone
 Always dry-run first.
 
 ## Rules
-- Run commands from the repo root: `cd "/Users/allenenriquez/Desktop/Allen Enriquez"`
+- Run commands from the repo root: `cd "/Users/allenenriquez/Developer/Allen-Enriquez"`
 - Do NOT read `tools/personal_crm.py` — just run it
 - Do NOT read memory files, CLAUDE.md, or workflow docs
 - Suppress Python warnings: pipe through `2>&1 | grep -v Warning | grep -v warnings` for cleaner output

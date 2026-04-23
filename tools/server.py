@@ -1,6 +1,6 @@
 import http.server, ssl, json, base64, os, time
 
-UPLOAD_DIR = os.path.expanduser("~/Desktop/Allen Enriquez/.tmp/recordings")
+UPLOAD_DIR = os.path.expanduser("~/Developer/Allen-Enriquez/.tmp/recordings")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 class Handler(http.server.SimpleHTTPRequestHandler):

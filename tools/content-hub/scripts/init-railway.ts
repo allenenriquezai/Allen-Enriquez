@@ -28,6 +28,28 @@ if (!ideaCols.includes("notes")) {
   console.log("[init] Migration: added notes column to ideas");
 }
 
+// Create youtube_stats if missing (schema handles IF NOT EXISTS, this is belt-and-suspenders)
+const ytExists = db
+  .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='youtube_stats'")
+  .get();
+if (!ytExists) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS youtube_stats (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      video_id TEXT NOT NULL UNIQUE,
+      title TEXT,
+      url TEXT NOT NULL,
+      published_at TEXT,
+      views INTEGER DEFAULT 0,
+      likes INTEGER DEFAULT 0,
+      comments INTEGER DEFAULT 0,
+      fetched_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS idx_youtube_stats_published_at ON youtube_stats(published_at DESC);
+  `);
+  console.log("[init] Migration: created youtube_stats table");
+}
+
 // Seed only if ideas table is empty (first deploy on fresh volume)
 const count = (
   db.prepare("SELECT COUNT(*) as n FROM ideas").get() as { n: number }

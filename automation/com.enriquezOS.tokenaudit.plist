@@ -8,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/allenenriquez/Desktop/Allen Enriquez/automation/run_daily_token_audit.sh</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/automation/run_daily_token_audit.sh</string>
     </array>
 
     <key>StartCalendarInterval</key>
@@ -20,10 +20,10 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/token-audit-cron.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/token-audit-cron.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/token-audit-cron-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/token-audit-cron-error.log</string>
 
     <key>RunAtLoad</key>
     <false/>

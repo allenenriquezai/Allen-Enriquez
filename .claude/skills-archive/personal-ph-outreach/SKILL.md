@@ -70,7 +70,7 @@ python3 tools/outreach.py replies
 Drafts land in `projects/personal/.tmp/reply_drafts.md`. Read + summarise for Allen.
 
 ## Rules
-- Run from repo root: `cd "/Users/allenenriquez/Desktop/Allen Enriquez"`
+- Run from repo root: `cd "/Users/allenenriquez/Developer/Allen-Enriquez"`
 - Do NOT read `tools/outreach.py` or the 4 modules — just run the CLI
 - Do NOT read memory files, CLAUDE.md, workflow docs — this skill is self-contained
 - Suppress Python warnings: pipe through `2>&1 | grep -v -E "Warning|warnings.warn|google-auth|api_core|Google will"` for clean output

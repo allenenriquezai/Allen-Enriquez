@@ -161,6 +161,13 @@ async function ohLoadProspects() {
 
         if (count) count.textContent = `${ohState.prospects.length} shown`;
 
+        if (data.error) {
+            const errBanner = document.createElement('div');
+            errBanner.className = 'text-xs text-amber-400 bg-amber-900/20 border border-amber-800/40 rounded-lg px-3 py-2 mb-3';
+            errBanner.textContent = `Sheet error: ${data.error}`;
+            list.parentNode.insertBefore(errBanner, list);
+        }
+
         if (!ohState.prospects.length) {
             const hint = ohState.stage === 'all' && ohState.channel === 'all'
                 ? 'No prospects yet. Run <code class="text-[#02B3E9]">python3 tools/outreach.py discover</code>'

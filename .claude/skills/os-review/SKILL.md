@@ -10,7 +10,7 @@ You are running a full audit of Allen's personal OS. Your job is to produce a st
 
 Run this first:
 ```bash
-cd "/Users/allenenriquez/Desktop/Allen Enriquez" && python3 tools/fetch_review_data.py
+cd "/Users/allenenriquez/Developer/Allen-Enriquez" && python3 tools/fetch_review_data.py
 ```
 
 If it fails partially (e.g. personal Gmail not set up yet), continue — just note which sources were skipped.

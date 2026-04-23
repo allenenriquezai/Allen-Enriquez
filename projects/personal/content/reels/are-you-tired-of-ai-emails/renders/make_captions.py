@@ -4,7 +4,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path("/Users/allenenriquez/Desktop/Allen Enriquez/projects/personal/videos/reel-7-are-you-tired-of-ai-emails")
+ROOT = Path("/Users/allenenriquez/Developer/Allen-Enriquez/projects/personal/videos/reel-7-are-you-tired-of-ai-emails")
 WORDS_PATH = ROOT / "transcripts" / "words.json"
 OUT_PATH = ROOT / "render" / "captions.ass"
 

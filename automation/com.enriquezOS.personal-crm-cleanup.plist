@@ -7,7 +7,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/allenenriquez/Desktop/Allen Enriquez/automation/run_personal_crm_cleanup.sh</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/automation/run_personal_crm_cleanup.sh</string>
     </array>
     <key>StartCalendarInterval</key>
     <dict>
@@ -17,10 +17,10 @@
         <integer>30</integer>
     </dict>
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/personal-crm-cleanup.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/personal-crm-cleanup.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/personal-crm-cleanup.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/personal-crm-cleanup.log</string>
     <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez</string>
 </dict>
 </plist>

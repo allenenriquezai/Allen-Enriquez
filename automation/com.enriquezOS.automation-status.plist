@@ -8,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/usr/bin/python3</string>
-        <string>/Users/allenenriquez/Desktop/Allen Enriquez/tools/automation_status.py</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/automation_status.py</string>
     </array>
 
     <key>StartCalendarInterval</key>
@@ -20,12 +20,12 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/automation-status.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/automation-status.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/automation-status-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/automation-status-error.log</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez</string>
 </dict>
 </plist>

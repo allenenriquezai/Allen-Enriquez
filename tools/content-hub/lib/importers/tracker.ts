@@ -3,7 +3,7 @@ import path from "node:path";
 import type Database from "better-sqlite3";
 
 const TRACKER_PATH =
-  "/Users/allenenriquez/Desktop/Allen Enriquez/projects/personal/.tmp/content_tracker.json";
+  "/Users/allenenriquez/Developer/Allen-Enriquez/projects/personal/.tmp/content_tracker.json";
 
 type SlotState = {
   topic?: string;

@@ -22,12 +22,12 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/tender-batch.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/tender-batch.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/tender-batch-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/tender-batch-error.log</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez</string>
 </dict>
 </plist>

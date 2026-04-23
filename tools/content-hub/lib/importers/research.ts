@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 export const DEFAULT_RESEARCH_PATH =
-  "/Users/allenenriquez/Desktop/Allen Enriquez/projects/personal/.tmp/content-research.md";
+  "/Users/allenenriquez/Developer/Allen-Enriquez/projects/personal/.tmp/content-research.md";
 
 export interface ResearchParse {
   recommendedHooks: string[];

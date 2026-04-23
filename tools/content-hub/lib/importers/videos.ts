@@ -3,7 +3,7 @@ import path from "node:path";
 import type Database from "better-sqlite3";
 
 const VIDEOS_ROOT =
-  "/Users/allenenriquez/Desktop/Allen Enriquez/projects/personal/videos";
+  "/Users/allenenriquez/Developer/Allen-Enriquez/projects/personal/videos";
 
 export type ImportVideosResult = {
   inserted: number;

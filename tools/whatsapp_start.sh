@@ -2,7 +2,7 @@
 # Start WhatsApp webhook server + Cloudflare tunnel
 # Managed by launchd: com.enriquezOS.whatsapp-webhook
 
-BASE_DIR="/Users/allenenriquez/Desktop/Allen Enriquez"
+BASE_DIR="/Users/allenenriquez/Developer/Allen-Enriquez"
 PORT=5050
 
 # Kill any existing processes

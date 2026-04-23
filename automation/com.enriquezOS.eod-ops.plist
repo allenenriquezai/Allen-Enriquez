@@ -22,12 +22,12 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/eod-ops.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/eod-ops.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/eod-ops-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/eod-ops-error.log</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez</string>
 </dict>
 </plist>

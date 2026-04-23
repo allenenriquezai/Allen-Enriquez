@@ -22,12 +22,12 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/jibble-clockin.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/jibble-clockin.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/jibble-clockin-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/jibble-clockin-error.log</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez</string>
 </dict>
 </plist>

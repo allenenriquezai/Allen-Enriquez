@@ -217,15 +217,51 @@
 
         <!-- Spend -->
         <div id="subpill-personal-spend" class="subpill-content hidden">
-            <div class="flex items-center justify-between mb-4">
+
+            <!-- Quick-add -->
+            <div class="flex gap-2 mb-4">
+                <div class="flex-1 relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">₱</span>
+                    <input id="spend-quick-amount" type="number" inputmode="decimal" step="0.01" placeholder="0"
+                           class="w-full bg-gray-800 border border-gray-700 rounded-xl pl-7 pr-3 py-3 text-white text-lg font-semibold focus:border-blue-500 outline-none"
+                           onkeydown="if(event.key==='Enter'){quickAddSpend('General')}">
+                </div>
+                <button id="spend-quick-Takeout" onclick="quickAddSpend('Takeout')"
+                        class="px-4 py-3 bg-amber-900/40 hover:bg-amber-900/60 text-amber-400 rounded-xl text-sm font-medium transition">
+                    Takeout
+                </button>
+                <button id="spend-quick-General" onclick="quickAddSpend('General')"
+                        class="px-4 py-3 bg-blue-900/40 hover:bg-blue-900/60 text-blue-400 rounded-xl text-sm font-medium transition">
+                    General
+                </button>
+            </div>
+
+            <!-- Weekly overview -->
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 mb-3">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider">This Week</span>
+                    <span id="spend-week-total" class="text-sm font-semibold text-white">₱0</span>
+                </div>
+                <div id="spend-week-bars" class="flex gap-1 items-end" style="height:56px">
+                    <div class="flex-1 text-center text-xs text-gray-600 py-3">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Monthly summary -->
+            <div class="flex items-center gap-2 text-sm mb-4 px-1">
+                <div id="spend-month-summary" class="flex items-center gap-2 text-sm">
+                    <span class="text-gray-500 text-xs">Loading month...</span>
+                </div>
+            </div>
+
+            <!-- Date nav + today's log -->
+            <div class="flex items-center justify-between mb-3">
                 <button onclick="changeDate(-1)" class="p-2 text-gray-400 hover:text-white transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </button>
-                <div class="text-center">
-                    <div id="spend-date-display" class="text-base font-semibold">{{ date }}</div>
-                </div>
+                <div id="spend-date-display" class="text-base font-semibold">{{ date }}</div>
                 <button onclick="changeDate(1)" class="p-2 text-gray-400 hover:text-white transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -233,19 +269,8 @@
                 </button>
             </div>
 
-            <div id="spend-totals" class="text-base text-center mb-4">
+            <div id="spend-totals" class="text-sm text-center mb-3">
                 <span class="text-gray-500">No data</span>
-            </div>
-
-            <div class="flex gap-2 mb-4">
-                <button onclick="openSpendModal('Takeout')"
-                        class="flex-1 py-3 bg-amber-900/30 hover:bg-amber-900/50 text-amber-400 rounded-xl text-sm font-medium transition">
-                    + Takeout
-                </button>
-                <button onclick="openSpendModal('General')"
-                        class="flex-1 py-3 bg-blue-900/30 hover:bg-blue-900/50 text-blue-400 rounded-xl text-sm font-medium transition">
-                    + General
-                </button>
             </div>
 
             <div id="spend-list" class="space-y-1.5">
@@ -680,10 +705,14 @@
             </div>
         </div>
 
-        <!-- Links placeholder -->
+        <!-- Links -->
         <div id="subpill-vault-links" class="subpill-content hidden">
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 text-center">
-                <div class="text-sm text-gray-400">Links — Phase 2</div>
+            <div class="flex justify-end mb-3">
+                <button onclick="openLinksModal()"
+                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition">+ Add Link</button>
+            </div>
+            <div id="library-links-list" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
             </div>
         </div>
 
@@ -745,31 +774,40 @@
     </div>
 </div>
 
-<!-- Spend Modal -->
-<div id="spend-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end justify-center"
-     onclick="if(event.target===this)closeSpendModal()">
+<!-- Links Modal -->
+<div id="links-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end justify-center"
+     onclick="if(event.target===this)closeLinksModal()">
     <div class="bg-gray-900 rounded-t-2xl border-t border-gray-700 w-full max-w-lg p-5 space-y-4 animate-slide-up">
         <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-white">Add Spend</h3>
-            <button onclick="closeSpendModal()" class="text-gray-400 hover:text-white transition">
+            <h3 class="text-lg font-semibold text-white">Add Link</h3>
+            <button onclick="closeLinksModal()" class="text-gray-400 hover:text-white transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
-        <input type="hidden" id="spend-category" value="Takeout">
         <div>
-            <label class="text-xs text-gray-400 uppercase tracking-wider">Amount (₱)</label>
-            <input id="spend-amount" type="number" inputmode="decimal" step="0.01" placeholder="0.00"
-                   class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-2xl text-center text-white font-semibold focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-                   onkeydown="if(event.key==='Enter')saveSpend()">
+            <label class="text-xs text-gray-400 uppercase tracking-wider">URL *</label>
+            <input id="link-url" type="url" placeholder="https://..."
+                   class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:border-blue-500 outline-none"
+                   onkeydown="if(event.key==='Enter')saveLink()">
         </div>
         <div>
-            <label class="text-xs text-gray-400 uppercase tracking-wider">Description (optional)</label>
-            <input id="spend-desc" type="text" placeholder="What was it?"
-                   class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
+            <label class="text-xs text-gray-400 uppercase tracking-wider">Title (optional)</label>
+            <input id="link-title" type="text" placeholder="Leave blank to use URL"
+                   class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none">
         </div>
-        <button onclick="saveSpend()" id="spend-save-btn"
+        <div>
+            <label class="text-xs text-gray-400 uppercase tracking-wider">Note (optional)</label>
+            <input id="link-note" type="text" placeholder="Why is this useful?"
+                   class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none">
+        </div>
+        <div>
+            <label class="text-xs text-gray-400 uppercase tracking-wider">Section (optional)</label>
+            <input id="link-section" type="text" placeholder="e.g. Tools, Resources, Reading"
+                   class="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none">
+        </div>
+        <button onclick="saveLink()" id="link-save-btn"
                 class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium transition">
             Save
         </button>

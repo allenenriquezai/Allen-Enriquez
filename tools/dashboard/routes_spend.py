@@ -119,3 +119,110 @@ def spend_summary():
         })
     except Exception as e:
         return jsonify({'ok': False, 'error': str(e)}), 500
+
+
+@spend_bp.route('/api/spend/weekly')
+def spend_weekly():
+    """Per-day spend breakdown for the current week (Sun–Sat)."""
+    try:
+        today = now_ph().date()
+        week_start = today - timedelta(days=(today.weekday() + 1) % 7)
+        week_end = week_start + timedelta(days=6)
+
+        rows = db.load_spend_range(
+            week_start.strftime('%Y-%m-%d'), week_end.strftime('%Y-%m-%d'))
+
+        # Group by date
+        by_date = {}
+        for r in rows:
+            d = r['date']
+            if d not in by_date:
+                by_date[d] = {'takeout': 0.0, 'general': 0.0}
+            cat = r['category'].lower()
+            if cat == 'takeout':
+                by_date[d]['takeout'] += r['amount']
+            else:
+                by_date[d]['general'] += r['amount']
+
+        days = []
+        d = week_start
+        while d <= week_end:
+            key = d.strftime('%Y-%m-%d')
+            entry = by_date.get(key, {'takeout': 0.0, 'general': 0.0})
+            days.append({
+                'date': key,
+                'day': d.strftime('%a'),
+                'is_today': key == today.strftime('%Y-%m-%d'),
+                'takeout': entry['takeout'],
+                'general': entry['general'],
+                'total': entry['takeout'] + entry['general'],
+            })
+            d += timedelta(days=1)
+
+        week_total = sum(day['total'] for day in days)
+        return jsonify({
+            'ok': True,
+            'days': days,
+            'week_total': week_total,
+            'week_takeout': sum(day['takeout'] for day in days),
+            'week_general': sum(day['general'] for day in days),
+        })
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 500
+
+
+@spend_bp.route('/api/spend/monthly')
+def spend_monthly():
+    """Per-day spend for the current calendar month + totals."""
+    try:
+        today = now_ph().date()
+        month_start = today.replace(day=1)
+        # Last day of month
+        if today.month == 12:
+            month_end = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+        else:
+            month_end = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+
+        rows = db.load_spend_range(
+            month_start.strftime('%Y-%m-%d'), month_end.strftime('%Y-%m-%d'))
+
+        by_date = {}
+        for r in rows:
+            d = r['date']
+            if d not in by_date:
+                by_date[d] = {'takeout': 0.0, 'general': 0.0}
+            cat = r['category'].lower()
+            if cat == 'takeout':
+                by_date[d]['takeout'] += r['amount']
+            else:
+                by_date[d]['general'] += r['amount']
+
+        days = []
+        d = month_start
+        while d <= month_end:
+            key = d.strftime('%Y-%m-%d')
+            entry = by_date.get(key, {'takeout': 0.0, 'general': 0.0})
+            days.append({
+                'date': key,
+                'day_num': d.day,
+                'is_today': key == today.strftime('%Y-%m-%d'),
+                'takeout': entry['takeout'],
+                'general': entry['general'],
+                'total': entry['takeout'] + entry['general'],
+            })
+            d += timedelta(days=1)
+
+        month_total = sum(day['total'] for day in days)
+        days_with_spend = sum(1 for day in days if day['total'] > 0)
+        return jsonify({
+            'ok': True,
+            'month': today.strftime('%B %Y'),
+            'days': days,
+            'month_total': month_total,
+            'month_takeout': sum(day['takeout'] for day in days),
+            'month_general': sum(day['general'] for day in days),
+            'daily_avg': round(month_total / days_with_spend, 2) if days_with_spend else 0,
+            'days_with_spend': days_with_spend,
+        })
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 500

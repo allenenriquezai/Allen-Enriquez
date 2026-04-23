@@ -8,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/usr/bin/python3</string>
-        <string>/Users/allenenriquez/Desktop/Allen Enriquez/tools/crm_sync.py</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/crm_sync.py</string>
     </array>
 
     <!-- Every 10 minutes -->
@@ -16,13 +16,13 @@
     <integer>600</integer>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/crm-sync.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/crm-sync.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/crm-sync-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/crm-sync-error.log</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez</string>
 
     <key>RunAtLoad</key>
     <true/>

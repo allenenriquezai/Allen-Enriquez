@@ -8,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/allenenriquez/Desktop/Allen Enriquez/tools/whatsapp_start.sh</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/whatsapp_start.sh</string>
     </array>
 
     <key>RunAtLoad</key>
@@ -18,12 +18,12 @@
     <true/>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/whatsapp-webhook.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/whatsapp-webhook.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/whatsapp-webhook-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/whatsapp-webhook-error.log</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez</string>
 </dict>
 </plist>

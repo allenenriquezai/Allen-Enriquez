@@ -318,7 +318,29 @@ SM8_STATUS_LABELS = {
 }
 
 
-def post_sm8_status_note(deal_id, old_status, new_status, sm8_number, dry_run=False):
+import re as _re
+
+
+def _normalize_note(content):
+    text = (content or '').lower().strip()
+    for prefix in ('[sm8 sync] ', '[sm8 update] ', '[sm8] '):
+        if text.startswith(prefix):
+            text = text[len(prefix):]
+    return _re.sub(r'\s+', ' ', text)
+
+
+def _already_posted(new_content, existing_notes):
+    a = _normalize_note(new_content)
+    if not a:
+        return False
+    for n in existing_notes:
+        b = _normalize_note(n.get('content', ''))
+        if a == b or a in b or b in a:
+            return True
+    return False
+
+
+def post_sm8_status_note(deal_id, old_status, new_status, sm8_number, dry_run=False, existing_notes=None):
     """Post a note to Pipedrive when SM8 job status changes."""
     old_label = SM8_STATUS_LABELS.get(old_status, old_status)
     new_label = SM8_STATUS_LABELS.get(new_status, new_status)
@@ -327,10 +349,12 @@ def post_sm8_status_note(deal_id, old_status, new_status, sm8_number, dry_run=Fa
     if dry_run:
         print(f"    [DRY RUN] Would post note: {content}")
         return
+    if existing_notes and _already_posted(content, existing_notes):
+        return
     result = pd_post('/notes', {
         'content': content,
         'deal_id': deal_id,
-        'pinned_to_deal_flag': 1,
+        'pinned_to_deal_flag': 0,
     })
     if result:
         print(f"    Posted SM8 status note: {content}")
@@ -399,6 +423,17 @@ def pd_post(path, payload):
             return json.loads(r.read())
 
     return _retry_request(_do, f"PD POST {path}")
+
+
+def pd_get_deal_notes(deal_id):
+    url = (f"https://{PIPEDRIVE_DOMAIN}/api/v1/notes"
+           f"?deal_id={deal_id}&limit=100&api_token={PIPEDRIVE_API_KEY}")
+
+    def _do():
+        with urllib.request.urlopen(url, timeout=15) as r:
+            return json.loads(r.read()).get('data') or []
+
+    return _retry_request(_do, f"PD GET notes/{deal_id}") or []
 
 
 def pd_paginate(path, params=None):
@@ -848,7 +883,7 @@ def sync_notes(deal_id, sm8_notes, existing_pd_notes, dry_run=False):
         result = pd_post('/notes', {
             'content': content,
             'deal_id': deal_id,
-            'pinned_to_deal_flag': 1,
+            'pinned_to_deal_flag': 0,
         })
         if result:
             posted += 1
@@ -1006,6 +1041,9 @@ def run_sync(deal_id=None, dry_run=False, print_mode=False):
 
         results['deals_with_sm8'] += 1
 
+        # Fetch existing Pipedrive notes once per deal for dedup checks
+        pd_notes = pd_get_deal_notes(did) if not dry_run else []
+
         # Detect SM8 status changes and post note to Pipedrive
         prev = db_get_previous(db, did)
         sm8_status = sm8_job.get('status', '').lower()
@@ -1028,11 +1066,12 @@ def run_sync(deal_id=None, dry_run=False, print_mode=False):
                         print(f"    [DRY RUN] Would post note: {note_text}")
                     else:
                         pd_put(f'/deals/{did}', {'stage_id': target_stage})
-                        pd_post('/notes', {
-                            'content': note_text,
-                            'deal_id': did,
-                            'pinned_to_deal_flag': 1,
-                        })
+                        if not _already_posted(note_text, pd_notes):
+                            pd_post('/notes', {
+                                'content': note_text,
+                                'deal_id': did,
+                                'pinned_to_deal_flag': 0,
+                            })
                         print(f"    Moved to DEPOSIT PROCESS + note posted")
                     db_log_change(db, did, 'stage_id', str(stage_id), str(target_stage), 'sm8_auto')
                     stage_moved = True
@@ -1046,16 +1085,17 @@ def run_sync(deal_id=None, dry_run=False, print_mode=False):
                 if dry_run:
                     print(f"    [DRY RUN] Would post note: {note_text}")
                 else:
-                    pd_post('/notes', {
-                        'content': note_text,
-                        'deal_id': did,
-                        'pinned_to_deal_flag': 1,
-                    })
+                    if not _already_posted(note_text, pd_notes):
+                        pd_post('/notes', {
+                            'content': note_text,
+                            'deal_id': did,
+                            'pinned_to_deal_flag': 0,
+                        })
                 results['flagged'] += 1
                 results['status_notes_posted'] += 1
             else:
                 # Other status changes — post note only
-                post_sm8_status_note(did, prev['sm8_status'], sm8_status, sm8_job_number, dry_run)
+                post_sm8_status_note(did, prev['sm8_status'], sm8_status, sm8_job_number, dry_run, existing_notes=pd_notes)
                 results['status_notes_posted'] += 1
 
             db_log_change(db, did, 'sm8_status', prev['sm8_status'], sm8_status, 'sm8')
@@ -1078,11 +1118,12 @@ def run_sync(deal_id=None, dry_run=False, print_mode=False):
                         print(f"    [DRY RUN] Would post note: {note_text}")
                     else:
                         pd_put(f'/deals/{did}', {'stage_id': target_stage})
-                        pd_post('/notes', {
-                            'content': note_text,
-                            'deal_id': did,
-                            'pinned_to_deal_flag': 1,
-                        })
+                        if not _already_posted(note_text, pd_notes):
+                            pd_post('/notes', {
+                                'content': note_text,
+                                'deal_id': did,
+                                'pinned_to_deal_flag': 0,
+                            })
                         print(f"    Baseline fix: moved to DEPOSIT PROCESS + note posted")
                     db_log_change(db, did, 'stage_id', str(stage_id), str(target_stage), 'sm8_baseline')
                     stage_moved = True
@@ -1094,11 +1135,12 @@ def run_sync(deal_id=None, dry_run=False, print_mode=False):
                 if dry_run:
                     print(f"    [DRY RUN] Baseline flag: {note_text}")
                 else:
-                    pd_post('/notes', {
-                        'content': note_text,
-                        'deal_id': did,
-                        'pinned_to_deal_flag': 1,
-                    })
+                    if not _already_posted(note_text, pd_notes):
+                        pd_post('/notes', {
+                            'content': note_text,
+                            'deal_id': did,
+                            'pinned_to_deal_flag': 0,
+                        })
                 results['flagged'] += 1
                 results['status_notes_posted'] += 1
 
@@ -1136,11 +1178,14 @@ def run_sync(deal_id=None, dry_run=False, print_mode=False):
                 content = f"{act_note}{staff_str}"
                 if date_str:
                     content = f"{content} | {date_str}"
-                # Post to Pipedrive
+                # Post to Pipedrive (skip if already posted as near-duplicate)
+                if _already_posted(content, pd_notes):
+                    db.execute("UPDATE sm8_activities SET posted_to_pd = 1 WHERE id = ?", (act_id,))
+                    continue
                 result = pd_post('/notes', {
                     'content': content,
                     'deal_id': did,
-                    'pinned_to_deal_flag': 1,
+                    'pinned_to_deal_flag': 0,
                 })
                 if result:
                     db.execute("UPDATE sm8_activities SET posted_to_pd = 1 WHERE id = ?", (act_id,))

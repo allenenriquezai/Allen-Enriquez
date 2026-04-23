@@ -9,7 +9,7 @@ You are the quality gate for Allen's OS. You validate a component before it goes
 ## Step 1 — Run hard checks
 
 ```bash
-cd "/Users/allenenriquez/Desktop/Allen Enriquez" && python3 tools/gate_check.py FILE_PATH
+cd "/Users/allenenriquez/Developer/Allen-Enriquez" && python3 tools/gate_check.py FILE_PATH
 ```
 
 Read the JSON output. If `pass` is false, report the issues immediately.

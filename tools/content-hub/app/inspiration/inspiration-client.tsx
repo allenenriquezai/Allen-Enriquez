@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -332,6 +332,27 @@ export function InspirationClient({
   const [toast, setToast] = useState<string | null>(null);
   const [refs, setRefs] = useState<LearningRef[]>(initialRefs);
   const [creatorFilter, setCreatorFilter] = useState(CREATOR_FILTER_ALL);
+  const [autoRefreshing, setAutoRefreshing] = useState(false);
+
+  useEffect(() => {
+    async function checkAndRefresh() {
+      try {
+        const res = await fetch("/api/creator-feed/last-refresh");
+        const { last_fetched_at, total } = await res.json();
+        const stale =
+          total === 0 ||
+          !last_fetched_at ||
+          Date.now() - new Date(last_fetched_at).getTime() > 6 * 60 * 60 * 1000;
+        if (!stale) return;
+        setAutoRefreshing(true);
+        await fetch("/api/creator-feed/refresh", { method: "POST" });
+      } finally {
+        setAutoRefreshing(false);
+        startTransition(() => router.refresh());
+      }
+    }
+    checkAndRefresh();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const flash = (msg: string) => {
     setToast(msg);
@@ -425,7 +446,14 @@ export function InspirationClient({
     <div className="flex flex-col gap-5">
       {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <h1 className="text-2xl font-semibold">Inspiration</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-semibold">Inspiration</h1>
+          {autoRefreshing && (
+            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 font-medium animate-pulse">
+              Refreshing…
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Toast */}

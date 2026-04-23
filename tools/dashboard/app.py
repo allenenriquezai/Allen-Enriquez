@@ -16,9 +16,24 @@ from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
 
-# Import shared auth from personal_crm.py
+import pickle
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from personal_crm import get_sheets_service, load_token
+
+# Dashboard sheet belongs to 006 account — use token_personal.pickle
+_DASHBOARD_TOKEN = Path(__file__).parent.parent.parent / 'projects' / 'personal' / 'token_personal.pickle'
+
+def _load_dashboard_creds():
+    with open(_DASHBOARD_TOKEN, 'rb') as f:
+        creds = pickle.load(f)
+    if creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+        with open(_DASHBOARD_TOKEN, 'wb') as f:
+            pickle.dump(creds, f)
+    return creds
 
 import db
 import sync
@@ -116,7 +131,7 @@ def _populate_defaults(service, sheet_id):
 
 
 def _svc():
-    return get_sheets_service()
+    return build('sheets', 'v4', credentials=_load_dashboard_creds())
 
 
 # ============================================================
@@ -507,7 +522,10 @@ def _ensure_init():
 
         sheet_id = get_sheet_id()
         service = _svc()
-        _migrate_habits_if_needed(service, sheet_id)
+        try:
+            _migrate_habits_if_needed(service, sheet_id)
+        except Exception as e:
+            print(f"[warn] habits migration skipped: {e}")
 
         # Pull from Sheets → SQLite on first boot (or if DB is empty)
         if db.is_empty():

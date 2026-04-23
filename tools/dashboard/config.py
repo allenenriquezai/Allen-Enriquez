@@ -20,6 +20,7 @@ def today_ph():
     return now_ph().strftime('%Y-%m-%d')
 
 BASE_DIR = Path(__file__).parent.parent.parent  # Allen Enriquez/
+SHARED_ENV = BASE_DIR / 'projects' / '.env'
 EPS_ENV = BASE_DIR / 'projects' / 'eps' / '.env'
 PERSONAL_ENV = BASE_DIR / 'projects' / 'personal' / '.env'
 
@@ -31,7 +32,7 @@ def _load_dotenvs():
     global _loaded
     if _loaded:
         return
-    for env_file in [EPS_ENV, PERSONAL_ENV]:
+    for env_file in [SHARED_ENV, EPS_ENV, PERSONAL_ENV]:
         if env_file.exists():
             for line in env_file.read_text().splitlines():
                 line = line.strip()

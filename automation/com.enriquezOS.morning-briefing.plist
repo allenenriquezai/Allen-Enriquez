@@ -8,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/allenenriquez/Desktop/Allen Enriquez/automation/run_morning_briefing.sh</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/automation/run_morning_briefing.sh</string>
     </array>
 
     <key>StartCalendarInterval</key>
@@ -20,10 +20,10 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/briefing-cron.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/briefing-cron.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/briefing-cron-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/briefing-cron-error.log</string>
 
     <key>RunAtLoad</key>
     <false/>

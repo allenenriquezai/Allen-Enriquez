@@ -22,12 +22,12 @@
     <integer>10</integer>
 
     <key>StandardOutPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/crm-kanban.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/crm-kanban.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez/.tmp/crm-kanban-error.log</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez/.tmp/crm-kanban-error.log</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/allenenriquez/Desktop/Allen Enriquez</string>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez</string>
 </dict>
 </plist>

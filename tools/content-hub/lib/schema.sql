@@ -110,3 +110,16 @@ CREATE TABLE IF NOT EXISTS creator_posts (
 CREATE INDEX IF NOT EXISTS idx_creator_posts_posted_at ON creator_posts(posted_at DESC);
 CREATE INDEX IF NOT EXISTS idx_creator_posts_creator ON creator_posts(creator);
 CREATE INDEX IF NOT EXISTS idx_creator_posts_fetched_at ON creator_posts(fetched_at DESC);
+
+CREATE TABLE IF NOT EXISTS youtube_stats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  video_id TEXT NOT NULL UNIQUE,
+  title TEXT,
+  url TEXT NOT NULL,
+  published_at TEXT,
+  views INTEGER DEFAULT 0,
+  likes INTEGER DEFAULT 0,
+  comments INTEGER DEFAULT 0,
+  fetched_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_youtube_stats_published_at ON youtube_stats(published_at DESC);

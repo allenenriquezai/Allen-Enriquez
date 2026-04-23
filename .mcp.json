@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "blotato": {
+      "type": "sse",
+      "url": "https://mcp.blotato.com/mcp",
+      "headers": {
+        "blotato-api-key": "${BLOTATO_API_KEY}"
+      }
+    }
+  }
+}
