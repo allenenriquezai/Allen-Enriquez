@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Roboto_Mono } from "next/font/google";
 import "./globals.css";
-import { TabNav } from "@/components/tab-nav";
+import { TabNav, MobileBottomNav } from "@/components/tab-nav";
 import { AeMonogram } from "@/components/ae-monogram";
 
 const montserrat = Montserrat({
@@ -17,6 +17,8 @@ const robotoMono = Roboto_Mono({
   weight: ["400", "500", "700"],
   display: "swap",
 });
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Content Hub — AE",
@@ -44,7 +46,7 @@ export default function RootLayout({
       className={`dark ${montserrat.variable} ${robotoMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex">
-        <aside className="w-64 shrink-0 border-r border-sidebar-border bg-sidebar text-sidebar-foreground flex flex-col">
+        <aside className="hidden md:flex w-64 shrink-0 border-r border-sidebar-border bg-sidebar text-sidebar-foreground flex-col">
           <div className="px-5 py-6 border-b border-sidebar-border">
             <div className="flex items-center gap-3">
               <AeMonogram size={40} />
@@ -84,8 +86,9 @@ export default function RootLayout({
               {formatToday()}
             </span>
           </header>
-          <main className="flex-1 p-8 overflow-auto">{children}</main>
+          <main className="flex-1 p-8 overflow-auto pb-16 md:pb-0">{children}</main>
         </div>
+        <MobileBottomNav />
       </body>
     </html>
   );

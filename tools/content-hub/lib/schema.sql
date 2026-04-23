@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS ideas (
   day_of_week TEXT,
   slot INTEGER,
   batch TEXT,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  notes TEXT -- reviewer notes
 );
 
 CREATE TABLE IF NOT EXISTS scripts (

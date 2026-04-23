@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# sqlite (DB lives on Railway volume — seed-data.sql is kept)
+*.db
+*.db-shm
+*.db-wal

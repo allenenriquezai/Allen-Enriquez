@@ -3,28 +3,28 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  ClipboardList,
-  Lightbulb,
-  FileText,
   Calendar,
+  FileText,
+  Sparkles,
   FolderOpen,
   BarChart3,
-  Inbox,
-  BookOpen,
-  Rss,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/queue", label: "Queue", icon: ClipboardList },
-  { href: "/ideation", label: "Ideation", icon: Lightbulb },
-  { href: "/scripts", label: "Scripts", icon: FileText },
   { href: "/calendar", label: "Calendar", icon: Calendar },
+  { href: "/scripts", label: "Scripts", icon: FileText },
+  { href: "/inspiration", label: "Inspiration", icon: Sparkles },
   { href: "/library", label: "Library", icon: FolderOpen },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/inbox", label: "Inbox", icon: Inbox },
-  { href: "/learning", label: "Learning", icon: BookOpen },
-  { href: "/creator-feed", label: "Creator Feed", icon: Rss },
+];
+
+const MOBILE_NAV = [
+  { href: "/calendar", label: "Calendar", icon: Calendar },
+  { href: "/scripts", label: "Scripts", icon: FileText },
+  { href: "/inspiration", label: "Inspire", icon: Sparkles },
+  { href: "/library", label: "Library", icon: FolderOpen },
+  { href: "/analytics", label: "Stats", icon: BarChart3 },
 ];
 
 export function TabNav() {
@@ -66,6 +66,38 @@ export function TabNav() {
             <span className="text-[0.78rem] font-medium uppercase">
               {item.label}
             </span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+export function MobileBottomNav() {
+  const pathname = usePathname();
+  return (
+    <nav className="fixed bottom-0 inset-x-0 z-50 flex md:hidden border-t border-sidebar-border bg-sidebar">
+      {MOBILE_NAV.map((item) => {
+        const active =
+          pathname === item.href || pathname?.startsWith(item.href + "/");
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              "flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium uppercase transition-colors",
+              active
+                ? "text-[color:var(--brand)]"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+            style={{ fontFamily: "var(--font-roboto-mono)", letterSpacing: "0.04em" }}
+          >
+            <Icon
+              className="h-5 w-5"
+              style={active ? { filter: "drop-shadow(0 0 6px rgba(2,179,233,0.6))" } : undefined}
+            />
+            {item.label}
           </Link>
         );
       })}

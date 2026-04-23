@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, CheckCircle2 } from "lucide-react";
 
 export type Caption = { variant: string; body: string };
 
@@ -25,7 +26,8 @@ const PLATFORM_TABS: { key: string; label: string }[] = [
   { key: "caption_ig", label: "IG / FB" },
   { key: "caption_tiktok", label: "TikTok" },
   { key: "caption_yt", label: "YT Shorts" },
-  { key: "caption_x", label: "LinkedIn" },
+  { key: "caption_x", label: "X" },
+  { key: "caption_linkedin", label: "LinkedIn" },
 ];
 
 const SLOT_LABELS: Record<string, string> = {
@@ -59,12 +61,28 @@ function formatDate(dateStr: string) {
 }
 
 export function QueueClient({ slots }: { slots: QueueSlot[] }) {
+  const router = useRouter();
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [postingId, setPostingId] = useState<number | null>(null);
 
   const handleCopy = async (text: string, key: string) => {
     await navigator.clipboard.writeText(text);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  const handleMarkPosted = async (scheduleId: number) => {
+    setPostingId(scheduleId);
+    try {
+      await fetch(`/api/schedule/${scheduleId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "posted" }),
+      });
+      router.refresh();
+    } finally {
+      setPostingId(null);
+    }
   };
 
   if (slots.length === 0) {
@@ -105,9 +123,21 @@ export function QueueClient({ slots }: { slots: QueueSlot[] }) {
                     </span>
                   )}
                 </div>
-                <span className="ae-mono-label opacity-60">
-                  {SLOT_LABELS[slot.slot_type] ?? slot.slot_type}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="ae-mono-label opacity-60">
+                    {SLOT_LABELS[slot.slot_type] ?? slot.slot_type}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 px-2.5 text-xs gap-1.5"
+                    disabled={postingId === slot.schedule_id}
+                    onClick={() => handleMarkPosted(slot.schedule_id)}
+                  >
+                    <CheckCircle2 className="h-3 w-3" />
+                    {postingId === slot.schedule_id ? "Saving…" : "Mark Posted"}
+                  </Button>
+                </div>
               </div>
               {/* Row 2: title + pillar */}
               {slot.title && (

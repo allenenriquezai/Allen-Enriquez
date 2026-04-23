@@ -3,7 +3,8 @@ import path from "node:path";
 import Database from "better-sqlite3";
 
 const ROOT = process.cwd();
-const DB_PATH = path.join(ROOT, "content_hub.db");
+const DB_PATH =
+  process.env.DATABASE_PATH ?? path.join(ROOT, "content_hub.db");
 const SCHEMA_PATH = path.join(ROOT, "lib", "schema.sql");
 
 const schema = fs.readFileSync(SCHEMA_PATH, "utf8");

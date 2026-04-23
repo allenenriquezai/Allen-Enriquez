@@ -31,11 +31,13 @@ export function SendToCalendarButton({
   title,
   scriptIds,
   pillar,
+  ideaStatus,
 }: {
   ideaId: number;
   title: string;
   scriptIds: { variant: string; id: number }[];
   pillar: string | null;
+  ideaStatus: string;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -63,7 +65,9 @@ export function SendToCalendarButton({
         slot_date: slotDate,
         slot_type: slotType,
         pillar,
-        status: "scripted",
+        status: ["filmed", "edited", "posted"].includes(ideaStatus)
+          ? ideaStatus
+          : "scripted",
         notes: title,
       }),
     });

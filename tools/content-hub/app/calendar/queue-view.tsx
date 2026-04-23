@@ -1,0 +1,60 @@
+import db from "@/lib/db";
+import { QueueClient, type QueueSlot, type Caption } from "@/app/queue/queue-client";
+
+export function QueueView() {
+  const slots = db
+    .prepare(
+      `SELECT sch.id AS schedule_id, sch.slot_date, sch.slot_type, sch.status, sch.notes,
+              i.id AS idea_id, i.title, i.pillar
+       FROM schedule sch
+       LEFT JOIN scripts s ON s.id = sch.script_id
+       LEFT JOIN ideas i ON i.id = s.idea_id
+       WHERE sch.status NOT IN ('posted')
+         AND sch.slot_date >= date('now', '-1 day')
+       ORDER BY sch.slot_date ASC,
+         CASE sch.slot_type
+           WHEN 'reel_1'   THEN 0
+           WHEN 'reel_2'   THEN 1
+           WHEN 'carousel' THEN 2
+           WHEN 'youtube'  THEN 3
+           ELSE 4
+         END`,
+    )
+    .all() as Omit<QueueSlot, "captions">[];
+
+  const captionStmt = db.prepare(
+    `SELECT variant, body FROM scripts
+     WHERE idea_id = ?
+       AND variant IN ('caption_ig','caption_fb','caption_tiktok','caption_yt','caption_x','caption_linkedin')
+     ORDER BY CASE variant
+       WHEN 'caption_ig'       THEN 0
+       WHEN 'caption_tiktok'   THEN 1
+       WHEN 'caption_yt'       THEN 2
+       WHEN 'caption_x'        THEN 3
+       WHEN 'caption_linkedin' THEN 4
+       ELSE 5
+     END`,
+  );
+
+  const slotsWithCaptions: QueueSlot[] = slots.map((slot) => ({
+    ...slot,
+    captions: slot.idea_id
+      ? (captionStmt.all(slot.idea_id) as Caption[])
+      : [],
+  }));
+
+  const readyCount = slotsWithCaptions.filter(
+    (s) => s.status === "filmed" || s.status === "edited",
+  ).length;
+
+  return (
+    <div className="flex flex-col gap-5">
+      <p className="text-sm text-muted-foreground">
+        {slotsWithCaptions.length} scheduled ·{" "}
+        <span style={{ color: "#22c55e" }}>{readyCount} ready to post</span>
+        {" "}· captions ready to copy
+      </p>
+      <QueueClient slots={slotsWithCaptions} />
+    </div>
+  );
+}

@@ -1,94 +1,128 @@
-import Link from "next/link";
-import db from "@/lib/db";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+export const dynamic = "force-dynamic";
 
-type GroupRow = {
-  id: number;
+import db from "@/lib/db";
+import { ScriptsClient } from "./scripts-client";
+
+export type ScheduledScript = {
+  scheduleId: number;
+  scriptId: number;
+  ideaId: number;
+  slotDate: string; // YYYY-MM-DD
+  slotType: string;
+  status: string;
+  pillar: string | null;
+  title: string;
+  reelBody: string | null;
+  notes: string | null;
+  ideaStatus: string;
+};
+
+export type UnscheduledScript = {
+  ideaId: number;
   title: string;
   pillar: string | null;
   status: string;
-  variants: string; // comma-joined list from SQLite GROUP_CONCAT
-  script_count: number;
+  reelBody: string | null;
+  notes: string | null;
 };
 
-export default async function ScriptsPage() {
-  const rows = db
+/** Return Monday of the ISO week containing `date`. */
+function weekMonday(date: Date): Date {
+  const d = new Date(date);
+  d.setUTCHours(0, 0, 0, 0);
+  const day = d.getUTCDay(); // 0 = Sun
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setUTCDate(d.getUTCDate() + diff);
+  return d;
+}
+
+function toISO(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
+export default async function ScriptsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ week?: string }>;
+}) {
+  const sp = await searchParams;
+  const weekParam = sp.week;
+
+  // Determine anchor Monday
+  const anchor =
+    weekParam && /^\d{4}-\d{2}-\d{2}$/.test(weekParam)
+      ? weekMonday(new Date(weekParam + "T00:00:00Z"))
+      : weekMonday(new Date());
+
+  const mondayStr = toISO(anchor);
+  const sundayDate = new Date(anchor);
+  sundayDate.setUTCDate(anchor.getUTCDate() + 6);
+  const sundayStr = toISO(sundayDate);
+
+  // Scheduled reels in the week
+  const scheduled = db
     .prepare(
-      `SELECT i.id, i.title, i.pillar, i.status,
-              COALESCE(GROUP_CONCAT(s.variant), '') AS variants,
-              COUNT(s.id) AS script_count
+      `SELECT
+         sc.id           AS scheduleId,
+         sc.script_id    AS scriptId,
+         sc.slot_date    AS slotDate,
+         sc.slot_type    AS slotType,
+         sc.status       AS status,
+         sc.pillar       AS pillar,
+         COALESCE(sc.notes, i.title) AS title,
+         s.body          AS reelBody,
+         i.id            AS ideaId,
+         i.notes         AS notes,
+         i.status        AS ideaStatus
+       FROM schedule sc
+       LEFT JOIN scripts s  ON s.id = sc.script_id
+       LEFT JOIN ideas   i  ON i.id = s.idea_id
+       WHERE sc.slot_date >= ? AND sc.slot_date <= ?
+         AND sc.slot_type IN ('reel_1','reel_2','youtube','carousel','fb_post')
+       ORDER BY sc.slot_date ASC, sc.slot_type ASC`,
+    )
+    .all(mondayStr, sundayStr) as ScheduledScript[];
+
+  // IDs already in schedule (to exclude from unscheduled)
+  const scheduledIdeaIds = new Set(
+    scheduled.map((r) => r.ideaId).filter(Boolean),
+  );
+
+  // Unscheduled: ideas with a reel script, not yet on any schedule row
+  const unscheduled = db
+    .prepare(
+      `SELECT
+         i.id     AS ideaId,
+         i.title  AS title,
+         i.pillar AS pillar,
+         i.status AS status,
+         i.notes  AS notes,
+         s.body   AS reelBody
        FROM ideas i
-       LEFT JOIN scripts s ON s.idea_id = i.id
+       JOIN scripts s ON s.idea_id = i.id AND s.variant = 'reel'
        WHERE i.status IN ('picked','bookmarked','new')
-       GROUP BY i.id
-       HAVING script_count > 0 OR i.status = 'picked'
+         AND i.id NOT IN (
+           SELECT DISTINCT idea_id
+           FROM scripts
+           JOIN schedule ON schedule.script_id = scripts.id
+         )
        ORDER BY
          CASE i.status WHEN 'picked' THEN 0 WHEN 'bookmarked' THEN 1 ELSE 2 END,
          i.id DESC`,
     )
-    .all() as GroupRow[];
+    .all() as UnscheduledScript[];
+
+  // Filter out any that ended up in scheduled (safety net)
+  const filteredUnscheduled = unscheduled.filter(
+    (u) => !scheduledIdeaIds.has(u.ideaId),
+  );
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Scripts</h1>
-        <p className="text-sm text-muted-foreground">
-          {rows.length} idea{rows.length === 1 ? "" : "s"} with scripts
-        </p>
-      </div>
-
-      {rows.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No scripts yet. Pick an idea in{" "}
-          <Link href="/ideation" className="underline">
-            Ideation
-          </Link>
-          .
-        </p>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {rows.map((r) => {
-            const variants = r.variants
-              ? r.variants.split(",").filter(Boolean)
-              : [];
-            return (
-              <Link
-                key={r.id}
-                href={`/scripts/${r.id}`}
-                className="block transition-colors hover:bg-muted/30 rounded-xl"
-              >
-                <Card>
-                  <CardHeader className="pb-0">
-                    <CardTitle className="text-base">{r.title}</CardTitle>
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {r.pillar && (
-                        <Badge variant="secondary">{r.pillar}</Badge>
-                      )}
-                      <Badge variant="outline">{r.status}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-1.5">
-                      {variants.length === 0 ? (
-                        <span className="text-xs text-muted-foreground">
-                          No variants yet — open to generate.
-                        </span>
-                      ) : (
-                        variants.map((v) => (
-                          <Badge key={v} variant="outline">
-                            {v}
-                          </Badge>
-                        ))
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
-      )}
-    </div>
+    <ScriptsClient
+      monday={mondayStr}
+      sunday={sundayStr}
+      scheduled={scheduled}
+      unscheduled={filteredUnscheduled}
+    />
   );
 }

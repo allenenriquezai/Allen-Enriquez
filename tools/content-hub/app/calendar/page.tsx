@@ -1,9 +1,18 @@
+export const dynamic = "force-dynamic";
+
 import db from "@/lib/db";
 import { CalendarGrid, type Slot } from "@/components/calendar-grid";
+import { QueueView } from "./queue-view";
+import { CalendarTabSwitcher } from "./tab-switcher";
 
-// Server component — loads current month's slots from SQLite and hands off
-// to the client grid for drag-drop + dialog interactions.
-export default function CalendarPage() {
+export default async function CalendarPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const { tab } = await searchParams;
+  const activeTab = tab === "queue" ? "queue" : "calendar";
+
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
@@ -27,13 +36,23 @@ export default function CalendarPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold">Calendar</h1>
-        <p className="text-sm text-muted-foreground">
-          Drag slot pills between days to reschedule. Click a pill for details.
-        </p>
+      <div className="mb-5 flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">Calendar</h1>
+          <p className="text-sm text-muted-foreground">
+            {activeTab === "calendar"
+              ? "Drag slot pills between days to reschedule. Click a pill for details."
+              : "Upcoming slots with captions ready to copy and post."}
+          </p>
+        </div>
+        <CalendarTabSwitcher active={activeTab} />
       </div>
-      <CalendarGrid initialSlots={slots} />
+
+      {activeTab === "calendar" ? (
+        <CalendarGrid initialSlots={slots} />
+      ) : (
+        <QueueView />
+      )}
     </div>
   );
 }

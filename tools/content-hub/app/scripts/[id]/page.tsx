@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { notFound } from "next/navigation";
 import db from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
@@ -77,6 +79,7 @@ export default async function ScriptDetailPage({
           ideaId={idea.id}
           title={idea.title}
           pillar={idea.pillar}
+          ideaStatus={idea.status}
           scriptIds={scripts.map((s) => ({ variant: s.variant, id: s.id }))}
         />
       </div>

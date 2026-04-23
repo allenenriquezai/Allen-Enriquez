@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import db from "@/lib/db";
 import { AssetTile, type Asset, type AssetPost } from "@/components/asset-tile";
 
