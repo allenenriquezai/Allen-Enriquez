@@ -1,0 +1,125 @@
+<h2>Native Platform APIs vs Blotato — Can We Go Direct?</h2>
+<p class="subtitle">Short answer: yes for analytics + inbox. Blotato stays for posting. Here's why.</p>
+
+<div class="section">
+<span class="label">Platform-by-Platform Reality</span>
+<div style="overflow-x:auto;margin-top:12px;">
+<table style="width:100%;border-collapse:collapse;font-size:12px;">
+  <thead>
+    <tr style="background:#161b22;color:#8b949e;">
+      <th style="padding:10px;text-align:left;border-bottom:1px solid #30363d;">Platform</th>
+      <th style="padding:10px;text-align:center;border-bottom:1px solid #30363d;">📤 Auto-Post</th>
+      <th style="padding:10px;text-align:center;border-bottom:1px solid #30363d;">📊 Analytics</th>
+      <th style="padding:10px;text-align:center;border-bottom:1px solid #30363d;">💬 Comments</th>
+      <th style="padding:10px;text-align:center;border-bottom:1px solid #30363d;">📩 DMs</th>
+      <th style="padding:10px;text-align:left;border-bottom:1px solid #30363d;">Gotcha</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom:1px solid #21262d;">
+      <td style="padding:10px;color:#f0f6fc;font-weight:600;">Instagram</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Reels, carousels</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Full insights</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Read + reply</td>
+      <td style="padding:10px;text-align:center;color:#d29922;">⚠️ Limited</td>
+      <td style="padding:10px;color:#8b949e;">Needs Facebook Business account + Meta App Review (1-2 wks)</td>
+    </tr>
+    <tr style="border-bottom:1px solid #21262d;background:#0d1117;">
+      <td style="padding:10px;color:#f0f6fc;font-weight:600;">Facebook</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Posts, videos</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Page insights</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Read + reply</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Messenger API</td>
+      <td style="padding:10px;color:#8b949e;">Same Meta token as Instagram — free once approved</td>
+    </tr>
+    <tr style="border-bottom:1px solid #21262d;">
+      <td style="padding:10px;color:#f0f6fc;font-weight:600;">YouTube</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Upload + schedule</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Full Analytics API</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Read + reply</td>
+      <td style="padding:10px;text-align:center;color:#f85149;">❌ None</td>
+      <td style="padding:10px;color:#8b949e;">Already set up (youtube_analytics.py). Best native API of all.</td>
+    </tr>
+    <tr style="border-bottom:1px solid #21262d;background:#0d1117;">
+      <td style="padding:10px;color:#f0f6fc;font-weight:600;">TikTok</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Video upload</td>
+      <td style="padding:10px;text-align:center;color:#d29922;">⚠️ Basic only</td>
+      <td style="padding:10px;text-align:center;color:#d29922;">⚠️ Read only</td>
+      <td style="padding:10px;text-align:center;color:#f85149;">❌ None</td>
+      <td style="padding:10px;color:#8b949e;">Restrictive app approval. Creator Marketplace API limited to partner programs.</td>
+    </tr>
+    <tr style="border-bottom:1px solid #21262d;">
+      <td style="padding:10px;color:#f0f6fc;font-weight:600;">Twitter / X</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Tweets</td>
+      <td style="padding:10px;text-align:center;color:#d29922;">⚠️ Very limited free</td>
+      <td style="padding:10px;text-align:center;color:#d29922;">⚠️ Read only (free)</td>
+      <td style="padding:10px;text-align:center;color:#d29922;">⚠️ Paid tier only</td>
+      <td style="padding:10px;color:#8b949e;"><strong style="color:#f85149;">$100–$5000/mo</strong> for meaningful access. Free = 500 posts/mo read-only.</td>
+    </tr>
+    <tr style="border-bottom:1px solid #21262d;background:#0d1117;">
+      <td style="padding:10px;color:#f0f6fc;font-weight:600;">LinkedIn</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ UGC Posts API</td>
+      <td style="padding:10px;text-align:center;color:#d29922;">⚠️ Page only</td>
+      <td style="padding:10px;text-align:center;color:#d29922;">⚠️ Read only</td>
+      <td style="padding:10px;text-align:center;color:#f85149;">❌ None</td>
+      <td style="padding:10px;color:#8b949e;">Personal profile analytics locked. Need Partner Program for full access.</td>
+    </tr>
+    <tr style="border-bottom:1px solid #21262d;">
+      <td style="padding:10px;color:#f0f6fc;font-weight:600;">Threads</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Posts</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Insights</td>
+      <td style="padding:10px;text-align:center;color:#3fb950;">✅ Reply management</td>
+      <td style="padding:10px;text-align:center;color:#f85149;">❌ None</td>
+      <td style="padding:10px;color:#8b949e;">Meta ecosystem — same approval path as Instagram.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+<span class="label">The Recommended Architecture — Hybrid</span>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;">
+
+  <div style="background:#0d1117;border:2px solid #3fb950;border-radius:8px;padding:16px;">
+    <div style="font-size:18px;margin-bottom:6px;">📤 POSTING</div>
+    <h3 style="margin:0 0 6px;font-size:13px;color:#3fb950;">Keep Blotato</h3>
+    <p style="margin:0;font-size:12px;color:#8b949e;">They handle OAuth refresh, app approvals, rate limits for 11 platforms. Building this in-house = months of maintenance. Blotato is the right tool here.</p>
+  </div>
+
+  <div style="background:#0d1117;border:2px solid #58a6ff;border-radius:8px;padding:16px;">
+    <div style="font-size:18px;margin-bottom:6px;">📊 ANALYTICS</div>
+    <h3 style="margin:0 0 6px;font-size:13px;color:#58a6ff;">Go Native</h3>
+    <p style="margin:0;font-size:12px;color:#8b949e;">YouTube Analytics API (already done), Meta Insights API (IG + FB same token), TikTok basic. Pull all into Content Hub DB. Richer data than any 3rd-party tool.</p>
+  </div>
+
+  <div style="background:#0d1117;border:2px solid #d2a679;border-radius:8px;padding:16px;">
+    <div style="font-size:18px;margin-bottom:6px;">💬 INBOX</div>
+    <h3 style="margin:0 0 6px;font-size:13px;color:#d2a679;">Go Native (Meta)</h3>
+    <p style="margin:0;font-size:12px;color:#8b949e;">Meta Graph API: read + reply to IG comments, FB comments, FB Messenger DMs. YouTube comment management. That's 80% of your inbox. TikTok/X very limited regardless of tool.</p>
+  </div>
+
+</div>
+</div>
+
+<div class="section" style="margin-top:20px;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;">
+  <span class="label">What this gets you</span>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;font-size:12px;">
+    <div>
+      <div style="color:#3fb950;margin-bottom:4px;">✅ Fully centralised in Content Hub</div>
+      <div style="color:#8b949e;">Post → schedule → publish → see results → reply to comments. All one app. No switching between Instagram, YouTube Studio, Facebook Business.</div>
+    </div>
+    <div>
+      <div style="color:#3fb950;margin-bottom:4px;">✅ Data you actually own</div>
+      <div style="color:#8b949e;">All metrics in SQLite. Run any query. Track trends over time. Build custom KPIs. No relying on platform dashboards.</div>
+    </div>
+    <div>
+      <div style="color:#d29922;margin-bottom:4px;">⚠️ One-time setup cost</div>
+      <div style="color:#8b949e;">Meta App Review (1-2 weeks), TikTok developer access. Not hard but takes calendar time.</div>
+    </div>
+    <div>
+      <div style="color:#f85149;margin-bottom:4px;">❌ Skip for now: X/Twitter</div>
+      <div style="color:#8b949e;">$100+/mo for anything useful. Blotato posts there fine. Don't pay for the API separately.</div>
+    </div>
+  </div>
+</div>

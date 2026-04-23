@@ -34,6 +34,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 BASE_DIR = Path(__file__).parent.parent
+SHARED_ENV = BASE_DIR / 'projects' / '.env'
 PERSONAL_TOKEN = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 PERSONAL_ENV = BASE_DIR / 'projects' / 'personal' / '.env'
 TMP_DIR = BASE_DIR / '.tmp'
@@ -44,9 +45,10 @@ TO_EMAIL_DEFAULT = 'allenenriquez.ai@gmail.com'
 
 
 def load_env():
-    """Load ANTHROPIC_API_KEY from personal .env."""
-    if PERSONAL_ENV.exists():
-        for line in PERSONAL_ENV.read_text().splitlines():
+    for env_file in [SHARED_ENV, PERSONAL_ENV]:
+        if not env_file.exists():
+            continue
+        for line in env_file.read_text().splitlines():
             line = line.strip()
             if line and not line.startswith('#') and '=' in line:
                 k, v = line.split('=', 1)

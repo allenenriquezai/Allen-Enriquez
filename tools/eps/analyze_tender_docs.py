@@ -28,6 +28,7 @@ from datetime import datetime
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent
+SHARED_ENV = BASE_DIR / "projects" / ".env"
 DOCS_DIR = BASE_DIR / "projects" / "eps" / ".tmp" / "estimateone" / "docs"
 BRIEFS_DIR = BASE_DIR / "projects" / "eps" / ".tmp" / "estimateone" / "briefs"
 ENV_FILE = BASE_DIR / "projects" / "eps" / ".env"
@@ -58,12 +59,14 @@ SKIP_KEYWORDS = {
 
 def load_env():
     env = {}
-    if ENV_FILE.exists():
-        for line in ENV_FILE.read_text().splitlines():
+    for env_file in [SHARED_ENV, ENV_FILE]:
+        if not env_file.exists():
+            continue
+        for line in env_file.read_text().splitlines():
             line = line.strip()
             if line and not line.startswith("#") and "=" in line:
                 k, v = line.split("=", 1)
-                env[k.strip()] = v.strip()
+                env.setdefault(k.strip(), v.strip())
     return env
 
 

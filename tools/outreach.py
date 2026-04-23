@@ -59,6 +59,7 @@ from outreach_lifecycle import (
 )
 
 BASE_DIR = Path(__file__).parent.parent
+SHARED_ENV = BASE_DIR / 'projects' / '.env'
 TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 ENV_FILE = BASE_DIR / 'projects' / 'personal' / '.env'
 CONFIG_FILE = BASE_DIR / 'projects' / 'personal' / 'reference' / 'outreach_config.yaml'
@@ -74,15 +75,16 @@ PH_TZ = timezone(timedelta(hours=8))
 # ============================================================
 
 def load_env():
-    """Load projects/personal/.env into os.environ."""
-    if not ENV_FILE.exists():
-        return
-    for line in ENV_FILE.read_text().splitlines():
-        line = line.strip()
-        if not line or line.startswith('#') or '=' not in line:
+    """Load shared then personal .env into os.environ."""
+    for env_file in [SHARED_ENV, ENV_FILE]:
+        if not env_file.exists():
             continue
-        k, v = line.split('=', 1)
-        os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+        for line in env_file.read_text().splitlines():
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            k, v = line.split('=', 1)
+            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
 
 def load_config():

@@ -39,6 +39,7 @@ from curl_cffi import requests as cffi_requests
 _IMPERSONATE_TARGET = ImpersonateTarget("chrome")
 
 BASE_DIR = Path(__file__).parent.parent
+SHARED_ENV = BASE_DIR / "projects" / ".env"
 CONFIG_FILE = BASE_DIR / "projects" / "personal" / "creator_config.yaml"
 DB_FILE = BASE_DIR / "tools" / "content-hub" / "content_hub.db"
 PERSONAL_ENV = BASE_DIR / "projects" / "personal" / ".env"
@@ -46,8 +47,10 @@ TRANSCRIBE_SCRIPT = BASE_DIR / "tools" / "transcribe_video.py"
 
 
 def load_env():
-    if PERSONAL_ENV.exists():
-        for line in PERSONAL_ENV.read_text().splitlines():
+    for env_file in [SHARED_ENV, PERSONAL_ENV]:
+        if not env_file.exists():
+            continue
+        for line in env_file.read_text().splitlines():
             line = line.strip()
             if not line or line.startswith("#") or "=" not in line:
                 continue

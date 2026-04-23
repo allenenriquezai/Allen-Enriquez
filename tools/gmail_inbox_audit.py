@@ -46,6 +46,7 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import BatchHttpRequest
 
 BASE_DIR = Path(__file__).parent.parent
+SHARED_ENV = BASE_DIR / 'projects' / '.env'
 DEFAULT_CREDS = BASE_DIR / 'projects' / 'personal' / 'credentials_enriquez_os.json'
 CLIENTS_DIR = BASE_DIR / 'projects' / 'personal' / '.tmp' / 'clients'
 EPS_ENV = BASE_DIR / 'projects' / 'eps' / '.env'
@@ -306,12 +307,13 @@ Rules:
 def load_anthropic_key() -> str:
     if 'ANTHROPIC_API_KEY' in os.environ:
         return os.environ['ANTHROPIC_API_KEY']
-    if EPS_ENV.exists():
-        for line in EPS_ENV.read_text().splitlines():
-            line = line.strip()
-            if line.startswith('ANTHROPIC_API_KEY='):
-                return line.split('=', 1)[1].strip().strip('"').strip("'")
-    print("ERROR: ANTHROPIC_API_KEY not found in env or projects/eps/.env", file=sys.stderr)
+    for env_file in [SHARED_ENV, EPS_ENV]:
+        if env_file.exists():
+            for line in env_file.read_text().splitlines():
+                line = line.strip()
+                if line.startswith('ANTHROPIC_API_KEY='):
+                    return line.split('=', 1)[1].strip().strip('"').strip("'")
+    print("ERROR: ANTHROPIC_API_KEY not found in env or projects/.env", file=sys.stderr)
     sys.exit(1)
 
 

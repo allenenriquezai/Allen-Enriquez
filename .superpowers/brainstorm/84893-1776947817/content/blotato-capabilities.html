@@ -1,0 +1,65 @@
+<h2>Blotato API — What's Now Possible</h2>
+<p class="subtitle">Full capability map from the live API docs. Current integration uses ~5% of this.</p>
+
+<div class="section">
+<span class="label">11 Platforms via one API key</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+  <span style="background:#1DA1F2;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;">Twitter / X</span>
+  <span style="background:#E1306C;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;">Instagram</span>
+  <span style="background:#000;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;">TikTok</span>
+  <span style="background:#FF0000;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;">YouTube</span>
+  <span style="background:#0A66C2;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;">LinkedIn</span>
+  <span style="background:#1877F2;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;">Facebook</span>
+  <span style="background:#000;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;">Threads</span>
+  <span style="background:#0085FF;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;">Bluesky</span>
+  <span style="background:#E60023;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;">Pinterest</span>
+  <span style="background:#555;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;">Webhook</span>
+</div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+<span class="label">5 Unlocked Capabilities</span>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;">
+
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px;">
+    <div style="font-size:22px;margin-bottom:6px;">📤</div>
+    <h3 style="margin:0 0 6px;font-size:14px;color:#58a6ff;">1. Multi-Platform Publish</h3>
+    <p style="margin:0;font-size:12px;color:#8b949e;">POST /v2/posts — one slot → 8+ platforms. Per-platform captions already live in DB (caption_ig, caption_tiktok, caption_yt, caption_x, caption_linkedin). Wire them up.</p>
+    <div style="margin-top:8px;font-size:11px;color:#3fb950;">✓ Currently: text-only, no platform targeting<br>→ Now: per-platform captions + account ID</div>
+  </div>
+
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px;">
+    <div style="font-size:22px;margin-bottom:6px;">🎬</div>
+    <h3 style="margin:0 0 6px;font-size:14px;color:#58a6ff;">2. Video Autopublish</h3>
+    <p style="margin:0;font-size:12px;color:#8b949e;">POST /v2/media → upload filmed reel to Blotato CDN → attach mediaUrl to post. TikTok, IG Reels, YT Shorts all accept video. Film once, auto-post everywhere.</p>
+    <div style="margin-top:8px;font-size:11px;color:#3fb950;">✓ Currently: captions only<br>→ Now: actual video posted automatically</div>
+  </div>
+
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px;">
+    <div style="font-size:22px;margin-bottom:6px;">🖼️</div>
+    <h3 style="margin:0 0 6px;font-size:14px;color:#58a6ff;">3. AI Visual Generation</h3>
+    <p style="margin:0;font-size:12px;color:#8b949e;">POST /v2/videos/from-templates — script → Blotato auto-generates Instagram Carousel, Quote Cards, Tweet Cards, Tutorial Slides, AI Story Video. Replaces Canva.</p>
+    <div style="margin-top:8px;font-size:11px;color:#3fb950;">✓ Currently: manual design<br>→ Now: carousel from script in 1 click</div>
+  </div>
+
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px;">
+    <div style="font-size:22px;margin-bottom:6px;">👤</div>
+    <h3 style="margin:0 0 6px;font-size:14px;color:#58a6ff;">4. Account Sync</h3>
+    <p style="margin:0;font-size:12px;color:#8b949e;">GET /v2/users/me/accounts — pull all connected accounts (with IDs) into DB. UI shows checkboxes: pick which accounts to publish each slot to. Subaccounts for FB pages / LinkedIn pages.</p>
+    <div style="margin-top:8px;font-size:11px;color:#3fb950;">✓ Currently: hardcoded, no account selection<br>→ Now: per-slot account picker</div>
+  </div>
+
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px;grid-column:1/-1;">
+    <div style="font-size:22px;margin-bottom:6px;">⏱️</div>
+    <h3 style="margin:0 0 6px;font-size:14px;color:#58a6ff;">5. Smart Scheduling</h3>
+    <p style="margin:0;font-size:12px;color:#8b949e;">scheduledTime (ISO 8601) OR useNextFreeSlot: true. Blotato auto-picks the next open slot in your posting schedule. Content Hub calendar drives the schedule_date, Blotato fires it.</p>
+    <div style="margin-top:8px;font-size:11px;color:#3fb950;">✓ Currently: manual mark-as-posted only<br>→ Now: fully automated fire-and-forget</div>
+  </div>
+
+</div>
+</div>
+
+<div class="section" style="margin-top:20px;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;">
+  <span class="label">What Blotato does NOT cover</span>
+  <p style="margin:8px 0 0;font-size:13px;color:#8b949e;">No analytics pull API (use YouTube Data API + platform-native for stats). No inbox/comments management. No auto-transcription (keep Whisper). Video generation is template-based, not AI from raw footage.</p>
+</div>

@@ -1,0 +1,133 @@
+<h2>Content Hub — Full Architecture</h2>
+<p class="subtitle">Zero new costs. Blotato posts. Native APIs for analytics + inbox. n8n orchestrates everything.</p>
+
+<div class="section">
+<span class="label">System Overview</span>
+<div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;">
+
+  <div style="background:#0d1117;border:2px solid #58a6ff;border-radius:8px;padding:14px;text-align:center;">
+    <div style="font-size:28px;">🖥️</div>
+    <h3 style="margin:6px 0 4px;font-size:13px;color:#58a6ff;">Content Hub</h3>
+    <p style="margin:0;font-size:11px;color:#8b949e;">Next.js app + SQLite<br>UI + DB + API routes<br><strong style="color:#f0f6fc;">The brain</strong></p>
+  </div>
+
+  <div style="background:#0d1117;border:2px solid #e06c75;border-radius:8px;padding:14px;text-align:center;">
+    <div style="font-size:28px;">⚙️</div>
+    <h3 style="margin:6px 0 4px;font-size:13px;color:#e06c75;">n8n</h3>
+    <p style="margin:0;font-size:11px;color:#8b949e;">Scheduled triggers<br>Webhook calls to Hub<br><strong style="color:#f0f6fc;">The automation</strong></p>
+  </div>
+
+  <div style="background:#0d1117;border:2px solid #3fb950;border-radius:8px;padding:14px;text-align:center;">
+    <div style="font-size:28px;">📤</div>
+    <h3 style="margin:6px 0 4px;font-size:13px;color:#3fb950;">Blotato</h3>
+    <p style="margin:0;font-size:11px;color:#8b949e;">Posts to 8+ platforms<br>Media upload CDN<br><strong style="color:#f0f6fc;">The publisher</strong></p>
+  </div>
+
+  <div style="background:#0d1117;border:2px solid #d2a679;border-radius:8px;padding:14px;text-align:center;">
+    <div style="font-size:28px;">📊</div>
+    <h3 style="margin:6px 0 4px;font-size:13px;color:#d2a679;">Native APIs</h3>
+    <p style="margin:0;font-size:11px;color:#8b949e;">Meta + YouTube<br>Analytics + Comments<br><strong style="color:#f0f6fc;">Free data</strong></p>
+  </div>
+
+</div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+<span class="label">3 Automated Flows (n8n triggers Content Hub)</span>
+
+<div style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;">
+
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="background:#3fb950;color:#000;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">FLOW 1 — AUTO PUBLISH</span>
+      <span style="font-size:11px;color:#8b949e;">n8n cron checks every 15min for due slots</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;">
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">Slot due in calendar</span>
+      <span style="color:#8b949e;">→</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">n8n hits /api/blotato/publish</span>
+      <span style="color:#8b949e;">→</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">Upload video to Blotato CDN</span>
+      <span style="color:#8b949e;">→</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">1 post per platform (IG, TikTok, YT, FB, LinkedIn, Threads)</span>
+      <span style="color:#8b949e;">→</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#3fb950;">Slot marked "posted"</span>
+    </div>
+    <div style="margin-top:6px;font-size:11px;color:#8b949e;">Per-platform captions already in DB (caption_ig, caption_tiktok, caption_yt, caption_x, caption_linkedin). Each post uses its own caption + platform-specific settings (TikTok privacy, YT title/privacy, IG Reels settings).</div>
+  </div>
+
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="background:#58a6ff;color:#000;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">FLOW 2 — AUTO ANALYTICS</span>
+      <span style="font-size:11px;color:#8b949e;">n8n cron daily at 6am</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;">
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">n8n triggers /api/analytics/refresh</span>
+      <span style="color:#8b949e;">→</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">YouTube Analytics API (already done)</span>
+      <span style="color:#8b949e;">+</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">Meta Insights API (IG + FB — 1 token)</span>
+      <span style="color:#8b949e;">+</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">TikTok basic metrics</span>
+      <span style="color:#8b949e;">→</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#58a6ff;">All into SQLite metrics table</span>
+    </div>
+    <div style="margin-top:6px;font-size:11px;color:#8b949e;">Replaces manual metric entry. Analytics tab shows real data automatically. Cross-platform reach + engagement in one view.</div>
+  </div>
+
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="background:#d2a679;color:#000;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">FLOW 3 — AUTO INBOX</span>
+      <span style="font-size:11px;color:#8b949e;">n8n cron every 30min</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;">
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">n8n triggers /api/inbox/sync</span>
+      <span style="color:#8b949e;">→</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">IG comments (Meta API)</span>
+      <span style="color:#8b949e;">+</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">FB comments (Meta API)</span>
+      <span style="color:#8b949e;">+</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#f0f6fc;">YouTube comments</span>
+      <span style="color:#8b949e;">→</span>
+      <span style="background:#161b22;padding:4px 10px;border-radius:4px;color:#d2a679;">inbox table + AI reply suggestions</span>
+    </div>
+    <div style="margin-top:6px;font-size:11px;color:#8b949e;">Claude drafts a reply suggestion per comment. One-click send via Meta Graph API / YouTube API. TikTok comments: read-only for now. X: skip (no free API).</div>
+  </div>
+
+</div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+<span class="label">New App Tab Structure</span>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px;">
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;text-align:center;">
+    <div style="font-size:20px;">📋</div>
+    <div style="font-size:12px;color:#58a6ff;font-weight:600;margin:4px 0;">Pipeline</div>
+    <div style="font-size:10px;color:#8b949e;">Idea → Script → Film → Ready. Kanban + video attach.</div>
+  </div>
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;text-align:center;">
+    <div style="font-size:20px;">📅</div>
+    <div style="font-size:12px;color:#58a6ff;font-weight:600;margin:4px 0;">Publish</div>
+    <div style="font-size:10px;color:#8b949e;">Calendar + queue. Per-slot: pick platforms, preview captions, hit publish.</div>
+  </div>
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;text-align:center;">
+    <div style="font-size:20px;">💬</div>
+    <div style="font-size:12px;color:#58a6ff;font-weight:600;margin:4px 0;">Inbox</div>
+    <div style="font-size:10px;color:#8b949e;">IG + FB + YT comments. AI reply draft. One-click send.</div>
+  </div>
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;text-align:center;">
+    <div style="font-size:20px;">📊</div>
+    <div style="font-size:12px;color:#58a6ff;font-weight:600;margin:4px 0;">Analytics</div>
+    <div style="font-size:10px;color:#8b949e;">Auto-pulled. Cross-platform views, likes, reach, best performers.</div>
+  </div>
+  <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;text-align:center;">
+    <div style="font-size:20px;">🔍</div>
+    <div style="font-size:12px;color:#58a6ff;font-weight:600;margin:4px 0;">Inspiration</div>
+    <div style="font-size:10px;color:#8b949e;">Creator feed. Stays as-is.</div>
+  </div>
+</div>
+</div>
+
+<div style="margin-top:16px;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;font-size:12px;color:#8b949e;">
+  <strong style="color:#f0f6fc;">One-time setup needed:</strong> Meta App Review (IG + FB permissions, ~1-2 wks). Everything else — Blotato key done, YouTube done, n8n running, Claude done.
+</div>

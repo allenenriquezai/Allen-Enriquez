@@ -36,6 +36,7 @@ from datetime import datetime
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent
+SHARED_ENV = BASE_DIR / "projects" / ".env"
 EPS_ENV = BASE_DIR / "projects" / "eps" / ".env"
 PERSONAL_ENV = BASE_DIR / "projects" / "personal" / ".env"
 INBOX_FILE = BASE_DIR / "projects" / "eps" / ".tmp" / "whatsapp_inbox.json"
@@ -59,10 +60,11 @@ def load_env(path):
 
 
 # Load credentials
+SHARED = load_env(SHARED_ENV)
 EPS = load_env(EPS_ENV)
 PERSONAL = load_env(PERSONAL_ENV)
 
-ANTHROPIC_API_KEY = PERSONAL.get("ANTHROPIC_API_KEY", "")
+ANTHROPIC_API_KEY = PERSONAL.get("ANTHROPIC_API_KEY") or SHARED.get("ANTHROPIC_API_KEY", "")
 PIPEDRIVE_API_KEY = EPS.get("PIPEDRIVE_API_KEY", "")
 PIPEDRIVE_DOMAIN = EPS.get("PIPEDRIVE_COMPANY_DOMAIN", "api.pipedrive.com")
 WHATSAPP_TOKEN = EPS.get("WHATSAPP_ACCESS_TOKEN", "")
