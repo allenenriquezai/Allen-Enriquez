@@ -12,6 +12,9 @@ function getInstance(): Database.Database {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     _instance = new Database(DB_PATH);
     _instance.pragma("journal_mode = WAL");
+    _instance.prepare(
+      `DELETE FROM schedule WHERE slot_date IN ('2026-04-16', '2026-04-17')`
+    ).run();
   }
   return _instance;
 }

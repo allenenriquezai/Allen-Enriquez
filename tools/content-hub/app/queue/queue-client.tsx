@@ -20,6 +20,7 @@ export type QueueSlot = {
   title: string | null;
   pillar: string | null;
   captions: Caption[];
+  reel_body: string | null;
 };
 
 const PLATFORM_TABS: { key: string; label: string }[] = [
@@ -64,12 +65,24 @@ export function QueueClient({ slots }: { slots: QueueSlot[] }) {
   const router = useRouter();
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [postingId, setPostingId] = useState<number | null>(null);
+  const [reschedulingId, setReschedulingId] = useState<number | null>(null);
 
   const handleCopy = async (text: string, key: string) => {
     await navigator.clipboard.writeText(text);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
   };
+
+  async function handleReschedule(scheduleId: number, newDate: string) {
+    setReschedulingId(scheduleId);
+    await fetch(`/api/schedule/${scheduleId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slot_date: newDate }),
+    });
+    setReschedulingId(null);
+    router.refresh();
+  }
 
   const handleMarkPosted = async (scheduleId: number) => {
     setPostingId(scheduleId);
@@ -127,6 +140,17 @@ export function QueueClient({ slots }: { slots: QueueSlot[] }) {
                   <span className="ae-mono-label opacity-60">
                     {SLOT_LABELS[slot.slot_type] ?? slot.slot_type}
                   </span>
+                  <input
+                    type="date"
+                    defaultValue={slot.slot_date}
+                    className="text-xs bg-transparent border border-border/50 rounded px-1.5 py-0.5 text-muted-foreground hover:border-border transition-colors"
+                    disabled={reschedulingId === slot.schedule_id}
+                    onBlur={(e) => {
+                      if (e.target.value && e.target.value !== slot.slot_date) {
+                        handleReschedule(slot.schedule_id, e.target.value);
+                      }
+                    }}
+                  />
                   <Button
                     size="sm"
                     variant="outline"
@@ -153,6 +177,14 @@ export function QueueClient({ slots }: { slots: QueueSlot[] }) {
             </CardHeader>
 
             <CardContent className="pt-4 pb-5">
+              {slot.reel_body && (
+                <div className="mb-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Script</p>
+                  <pre className="text-sm whitespace-pre-wrap font-mono leading-relaxed p-4 rounded-lg bg-muted/10 border border-border/30 max-h-48 overflow-y-auto">
+                    {slot.reel_body}
+                  </pre>
+                </div>
+              )}
               {!hasCaptions ? (
                 <p className="text-sm text-muted-foreground">No captions written yet.</p>
               ) : (

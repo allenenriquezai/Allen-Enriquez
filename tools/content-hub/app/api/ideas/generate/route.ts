@@ -41,13 +41,14 @@ Rules:
 - Return ONLY valid JSON, no commentary`;
 
 export async function POST(req: Request) {
-  let body: { count?: number };
+  let body: { count?: number; day_of_week?: string };
   try {
     body = await req.json();
   } catch {
     body = {};
   }
   const count = Math.min(Math.max(1, body.count ?? 10), 20);
+  const dayOfWeek = body.day_of_week ?? null;
 
   // Fetch existing titles for dedup
   const existingRows = db
@@ -55,10 +56,14 @@ export async function POST(req: Request) {
     .all() as { title: string }[];
   const existingTitles = existingRows.map((r) => r.title);
 
+  const dayContext = dayOfWeek
+    ? `\n\nTarget day of week: ${dayOfWeek}. Weight ideas toward content that fits posting on that day.`
+    : "";
+
   const userPrompt = `Generate ${count} fresh script ideas.
 
 Existing titles to avoid repeating (themes or topics):
-${existingTitles.slice(0, 50).map((t) => `- ${t}`).join("\n")}
+${existingTitles.slice(0, 50).map((t) => `- ${t}`).join("\n")}${dayContext}
 
 Return a JSON array of ${count} objects.`;
 
@@ -84,8 +89,8 @@ Return a JSON array of ${count} objects.`;
   const inserted: Array<{ id: number; title: string }> = [];
 
   const stmt = db.prepare(
-    `INSERT INTO ideas (title, hook, pillar, modeled_after, status, batch)
-     VALUES (?, ?, ?, ?, 'new', 'ai_generated')`,
+    `INSERT INTO ideas (title, hook, pillar, modeled_after, status, batch, day_of_week)
+     VALUES (?, ?, ?, ?, 'new', 'ai_generated', ?)`,
   );
 
   for (const idea of ideas) {
@@ -95,6 +100,7 @@ Return a JSON array of ${count} objects.`;
       idea.hook ?? null,
       idea.pillar ?? "fundamental",
       idea.modeled_after ?? null,
+      dayOfWeek,
     );
     inserted.push({ id: Number(info.lastInsertRowid), title: idea.title });
   }

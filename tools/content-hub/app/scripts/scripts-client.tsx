@@ -12,6 +12,15 @@ import {
   RotateCcw,
   Plus,
 } from "lucide-react";
+import {
+  DndContext,
+  useDraggable,
+  useDroppable,
+  type DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -381,6 +390,11 @@ function KanbanCard({
     ["picked", "scripted", "filmed", "edited", "posted"].includes(idea.status) &&
     !idea.hasCarousel;
 
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `idea-${idea.ideaId}`,
+    data: { idea },
+  });
+
   async function handleCarousel(e: React.MouseEvent) {
     e.stopPropagation();
     setGenLoading(true);
@@ -389,7 +403,12 @@ function KanbanCard({
   }
 
   return (
-    <div className="rounded-xl border bg-card flex flex-col hover:border-foreground/20 transition-colors">
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      className={`rounded-xl border bg-card flex flex-col hover:border-foreground/20 transition-colors ${isDragging ? "opacity-40" : ""}`}
+    >
       <button onClick={onOpen} className="text-left p-3 flex flex-col gap-1.5">
         <p className="text-sm font-medium leading-snug line-clamp-2">{idea.title}</p>
         {idea.hook && (
@@ -443,6 +462,8 @@ function KanbanColumn({
   onCarouselGenerated,
   onRewriteAll,
   onGenerateIdeas,
+  showGenPopover,
+  onToggleGenPopover,
   rewritingAll,
   generatingIdeas,
 }: {
@@ -451,12 +472,23 @@ function KanbanColumn({
   onOpen: (idea: KanbanIdea) => void;
   onCarouselGenerated: (ideaId: number) => void;
   onRewriteAll: (ids: number[]) => void;
-  onGenerateIdeas: () => void;
+  onGenerateIdeas: (dayOfWeek?: string, count?: number) => void;
+  showGenPopover: boolean;
+  onToggleGenPopover: () => void;
   rewritingAll: boolean;
   generatingIdeas: boolean;
 }) {
+  const [selectedCount, setSelectedCount] = useState(10);
+  const { setNodeRef: setDropRef, isOver } = useDroppable({
+    id: `col-${col.key}`,
+    data: { targetStatus: col.targetStatus },
+  });
+
   return (
-    <div className="flex flex-col gap-3 min-w-[260px] max-w-[260px]">
+    <div
+      ref={setDropRef}
+      className={`flex flex-col gap-3 min-w-[200px] max-w-[200px] sm:min-w-[260px] sm:max-w-[260px] ${isOver ? "bg-muted/20 rounded-xl" : ""}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur-sm py-1 z-10">
         <div className="flex items-center gap-2">
@@ -468,18 +500,48 @@ function KanbanColumn({
           </span>
         </div>
         {col.key === "new" && (
-          <button
-            onClick={onGenerateIdeas}
-            disabled={generatingIdeas}
-            title="Generate 10 ideas with AI"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {generatingIdeas ? (
-              <RotateCcw size={13} className="animate-spin" />
-            ) : (
-              <Sparkles size={13} />
+          <div className="relative">
+            <button
+              onClick={onToggleGenPopover}
+              disabled={generatingIdeas}
+              title="Generate ideas with AI"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {generatingIdeas ? (
+                <RotateCcw size={13} className="animate-spin" />
+              ) : (
+                <Sparkles size={13} />
+              )}
+            </button>
+            {showGenPopover && (
+              <div className="absolute right-0 top-6 z-20 w-56 bg-background border border-border rounded-xl shadow-xl p-3 flex flex-col gap-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Target day</p>
+                <div className="flex flex-wrap gap-1">
+                  {["Mon","Tue","Wed","Thu","Fri","Sat","Sun","Any"].map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => onGenerateIdeas(d === "Any" ? undefined : d, selectedCount)}
+                      className="text-xs px-2 py-1 rounded-full border border-border hover:border-foreground/40 hover:text-foreground transition-colors text-muted-foreground"
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-muted-foreground">Count:</p>
+                  {[5, 10, 20].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => setSelectedCount(n)}
+                      className={`text-xs px-2 py-0.5 rounded border transition-colors ${selectedCount === n ? "bg-foreground text-background border-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
-          </button>
+          </div>
         )}
         {col.key === "needs_edit" && ideas.length > 0 && (
           <button
@@ -662,6 +724,26 @@ export function ScriptsClient({
   const [modalIdea, setModalIdea] = useState<KanbanIdea | null>(null);
   const [generatingIdeas, setGeneratingIdeas] = useState(false);
   const [rewritingAll, setRewritingAll] = useState(false);
+  const [genPopover, setGenPopover] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over) return;
+    const idea = (active.data.current as { idea: KanbanIdea }).idea;
+    const targetStatus = (over.data.current as { targetStatus: string }).targetStatus;
+    if (ideaColumnKey(idea.status) === ideaColumnKey(targetStatus)) return;
+    updateIdea(idea.ideaId, { status: targetStatus });
+    await fetch(`/api/ideas/${idea.ideaId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: targetStatus }),
+    });
+    router.refresh();
+  }
 
   function navigate(dir: -1 | 1) {
     router.push(`/scripts?week=${addDays(monday, dir * 7)}`);
@@ -687,12 +769,13 @@ export function ScriptsClient({
     }
   }
 
-  async function handleGenerateIdeas() {
+  async function handleGenerateIdeas(dayOfWeek?: string, count = 10) {
     setGeneratingIdeas(true);
+    setGenPopover(false);
     const res = await fetch("/api/ideas/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ count: 10 }),
+      body: JSON.stringify({ count, day_of_week: dayOfWeek ?? null }),
     });
     setGeneratingIdeas(false);
     if (!res.ok) return;
@@ -771,23 +854,27 @@ export function ScriptsClient({
 
         {/* Kanban view */}
         {view === "kanban" && (
-          <div className="flex gap-4 overflow-x-auto pb-6 -mx-1 px-1">
-            {COLUMNS.map((col) => (
-              <KanbanColumn
-                key={col.key}
-                col={col}
-                ideas={columnIdeas[col.key]}
-                onOpen={(idea) => setModalIdea(idea)}
-                onCarouselGenerated={(ideaId) =>
-                  updateIdea(ideaId, { hasCarousel: true })
-                }
-                onRewriteAll={handleRewriteAll}
-                onGenerateIdeas={handleGenerateIdeas}
-                rewritingAll={rewritingAll}
-                generatingIdeas={generatingIdeas}
-              />
-            ))}
-          </div>
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <div className="flex gap-4 overflow-x-auto pb-6 -mx-1 px-1">
+              {COLUMNS.map((col) => (
+                <KanbanColumn
+                  key={col.key}
+                  col={col}
+                  ideas={columnIdeas[col.key]}
+                  onOpen={(idea) => setModalIdea(idea)}
+                  onCarouselGenerated={(ideaId) =>
+                    updateIdea(ideaId, { hasCarousel: true })
+                  }
+                  onRewriteAll={handleRewriteAll}
+                  onGenerateIdeas={handleGenerateIdeas}
+                  showGenPopover={col.key === "new" && genPopover}
+                  onToggleGenPopover={() => setGenPopover((v) => !v)}
+                  rewritingAll={rewritingAll}
+                  generatingIdeas={generatingIdeas}
+                />
+              ))}
+            </div>
+          </DndContext>
         )}
 
         {/* Week view */}
@@ -809,6 +896,7 @@ export function ScriptsClient({
           onClose={() => setModalIdea(null)}
           onSaved={(updates) => {
             updateIdea(modalIdea.ideaId, updates);
+            if (updates.status) router.refresh();
           }}
           onCarouselGenerated={() => {
             updateIdea(modalIdea.ideaId, { hasCarousel: true });

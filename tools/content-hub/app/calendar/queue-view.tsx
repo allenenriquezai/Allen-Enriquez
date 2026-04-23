@@ -20,7 +20,7 @@ export function QueueView() {
            ELSE 4
          END`,
     )
-    .all() as Omit<QueueSlot, "captions">[];
+    .all() as Omit<QueueSlot, "captions" | "reel_body">[];
 
   const captionStmt = db.prepare(
     `SELECT variant, body FROM scripts
@@ -41,20 +41,31 @@ export function QueueView() {
     captions: slot.idea_id
       ? (captionStmt.all(slot.idea_id) as Caption[])
       : [],
+    reel_body: null,
   }));
 
-  const readyCount = slotsWithCaptions.filter(
+  const reelStmt = db.prepare(
+    `SELECT body FROM scripts WHERE idea_id = ? AND variant = 'reel' LIMIT 1`
+  );
+  const slotsWithAll: QueueSlot[] = slotsWithCaptions.map((slot) => ({
+    ...slot,
+    reel_body: slot.idea_id
+      ? (reelStmt.get(slot.idea_id) as { body: string } | undefined)?.body ?? null
+      : null,
+  }));
+
+  const readyCount = slotsWithAll.filter(
     (s) => s.status === "filmed" || s.status === "edited",
   ).length;
 
   return (
     <div className="flex flex-col gap-5">
       <p className="text-sm text-muted-foreground">
-        {slotsWithCaptions.length} scheduled ·{" "}
+        {slotsWithAll.length} scheduled ·{" "}
         <span style={{ color: "#22c55e" }}>{readyCount} ready to post</span>
         {" "}· captions ready to copy
       </p>
-      <QueueClient slots={slotsWithCaptions} />
+      <QueueClient slots={slotsWithAll} />
     </div>
   );
 }
