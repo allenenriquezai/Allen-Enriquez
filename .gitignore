@@ -14,7 +14,7 @@ projects/personal/token_personal.pickle
 projects/**/.tmp/
 
 # Shared (personal — keep off remote)
-shared/
+/shared/
 
 # Dashboard SQLite cache
 tools/dashboard/dashboard.db

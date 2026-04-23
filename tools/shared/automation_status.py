@@ -5,8 +5,8 @@ Checks launchctl for enriquezOS jobs, reads log tails for errors,
 pulls CRM sync metrics, and sends a formatted WhatsApp message.
 
 Usage:
-    python3 tools/automation_status.py              # Send report to WhatsApp
-    python3 tools/automation_status.py --dry-run    # Print message only, don't send
+    python3 tools/shared/automation_status.py              # Send report to WhatsApp
+    python3 tools/shared/automation_status.py --dry-run    # Print message only, don't send
 
 Scheduled daily at 17:30 PH time via launchd.
 """
@@ -23,9 +23,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent
 TMP_DIR = BASE_DIR / ".tmp"
 
-# Add tools dir so we can import whatsapp
-sys.path.insert(0, str(BASE_DIR / "tools"))
-import whatsapp  # noqa: E402
+from tools.eps import whatsapp
 
 # Allen's WhatsApp number — UPDATE THIS with actual number
 ALLEN_PHONE = "639454203195"
