@@ -7,14 +7,40 @@ type AssetType = "reel" | "youtube" | "carousel";
 
 const ACCEPT = "video/mp4,video/quicktime,video/webm,image/jpeg,image/png,image/gif";
 
+type Idea = {
+  id: number;
+  title: string;
+};
+
 export function LibraryAddDialog({ onDone }: { onDone: () => void }) {
   const [file, setFile] = React.useState<File | null>(null);
   const [title, setTitle] = React.useState("");
   const [assetType, setAssetType] = React.useState<AssetType>("reel");
+  const [ideaId, setIdeaId] = React.useState<number | null>(null);
+  const [ideas, setIdeas] = React.useState<Idea[]>([]);
   const [status, setStatus] = React.useState<"idle" | "uploading" | "saving" | "done" | "error">("idle");
   const [progress, setProgress] = React.useState(0);
   const [error, setError] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  // Fetch ideas on mount
+  React.useEffect(() => {
+    const fetchIdeas = async () => {
+      try {
+        const res = await fetch("/api/ideas");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ideas && Array.isArray(data.ideas)) {
+            setIdeas(data.ideas);
+          }
+        }
+      } catch (e) {
+        // Gracefully degrade — log and skip
+        console.warn("Failed to fetch ideas:", e instanceof Error ? e.message : "Unknown error");
+      }
+    };
+    fetchIdeas();
+  }, []);
 
   const inferType = (f: File): AssetType => {
     if (f.type.startsWith("image/")) return "carousel";
@@ -65,7 +91,7 @@ export function LibraryAddDialog({ onDone }: { onDone: () => void }) {
       const saveRes = await fetch("/api/library", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: file.name, type: assetType, title: title || null, url: publicUrl }),
+        body: JSON.stringify({ path: file.name, type: assetType, title: title || null, url: publicUrl, idea_id: ideaId }),
       });
       if (!saveRes.ok) throw new Error("Failed to save asset");
 
@@ -115,6 +141,25 @@ export function LibraryAddDialog({ onDone }: { onDone: () => void }) {
             className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"
           />
         </label>
+
+        {/* Link to Idea */}
+        {ideas.length > 0 && (
+          <label className="block mb-3">
+            <span className="text-xs font-mono uppercase text-muted-foreground">Link to Idea</span>
+            <select
+              value={ideaId ?? ""}
+              onChange={(e) => setIdeaId(e.target.value ? parseInt(e.target.value, 10) : null)}
+              className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"
+            >
+              <option value="">— None —</option>
+              {ideas.map((idea) => (
+                <option key={idea.id} value={idea.id}>
+                  {idea.title}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
         {/* Type */}
         <label className="block mb-5">
