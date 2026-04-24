@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, CheckCircle2, Send, Zap } from "lucide-react";
-import { QuickPublishModal } from "@/components/quick-publish-modal";
 
 export type Caption = { variant: string; body: string };
 
@@ -70,7 +69,6 @@ export function QueueClient({ slots, ytConnected = false, tikConnected = false }
   const router = useRouter();
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [postingId, setPostingId] = useState<number | null>(null);
-  const [publishSlot, setPublishSlot] = useState<QueueSlot | null>(null);
   const [reschedulingId, setReschedulingId] = useState<number | null>(null);
   const [blotatoId, setBlotatoId] = useState<number | null>(null);
   const [blotatoFlash, setBlotatoFlash] = useState<Set<number>>(new Set());
@@ -228,24 +226,6 @@ export function QueueClient({ slots, ytConnected = false, tikConnected = false }
 
   return (
     <>
-      {publishSlot?.asset_url && (
-        <QuickPublishModal
-          asset={{
-            id: publishSlot.asset_id!,
-            url: publishSlot.asset_url,
-            title: publishSlot.asset_title,
-            type: publishSlot.asset_type ?? "reel",
-            idea_id: publishSlot.idea_id,
-          }}
-          scheduleId={publishSlot.schedule_id}
-          captions={(() => {
-            const m: Record<string, string> = {};
-            for (const c of publishSlot.captions) m[c.variant] = c.body;
-            return m;
-          })()}
-          onClose={() => setPublishSlot(null)}
-        />
-      )}
     <div className="flex flex-col gap-4">
       {slots.map((slot) => {
         const captionMap: Record<string, string> = {};
@@ -305,10 +285,10 @@ export function QueueClient({ slots, ytConnected = false, tikConnected = false }
                       size="sm"
                       className="h-7 px-2.5 text-xs gap-1.5"
                       style={{ background: "rgba(2,179,233,0.15)", color: "var(--brand)", border: "1px solid rgba(2,179,233,0.3)" }}
-                      onClick={() => setPublishSlot(slot)}
+                      onClick={() => slot.asset_id && router.push(`/library/${slot.asset_id}`)}
                     >
                       <Zap className="h-3 w-3" />
-                      Quick Publish
+                      Open Post
                     </Button>
                   ) : (
                     <span className="text-[10px] font-mono text-muted-foreground/40 px-1">No asset linked</span>

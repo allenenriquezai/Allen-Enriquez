@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { format } from "date-fns";
-import { Send } from "lucide-react";
-import { QuickPublishModal } from "@/components/quick-publish-modal";
 
 export type AssetPost = {
   id: number;
@@ -19,6 +18,8 @@ export type Asset = {
   type: string;
   title: string | null;
   url: string | null;
+  thumbnail_url: string | null;
+  duration_seconds: number | null;
   idea_id: number | null;
   created_at: string;
   posts: AssetPost[];
@@ -32,98 +33,72 @@ const PLATFORM_LABELS: Record<string, string> = {
   x: "X",
 };
 
-export function AssetTile({ asset: initial }: { asset: Asset }) {
-  const [showPublish, setShowPublish] = React.useState(false);
+function formatDuration(seconds: number | null): string | null {
+  if (!seconds) return null;
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
 
+export function AssetTile({ asset }: { asset: Asset }) {
   const postedPlatforms = React.useMemo(() => {
-    const platforms = new Set<string>();
-    for (const p of initial.posts) {
-      platforms.add(p.platform);
-    }
-    return Array.from(platforms).sort();
-  }, [initial.posts]);
+    const set = new Set<string>();
+    for (const p of asset.posts) set.add(p.platform);
+    return Array.from(set).sort();
+  }, [asset.posts]);
+
+  const isVideo = asset.type === "reel" || asset.type === "youtube";
+  const duration = formatDuration(asset.duration_seconds);
 
   return (
-    <>
-      {showPublish && initial.url && (
-        <QuickPublishModal
-          asset={{ id: initial.id, url: initial.url, title: initial.title, type: initial.type, idea_id: initial.idea_id }}
-          onClose={() => setShowPublish(false)}
-        />
-      )}
-      <div className="rounded-lg border border-border bg-card overflow-hidden flex flex-col">
-        {/* Media preview or gradient fallback */}
-        <div className="aspect-[9/16] overflow-hidden">
-          {initial.type === "carousel" && initial.url ? (
-            <img
-              src={initial.url}
-              alt={initial.title ?? ""}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          ) : (initial.type === "reel" || initial.type === "youtube") && initial.url ? (
-            <video
-              src={initial.url}
-              preload="metadata"
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div
-              className="w-full h-full flex items-center justify-center text-muted-foreground"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(2,179,233,0.12), rgba(2,179,233,0.02))",
-              }}
-            >
-              <span className="text-[10px] font-mono">No preview</span>
-            </div>
-          )}
-        </div>
-
-        {/* Title and metadata */}
-        <div className="p-3 flex flex-col gap-2 flex-1">
+    <Link
+      href={`/library/${asset.id}`}
+      className="group rounded-lg border border-border bg-card overflow-hidden flex flex-col hover:border-[var(--brand)]/60 transition-colors"
+    >
+      {/* Media preview */}
+      <div className="aspect-[9/16] overflow-hidden bg-muted/20 relative">
+        {asset.thumbnail_url ? (
+          <img src={asset.thumbnail_url} alt={asset.title ?? ""} className="w-full h-full object-cover" loading="lazy" />
+        ) : asset.type === "carousel" && asset.url ? (
+          <img src={asset.url} alt={asset.title ?? ""} className="w-full h-full object-cover" loading="lazy" />
+        ) : isVideo && asset.url ? (
+          <video src={asset.url} preload="metadata" muted playsInline className="w-full h-full object-cover" />
+        ) : (
           <div
-            className="text-sm font-medium truncate"
-            title={initial.title ?? initial.path}
+            className="w-full h-full flex items-center justify-center text-muted-foreground"
+            style={{ background: "linear-gradient(135deg, rgba(2,179,233,0.12), rgba(2,179,233,0.02))" }}
           >
-            {initial.title ?? "Untitled"}
+            <span className="text-[10px] font-mono">No preview</span>
           </div>
-          <div className="text-[10px] text-muted-foreground font-mono">
-            {format(new Date(initial.created_at), "MMM d, yyyy")}
-          </div>
-
-          {/* Posted-to chips */}
-          {postedPlatforms.length > 0 && (
-            <div className="flex gap-1 flex-wrap mt-auto pt-1">
-              {postedPlatforms.map((platform) => (
-                <span
-                  key={platform}
-                  className="px-1.5 py-0.5 rounded text-[9px] font-mono uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                >
-                  {PLATFORM_LABELS[platform] || platform.slice(0, 2).toUpperCase()}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Post CTA button */}
-          {initial.url ? (
-            <button
-              type="button"
-              onClick={() => setShowPublish(true)}
-              className="mt-2 flex items-center gap-1 text-[10px] font-mono uppercase px-2 py-1 rounded border transition-colors"
-              style={{ color: "var(--brand)", borderColor: "rgba(2,179,233,0.3)", background: "rgba(2,179,233,0.06)" }}
-            >
-              <Send className="size-3" />
-              Post this
-            </button>
-          ) : (
-            <span className="mt-2 text-[10px] font-mono text-muted-foreground/50">No URL — add via Library</span>
-          )}
-        </div>
+        )}
+        {duration && (
+          <span className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded text-[10px] font-mono bg-black/70 text-white">
+            {duration}
+          </span>
+        )}
       </div>
-    </>
+
+      <div className="p-3 flex flex-col gap-2 flex-1">
+        <div className="text-sm font-medium truncate" title={asset.title ?? asset.path}>
+          {asset.title ?? "Untitled"}
+        </div>
+        <div className="text-[10px] text-muted-foreground font-mono">
+          {format(new Date(asset.created_at), "MMM d, yyyy")}
+        </div>
+
+        {postedPlatforms.length > 0 && (
+          <div className="flex gap-1 flex-wrap mt-auto pt-1">
+            {postedPlatforms.map((platform) => (
+              <span
+                key={platform}
+                className="px-1.5 py-0.5 rounded text-[9px] font-mono uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+              >
+                {PLATFORM_LABELS[platform] || platform.slice(0, 2).toUpperCase()}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }

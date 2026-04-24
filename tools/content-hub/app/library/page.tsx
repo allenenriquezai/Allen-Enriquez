@@ -11,6 +11,7 @@ type AssetRow = {
   type: string;
   title: string | null;
   url: string | null;
+  thumbnail_url: string | null;
   idea_id: number | null;
   created_at: string;
 };

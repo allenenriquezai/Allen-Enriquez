@@ -42,18 +42,18 @@ export async function GET() {
   return NextResponse.json({ groups });
 }
 
-// POST /api/library  body: { path, type, title?, url?, idea_id? }
+// POST /api/library  body: { path, type, title?, url?, idea_id?, duration_seconds? }
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { path, type, title, url, idea_id } = body ?? {};
+  const { path, type, title, url, idea_id, duration_seconds } = body ?? {};
   if (!path || !type) {
     return NextResponse.json({ error: "path and type required" }, { status: 400 });
   }
   const result = db
     .prepare(
-      "INSERT INTO assets (path, type, title, url, idea_id) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO assets (path, type, title, url, idea_id, duration_seconds) VALUES (?, ?, ?, ?, ?, ?)",
     )
-    .run(path, type, title ?? null, url ?? null, idea_id ?? null);
+    .run(path, type, title ?? null, url ?? null, idea_id ?? null, duration_seconds ?? null);
   const asset = db.prepare("SELECT * FROM assets WHERE id = ?").get(result.lastInsertRowid);
   return NextResponse.json({ asset }, { status: 201 });
 }
@@ -78,7 +78,7 @@ export function patchAssetRow(
   }
   const fields: string[] = [];
   const values: unknown[] = [];
-  for (const key of ["title", "type", "url", "idea_id"] as const) {
+  for (const key of ["title", "type", "url", "idea_id", "thumbnail_url", "duration_seconds"] as const) {
     if (key in body && body[key] !== undefined) {
       fields.push(`${key} = ?`);
       values.push(body[key]);

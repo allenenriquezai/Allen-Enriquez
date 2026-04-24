@@ -21,6 +21,7 @@ export function LibraryAddDialog({ onDone }: { onDone: () => void }) {
   const [status, setStatus] = React.useState<"idle" | "uploading" | "saving" | "done" | "error">("idle");
   const [progress, setProgress] = React.useState(0);
   const [error, setError] = React.useState("");
+  const [durationSeconds, setDurationSeconds] = React.useState<number | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Fetch ideas on mount
@@ -42,6 +43,19 @@ export function LibraryAddDialog({ onDone }: { onDone: () => void }) {
     fetchIdeas();
   }, []);
 
+  const detectDuration = (file: File): Promise<number | null> => {
+    return new Promise((resolve) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(video.src);
+        resolve(Math.floor(video.duration));
+      };
+      video.onerror = () => resolve(null);
+      video.src = URL.createObjectURL(file);
+    });
+  };
+
   const inferType = (f: File): AssetType => {
     if (f.type.startsWith("image/")) return "carousel";
     return "reel";
@@ -53,6 +67,9 @@ export function LibraryAddDialog({ onDone }: { onDone: () => void }) {
     setFile(f);
     setAssetType(inferType(f));
     if (!title) setTitle(f.name.replace(/\.[^.]+$/, ""));
+    if (f.type.startsWith("video/")) {
+      detectDuration(f).then((duration) => setDurationSeconds(duration));
+    }
   };
 
   const upload = async () => {
@@ -91,7 +108,7 @@ export function LibraryAddDialog({ onDone }: { onDone: () => void }) {
       const saveRes = await fetch("/api/library", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: file.name, type: assetType, title: title || null, url: publicUrl, idea_id: ideaId }),
+        body: JSON.stringify({ path: file.name, type: assetType, title: title || null, url: publicUrl, idea_id: ideaId, duration_seconds: durationSeconds }),
       });
       if (!saveRes.ok) throw new Error("Failed to save asset");
 

@@ -3,24 +3,27 @@ import { NextResponse } from "next/server";
 const IG_ACCOUNT_ID = process.env.INSTAGRAM_ACCOUNT_ID!;
 const IG_TOKEN = process.env.INSTAGRAM_USER_TOKEN!;
 const IG_BASE = "https://graph.facebook.com/v25.0";
+const RUPLOAD_BASE = "https://rupload.facebook.com/ig-api-upload/v25.0";
 
 async function wait(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-async function pollStatus(mediaId: string): Promise<boolean> {
-  for (let i = 0; i < 10; i++) {
+async function pollStatus(mediaId: string): Promise<{ ok: boolean; detail?: string }> {
+  let lastStatus = "";
+  for (let i = 0; i < 18; i++) {
     await wait(10_000);
     const url = new URL(`${IG_BASE}/${mediaId}`);
-    url.searchParams.set("fields", "status_code");
+    url.searchParams.set("fields", "status_code,status");
     url.searchParams.set("access_token", IG_TOKEN);
     const res = await fetch(url.toString(), { cache: "no-store" });
     if (!res.ok) continue;
     const json = await res.json();
-    if (json.status_code === "FINISHED") return true;
-    if (json.status_code === "ERROR") return false;
+    lastStatus = json.status || json.status_code || "";
+    if (json.status_code === "FINISHED") return { ok: true };
+    if (json.status_code === "ERROR") return { ok: false, detail: lastStatus };
   }
-  return false;
+  return { ok: false, detail: `Timed out after 180s. Last status: ${lastStatus}` };
 }
 
 export async function POST(req: Request) {
@@ -29,18 +32,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "media_url required" }, { status: 400 });
   }
 
+  const isVideo = media_type !== "IMAGE";
+
   const containerUrl = new URL(`${IG_BASE}/${IG_ACCOUNT_ID}/media`);
   containerUrl.searchParams.set("access_token", IG_TOKEN);
 
   const containerBody: Record<string, string> = { media_type };
   if (caption) containerBody.caption = caption;
-  if (media_type === "IMAGE") {
-    containerBody.image_url = media_url;
-  } else {
-    containerBody.video_url = media_url;
-  }
   if (scheduled_at) {
     containerBody.scheduled_publish_time = String(Math.floor(new Date(scheduled_at).getTime() / 1000));
+  }
+  if (isVideo) {
+    containerBody.upload_type = "resumable";
+  } else {
+    containerBody.image_url = media_url;
   }
 
   const containerRes = await fetch(containerUrl.toString(), {
@@ -55,12 +60,43 @@ export async function POST(req: Request) {
       { status: 500 },
     );
   }
-  const { id: creationId } = await containerRes.json();
+  const containerJson = await containerRes.json();
+  const creationId: string = containerJson.id;
 
-  if (media_type !== "IMAGE") {
-    const ready = await pollStatus(creationId);
-    if (!ready) {
-      return NextResponse.json({ error: "Video processing timed out or failed" }, { status: 500 });
+  if (isVideo) {
+    const mediaRes = await fetch(media_url, { cache: "no-store" });
+    if (!mediaRes.ok) {
+      return NextResponse.json(
+        { error: "Failed to fetch media bytes from R2", detail: `${mediaRes.status} ${mediaRes.statusText}` },
+        { status: 500 },
+      );
+    }
+    const bytes = Buffer.from(await mediaRes.arrayBuffer());
+
+    const uploadUrl = containerJson.uri || `${RUPLOAD_BASE}/${creationId}`;
+    const uploadRes = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `OAuth ${IG_TOKEN}`,
+        offset: "0",
+        file_size: String(bytes.length),
+      },
+      body: bytes,
+      cache: "no-store",
+    });
+    if (!uploadRes.ok) {
+      return NextResponse.json(
+        { error: "Resumable upload failed", detail: await uploadRes.text() },
+        { status: 500 },
+      );
+    }
+
+    const { ok, detail } = await pollStatus(creationId);
+    if (!ok) {
+      return NextResponse.json(
+        { error: "Video processing failed", detail: detail || "unknown" },
+        { status: 500 },
+      );
     }
   }
 

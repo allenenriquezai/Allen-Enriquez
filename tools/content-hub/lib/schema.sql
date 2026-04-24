@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS assets (
   type TEXT NOT NULL, -- reel, youtube, carousel, thumbnail
   title TEXT,
   url TEXT,            -- R2 public URL (set after upload)
+  thumbnail_url TEXT,  -- custom thumbnail URL (optional override for video first-frame)
+  duration_seconds INTEGER, -- video duration; null for carousels
   idea_id INTEGER REFERENCES ideas(id),
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );

@@ -23,6 +23,12 @@ function getInstance(): Database.Database {
       if (!cols.has("idea_id")) {
         _instance.exec("ALTER TABLE assets ADD COLUMN idea_id INTEGER");
       }
+      if (!cols.has("thumbnail_url")) {
+        _instance.exec("ALTER TABLE assets ADD COLUMN thumbnail_url TEXT");
+      }
+      if (!cols.has("duration_seconds")) {
+        _instance.exec("ALTER TABLE assets ADD COLUMN duration_seconds INTEGER");
+      }
     }
 
     // Migrate schedule table — add asset_id and captions_json columns if missing
