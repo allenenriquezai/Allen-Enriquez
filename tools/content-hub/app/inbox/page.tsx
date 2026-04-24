@@ -13,6 +13,63 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { InboxColumn, type InboxMessage } from "@/components/inbox-column";
+import { RefreshCw } from "lucide-react";
+
+type SyncState = "idle" | "syncing" | "done";
+
+const SYNC_BUTTONS: { label: string; endpoint: string; disabled?: boolean; tooltip?: string }[] = [
+  { label: "FB Comments", endpoint: "/api/facebook/comments?limit=50" },
+  { label: "FB DMs", endpoint: "/api/facebook/conversations" },
+  { label: "IG Comments", endpoint: "/api/instagram/comments?media_id=recent&limit=25" },
+  { label: "IG DMs", endpoint: "/api/instagram/conversations" },
+  { label: "YT Comments", endpoint: "/api/youtube/comments?limit=50" },
+  { label: "TikTok", endpoint: "", disabled: true, tooltip: "Pending TikTok credentials" },
+];
+
+function SyncButton({ label, endpoint, disabled, tooltip, onDone }: {
+  label: string;
+  endpoint: string;
+  disabled?: boolean;
+  tooltip?: string;
+  onDone: () => void;
+}) {
+  const [state, setState] = useState<SyncState>("idle");
+  const [newCount, setNewCount] = useState<number | null>(null);
+
+  const handleSync = async () => {
+    if (disabled || !endpoint) return;
+    setState("syncing");
+    try {
+      const res = await fetch(endpoint, { cache: "no-store" });
+      const json = res.ok ? await res.json() : {};
+      setNewCount(json.inserted ?? json.new ?? null);
+      setState("done");
+      onDone();
+      setTimeout(() => { setState("idle"); setNewCount(null); }, 3000);
+    } catch {
+      setState("idle");
+    }
+  };
+
+  return (
+    <Button
+      size="sm"
+      variant="outline"
+      disabled={disabled || state === "syncing"}
+      title={tooltip}
+      className="h-7 px-2.5 text-xs gap-1.5"
+      style={state === "done" ? { color: "#22c55e", borderColor: "rgba(34,197,94,0.4)" } : disabled ? { opacity: 0.45 } : {}}
+      onClick={handleSync}
+    >
+      <RefreshCw className={`h-3 w-3 ${state === "syncing" ? "animate-spin" : ""}`} />
+      {state === "done"
+        ? newCount !== null ? `${newCount} new` : "Done"
+        : state === "syncing"
+        ? "Syncing…"
+        : label}
+    </Button>
+  );
+}
 
 const PLATFORMS = [
   { value: "all", label: "All" },
@@ -56,10 +113,24 @@ export default function InboxPage() {
         <div>
           <h1 className="text-2xl font-semibold">Inbox</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manual entry only. Auto-pull coming in Phase 2.
+            Comments, DMs, and mentions across platforms.
           </p>
         </div>
         <AddMessageDialog onSaved={load} />
+      </div>
+
+      <div className="flex flex-wrap gap-1.5 items-center">
+        <span className="text-xs text-muted-foreground mr-1">Sync:</span>
+        {SYNC_BUTTONS.map((btn) => (
+          <SyncButton
+            key={btn.label}
+            label={btn.label}
+            endpoint={btn.endpoint}
+            disabled={btn.disabled}
+            tooltip={btn.tooltip}
+            onDone={load}
+          />
+        ))}
       </div>
 
       <div className="flex flex-wrap gap-1.5">

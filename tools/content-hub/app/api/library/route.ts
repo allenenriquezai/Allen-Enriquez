@@ -42,6 +42,22 @@ export async function GET() {
   return NextResponse.json({ groups });
 }
 
+// POST /api/library  body: { path, type, title?, url?, idea_id? }
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  const { path, type, title, url, idea_id } = body ?? {};
+  if (!path || !type) {
+    return NextResponse.json({ error: "path and type required" }, { status: 400 });
+  }
+  const result = db
+    .prepare(
+      "INSERT INTO assets (path, type, title, url, idea_id) VALUES (?, ?, ?, ?, ?)",
+    )
+    .run(path, type, title ?? null, url ?? null, idea_id ?? null);
+  const asset = db.prepare("SELECT * FROM assets WHERE id = ?").get(result.lastInsertRowid);
+  return NextResponse.json({ asset }, { status: 201 });
+}
+
 // PATCH /api/library  body: { id, title? } — also supports /api/library/[id]
 export async function PATCH(req: NextRequest) {
   const body = await req.json();

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import db from "@/lib/db";
 import { AssetTile, type Asset, type AssetPost } from "@/components/asset-tile";
+import { LibraryUploadButton } from "@/components/library-upload-button";
 
 type AssetRow = {
   id: number;
@@ -40,11 +41,14 @@ export default function LibraryPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Library</h1>
-        <p className="text-sm text-muted-foreground">
-          Produced assets. Click a platform chip to log or unlog a post.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Library</h1>
+          <p className="text-sm text-muted-foreground">
+            Produced assets. Click a platform chip to log or unlog a post.
+          </p>
+        </div>
+        <LibraryUploadButton />
       </div>
 
       <section>

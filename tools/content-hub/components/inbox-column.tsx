@@ -14,6 +14,9 @@ export interface InboxMessage {
   reply_text: string | null;
   status: string;
   received_at: string;
+  external_id: string | null;
+  post_id: string | null;
+  reply_sent: number;
 }
 
 export function InboxColumn({
@@ -45,6 +48,19 @@ export function InboxColumn({
   );
 }
 
+function replyEndpoint(platform: string, thread_type: string): string | null {
+  if (thread_type === "dm") {
+    if (platform === "facebook") return "/api/facebook/conversations/reply";
+    if (platform === "instagram") return "/api/instagram/conversations/reply";
+  } else {
+    if (platform === "facebook") return "/api/facebook/comments/reply";
+    if (platform === "instagram") return "/api/instagram/comments/reply";
+    if (platform === "youtube") return "/api/youtube/comments/reply";
+    if (platform === "tiktok") return "/api/tiktok/comments/reply";
+  }
+  return null;
+}
+
 function MessageCard({
   message,
   onRefresh,
@@ -54,6 +70,7 @@ function MessageCard({
 }) {
   const [replying, setReplying] = useState(false);
   const [draft, setDraft] = useState(message.reply_text ?? "");
+  const [sending, setSending] = useState(false);
 
   const patch = async (body: Record<string, unknown>) => {
     await fetch(`/api/inbox/${message.id}`, {
@@ -64,6 +81,31 @@ function MessageCard({
     onRefresh();
   };
 
+  const handleSendReply = async () => {
+    setSending(true);
+    try {
+      const endpoint = replyEndpoint(message.platform, message.thread_type);
+      if (endpoint && message.external_id) {
+        const isComment = message.thread_type !== "dm";
+        await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(
+            isComment
+              ? { comment_id: message.external_id, message: draft, inbox_id: message.id }
+              : { thread_id: message.external_id, message: draft, inbox_id: message.id }
+          ),
+        });
+      } else {
+        await patch({ reply_text: draft, status: "replied" });
+      }
+      setReplying(false);
+      onRefresh();
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <div className="rounded-xl bg-card ring-1 ring-foreground/10 p-3 text-sm flex flex-col gap-2">
       <div className="flex items-center gap-2 flex-wrap">
@@ -71,7 +113,13 @@ function MessageCard({
         <span className="text-xs text-muted-foreground truncate">
           {message.author ?? "anon"}
         </span>
-        <span className="ml-auto">
+        <span className="ml-auto flex items-center gap-1.5">
+          {message.reply_sent === 1 && (
+            <span className="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded"
+              style={{ color: "#22c55e", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)" }}>
+              ✓ sent
+            </span>
+          )}
           <StatusBadge status={message.status} />
         </span>
       </div>
@@ -92,12 +140,10 @@ function MessageCard({
           <div className="flex gap-1.5">
             <Button
               size="sm"
-              onClick={async () => {
-                await patch({ reply_text: draft, status: "replied" });
-                setReplying(false);
-              }}
+              disabled={sending}
+              onClick={handleSendReply}
             >
-              Save
+              {sending ? "Sending…" : message.external_id ? "Send" : "Save"}
             </Button>
             <Button
               size="sm"

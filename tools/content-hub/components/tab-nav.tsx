@@ -8,6 +8,7 @@ import {
   Sparkles,
   FolderOpen,
   BarChart3,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,7 @@ const NAV = [
   { href: "/inspiration", label: "Inspiration", icon: Sparkles },
   { href: "/library", label: "Library", icon: FolderOpen },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/inbox", label: "Inbox", icon: MessageSquare },
 ];
 
 const MOBILE_NAV = [
@@ -25,6 +27,7 @@ const MOBILE_NAV = [
   { href: "/inspiration", label: "Inspire", icon: Sparkles },
   { href: "/library", label: "Library", icon: FolderOpen },
   { href: "/analytics", label: "Stats", icon: BarChart3 },
+  { href: "/inbox", label: "Inbox", icon: MessageSquare },
 ];
 
 export function TabNav() {
