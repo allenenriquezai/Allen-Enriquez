@@ -9,6 +9,7 @@ type ScheduleRow = {
   pillar: string | null;
   status: string;
   notes: string | null;
+  captions_json: string | null;
   script_body: string | null;
   idea_title: string | null;
 };
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
 
   const rows = db
     .prepare(
-      `SELECT s.id, s.script_id, s.slot_date, s.slot_type, s.pillar, s.status, s.notes,
+      `SELECT s.id, s.script_id, s.slot_date, s.slot_type, s.pillar, s.status, s.notes, s.captions_json,
               sc.body AS script_body,
               i.title AS idea_title
        FROM schedule s
@@ -110,10 +111,25 @@ export function patchScheduleRow(
     "asset_id",
     "notes",
     "pillar",
+    "captions_json",
   ] as const) {
     if (key in body && body[key] !== undefined) {
+      let value = body[key];
+      // Handle captions_json: stringify objects, pass strings as-is, null empty objects
+      if (key === "captions_json") {
+        if (typeof value === "object" && value !== null) {
+          const obj = value as Record<string, unknown>;
+          if (Object.keys(obj).length === 0) {
+            value = null;
+          } else {
+            value = JSON.stringify(obj);
+          }
+        } else if (typeof value === "string" && value.trim() === "") {
+          value = null;
+        }
+      }
       fields.push(`${key} = ?`);
-      values.push(body[key]);
+      values.push(value);
     }
   }
   if (fields.length === 0) {

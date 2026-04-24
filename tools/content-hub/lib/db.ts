@@ -25,12 +25,15 @@ function getInstance(): Database.Database {
       }
     }
 
-    // Migrate schedule table — add asset_id column if missing
+    // Migrate schedule table — add asset_id and captions_json columns if missing
     const schedInfo = _instance.prepare("PRAGMA table_info(schedule)").all() as { name: string }[];
     if (schedInfo.length > 0) {
       const cols = new Set(schedInfo.map((c) => c.name));
       if (!cols.has("asset_id")) {
         _instance.exec("ALTER TABLE schedule ADD COLUMN asset_id INTEGER");
+      }
+      if (!cols.has("captions_json")) {
+        _instance.exec("ALTER TABLE schedule ADD COLUMN captions_json TEXT");
       }
     }
 

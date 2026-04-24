@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS schedule (
   slot_type TEXT NOT NULL, -- reel_1, reel_2, youtube, fb_post, carousel
   pillar TEXT,
   status TEXT DEFAULT 'planned', -- planned, scripted, filmed, edited, posted
-  notes TEXT
+  notes TEXT,
+  captions_json TEXT -- per-platform caption overrides: { caption_fb, caption_ig, caption_tiktok, caption_yt }
 );
 
 CREATE TABLE IF NOT EXISTS assets (
