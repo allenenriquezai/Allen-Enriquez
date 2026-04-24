@@ -80,7 +80,7 @@ export default function RootLayout({
               >
                 CONTENT HUB
               </h1>
-              <span className="ae-mono-label">v1 · local</span>
+              <span className="ae-mono-label">v1</span>
             </div>
             <span className="ae-mono-label" style={{ color: "var(--brand)" }}>
               {formatToday()}
