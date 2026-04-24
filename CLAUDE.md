@@ -59,6 +59,7 @@ Python scripts in `tools/eps/`, `tools/personal/`, `tools/clients/`, `tools/shar
 | ICP research | `personal/CONTEXT.md` | `personal/workflows/intel/icp-research.md` |
 | Outreach | `personal/CONTEXT.md` | `personal/workflows/sales/outreach.md` |
 | Client delivery | `personal/CONTEXT.md` | `personal/workflows/delivery/client-intake.md` |
+| Debug web/mobile app | `personal/CONTEXT.md` | `personal/workflows/delivery/debug-web-mobile.md` |
 | Cross-domain | Both CONTEXT.md as needed | Handle directly using `tools/` |
 
 All paths relative to `projects/`.
