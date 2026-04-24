@@ -323,9 +323,11 @@ const CREATOR_FILTER_ALL = "all";
 export function InspirationClient({
   posts,
   refs: initialRefs,
+  autoRefreshEnabled = true,
 }: {
   posts: CreatorPost[];
   refs: LearningRef[];
+  autoRefreshEnabled?: boolean;
 }) {
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -335,6 +337,7 @@ export function InspirationClient({
   const [autoRefreshing, setAutoRefreshing] = useState(false);
 
   useEffect(() => {
+    if (!autoRefreshEnabled) return;
     async function checkAndRefresh() {
       try {
         const res = await fetch("/api/creator-feed/last-refresh");
@@ -352,7 +355,7 @@ export function InspirationClient({
       }
     }
     checkAndRefresh();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [autoRefreshEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const flash = (msg: string) => {
     setToast(msg);

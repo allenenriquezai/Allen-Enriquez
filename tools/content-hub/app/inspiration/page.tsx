@@ -26,6 +26,7 @@ type CreatorPost = {
 };
 
 export default function InspirationPage() {
+  const autoRefreshEnabled = process.env.CREATOR_FEED_AUTO_REFRESH !== "false";
   const posts = db
     .prepare(
       `SELECT id, post_id, creator, platform, url, title, description,
@@ -45,5 +46,5 @@ export default function InspirationPage() {
     )
     .all() as LearningRef[];
 
-  return <InspirationClient posts={posts} refs={refs} />;
+  return <InspirationClient posts={posts} refs={refs} autoRefreshEnabled={autoRefreshEnabled} />;
 }
