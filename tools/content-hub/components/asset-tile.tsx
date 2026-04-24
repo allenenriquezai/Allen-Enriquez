@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { Film, Image as ImageIcon, Check } from "lucide-react";
+import { Film, Image as ImageIcon, Check, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { QuickPublishModal } from "@/components/quick-publish-modal";
 
 export type AssetPost = {
   id: number;
@@ -18,6 +19,8 @@ export type Asset = {
   path: string;
   type: string;
   title: string | null;
+  url: string | null;
+  idea_id: number | null;
   created_at: string;
   posts: AssetPost[];
 };
@@ -99,6 +102,7 @@ function PlatformToggle({
 
 export function AssetTile({ asset: initial }: { asset: Asset }) {
   const [asset, setAsset] = React.useState<Asset>(initial);
+  const [showPublish, setShowPublish] = React.useState(false);
   const postByPlatform = React.useMemo(() => {
     const m = new Map<string, AssetPost>();
     for (const p of asset.posts) {
@@ -118,6 +122,13 @@ export function AssetTile({ asset: initial }: { asset: Asset }) {
   const Icon = isCarousel ? ImageIcon : Film;
 
   return (
+    <>
+      {showPublish && asset.url && (
+        <QuickPublishModal
+          asset={{ id: asset.id, url: asset.url, title: asset.title, type: asset.type, idea_id: asset.idea_id }}
+          onClose={() => setShowPublish(false)}
+        />
+      )}
     <div className="rounded-lg border border-border bg-card overflow-hidden flex flex-col">
       <div
         className="aspect-[9/16] flex items-center justify-center text-muted-foreground"
@@ -138,7 +149,7 @@ export function AssetTile({ asset: initial }: { asset: Asset }) {
         <div className="text-[10px] text-muted-foreground font-mono">
           {format(new Date(asset.created_at), "MMM d, yyyy")}
         </div>
-        <div className="flex gap-1 mt-auto pt-1">
+        <div className="flex gap-1 mt-auto pt-1 flex-wrap">
           {PLATFORMS.map((p) => (
             <PlatformToggle
               key={p.key}
@@ -150,7 +161,21 @@ export function AssetTile({ asset: initial }: { asset: Asset }) {
             />
           ))}
         </div>
+        {asset.url ? (
+          <button
+            type="button"
+            onClick={() => setShowPublish(true)}
+            className="mt-2 flex items-center gap-1 text-[10px] font-mono uppercase px-2 py-1 rounded border transition-colors"
+            style={{ color: "var(--brand)", borderColor: "rgba(2,179,233,0.3)", background: "rgba(2,179,233,0.06)" }}
+          >
+            <Send className="size-3" />
+            Post this
+          </button>
+        ) : (
+          <span className="mt-2 text-[10px] font-mono text-muted-foreground/50">No URL — add via Library</span>
+        )}
       </div>
     </div>
+    </>
   );
 }

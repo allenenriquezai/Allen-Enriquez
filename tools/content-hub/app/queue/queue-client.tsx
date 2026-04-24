@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, CheckCircle2 } from "lucide-react";
+import { Copy, Check, CheckCircle2, Send, Zap } from "lucide-react";
+import { QuickPublishModal } from "@/components/quick-publish-modal";
 
 export type Caption = { variant: string; body: string };
 
@@ -21,6 +22,10 @@ export type QueueSlot = {
   pillar: string | null;
   captions: Caption[];
   reel_body: string | null;
+  asset_id: number | null;
+  asset_url: string | null;
+  asset_title: string | null;
+  asset_type: string | null;
 };
 
 const PLATFORM_TABS: { key: string; label: string }[] = [
@@ -61,11 +66,31 @@ function formatDate(dateStr: string) {
   return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
 }
 
-export function QueueClient({ slots }: { slots: QueueSlot[] }) {
+export function QueueClient({ slots, ytConnected = false, tikConnected = false }: { slots: QueueSlot[]; ytConnected?: boolean; tikConnected?: boolean }) {
   const router = useRouter();
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [postingId, setPostingId] = useState<number | null>(null);
+  const [publishSlot, setPublishSlot] = useState<QueueSlot | null>(null);
   const [reschedulingId, setReschedulingId] = useState<number | null>(null);
+  const [blotatoId, setBlotatoId] = useState<number | null>(null);
+  const [blotatoFlash, setBlotatoFlash] = useState<Set<number>>(new Set());
+  const [fbId, setFbId] = useState<number | null>(null);
+  const [fbFlash, setFbFlash] = useState<Set<number>>(new Set());
+  // IG publish state
+  const [igUrlOpen, setIgUrlOpen] = useState<number | null>(null);
+  const [igUrl, setIgUrl] = useState<Record<number, string>>({});
+  const [igId, setIgId] = useState<number | null>(null);
+  const [igFlash, setIgFlash] = useState<Set<number>>(new Set());
+  // YT publish state
+  const [ytUrlOpen, setYtUrlOpen] = useState<number | null>(null);
+  const [ytUrl, setYtUrl] = useState<Record<number, string>>({});
+  const [ytId, setYtId] = useState<number | null>(null);
+  const [ytFlash, setYtFlash] = useState<Set<number>>(new Set());
+  // TikTok publish state
+  const [tikUrlOpen, setTikUrlOpen] = useState<number | null>(null);
+  const [tikUrl, setTikUrl] = useState<Record<number, string>>({});
+  const [tikId, setTikId] = useState<number | null>(null);
+  const [tikFlash, setTikFlash] = useState<Set<number>>(new Set());
 
   const handleCopy = async (text: string, key: string) => {
     await navigator.clipboard.writeText(text);
@@ -83,6 +108,101 @@ export function QueueClient({ slots }: { slots: QueueSlot[] }) {
     setReschedulingId(null);
     router.refresh();
   }
+
+  const handleFbPost = async (scheduleId: number, message: string) => {
+    setFbId(scheduleId);
+    try {
+      const res = await fetch("/api/facebook/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+      if (res.ok) {
+        setFbFlash((prev) => new Set(prev).add(scheduleId));
+        setTimeout(() => setFbFlash((prev) => { const n = new Set(prev); n.delete(scheduleId); return n; }), 3000);
+      }
+    } finally {
+      setFbId(null);
+    }
+  };
+
+  const handleBlotato = async (scheduleId: number) => {
+    setBlotatoId(scheduleId);
+    try {
+      const res = await fetch("/api/blotato/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schedule_id: scheduleId }),
+      });
+      if (res.ok) {
+        setBlotatoFlash((prev) => new Set(prev).add(scheduleId));
+        setTimeout(() => setBlotatoFlash((prev) => { const n = new Set(prev); n.delete(scheduleId); return n; }), 3000);
+        router.refresh();
+      }
+    } finally {
+      setBlotatoId(null);
+    }
+  };
+
+  const handleIgPost = async (scheduleId: number, caption: string) => {
+    const url = igUrl[scheduleId];
+    if (!url) return;
+    setIgId(scheduleId);
+    try {
+      const res = await fetch("/api/instagram/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ caption, media_url: url, media_type: "REELS" }),
+      });
+      if (res.ok) {
+        setIgFlash((prev) => new Set(prev).add(scheduleId));
+        setTimeout(() => setIgFlash((prev) => { const n = new Set(prev); n.delete(scheduleId); return n; }), 3000);
+        setIgUrlOpen(null);
+      }
+    } finally {
+      setIgId(null);
+    }
+  };
+
+  const handleYtPost = async (scheduleId: number, title: string, description: string) => {
+    const url = ytUrl[scheduleId];
+    if (!url) return;
+    setYtId(scheduleId);
+    try {
+      const res = await fetch("/api/youtube/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, media_url: url }),
+      });
+      if (res.ok) {
+        setYtFlash((prev) => new Set(prev).add(scheduleId));
+        setTimeout(() => setYtFlash((prev) => { const n = new Set(prev); n.delete(scheduleId); return n; }), 3000);
+        setYtUrlOpen(null);
+      }
+    } finally {
+      setYtId(null);
+    }
+  };
+
+  const handleTikPost = async (scheduleId: number, title: string, description: string) => {
+    const url = tikUrl[scheduleId];
+    if (!url) return;
+    setTikId(scheduleId);
+    try {
+      const res = await fetch("/api/tiktok/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, video_url: url }),
+      });
+      if (res.ok) {
+        setTikFlash((prev) => new Set(prev).add(scheduleId));
+        setTimeout(() => setTikFlash((prev) => { const n = new Set(prev); n.delete(scheduleId); return n; }), 3000);
+        setTikUrlOpen(null);
+      }
+    } finally {
+      setTikId(null);
+    }
+  };
 
   const handleMarkPosted = async (scheduleId: number) => {
     setPostingId(scheduleId);
@@ -107,6 +227,25 @@ export function QueueClient({ slots }: { slots: QueueSlot[] }) {
   }
 
   return (
+    <>
+      {publishSlot?.asset_url && (
+        <QuickPublishModal
+          asset={{
+            id: publishSlot.asset_id!,
+            url: publishSlot.asset_url,
+            title: publishSlot.asset_title,
+            type: publishSlot.asset_type ?? "reel",
+            idea_id: publishSlot.idea_id,
+          }}
+          scheduleId={publishSlot.schedule_id}
+          captions={(() => {
+            const m: Record<string, string> = {};
+            for (const c of publishSlot.captions) m[c.variant] = c.body;
+            return m;
+          })()}
+          onClose={() => setPublishSlot(null)}
+        />
+      )}
     <div className="flex flex-col gap-4">
       {slots.map((slot) => {
         const captionMap: Record<string, string> = {};
@@ -161,6 +300,170 @@ export function QueueClient({ slots }: { slots: QueueSlot[] }) {
                     <CheckCircle2 className="h-3 w-3" />
                     {postingId === slot.schedule_id ? "Saving…" : "Mark Posted"}
                   </Button>
+                  {slot.asset_url ? (
+                    <Button
+                      size="sm"
+                      className="h-7 px-2.5 text-xs gap-1.5"
+                      style={{ background: "rgba(2,179,233,0.15)", color: "var(--brand)", border: "1px solid rgba(2,179,233,0.3)" }}
+                      onClick={() => setPublishSlot(slot)}
+                    >
+                      <Zap className="h-3 w-3" />
+                      Quick Publish
+                    </Button>
+                  ) : (
+                    <span className="text-[10px] font-mono text-muted-foreground/40 px-1">No asset linked</span>
+                  )}
+                  {slot.reel_body && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 px-2.5 text-xs gap-1.5"
+                      style={blotatoFlash.has(slot.schedule_id) ? { color: "#22c55e", borderColor: "rgba(34,197,94,0.4)" } : {}}
+                      disabled={blotatoId === slot.schedule_id}
+                      onClick={() => handleBlotato(slot.schedule_id)}
+                    >
+                      <Send className="h-3 w-3" />
+                      {blotatoFlash.has(slot.schedule_id) ? "Posted to Blotato" : blotatoId === slot.schedule_id ? "Publishing…" : "Blotato"}
+                    </Button>
+                  )}
+                  {captionMap["caption_ig"] && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 px-2.5 text-xs gap-1.5"
+                      style={fbFlash.has(slot.schedule_id) ? { color: "#22c55e", borderColor: "rgba(34,197,94,0.4)" } : { color: "#1877F2", borderColor: "rgba(24,119,242,0.3)" }}
+                      disabled={fbId === slot.schedule_id}
+                      onClick={() => handleFbPost(slot.schedule_id, captionMap["caption_ig"])}
+                    >
+                      <Send className="h-3 w-3" />
+                      {fbFlash.has(slot.schedule_id) ? "Posted to FB" : fbId === slot.schedule_id ? "Posting…" : "Post to FB"}
+                    </Button>
+                  )}
+                  {captionMap["caption_ig"] && (
+                    igUrlOpen === slot.schedule_id ? (
+                      <span className="flex items-center gap-1">
+                        <input
+                          type="url"
+                          placeholder="Media URL"
+                          value={igUrl[slot.schedule_id] ?? ""}
+                          onChange={(e) => setIgUrl((prev) => ({ ...prev, [slot.schedule_id]: e.target.value }))}
+                          className="h-7 text-xs bg-transparent border border-border/60 rounded px-2 w-44"
+                          autoFocus
+                        />
+                        <Button
+                          size="sm"
+                          className="h-7 px-2.5 text-xs gap-1.5"
+                          disabled={igId === slot.schedule_id || !igUrl[slot.schedule_id]}
+                          style={{ color: "#E1306C", background: "rgba(225,48,108,0.1)", border: "1px solid rgba(225,48,108,0.3)" }}
+                          onClick={() => handleIgPost(slot.schedule_id, captionMap["caption_ig"])}
+                        >
+                          {igId === slot.schedule_id ? "Posting…" : "Confirm"}
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setIgUrlOpen(null)}>✕</Button>
+                      </span>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 px-2.5 text-xs gap-1.5"
+                        style={igFlash.has(slot.schedule_id) ? { color: "#22c55e", borderColor: "rgba(34,197,94,0.4)" } : { color: "#E1306C", borderColor: "rgba(225,48,108,0.3)" }}
+                        onClick={() => setIgUrlOpen(slot.schedule_id)}
+                      >
+                        <Send className="h-3 w-3" />
+                        {igFlash.has(slot.schedule_id) ? "Posted to IG" : "Post to IG"}
+                      </Button>
+                    )
+                  )}
+                  {captionMap["caption_tiktok"] && (
+                    tikConnected ? (
+                      tikUrlOpen === slot.schedule_id ? (
+                        <span className="flex items-center gap-1">
+                          <input
+                            type="url"
+                            placeholder="Video URL"
+                            value={tikUrl[slot.schedule_id] ?? ""}
+                            onChange={(e) => setTikUrl((prev) => ({ ...prev, [slot.schedule_id]: e.target.value }))}
+                            className="h-7 text-xs bg-transparent border border-border/60 rounded px-2 w-44"
+                            autoFocus
+                          />
+                          <Button
+                            size="sm"
+                            className="h-7 px-2.5 text-xs gap-1.5"
+                            disabled={tikId === slot.schedule_id || !tikUrl[slot.schedule_id]}
+                            style={{ color: "#010101", background: "rgba(1,1,1,0.08)", border: "1px solid rgba(1,1,1,0.3)" }}
+                            onClick={() => handleTikPost(slot.schedule_id, slot.title ?? "Untitled", captionMap["caption_tiktok"] ?? "")}
+                          >
+                            {tikId === slot.schedule_id ? "Uploading…" : "Confirm"}
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setTikUrlOpen(null)}>✕</Button>
+                        </span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 px-2.5 text-xs gap-1.5"
+                          style={tikFlash.has(slot.schedule_id) ? { color: "#22c55e", borderColor: "rgba(34,197,94,0.4)" } : { color: "#010101", borderColor: "rgba(1,1,1,0.3)" }}
+                          onClick={() => setTikUrlOpen(slot.schedule_id)}
+                        >
+                          <Send className="h-3 w-3" />
+                          {tikFlash.has(slot.schedule_id) ? "Posted to TikTok" : "Post to TikTok"}
+                        </Button>
+                      )
+                    ) : (
+                      <a
+                        href="/api/tiktok/auth"
+                        className="inline-flex items-center gap-1.5 h-7 px-2.5 text-xs rounded border"
+                        style={{ color: "#010101", borderColor: "rgba(1,1,1,0.3)" }}
+                      >
+                        Connect TikTok →
+                      </a>
+                    )
+                  )}
+                  {slot.slot_type === "youtube" && (
+                    ytConnected ? (
+                      ytUrlOpen === slot.schedule_id ? (
+                        <span className="flex items-center gap-1">
+                          <input
+                            type="url"
+                            placeholder="Video URL"
+                            value={ytUrl[slot.schedule_id] ?? ""}
+                            onChange={(e) => setYtUrl((prev) => ({ ...prev, [slot.schedule_id]: e.target.value }))}
+                            className="h-7 text-xs bg-transparent border border-border/60 rounded px-2 w-44"
+                            autoFocus
+                          />
+                          <Button
+                            size="sm"
+                            className="h-7 px-2.5 text-xs gap-1.5"
+                            disabled={ytId === slot.schedule_id || !ytUrl[slot.schedule_id]}
+                            style={{ color: "#FF0000", background: "rgba(255,0,0,0.08)", border: "1px solid rgba(255,0,0,0.3)" }}
+                            onClick={() => handleYtPost(slot.schedule_id, slot.title ?? "Untitled", captionMap["caption_yt"] ?? "")}
+                          >
+                            {ytId === slot.schedule_id ? "Uploading…" : "Confirm"}
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setYtUrlOpen(null)}>✕</Button>
+                        </span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 px-2.5 text-xs gap-1.5"
+                          style={ytFlash.has(slot.schedule_id) ? { color: "#22c55e", borderColor: "rgba(34,197,94,0.4)" } : { color: "#FF0000", borderColor: "rgba(255,0,0,0.3)" }}
+                          onClick={() => setYtUrlOpen(slot.schedule_id)}
+                        >
+                          <Send className="h-3 w-3" />
+                          {ytFlash.has(slot.schedule_id) ? "Uploaded to YT" : "Post to YT"}
+                        </Button>
+                      )
+                    ) : (
+                      <a
+                        href="/api/youtube/auth"
+                        className="inline-flex items-center gap-1.5 h-7 px-2.5 text-xs rounded border"
+                        style={{ color: "#FF0000", borderColor: "rgba(255,0,0,0.3)" }}
+                      >
+                        Connect YouTube →
+                      </a>
+                    )
+                  )}
                 </div>
               </div>
               {/* Row 2: title + pillar */}
@@ -236,5 +539,6 @@ export function QueueClient({ slots }: { slots: QueueSlot[] }) {
         );
       })}
     </div>
+    </>
   );
 }

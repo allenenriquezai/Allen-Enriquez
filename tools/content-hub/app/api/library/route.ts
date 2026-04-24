@@ -62,7 +62,7 @@ export function patchAssetRow(
   }
   const fields: string[] = [];
   const values: unknown[] = [];
-  for (const key of ["title", "type"] as const) {
+  for (const key of ["title", "type", "url", "idea_id"] as const) {
     if (key in body && body[key] !== undefined) {
       fields.push(`${key} = ?`);
       values.push(body[key]);

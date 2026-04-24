@@ -107,6 +107,7 @@ export function patchScheduleRow(
     "slot_type",
     "status",
     "script_id",
+    "asset_id",
     "notes",
     "pillar",
   ] as const) {

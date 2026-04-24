@@ -63,6 +63,36 @@ interface YtStat {
 
 type YtSortKey = "published_at" | "views" | "likes" | "comments";
 
+interface FbPost {
+  post_id: string;
+  message: string | null;
+  created_time: string;
+  permalink_url: string | null;
+  impressions: number;
+  reach: number;
+  engaged_users: number;
+  reactions: number;
+  comments_count: number;
+  shares_count: number;
+}
+
+type FbSortKey = "created_time" | "reactions" | "comments_count" | "shares_count" | "reach";
+
+interface IgPost {
+  post_id: string;
+  caption: string | null;
+  media_type: string | null;
+  timestamp: string;
+  permalink: string | null;
+  like_count: number;
+  comments_count: number;
+  impressions: number;
+  reach: number;
+  saved: number;
+}
+
+type IgSortKey = "timestamp" | "like_count" | "comments_count" | "saved" | "reach";
+
 export default function AnalyticsPage() {
   const [platform, setPlatform] = useState("all");
   const [rows, setRows] = useState<MetricRow[]>([]);
@@ -71,6 +101,14 @@ export default function AnalyticsPage() {
   const [ytLoading, setYtLoading] = useState(false);
   const [ytSortKey, setYtSortKey] = useState<YtSortKey>("published_at");
   const [ytSortDir, setYtSortDir] = useState<"asc" | "desc">("desc");
+  const [fbPosts, setFbPosts] = useState<FbPost[]>([]);
+  const [fbLoading, setFbLoading] = useState(false);
+  const [fbSortKey, setFbSortKey] = useState<FbSortKey>("created_time");
+  const [fbSortDir, setFbSortDir] = useState<"asc" | "desc">("desc");
+  const [igPosts, setIgPosts] = useState<IgPost[]>([]);
+  const [igLoading, setIgLoading] = useState(false);
+  const [igSortKey, setIgSortKey] = useState<IgSortKey>("timestamp");
+  const [igSortDir, setIgSortDir] = useState<"asc" | "desc">("desc");
 
   const load = useCallback(async () => {
     const url =
@@ -99,9 +137,33 @@ export default function AnalyticsPage() {
     }
   }, []);
 
+  const loadFacebook = useCallback(async (refresh = false) => {
+    setFbLoading(true);
+    try {
+      const res = await fetch(`/api/analytics/facebook${refresh ? "?refresh=1" : ""}`, { cache: "no-store" });
+      const json = await res.json();
+      setFbPosts(json.posts ?? []);
+    } finally {
+      setFbLoading(false);
+    }
+  }, []);
+
+  const loadInstagram = useCallback(async (refresh = false) => {
+    setIgLoading(true);
+    try {
+      const res = await fetch(`/api/analytics/instagram${refresh ? "?refresh=1" : ""}`, { cache: "no-store" });
+      const json = await res.json();
+      setIgPosts(json.posts ?? []);
+    } finally {
+      setIgLoading(false);
+    }
+  }, []);
+
   useEffect(() => { load(); }, [load]);
   useEffect(() => { loadPosts(); }, [loadPosts]);
   useEffect(() => { loadYouTube(); }, [loadYouTube]);
+  useEffect(() => { loadFacebook(); }, [loadFacebook]);
+  useEffect(() => { loadInstagram(); }, [loadInstagram]);
 
   const kpis = useMemo(() => {
     const totalViews = rows.reduce((a, r) => a + (r.views ?? 0), 0);
@@ -120,7 +182,7 @@ export default function AnalyticsPage() {
         <div>
           <h1 className="text-2xl font-semibold">Analytics</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manual entry only. Auto-pull coming in Phase 2.
+            Use the Refresh buttons below to pull latest data from each platform.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -180,6 +242,50 @@ export default function AnalyticsPage() {
               else { setYtSortKey(key); setYtSortDir("desc"); }
             }}
           />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Facebook Page</h2>
+            <Button size="sm" variant="outline" disabled={fbLoading} onClick={() => loadFacebook(true)}>
+              {fbLoading ? "Refreshing…" : "Refresh"}
+            </Button>
+          </div>
+          <FacebookChart posts={fbPosts} />
+          <div className="mt-4">
+            <FacebookTable
+              posts={fbPosts}
+              sortKey={fbSortKey}
+              sortDir={fbSortDir}
+              onSort={(key) => {
+                if (key === fbSortKey) setFbSortDir(d => d === "asc" ? "desc" : "asc");
+                else { setFbSortKey(key); setFbSortDir("desc"); }
+              }}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Instagram</h2>
+            <Button size="sm" variant="outline" disabled={igLoading} onClick={() => loadInstagram(true)}>
+              {igLoading ? "Refreshing…" : "Refresh"}
+            </Button>
+          </div>
+          <InstagramChart posts={igPosts} />
+          <div className="mt-4">
+            <InstagramTable
+              posts={igPosts}
+              sortKey={igSortKey}
+              sortDir={igSortDir}
+              onSort={(key) => {
+                if (key === igSortKey) setIgSortDir(d => d === "asc" ? "desc" : "asc");
+                else { setIgSortKey(key); setIgSortDir("desc"); }
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -287,6 +393,244 @@ function YouTubeTable({ stats, sortKey, sortDir, onSort }: {
               <td className="px-4 py-2 text-right font-mono">{v.views.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{v.likes.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{v.comments.toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function FacebookChart({ posts }: { posts: FbPost[] }) {
+  if (posts.length === 0) return null;
+
+  const data = [...posts]
+    .sort((a, b) => a.created_time.localeCompare(b.created_time))
+    .map((p) => ({
+      label: p.created_time.slice(5, 10),
+      msg: (p.message ?? "").slice(0, 40) + ((p.message ?? "").length > 40 ? "…" : ""),
+      reactions: p.reactions,
+      comments: p.comments_count,
+      shares: p.shares_count,
+      reach: p.reach,
+    }));
+
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payload: typeof data[0] }[] }) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0].payload;
+    return (
+      <div className="rounded-lg border border-border bg-[#1b1b1b] p-3 text-xs space-y-1 max-w-[220px]">
+        <p className="font-medium text-foreground leading-snug">{d.msg || "(no caption)"}</p>
+        <p className="text-muted-foreground">{d.label}</p>
+        <div className="flex gap-3 pt-1">
+          <span style={{ color: "#02B3E9" }}>{d.reactions} reactions</span>
+          <span style={{ color: "#f59e0b" }}>{d.comments} comments</span>
+          <span style={{ color: "#a855f7" }}>{d.shares} shares</span>
+        </div>
+        {d.reach > 0 && <p className="text-muted-foreground">Reach: {d.reach.toLocaleString()}</p>}
+      </div>
+    );
+  };
+
+  return (
+    <div className="h-64 rounded-xl ring-1 ring-foreground/10 p-3 mb-2">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+          <XAxis dataKey="label" stroke="rgba(255,255,255,0.5)" fontSize={11} />
+          <YAxis stroke="rgba(255,255,255,0.5)" fontSize={11} />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend wrapperStyle={{ fontSize: 11 }} />
+          <Bar dataKey="reactions" fill="#02B3E9" opacity={0.85} radius={[3, 3, 0, 0]} name="Reactions" />
+          <Bar dataKey="comments" fill="#f59e0b" opacity={0.85} radius={[3, 3, 0, 0]} name="Comments" />
+          <Bar dataKey="shares" fill="#a855f7" opacity={0.85} radius={[3, 3, 0, 0]} name="Shares" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function FacebookTable({ posts, sortKey, sortDir, onSort }: {
+  posts: FbPost[];
+  sortKey: FbSortKey;
+  sortDir: "asc" | "desc";
+  onSort: (key: FbSortKey) => void;
+}) {
+  const sorted = [...posts].sort((a, b) => {
+    const av = a[sortKey] ?? 0, bv = b[sortKey] ?? 0;
+    const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+    return sortDir === "asc" ? cmp : -cmp;
+  });
+
+  if (sorted.length === 0)
+    return <p className="text-sm text-muted-foreground">No Facebook data. Hit "Refresh from Facebook" to pull.</p>;
+
+  const hasReach = sorted.some(p => p.reach > 0);
+
+  const cols: { key: FbSortKey; label: string }[] = [
+    { key: "created_time", label: "Date" },
+    { key: "reactions", label: "Reactions" },
+    { key: "comments_count", label: "Comments" },
+    { key: "shares_count", label: "Shares" },
+    ...(hasReach ? [{ key: "reach" as FbSortKey, label: "Reach" }] : []),
+  ];
+
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-border bg-muted/20">
+            <th className="text-left px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">Post</th>
+            {cols.map(c => (
+              <th
+                key={c.key}
+                className="text-right px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide cursor-pointer select-none hover:text-foreground transition-colors"
+                onClick={() => onSort(c.key)}
+              >
+                {c.label}{sortKey === c.key ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map(p => (
+            <tr key={p.post_id} className="border-b border-border/40 hover:bg-muted/10 transition-colors">
+              <td className="px-4 py-2 max-w-xs">
+                <div className="flex flex-col gap-0.5">
+                  {p.permalink_url ? (
+                    <a href={p.permalink_url} target="_blank" rel="noreferrer" className="hover:underline truncate block" style={{ color: "var(--brand)" }}>
+                      {(p.message ?? "(no caption)").slice(0, 60)}
+                    </a>
+                  ) : (
+                    <span className="truncate text-muted-foreground">{(p.message ?? "(no caption)").slice(0, 60)}</span>
+                  )}
+                  <span className="text-xs text-muted-foreground">{p.created_time.slice(0, 10)}</span>
+                </div>
+              </td>
+              <td className="px-4 py-2 text-right font-mono">{p.reactions.toLocaleString()}</td>
+              <td className="px-4 py-2 text-right font-mono">{p.comments_count.toLocaleString()}</td>
+              <td className="px-4 py-2 text-right font-mono">{p.shares_count.toLocaleString()}</td>
+              {hasReach && <td className="px-4 py-2 text-right font-mono">{p.reach.toLocaleString()}</td>}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function InstagramChart({ posts }: { posts: IgPost[] }) {
+  if (posts.length === 0) return null;
+
+  const data = [...posts]
+    .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+    .map((p) => ({
+      label: p.timestamp.slice(5, 10),
+      caption: (p.caption ?? "").slice(0, 40) + ((p.caption ?? "").length > 40 ? "…" : ""),
+      likes: p.like_count,
+      comments: p.comments_count,
+      saved: p.saved,
+      reach: p.reach,
+    }));
+
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payload: typeof data[0] }[] }) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0].payload;
+    return (
+      <div className="rounded-lg border border-border bg-[#1b1b1b] p-3 text-xs space-y-1 max-w-[220px]">
+        <p className="font-medium text-foreground leading-snug">{d.caption || "(no caption)"}</p>
+        <p className="text-muted-foreground">{d.label}</p>
+        <div className="flex gap-3 pt-1">
+          <span style={{ color: "#e1306c" }}>{d.likes} likes</span>
+          <span style={{ color: "#f59e0b" }}>{d.comments} comments</span>
+          <span style={{ color: "#a855f7" }}>{d.saved} saved</span>
+        </div>
+        {d.reach > 0 && <p className="text-muted-foreground">Reach: {d.reach.toLocaleString()}</p>}
+      </div>
+    );
+  };
+
+  return (
+    <div className="h-64 rounded-xl ring-1 ring-foreground/10 p-3 mb-2">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+          <XAxis dataKey="label" stroke="rgba(255,255,255,0.5)" fontSize={11} />
+          <YAxis stroke="rgba(255,255,255,0.5)" fontSize={11} />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend wrapperStyle={{ fontSize: 11 }} />
+          <Bar dataKey="likes" fill="#e1306c" opacity={0.85} radius={[3, 3, 0, 0]} name="Likes" />
+          <Bar dataKey="comments" fill="#f59e0b" opacity={0.85} radius={[3, 3, 0, 0]} name="Comments" />
+          <Bar dataKey="saved" fill="#a855f7" opacity={0.85} radius={[3, 3, 0, 0]} name="Saved" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function InstagramTable({ posts, sortKey, sortDir, onSort }: {
+  posts: IgPost[];
+  sortKey: IgSortKey;
+  sortDir: "asc" | "desc";
+  onSort: (key: IgSortKey) => void;
+}) {
+  const sorted = [...posts].sort((a, b) => {
+    const av = a[sortKey] ?? 0, bv = b[sortKey] ?? 0;
+    const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+    return sortDir === "asc" ? cmp : -cmp;
+  });
+
+  if (sorted.length === 0)
+    return <p className="text-sm text-muted-foreground">No Instagram data. Hit "Refresh" to pull.</p>;
+
+  const hasReach = sorted.some(p => p.reach > 0);
+
+  const cols: { key: IgSortKey; label: string }[] = [
+    { key: "timestamp", label: "Date" },
+    { key: "like_count", label: "Likes" },
+    { key: "comments_count", label: "Comments" },
+    { key: "saved", label: "Saved" },
+    ...(hasReach ? [{ key: "reach" as IgSortKey, label: "Reach" }] : []),
+  ];
+
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-border bg-muted/20">
+            <th className="text-left px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">Post</th>
+            {cols.map(c => (
+              <th
+                key={c.key}
+                className="text-right px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide cursor-pointer select-none hover:text-foreground transition-colors"
+                onClick={() => onSort(c.key)}
+              >
+                {c.label}{sortKey === c.key ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map(p => (
+            <tr key={p.post_id} className="border-b border-border/40 hover:bg-muted/10 transition-colors">
+              <td className="px-4 py-2 max-w-xs">
+                <div className="flex flex-col gap-0.5">
+                  {p.permalink ? (
+                    <a href={p.permalink} target="_blank" rel="noreferrer" className="hover:underline truncate block" style={{ color: "var(--brand)" }}>
+                      {(p.caption ?? "(no caption)").slice(0, 60)}
+                    </a>
+                  ) : (
+                    <span className="truncate text-muted-foreground">{(p.caption ?? "(no caption)").slice(0, 60)}</span>
+                  )}
+                  <span className="text-xs text-muted-foreground">
+                    {p.timestamp.slice(0, 10)}{p.media_type ? ` · ${p.media_type}` : ""}
+                  </span>
+                </div>
+              </td>
+              <td className="px-4 py-2 text-right font-mono">{p.like_count.toLocaleString()}</td>
+              <td className="px-4 py-2 text-right font-mono">{p.comments_count.toLocaleString()}</td>
+              <td className="px-4 py-2 text-right font-mono">{p.saved.toLocaleString()}</td>
+              {hasReach && <td className="px-4 py-2 text-right font-mono">{p.reach.toLocaleString()}</td>}
             </tr>
           ))}
         </tbody>

@@ -8,6 +8,8 @@ type AssetRow = {
   path: string;
   type: string;
   title: string | null;
+  url: string | null;
+  idea_id: number | null;
   created_at: string;
 };
 
