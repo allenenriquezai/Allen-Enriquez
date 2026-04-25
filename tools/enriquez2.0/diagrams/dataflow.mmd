@@ -1,0 +1,67 @@
+flowchart TD
+    classDef src fill:#1e293b,stroke:#3b82f6,color:#f1f5f9
+    classDef ai fill:#0f172a,stroke:#22d3ee,color:#f1f5f9
+    classDef store fill:#1e293b,stroke:#a78bfa,color:#f1f5f9
+    classDef out fill:#0f172a,stroke:#34d399,color:#f1f5f9
+    classDef ident fill:#312e81,stroke:#fbbf24,color:#f1f5f9
+
+    subgraph SOURCES[" SOURCES "]
+        RSS[RSS feeds<br/>Anthropic / GitHub blog]:::src
+        RD[Reddit JSON API<br/>r/ClaudeAI · r/SaaS · r/Entrepreneur]:::src
+        GH[GitHub releases<br/>claude-code · sdk-python]:::src
+    end
+
+    subgraph IDENTITY[" IDENTITY "]
+        ID[who-i-am.md<br/>becoming.md<br/>q2-2026.md<br/>values.md<br/>non-negotiables.md]:::ident
+    end
+
+    FETCH[fetchers.ts<br/>normalize → RawItem]
+    RSS --> FETCH
+    RD --> FETCH
+    GH --> FETCH
+
+    FETCH --> RAW[(raw/&lt;domain&gt;/&lt;date&gt;.jsonl)]:::store
+    FETCH --> ROUTE{router.ts<br/>Claude Haiku<br/>tag + score 0-10<br/>+ topic kebab-case}:::ai
+    ID --> ROUTE
+
+    CAP[capture.ts<br/>npm run capture &lt;url&gt;<br/>Haiku fetch+summarize]:::ai
+    CAP --> ROUTE
+
+    ROUTE -->|build, rel≥6| INB1[domains/build/inbox.md]:::store
+    ROUTE -->|reach, rel≥6| INB2[domains/reach/inbox.md]:::store
+    ROUTE -->|serve, rel≥6| INB3[domains/serve/inbox.md]:::store
+    ROUTE -->|drop| DROP((discard))
+
+    ROUTE --> TOPICS[(topics.json<br/>per-topic count + last_seen)]:::store
+
+    INB1 -.Allen marks promote.-> DIST{distill.ts<br/>Claude Sonnet}:::ai
+    ID --> DIST
+    DIST --> STD[domains/build/standard.md<br/>what good looks like]:::store
+    DIST --> ARCH[(archive/standard-&lt;ts&gt;.md)]:::store
+
+    REPO[Allen-Enriquez/<br/>full repo + git ls-files] --> MIRROR[mirror.ts<br/>walk + index]
+    MIRROR --> STATE[(state/repo.json<br/>state/content.json<br/>state/automations.json)]:::store
+
+    STD --> AUDIT{audit.ts<br/>Claude Sonnet<br/>standard vs reality}:::ai
+    STATE --> AUDIT
+    ID --> AUDIT
+    AUDIT --> AREP[audits/&lt;domain&gt;-YYYY-MM-DD.md<br/>top gaps · impact × ease]:::out
+
+    INB1 --> OPP{opportunities.ts<br/>Claude Sonnet<br/>NEW moves only}:::ai
+    INB2 --> OPP
+    INB3 --> OPP
+    ID --> OPP
+    OPP --> OPPF[opportunities/YYYY-MM-DD.md<br/>top moves · first step]:::out
+
+    TOPICS --> SCOUT{scout.ts<br/>Claude Sonnet<br/>blind-spot detector}:::ai
+    STD --> SCOUT
+    ID --> SCOUT
+    SCOUT --> SCOUTF[scout/YYYY-MM-DD.md<br/>blind spots + sources to add]:::out
+
+    INB1 --> BRIEF[brief.ts]
+    INB2 --> BRIEF
+    INB3 --> BRIEF
+    AREP --> BRIEF
+    OPPF --> BRIEF
+    SCOUTF --> BRIEF
+    BRIEF --> BR[briefs/YYYY-MM-DD.md<br/>blind spots + opportunities + inbox + audit]:::out

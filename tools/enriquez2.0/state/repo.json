@@ -1,0 +1,753 @@
+{
+  "generated_at": "2026-04-25T15:01:14.811Z",
+  "repo_root": "/Users/allenenriquez/Developer/Allen-Enriquez",
+  "top_dirs": [
+    {
+      "path": "projects/personal/content/reels/are-you-tired-of-ai-emails/renders/frames",
+      "files": 2303,
+      "subdirs": 0,
+      "byExt": {
+        ".png": 2303
+      }
+    },
+    {
+      "path": "projects/personal/content/reels/are-you-tired-of-ai-emails/renders/caption-frames",
+      "files": 1862,
+      "subdirs": 0,
+      "byExt": {
+        ".png": 1862
+      }
+    },
+    {
+      "path": "projects/personal/content/reels/are-you-tired-of-ai-emails/renders/frames-transparent",
+      "files": 1260,
+      "subdirs": 0,
+      "byExt": {
+        ".png": 1260
+      }
+    },
+    {
+      "path": "tools/eps",
+      "files": 41,
+      "subdirs": 0,
+      "byExt": {
+        ".py": 39,
+        ".sh": 2
+      }
+    },
+    {
+      "path": "projects/personal/content/reels/are-you-tired-of-ai-emails/renders/verify",
+      "files": 37,
+      "subdirs": 0,
+      "byExt": {
+        ".png": 37
+      }
+    },
+    {
+      "path": "automation",
+      "files": 35,
+      "subdirs": 0,
+      "byExt": {
+        ".plist": 23,
+        ".sh": 12
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit/video-projects/hyperframes-sizzle/compositions",
+      "files": 30,
+      "subdirs": 2,
+      "byExt": {
+        ".html": 30
+      }
+    },
+    {
+      "path": "tools/personal",
+      "files": 29,
+      "subdirs": 0,
+      "byExt": {
+        ".py": 29
+      }
+    },
+    {
+      "path": "tools/dashboard",
+      "files": 25,
+      "subdirs": 2,
+      "byExt": {
+        ".txt": 2,
+        ".py": 18,
+        ".db-shm": 2,
+        ".db": 1,
+        ".db-wal": 1,
+        ".sh": 1
+      }
+    },
+    {
+      "path": "projects/personal/content/reels/are-you-tired-of-ai-emails/renders",
+      "files": 23,
+      "subdirs": 4,
+      "byExt": {
+        ".ttf": 1,
+        ".ass": 1,
+        ".html": 2,
+        ".mov": 3,
+        ".mjs": 5,
+        ".mp4": 3,
+        ".png": 7,
+        ".py": 1
+      }
+    },
+    {
+      "path": "services/ryan",
+      "files": 21,
+      "subdirs": 1,
+      "byExt": {
+        "(none)": 1,
+        ".md": 1,
+        ".py": 16,
+        ".sh": 1,
+        ".toml": 1,
+        ".txt": 1
+      }
+    },
+    {
+      "path": "tools/shared",
+      "files": 21,
+      "subdirs": 0,
+      "byExt": {
+        ".py": 18,
+        ".pem": 2,
+        ".html": 1
+      }
+    },
+    {
+      "path": "projects/eps/job_descriptions",
+      "files": 20,
+      "subdirs": 0,
+      "byExt": {
+        ".md": 20
+      }
+    },
+    {
+      "path": "projects/personal/clients/ryan",
+      "files": 19,
+      "subdirs": 2,
+      "byExt": {
+        ".py": 2,
+        ".json": 6,
+        ".md": 4,
+        ".txt": 1,
+        ".html": 1,
+        ".png": 1,
+        ".csv": 1,
+        ".jsonl": 1,
+        ".log": 1,
+        ".pickle": 1
+      }
+    },
+    {
+      "path": "tools/content-hub/components",
+      "files": 18,
+      "subdirs": 2,
+      "byExt": {
+        ".tsx": 18
+      }
+    },
+    {
+      "path": "tools/dashboard/static",
+      "files": 18,
+      "subdirs": 0,
+      "byExt": {
+        ".js": 14,
+        ".svg": 2,
+        ".json": 1,
+        ".css": 1
+      }
+    },
+    {
+      "path": "tools/content-hub",
+      "files": 16,
+      "subdirs": 5,
+      "byExt": {
+        ".md": 2,
+        ".json": 5,
+        ".db": 2,
+        ".db-shm": 1,
+        ".db-wal": 1,
+        ".ts": 2,
+        ".toml": 1,
+        ".mjs": 1,
+        ".tsbuildinfo": 1
+      }
+    },
+    {
+      "path": "projects/personal/content/reels/what-is-claude/compositions",
+      "files": 15,
+      "subdirs": 0,
+      "byExt": {
+        ".html": 15
+      }
+    },
+    {
+      "path": "projects/personal/outreach/templates",
+      "files": 13,
+      "subdirs": 0,
+      "byExt": {
+        ".txt": 1,
+        ".md": 12
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit/video-projects/linear-promo-30s/scripts",
+      "files": 13,
+      "subdirs": 0,
+      "byExt": {
+        ".js": 13
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit/video-projects/clickup-demo/scripts",
+      "files": 12,
+      "subdirs": 0,
+      "byExt": {
+        ".mjs": 12
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit/video-projects/first-agent-promo/_design/first-agent-release-video/project/screenshots",
+      "files": 12,
+      "subdirs": 0,
+      "byExt": {
+        ".png": 12
+      }
+    },
+    {
+      "path": "projects/personal/content/carousels/5-ai-agents-every-owner-should-use",
+      "files": 10,
+      "subdirs": 0,
+      "byExt": {
+        ".txt": 1,
+        ".png": 9
+      }
+    },
+    {
+      "path": "projects/personal/content/carousels/5-things-ai-automations-for-business-owners-and-professionals",
+      "files": 10,
+      "subdirs": 0,
+      "byExt": {
+        ".txt": 1,
+        ".png": 9
+      }
+    },
+    {
+      "path": "projects/personal/content/carousels/the-4-levels-of-ai-in-business",
+      "files": 10,
+      "subdirs": 0,
+      "byExt": {
+        ".txt": 1,
+        ".png": 7,
+        ".mp4": 2
+      }
+    },
+    {
+      "path": "projects/personal/content/reels/7-things-claude-business-owners/compositions",
+      "files": 10,
+      "subdirs": 0,
+      "byExt": {
+        ".html": 10
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit/video-projects/may-shorts-18/compositions",
+      "files": 10,
+      "subdirs": 0,
+      "byExt": {
+        ".html": 10
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit/video-projects/may-shorts-19/compositions",
+      "files": 10,
+      "subdirs": 2,
+      "byExt": {
+        ".html": 10
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit/video-projects/may-shorts-6/compositions",
+      "files": 10,
+      "subdirs": 0,
+      "byExt": {
+        ".html": 10
+      }
+    },
+    {
+      "path": "tools/archive",
+      "files": 10,
+      "subdirs": 0,
+      "byExt": {
+        ".py": 10
+      }
+    },
+    {
+      "path": "tools/content-hub/components/ui",
+      "files": 10,
+      "subdirs": 0,
+      "byExt": {
+        ".tsx": 10
+      }
+    },
+    {
+      "path": "projects/personal/content/reels/5-things-ai-agents/compositions",
+      "files": 9,
+      "subdirs": 0,
+      "byExt": {
+        ".html": 9
+      }
+    },
+    {
+      "path": "projects/personal/content/reels/youre-using-ai-wrong/compositions",
+      "files": 9,
+      "subdirs": 0,
+      "byExt": {
+        ".html": 9
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit/video-projects/aisoc-app-release/compositions",
+      "files": 9,
+      "subdirs": 2,
+      "byExt": {
+        ".html": 9
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit/video-projects/aisoc-lesson-5-1/compositions/sections",
+      "files": 9,
+      "subdirs": 0,
+      "byExt": {
+        ".html": 9
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit/video-projects/linear-promo-30s/assets",
+      "files": 9,
+      "subdirs": 0,
+      "byExt": {
+        ".svg": 2,
+        ".png": 3,
+        ".mp3": 4
+      }
+    },
+    {
+      "path": "projects/personal/reference/hyperframes-student-kit",
+      "files": 9,
+      "subdirs": 4,
+      "byExt": {
+        ".md": 5,
+        "(none)": 1,
+        ".json": 3
+      }
+    },
+    {
+      "path": "projects/personal/sales/landing-page",
+      "files": 9,
+      "subdirs": 1,
+      "byExt": {
+        ".md": 1,
+        ".html": 5,
+        ".js": 1,
+        ".png": 1,
+        ".css": 1
+      }
+    },
+    {
+      "path": "tools/content-hub/scripts",
+      "files": 9,
+      "subdirs": 0,
+      "byExt": {
+        ".ts": 8,
+        ".sql": 1
+      }
+    },
+    {
+      "path": "projects/personal/content/carousels/5-secret-codes-for-chatgpt",
+      "files": 8,
+      "subdirs": 0,
+      "byExt": {
+        ".txt": 1,
+        ".png": 7
+      }
+    }
+  ],
+  "total_dirs": 359,
+  "total_files": 6672,
+  "packages": [
+    {
+      "name": "content-hub",
+      "path": "tools/content-hub/package.json",
+      "deps": [
+        "@anthropic-ai/sdk",
+        "@aws-sdk/client-s3",
+        "@aws-sdk/s3-request-presigner",
+        "@base-ui/react",
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "better-sqlite3",
+        "class-variance-authority",
+        "clsx",
+        "date-fns",
+        "lucide-react",
+        "next",
+        "react",
+        "react-dom",
+        "recharts",
+        "shadcn",
+        "tailwind-merge",
+        "tw-animate-css"
+      ],
+      "scripts": [
+        "dev",
+        "build",
+        "start",
+        "migrate",
+        "seed"
+      ]
+    },
+    {
+      "name": "enriquez2.0",
+      "path": "tools/enriquez2.0/package.json",
+      "deps": [
+        "@anthropic-ai/sdk",
+        "@octokit/rest",
+        "rss-parser",
+        "yaml"
+      ],
+      "scripts": [
+        "ingest",
+        "distill",
+        "mirror",
+        "audit",
+        "brief"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "brief",
+      "path": ".claude/skills/brief/SKILL.md",
+      "description": "Send or preview the morning briefing. Triggers on \"send morning briefing\", \"morning brief\", \"send my briefing\", or /brief."
+    },
+    {
+      "name": "call-notes",
+      "path": ".claude/skills/call-notes/SKILL.md",
+      "description": "Process a call transcript for an EPS Pipedrive deal. Triggers on \"process the call for deal\", \"format call notes\", \"post call notes\", or /call-notes."
+    },
+    {
+      "name": "carousel",
+      "path": ".claude/skills/carousel/SKILL.md",
+      "description": "Turn a posted reel into a Hormozi-style 1080×1350 carousel. Reads only transcript.json + meta.json from the reel folder. CCN framework inline. Triggers on \"carousel from [reel]\", \"make a carousel\", \"t"
+    },
+    {
+      "name": "cold-calls",
+      "path": ".claude/skills/cold-calls/SKILL.md",
+      "description": "Process EPS cold calls after a calling session. Triggers on \"process my cold calls\", \"process cold calls\", or /cold-calls."
+    },
+    {
+      "name": "content",
+      "path": ".claude/skills/content/SKILL.md",
+      "description": "Marketing content engine — plan, write, track, and QA content for Allen's personal brand. Triggers on \"generate content\", \"write posts\", \"content calendar\", \"what to film\", \"30 day challenge\", \"market"
+    },
+    {
+      "name": "content-research",
+      "path": ".claude/skills/content-research/SKILL.md",
+      "description": "Content research engine — viral hooks, trending topics, competitor tracking, format trends. Triggers on \"research hooks\", \"trending topics\", \"competitor content\", \"what's working\", \"content research\","
+    },
+    {
+      "name": "deposit",
+      "path": ".claude/skills/deposit/SKILL.md",
+      "description": "Push job description + line items to ServiceM8 after a client accepts a quote. Triggers on \"run the deposit\", \"process the deposit\", \"client accepted\", \"push to SM8\", or /deposit."
+    },
+    {
+      "name": "email",
+      "path": ".claude/skills/email/SKILL.md",
+      "description": "Draft or send an EPS client email. Triggers on \"draft the email\", \"send the quote email\", \"follow up with\", \"write an email to\", or /email."
+    },
+    {
+      "name": "eps-crm",
+      "path": ".claude/skills/eps-crm/SKILL.md",
+      "description": "EPS Pipedrive CRM — monitor pipeline, sync SM8, manage activities, search/create deals. Triggers on \"EPS CRM\", \"pipeline report\", \"check deals\", \"sync CRM\", \"Pipedrive\", or /eps-crm."
+    },
+    {
+      "name": "excalidraw",
+      "path": ".claude/skills/excalidraw/SKILL.md",
+      "description": "Create Excalidraw diagrams — either editable JSON files (free, paste into excalidraw.com) or rendered PNG images (paid via kie.ai API). Use when someone asks to draw a diagram, make an Excalidraw visu"
+    },
+    {
+      "name": "find-skills",
+      "path": ".claude/skills/find-skills/SKILL.md",
+      "description": "Discover and install skills from the open agent skills ecosystem at skills.sh"
+    },
+    {
+      "name": "os-audit",
+      "path": ".claude/skills/os-audit/SKILL.md",
+      "description": "Audit context bloat — agents, skills, memory. Run with /os-audit to check what's eating session tokens."
+    },
+    {
+      "name": "os-gate",
+      "path": ".claude/skills/os-gate/SKILL.md",
+      "description": "Pre-deploy quality gate. Validates any new or modified agent, workflow, or tool before it enters the system. Run with /os-gate <file_path>."
+    },
+    {
+      "name": "os-review",
+      "path": ".claude/skills/os-review/SKILL.md",
+      "description": "Full system audit — scans skills, agents, workflows, Gmail (EPS + personal), Calendar, and Pipedrive to find what to improve or build next. Report only, no changes made."
+    },
+    {
+      "name": "personal-crm",
+      "path": ".claude/skills/personal-crm/SKILL.md",
+      "description": "Personal brand CRM — report, cleanup, brief, draft. Triggers on \"personal CRM\", \"clean up my CRM\", \"evening brief\", \"draft email for lead\", or /personal-crm."
+    },
+    {
+      "name": "quote",
+      "path": ".claude/skills/quote/SKILL.md",
+      "description": "Create an EPS quote end-to-end. Triggers on \"create a quote\", \"price up this job\", \"write a quote for\", or /quote."
+    },
+    {
+      "name": "scene-animation",
+      "path": ".claude/skills/scene-animation/SKILL.md",
+      "description": "Build and preview a single scene's motion graphic animation in isolation BEFORE the full reel is assembled. Use when Allen says \"animate a scene\", \"preview animation\", \"scene animation\", \"build the an"
+    },
+    {
+      "name": "short-form-video",
+      "path": ".claude/skills/short-form-video/SKILL.md",
+      "description": "Build and iterate short-form vertical (9:16) videos in Hyperframes — TikTok/Reels/Shorts style. Use when Allen says \"short-form video\", \"vertical video\", \"TikTok/Reels/Shorts\", \"make a short\", \"talkin"
+    },
+    {
+      "name": "site-visit",
+      "path": ".claude/skills/site-visit/SKILL.md",
+      "description": "Schedule an SM8 site visit for an EPS deal. Triggers on \"schedule a site visit\", \"book site visit\", \"site visit for deal\", or /site-visit."
+    },
+    {
+      "name": "start",
+      "path": ".claude/skills/start/SKILL.md",
+      "description": "Use at the beginning of each session to load minimal context, resume from last handoff, and push Allen."
+    },
+    {
+      "name": "webapp-testing",
+      "path": ".claude/skills/webapp-testing/SKILL.md",
+      "description": "Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and viewing browser l"
+    },
+    {
+      "name": "wrap",
+      "path": ".claude/skills/wrap/SKILL.md",
+      "description": "Use when the user says \"wrap\", \"wrap up\", \"done\", \"we're done\", \"that's it\", \"close out\", \"end session\", \"finish up\", \"we're good\", \"shutting down\", \"calling it\", \"let's stop here\", \"session handoff\","
+    }
+  ],
+  "automations": [
+    {
+      "name": "com.enriquezOS.ai-learning-brief.plist",
+      "path": "automation/com.enriquezOS.ai-learning-brief.plist"
+    },
+    {
+      "name": "com.enriquezOS.automation-status.plist",
+      "path": "automation/com.enriquezOS.automation-status.plist"
+    },
+    {
+      "name": "com.enriquezOS.briefing-action-loop.plist",
+      "path": "automation/com.enriquezOS.briefing-action-loop.plist"
+    },
+    {
+      "name": "com.enriquezOS.creator-feed.plist",
+      "path": "automation/com.enriquezOS.creator-feed.plist"
+    },
+    {
+      "name": "com.enriquezOS.crm-kanban.plist",
+      "path": "automation/com.enriquezOS.crm-kanban.plist"
+    },
+    {
+      "name": "com.enriquezOS.crm-sync.plist",
+      "path": "automation/com.enriquezOS.crm-sync.plist"
+    },
+    {
+      "name": "com.enriquezOS.dashboard.plist",
+      "path": "automation/com.enriquezOS.dashboard.plist"
+    },
+    {
+      "name": "com.enriquezOS.eod-ops.plist",
+      "path": "automation/com.enriquezOS.eod-ops.plist"
+    },
+    {
+      "name": "com.enriquezOS.eps-dashboard.plist",
+      "path": "automation/com.enriquezOS.eps-dashboard.plist"
+    },
+    {
+      "name": "com.enriquezOS.ig-token-refresh.plist",
+      "path": "automation/com.enriquezOS.ig-token-refresh.plist"
+    },
+    {
+      "name": "com.enriquezOS.inbox-sync.plist",
+      "path": "automation/com.enriquezOS.inbox-sync.plist"
+    },
+    {
+      "name": "com.enriquezOS.jibble-clockin.plist",
+      "path": "automation/com.enriquezOS.jibble-clockin.plist"
+    },
+    {
+      "name": "com.enriquezOS.memory-audit.plist",
+      "path": "automation/com.enriquezOS.memory-audit.plist"
+    },
+    {
+      "name": "com.enriquezOS.morning-briefing.plist",
+      "path": "automation/com.enriquezOS.morning-briefing.plist"
+    },
+    {
+      "name": "com.enriquezOS.n8n-monitor.plist",
+      "path": "automation/com.enriquezOS.n8n-monitor.plist"
+    },
+    {
+      "name": "com.enriquezOS.personal-crm-cleanup.plist",
+      "path": "automation/com.enriquezOS.personal-crm-cleanup.plist"
+    },
+    {
+      "name": "com.enriquezOS.ph-outreach-daily.plist",
+      "path": "automation/com.enriquezOS.ph-outreach-daily.plist"
+    },
+    {
+      "name": "com.enriquezOS.ph-outreach-discover.plist",
+      "path": "automation/com.enriquezOS.ph-outreach-discover.plist"
+    },
+    {
+      "name": "com.enriquezOS.reengage-campaign.plist",
+      "path": "automation/com.enriquezOS.reengage-campaign.plist"
+    },
+    {
+      "name": "com.enriquezOS.ryan-self-improve.plist",
+      "path": "automation/com.enriquezOS.ryan-self-improve.plist"
+    },
+    {
+      "name": "com.enriquezOS.tender-batch.plist",
+      "path": "automation/com.enriquezOS.tender-batch.plist"
+    },
+    {
+      "name": "com.enriquezOS.tokenaudit.plist",
+      "path": "automation/com.enriquezOS.tokenaudit.plist"
+    },
+    {
+      "name": "com.enriquezOS.whatsapp-webhook.plist",
+      "path": "automation/com.enriquezOS.whatsapp-webhook.plist"
+    }
+  ],
+  "projects": [
+    {
+      "name": "eps",
+      "hasContext": true
+    },
+    {
+      "name": "personal",
+      "hasContext": true
+    }
+  ],
+  "claude_md": {
+    "path": "CLAUDE.md",
+    "lines": 82,
+    "bytes": 4903
+  },
+  "git_tracked": {
+    "total": 1098,
+    "byExt": {
+      ".md": 265,
+      ".json": 86,
+      "(none)": 15,
+      ".html": 227,
+      ".log": 2,
+      ".pid": 1,
+      ".plist": 23,
+      ".sh": 16,
+      ".txt": 31,
+      ".png": 1,
+      ".py": 145,
+      ".jsonl": 2,
+      ".csv": 1,
+      ".pdf": 5,
+      ".jsx": 8,
+      ".js": 35,
+      ".ttf": 1,
+      ".ass": 1,
+      ".mjs": 25,
+      ".wav": 8,
+      ".webp": 3,
+      ".yaml": 2,
+      ".example": 1,
+      ".css": 17,
+      ".mp3": 8,
+      ".webm": 3,
+      ".gz": 1,
+      ".svg": 20,
+      ".woff2": 7,
+      ".toml": 2,
+      ".tsx": 49,
+      ".ts": 83,
+      ".ico": 1,
+      ".db": 1,
+      ".sql": 2
+    },
+    "byTopDir": {
+      ".claude": 59,
+      ".claudeignore": 1,
+      ".gitignore": 1,
+      ".mcp.json": 1,
+      ".planning": 2,
+      ".superpowers": 7,
+      ".vscode": 1,
+      "CLAUDE.md": 1,
+      "DECISIONS-archive.md": 1,
+      "DECISIONS.md": 1,
+      "automation": 35,
+      "projects": 645,
+      "scripts": 1,
+      "services": 26,
+      "tools": 316
+    },
+    "suspicious_tracked": [
+      "tools/content-hub/content_hub.db"
+    ],
+    "suspicious_count": 1
+  },
+  "gitignore": {
+    "path": ".gitignore",
+    "patterns": [
+      ".env",
+      "credentials.json",
+      "credentials_*.json",
+      "token.json",
+      "token.pickle",
+      "token_*.pickle",
+      "projects/**/.env",
+      "projects/personal/credentials_personal.json",
+      "projects/personal/token_personal.pickle",
+      ".tmp/",
+      "projects/**/.tmp/",
+      "/shared/",
+      "tools/dashboard/dashboard.db",
+      "tools/second-brain/raw/",
+      "__pycache__/",
+      "*.pyc",
+      "*.pyo",
+      ".venv/",
+      "venv/",
+      ".planning/",
+      "*.pem",
+      "*.mov",
+      "*.mp4",
+      "*.png",
+      "*.jpg",
+      "*.jpeg",
+      "*.db-shm",
+      "*.db-wal",
+      ".DS_Store",
+      "node_modules/",
+      "services/**/.venv/",
+      "services/**/__pycache__/"
+    ]
+  }
+}

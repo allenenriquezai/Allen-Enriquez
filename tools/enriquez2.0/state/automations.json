@@ -1,0 +1,97 @@
+{
+  "generated_at": "2026-04-25T15:01:14.831Z",
+  "plists": [
+    {
+      "name": "com.enriquezOS.ai-learning-brief.plist",
+      "path": "automation/com.enriquezOS.ai-learning-brief.plist"
+    },
+    {
+      "name": "com.enriquezOS.automation-status.plist",
+      "path": "automation/com.enriquezOS.automation-status.plist"
+    },
+    {
+      "name": "com.enriquezOS.briefing-action-loop.plist",
+      "path": "automation/com.enriquezOS.briefing-action-loop.plist"
+    },
+    {
+      "name": "com.enriquezOS.creator-feed.plist",
+      "path": "automation/com.enriquezOS.creator-feed.plist"
+    },
+    {
+      "name": "com.enriquezOS.crm-kanban.plist",
+      "path": "automation/com.enriquezOS.crm-kanban.plist"
+    },
+    {
+      "name": "com.enriquezOS.crm-sync.plist",
+      "path": "automation/com.enriquezOS.crm-sync.plist"
+    },
+    {
+      "name": "com.enriquezOS.dashboard.plist",
+      "path": "automation/com.enriquezOS.dashboard.plist"
+    },
+    {
+      "name": "com.enriquezOS.eod-ops.plist",
+      "path": "automation/com.enriquezOS.eod-ops.plist"
+    },
+    {
+      "name": "com.enriquezOS.eps-dashboard.plist",
+      "path": "automation/com.enriquezOS.eps-dashboard.plist"
+    },
+    {
+      "name": "com.enriquezOS.ig-token-refresh.plist",
+      "path": "automation/com.enriquezOS.ig-token-refresh.plist"
+    },
+    {
+      "name": "com.enriquezOS.inbox-sync.plist",
+      "path": "automation/com.enriquezOS.inbox-sync.plist"
+    },
+    {
+      "name": "com.enriquezOS.jibble-clockin.plist",
+      "path": "automation/com.enriquezOS.jibble-clockin.plist"
+    },
+    {
+      "name": "com.enriquezOS.memory-audit.plist",
+      "path": "automation/com.enriquezOS.memory-audit.plist"
+    },
+    {
+      "name": "com.enriquezOS.morning-briefing.plist",
+      "path": "automation/com.enriquezOS.morning-briefing.plist"
+    },
+    {
+      "name": "com.enriquezOS.n8n-monitor.plist",
+      "path": "automation/com.enriquezOS.n8n-monitor.plist"
+    },
+    {
+      "name": "com.enriquezOS.personal-crm-cleanup.plist",
+      "path": "automation/com.enriquezOS.personal-crm-cleanup.plist"
+    },
+    {
+      "name": "com.enriquezOS.ph-outreach-daily.plist",
+      "path": "automation/com.enriquezOS.ph-outreach-daily.plist"
+    },
+    {
+      "name": "com.enriquezOS.ph-outreach-discover.plist",
+      "path": "automation/com.enriquezOS.ph-outreach-discover.plist"
+    },
+    {
+      "name": "com.enriquezOS.reengage-campaign.plist",
+      "path": "automation/com.enriquezOS.reengage-campaign.plist"
+    },
+    {
+      "name": "com.enriquezOS.ryan-self-improve.plist",
+      "path": "automation/com.enriquezOS.ryan-self-improve.plist"
+    },
+    {
+      "name": "com.enriquezOS.tender-batch.plist",
+      "path": "automation/com.enriquezOS.tender-batch.plist"
+    },
+    {
+      "name": "com.enriquezOS.tokenaudit.plist",
+      "path": "automation/com.enriquezOS.tokenaudit.plist"
+    },
+    {
+      "name": "com.enriquezOS.whatsapp-webhook.plist",
+      "path": "automation/com.enriquezOS.whatsapp-webhook.plist"
+    }
+  ]
+}

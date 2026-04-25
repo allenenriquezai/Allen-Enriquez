@@ -1,0 +1,410 @@
+{
+  "build/agent-design": {
+    "count": 5,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-optimization": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-alternatives": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-mcp": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-automation-skills": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/shipping-discipline": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-harness-automation": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/llm-finetuning-domain-alignment": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/llm-memory-architecture": {
+    "count": 2,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-evaluation": {
+    "count": 2,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/reasoning-efficiency": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/mcp-token-optimization": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-safety-constraints": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-harness-tuning": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-governance-prompts": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-memory-architecture": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/llm-code-self-correction": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-memory-reflection": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-grounding-constraints": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/llm-inference-optimization": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-latency-optimization": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-benchmarking": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-orchestration": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/context-window-limits": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-updates": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-mcp-tools": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-release": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-perf": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/cma-memory": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-access": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-md-patterns": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-design-capability": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-agent-design": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-design-patterns": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-pricing": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-prototyping": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/local-llm-alternatives": {
+    "count": 3,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-reliability": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/agent-scaffold-optimization": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-positioning": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/mcp-apps-ui": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-pm-speed": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-velocity": {
+    "count": 2,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code-org-patterns": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/ai-automation-tools": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/claude-code": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "build/crm-automation-sales-workflow": {
+    "count": 1,
+    "domain": "build",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "reach/instagram-monetization": {
+    "count": 1,
+    "domain": "reach",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "reach/instagram-growth-strategy": {
+    "count": 1,
+    "domain": "reach",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "reach/aeo-b2b-discovery": {
+    "count": 1,
+    "domain": "reach",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "reach/engagement-decay": {
+    "count": 1,
+    "domain": "reach",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "reach/youtube-algorithm-velocity": {
+    "count": 1,
+    "domain": "reach",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "reach/founder-story-positioning": {
+    "count": 1,
+    "domain": "reach",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "reach/service-business-models": {
+    "count": 1,
+    "domain": "reach",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "reach/viral-system-playbook": {
+    "count": 1,
+    "domain": "reach",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "reach/founder-narrative": {
+    "count": 1,
+    "domain": "reach",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "reach/seo-content-strategy": {
+    "count": 1,
+    "domain": "reach",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/conversion-optimization": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/saas-support-tiers": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/saas-growth-organic": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/saas-positioning": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/problem-validation": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/saas-launch-validation": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/product-market-fit": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/key-person-dependency": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/customer-behavior-shift": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/outreach-efficacy": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  },
+  "serve/lead-management-compliance": {
+    "count": 1,
+    "domain": "serve",
+    "first_seen": "2026-04-25",
+    "last_seen": "2026-04-25"
+  }
+}

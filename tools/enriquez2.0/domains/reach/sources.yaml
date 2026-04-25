@@ -1,0 +1,21 @@
+rss:
+  # Content + social platform research
+  - https://buffer.com/resources/feed/
+  # Creator strategy newsletters
+  - https://www.lennysnewsletter.com/feed
+  - https://www.bensbites.com/feed
+  # Algorithm + format trends
+  - https://www.socialmediaexaminer.com/feed/
+  - https://blog.hubspot.com/marketing/rss.xml
+reddit:
+  hot_threshold: 100
+  subreddits:
+    - socialmedia
+    - contentmarketing
+    - PartneredYoutube
+    - NewTubers
+    - copywriting
+youtube:
+  - "@AlexHormozi"
+  - "@SabrinaRamonov"
+  - "@justyn.ai"

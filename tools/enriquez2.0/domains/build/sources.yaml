@@ -1,0 +1,28 @@
+rss:
+  # AI / model labs
+  - https://openai.com/news/rss.xml
+  # Dev infra + tooling
+  - https://github.blog/changelog/feed/
+  - https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml
+  # AI engineering newsletters
+  - https://www.latent.space/feed
+  - https://importai.substack.com/feed
+  - https://swyx.io/feed
+  # Aggregators
+  - https://hnrss.org/frontpage?points=200
+  - https://rss.arxiv.org/rss/cs.AI
+github_releases:
+  - anthropics/claude-code
+  - anthropics/anthropic-sdk-python
+  - modelcontextprotocol/servers
+reddit:
+  hot_threshold: 100
+  subreddits:
+    - ClaudeAI
+    - LocalLLaMA
+    - programming
+    - ChatGPTCoding
+    - mcp
+youtube:
+  - "@Anthropic"
+  - "@AICodingLab"

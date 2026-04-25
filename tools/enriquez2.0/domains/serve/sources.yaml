@@ -1,0 +1,17 @@
+rss:
+  # Founder / SaaS / consultancy
+  - https://saastr.com/feed/
+  - https://www.notboring.co/feed
+  # Product launches (market signals)
+  - https://www.producthunt.com/feed
+reddit:
+  hot_threshold: 100
+  subreddits:
+    - Entrepreneur
+    - SaaS
+    - smallbusiness
+    - sales
+    - consulting
+youtube:
+  - "@AlexHormozi"
+  - "@DanMartell"
