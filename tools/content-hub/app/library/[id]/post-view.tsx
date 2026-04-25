@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Check, Loader2, Pencil, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, Check, Loader2, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Asset } from "@/components/asset-tile";
 
@@ -66,10 +66,12 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
   const [captions, setCaptions] = React.useState<Record<string, string>>(
     scriptsToCaptions(initialScripts),
   );
+  const captionBaseline = React.useRef<Record<string, string>>(scriptsToCaptions(initialScripts));
   const [activeCaption, setActiveCaption] = React.useState<string>("caption_ig");
   const [loadingCaptions, setLoadingCaptions] = React.useState(false);
   const [savingScript, setSavingScript] = React.useState(false);
   const [scriptSavedAt, setScriptSavedAt] = React.useState<number | null>(null);
+  const [captionDirty, setCaptionDirty] = React.useState<Record<string, boolean>>({});
 
   // Publish controls
   const [selected, setSelected] = React.useState<Set<PlatformKey>>(new Set(["ig"]));
@@ -87,24 +89,78 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
 
   const isVideo = asset.type === "reel" || asset.type === "youtube";
 
-  // Reset "saved" indicator when switching tabs or editing
-  React.useEffect(() => {
-    setScriptSavedAt(null);
-  }, [activeCaption, captions[activeCaption]]);
-
-  // When idea changes, reload captions
+  // When idea changes, reload captions and reset baseline
   React.useEffect(() => {
     if (ideaId === asset.idea_id) return;
     if (!ideaId) {
       setCaptions({});
+      captionBaseline.current = {};
+      setCaptionDirty({});
       return;
     }
     setLoadingCaptions(true);
     fetch(`/api/scripts?idea_id=${ideaId}`)
       .then((r) => r.json())
-      .then((data) => setCaptions(scriptsToCaptions(data.scripts ?? [])))
+      .then((data) => {
+        const next = scriptsToCaptions(data.scripts ?? []);
+        setCaptions(next);
+        captionBaseline.current = next;
+        setCaptionDirty({});
+      })
       .finally(() => setLoadingCaptions(false));
   }, [ideaId, asset.idea_id]);
+
+  // Debounced autosave for asset metadata (title, thumbnail, idea_id)
+  React.useEffect(() => {
+    if (!metaDirty) return;
+    const t = setTimeout(async () => {
+      setSavingMeta(true);
+      try {
+        const res = await fetch("/api/library", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: asset.id,
+            title: title.trim() || null,
+            thumbnail_url: thumbnailUrl.trim() || null,
+            idea_id: ideaId,
+          }),
+        });
+        if (res.ok) {
+          setMetaDirty(false);
+          setMetaSavedAt(Date.now());
+        }
+      } finally {
+        setSavingMeta(false);
+      }
+    }, 800);
+    return () => clearTimeout(t);
+  }, [metaDirty, title, thumbnailUrl, ideaId, asset.id]);
+
+  // Debounced autosave for active caption
+  const activeValueForEffect = captions[activeCaption] ?? "";
+  React.useEffect(() => {
+    if (!ideaId) return;
+    if (!captionDirty[activeCaption]) return;
+    const t = setTimeout(async () => {
+      setSavingScript(true);
+      try {
+        const res = await fetch("/api/scripts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idea_id: ideaId, variant: activeCaption, body: activeValueForEffect }),
+        });
+        if (res.ok) {
+          setScriptSavedAt(Date.now());
+          captionBaseline.current = { ...captionBaseline.current, [activeCaption]: activeValueForEffect };
+          setCaptionDirty((d) => ({ ...d, [activeCaption]: false }));
+        }
+      } finally {
+        setSavingScript(false);
+      }
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [activeValueForEffect, activeCaption, ideaId, captionDirty]);
 
   const togglePlatform = (key: PlatformKey) => {
     setSelected((prev) => {
@@ -113,44 +169,6 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
       else next.add(key);
       return next;
     });
-  };
-
-  const saveMeta = async () => {
-    setSavingMeta(true);
-    try {
-      const res = await fetch("/api/library", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: asset.id,
-          title: title.trim() || null,
-          thumbnail_url: thumbnailUrl.trim() || null,
-          idea_id: ideaId,
-        }),
-      });
-      if (res.ok) {
-        setMetaDirty(false);
-        setMetaSavedAt(Date.now());
-      }
-    } finally {
-      setSavingMeta(false);
-    }
-  };
-
-  const saveActiveToScripts = async () => {
-    if (!ideaId) return;
-    const body = captions[activeCaption] ?? "";
-    setSavingScript(true);
-    try {
-      const res = await fetch("/api/scripts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idea_id: ideaId, variant: activeCaption, body }),
-      });
-      if (res.ok) setScriptSavedAt(Date.now());
-    } finally {
-      setSavingScript(false);
-    }
   };
 
   const uploadThumb = async (file: File) => {
@@ -347,16 +365,18 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
         >
           <ArrowLeft className="size-4" /> Library
         </Link>
-        <div className="flex items-center gap-2">
-          {metaDirty && (
-            <Button size="sm" variant="outline" onClick={saveMeta} disabled={savingMeta}>
-              {savingMeta ? <Loader2 className="size-3 animate-spin" /> : <Save className="size-3" />}
-              <span className="ml-1.5">Save changes</span>
-            </Button>
-          )}
-          {!metaDirty && metaSavedAt && (
-            <span className="text-[11px] font-mono text-emerald-400">Saved</span>
-          )}
+        <div className="flex items-center gap-2 text-[11px] font-mono">
+          {savingMeta ? (
+            <span className="flex items-center gap-1.5 text-muted-foreground">
+              <Loader2 className="size-3 animate-spin" /> Saving…
+            </span>
+          ) : metaDirty ? (
+            <span className="text-amber-400">Unsaved</span>
+          ) : metaSavedAt ? (
+            <span className="flex items-center gap-1 text-emerald-400">
+              <Check className="size-3" /> Saved
+            </span>
+          ) : null}
         </div>
       </div>
 
@@ -467,30 +487,23 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Captions
               </p>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-[10px] font-mono">
                 {loadingCaptions && <Loader2 className="size-3 animate-spin text-muted-foreground" />}
-                {ideaId ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={saveActiveToScripts}
-                    disabled={savingScript}
-                    className="h-7 text-[10px] font-mono uppercase"
-                  >
-                    {savingScript ? (
-                      <Loader2 className="size-3 animate-spin" />
-                    ) : scriptSavedAt ? (
-                      <Check className="size-3 text-emerald-400" />
-                    ) : (
-                      <Save className="size-3" />
-                    )}
-                    <span className="ml-1.5">Save to scripts</span>
-                  </Button>
-                ) : (
-                  <span className="text-[10px] text-muted-foreground/60 font-mono">
-                    Link an idea to save captions back to scripts
+                {!ideaId ? (
+                  <span className="text-muted-foreground/60">
+                    Link an idea to autosave captions
                   </span>
-                )}
+                ) : savingScript ? (
+                  <span className="flex items-center gap-1 text-muted-foreground">
+                    <Loader2 className="size-3 animate-spin" /> Saving…
+                  </span>
+                ) : captionDirty[activeCaption] ? (
+                  <span className="text-amber-400">Unsaved</span>
+                ) : scriptSavedAt ? (
+                  <span className="flex items-center gap-1 text-emerald-400">
+                    <Check className="size-3" /> Saved
+                  </span>
+                ) : null}
               </div>
             </div>
             <div className="flex gap-1 border-b border-border mb-3 overflow-x-auto">
@@ -527,9 +540,12 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
               <textarea
                 rows={4}
                 value={activeValue}
-                onChange={(e) =>
-                  setCaptions((prev) => ({ ...prev, [activeCaption]: e.target.value }))
-                }
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setCaptions((prev) => ({ ...prev, [activeCaption]: v }));
+                  setCaptionDirty((d) => ({ ...d, [activeCaption]: v !== (captionBaseline.current[activeCaption] ?? "") }));
+                  setScriptSavedAt(null);
+                }}
                 placeholder={`Write ${activeCaptionTab.label} caption here…`}
                 className={`w-full text-sm bg-muted/10 border rounded-lg p-4 resize-none overflow-hidden [field-sizing:content] font-sans leading-relaxed focus:outline-none ${
                   overLimit ? "border-red-400/60" : "border-border/40 focus:border-border"
