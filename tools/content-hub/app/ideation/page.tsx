@@ -22,16 +22,20 @@ export default function IdeationPage() {
     )
     .all() as IdeationNote[];
 
+  const tags = db
+    .prepare("SELECT id, name FROM ideation_tags ORDER BY name ASC")
+    .all() as { id: number; name: string }[];
+
   return (
     <div className="space-y-4">
       <StudioSubNav />
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold">Ideation</h1>
         <p className="text-sm text-muted-foreground">
-          Free-form notes for Allen, wife & Claude. Psychology, editing, hooks, frameworks — anything that shapes how we make content.
+          Free-form notes by project. Create projects to group ideas (e.g. Social Media Marketing, Video Editing, Hooks).
         </p>
       </div>
-      <IdeationBoard initialNotes={notes} />
+      <IdeationBoard initialNotes={notes} initialTags={tags} />
     </div>
   );
 }

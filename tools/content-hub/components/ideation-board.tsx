@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Pin, PinOff, Trash2, Save } from "lucide-react";
+import { Plus, Pin, PinOff, Trash2, Save, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type IdeationNote = {
@@ -15,13 +15,50 @@ export type IdeationNote = {
   updated_at: string;
 };
 
-const AUTHORS = ["allen", "wife", "claude"] as const;
-const TAG_PRESETS = ["psychology", "editing", "hooks", "frameworks", "tooling", "ops"];
+export type IdeationTag = { id: number; name: string };
 
-export function IdeationBoard({ initialNotes }: { initialNotes: IdeationNote[] }) {
+const AUTHORS = ["allen", "wife", "claude"] as const;
+
+export function IdeationBoard({
+  initialNotes,
+  initialTags,
+}: {
+  initialNotes: IdeationNote[];
+  initialTags: IdeationTag[];
+}) {
   const [notes, setNotes] = React.useState<IdeationNote[]>(initialNotes);
+  const [tags, setTags] = React.useState<IdeationTag[]>(initialTags);
   const [filter, setFilter] = React.useState<string>("all");
   const [composing, setComposing] = React.useState(false);
+  const [addingTag, setAddingTag] = React.useState(false);
+  const [newTagName, setNewTagName] = React.useState("");
+
+  async function addTag() {
+    const name = newTagName.trim().toLowerCase();
+    if (!name) return;
+    const res = await fetch("/api/ideation/tags", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    const data = await res.json();
+    if (data.tag) {
+      setTags((prev) =>
+        prev.find((t) => t.id === data.tag.id)
+          ? prev
+          : [...prev, data.tag].sort((a, b) => a.name.localeCompare(b.name)),
+      );
+    }
+    setNewTagName("");
+    setAddingTag(false);
+  }
+
+  async function deleteTag(t: IdeationTag) {
+    if (!confirm(`Remove tag "${t.name}"? Notes keep their tag text.`)) return;
+    await fetch(`/api/ideation/tags?id=${t.id}`, { method: "DELETE" });
+    setTags((prev) => prev.filter((x) => x.id !== t.id));
+    if (filter === t.name) setFilter("all");
+  }
 
   const visible = notes.filter((n) => {
     if (filter === "all") return true;
@@ -67,7 +104,7 @@ export function IdeationBoard({ initialNotes }: { initialNotes: IdeationNote[] }
         >
           <Plus className="size-4" /> New note
         </button>
-        <div className="flex items-center gap-1 ml-2">
+        <div className="flex items-center flex-wrap gap-1 ml-2">
           <button
             type="button"
             onClick={() => setFilter("all")}
@@ -78,19 +115,59 @@ export function IdeationBoard({ initialNotes }: { initialNotes: IdeationNote[] }
           >
             All
           </button>
-          {TAG_PRESETS.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setFilter(t)}
-              className={cn(
-                "px-2 py-1 text-xs rounded border",
-                filter === t ? "border-[color:var(--brand)] text-[color:var(--brand)]" : "border-transparent text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t}
-            </button>
+          {tags.map((t) => (
+            <span key={t.id} className="group relative inline-flex items-center">
+              <button
+                type="button"
+                onClick={() => setFilter(t.name)}
+                className={cn(
+                  "px-2 py-1 text-xs rounded border pr-5",
+                  filter === t.name ? "border-[color:var(--brand)] text-[color:var(--brand)]" : "border-transparent text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {t.name}
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteTag(t)}
+                title={`Delete tag ${t.name}`}
+                className="absolute right-0.5 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center justify-center text-muted-foreground hover:text-red-400"
+              >
+                <X className="size-3" />
+              </button>
+            </span>
           ))}
+          {addingTag ? (
+            <span className="inline-flex items-center gap-1">
+              <input
+                autoFocus
+                value={newTagName}
+                onChange={(e) => setNewTagName(e.target.value)}
+                onBlur={() => {
+                  if (newTagName.trim()) addTag();
+                  else setAddingTag(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") addTag();
+                  if (e.key === "Escape") {
+                    setNewTagName("");
+                    setAddingTag(false);
+                  }
+                }}
+                placeholder="new tag"
+                className="w-24 px-2 py-1 text-xs rounded border border-[color:var(--brand)]/40 bg-transparent focus:outline-none focus:border-[color:var(--brand)]"
+              />
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setAddingTag(true)}
+              className="px-2 py-1 text-xs rounded border border-dashed border-border text-muted-foreground hover:text-foreground hover:border-foreground/40 inline-flex items-center gap-1"
+            >
+              <Plus className="size-3" />
+              tag
+            </button>
+          )}
         </div>
       </div>
 

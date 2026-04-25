@@ -184,6 +184,24 @@ CREATE TABLE IF NOT EXISTS ideation_notes (
 );
 CREATE INDEX IF NOT EXISTS idx_ideation_notes_updated ON ideation_notes(updated_at DESC);
 
+CREATE TABLE IF NOT EXISTS week_themes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  week_start TEXT NOT NULL,
+  day_of_week TEXT NOT NULL,
+  theme TEXT NOT NULL,
+  pillar TEXT,
+  notes TEXT,
+  ideas_generated INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_week_themes_day ON week_themes(week_start, day_of_week);
+
+CREATE TABLE IF NOT EXISTS ideation_tags (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL UNIQUE,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS youtube_stats (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   video_id TEXT NOT NULL UNIQUE,

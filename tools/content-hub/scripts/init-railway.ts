@@ -43,6 +43,41 @@ if (!inboxCols.includes("reply_sent")) {
 }
 db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_inbox_external ON inbox(platform, external_id) WHERE external_id IS NOT NULL`);
 
+if (!ideaCols.includes("theme")) {
+  db.prepare("ALTER TABLE ideas ADD COLUMN theme TEXT").run();
+  console.log("[init] Migration: added theme column to ideas");
+}
+
+// week_themes + ideation_tags (idempotent)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS week_themes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    week_start TEXT NOT NULL,
+    day_of_week TEXT NOT NULL,
+    theme TEXT NOT NULL,
+    pillar TEXT,
+    notes TEXT,
+    ideas_generated INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_week_themes_day ON week_themes(week_start, day_of_week);
+
+  CREATE TABLE IF NOT EXISTS ideation_tags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+// Seed ideation_tags presets if empty
+const tagCount = (db.prepare("SELECT COUNT(*) as n FROM ideation_tags").get() as { n: number }).n;
+if (tagCount === 0) {
+  const seedTags = ["psychology", "editing", "hooks", "frameworks", "tooling", "ops"];
+  const insertTag = db.prepare("INSERT OR IGNORE INTO ideation_tags (name) VALUES (?)");
+  for (const t of seedTags) insertTag.run(t);
+  console.log(`[init] Seeded ${seedTags.length} ideation_tags presets`);
+}
+
 // Create youtube_stats if missing (schema handles IF NOT EXISTS, this is belt-and-suspenders)
 const ytExists = db
   .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='youtube_stats'")

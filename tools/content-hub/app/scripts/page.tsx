@@ -30,6 +30,17 @@ export type KanbanIdea = {
   scriptId: number | null;
   reelBody: string | null;
   hasCarousel: boolean;
+  dayOfWeek?: string | null;
+  theme?: string | null;
+};
+
+export type WeekTheme = {
+  id: number;
+  day: string;
+  theme: string;
+  pillar: string | null;
+  notes: string | null;
+  ideasGenerated: boolean;
 };
 
 function weekMonday(date: Date): Date {
@@ -130,6 +141,8 @@ export default async function ScriptsPage({
          i.modeled_after,
          i.status,
          i.notes,
+         i.day_of_week   AS day_of_week,
+         i.theme         AS theme,
          s.id            AS script_id,
          s.body          AS reel_body,
          (SELECT COUNT(*) FROM scripts cs WHERE cs.idea_id = i.id AND cs.variant = 'carousel') AS carousel_count
@@ -137,7 +150,34 @@ export default async function ScriptsPage({
        LEFT JOIN scripts s ON s.idea_id = i.id AND s.variant = 'reel'
        ORDER BY i.id DESC`,
     )
-    .all() as RawKanban[];
+    .all() as (RawKanban & { day_of_week: string | null; theme: string | null })[];
+
+  const weekThemeRows = db
+    .prepare(
+      `SELECT id, day_of_week, theme, pillar, notes, ideas_generated
+       FROM week_themes WHERE week_start = ?
+       ORDER BY CASE day_of_week
+         WHEN 'Mon' THEN 1 WHEN 'Tue' THEN 2 WHEN 'Wed' THEN 3
+         WHEN 'Thu' THEN 4 WHEN 'Fri' THEN 5 WHEN 'Sat' THEN 6 WHEN 'Sun' THEN 7
+       END`,
+    )
+    .all(mondayStr) as Array<{
+    id: number;
+    day_of_week: string;
+    theme: string;
+    pillar: string | null;
+    notes: string | null;
+    ideas_generated: number;
+  }>;
+
+  const weekThemes: WeekTheme[] = weekThemeRows.map((r) => ({
+    id: r.id,
+    day: r.day_of_week,
+    theme: r.theme,
+    pillar: r.pillar,
+    notes: r.notes,
+    ideasGenerated: Boolean(r.ideas_generated),
+  }));
 
   const kanbanIdeas: KanbanIdea[] = rawKanban.map((r) => ({
     ideaId: r.idea_id,
@@ -150,6 +190,8 @@ export default async function ScriptsPage({
     scriptId: r.script_id,
     reelBody: r.reel_body,
     hasCarousel: r.carousel_count > 0,
+    dayOfWeek: r.day_of_week,
+    theme: r.theme,
   }));
 
   return (
@@ -160,6 +202,7 @@ export default async function ScriptsPage({
         sunday={sundayStr}
         scheduled={scheduled}
         kanbanIdeas={kanbanIdeas}
+        weekThemes={weekThemes}
       />
     </div>
   );
