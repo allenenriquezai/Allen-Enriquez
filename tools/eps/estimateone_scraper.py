@@ -41,12 +41,12 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
 
 # --- Config ---
-ENV_PATH = Path(__file__).parent.parent / "projects" / "eps" / ".env"
+ENV_PATH = Path(__file__).parent.parent.parent / "projects" / "eps" / ".env"
 BASE_URL = "https://app.estimateone.com"
 DELAY_MIN = 0.5
 DELAY_MAX = 1.5
-COOKIE_PATH = Path(__file__).parent.parent / "projects" / "eps" / ".tmp" / "e1_cookies.json"
-OUT_DIR = Path(__file__).parent.parent / "projects" / "eps" / ".tmp" / "estimateone"
+COOKIE_PATH = Path(__file__).parent.parent.parent / "projects" / "eps" / ".tmp" / "e1_cookies.json"
+OUT_DIR = Path(__file__).parent.parent.parent / "projects" / "eps" / ".tmp" / "estimateone"
 
 MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 CATEGORIES = {
@@ -394,12 +394,30 @@ def scrape_find_tenders(page, tab="Open", max_pages=20, filter_trades=None):
     tab_el = page.query_selector(f"a:has-text('{tab}'), button:has-text('{tab}')")
     if tab_el:
         tab_el.click()
-        page.wait_for_load_state("domcontentloaded", timeout=10000)
+        page.wait_for_load_state("networkidle", timeout=15000)
         throttle()
+
+    # Reset E1 session filters — E1 persists Trades + Distance across sessions,
+    # which hides 551+ tenders. Must reset before scraping to see full list.
+    try:
+        reset = page.locator("button:has-text('Reset filters'), a:has-text('Reset filters')").first
+        if reset.is_visible(timeout=3000):
+            reset.click()
+            page.wait_for_load_state("networkidle", timeout=15000)
+            throttle(1)
+            print("  Filters reset")
+    except Exception:
+        pass
 
     # Apply trade filter if specified
     if filter_trades:
         apply_trade_filter(page, filter_trades)
+
+    # Wait for SPA to render — networkidle fires before React finishes painting
+    try:
+        page.wait_for_selector("[class*='projectLink'], [class*='noResults']", timeout=15000)
+    except Exception:
+        pass
 
     screenshot(page, f"find_tenders_{tab.lower()}")
 
@@ -418,28 +436,7 @@ def scrape_find_tenders(page, tab="Open", max_pages=20, filter_trades=None):
         all_tenders.extend(tenders)
         print(f"  Page {pg}: {len(tenders)} tenders")
 
-        # Pagination — E1 uses custom paginationItem elements (not <a> links)
-        next_page = pg + 1
-        next_link = None
-        for sel in [
-            f"[class*='paginationItem']:text-is('{next_page}')",
-            "[class*='paginationItem']:has-text('Next Page')",
-            f"*:text-is('{next_page}')",
-            "*:has-text('Next Page')",
-        ]:
-            candidate = page.query_selector(sel)
-            if candidate and candidate.is_visible():
-                # Don't click disabled items
-                cls = candidate.get_attribute("class") or ""
-                if "disabled" not in cls:
-                    next_link = candidate
-                    break
-
-        if next_link and next_link.is_visible():
-            next_link.click()
-            page.wait_for_load_state("domcontentloaded", timeout=10000)
-            throttle()
-        else:
+        if not _click_next_page(page):
             break
 
     # Filter out tenders >120km for Open (keep all for Awarded)
@@ -451,14 +448,14 @@ def scrape_find_tenders(page, tab="Open", max_pages=20, filter_trades=None):
             km_match = re.search(r"(\d+)", dist)
             if km_match:
                 km = int(km_match.group(1))
-                if km <= 120:
+                if km <= 150:
                     filtered.append(t)
             else:
                 filtered.append(t)  # Keep if no distance info
         all_tenders = filtered
         removed = before - len(all_tenders)
         if removed:
-            print(f"  Filtered out {removed} tenders >120km")
+            print(f"  Filtered out {removed} tenders >150km")
 
     print(f"  Total [{tab}]: {len(all_tenders)}")
     return all_tenders
@@ -1248,30 +1245,99 @@ def download_lead_packages(page, leads):
 
 # --- Noticeboard Open tender doc download ---
 
-EPS_TRADES = {"painting", "building cleaning", "cleaning", "rendering", "protective coatings"}
+def _dismiss_modal(page):
+    """Dismiss any blocking modal (browser warnings, announcements, etc.)."""
+    for sel in [
+        "button:has-text('Ok')", "button:has-text('Close')", "button:has-text('Got it')",
+        "button:has-text('Continue')", "button:has-text('Dismiss')",
+        "button:has-text('Use Anyway')", "button:has-text('Proceed')",
+        "[class*='modal'] button", "[class*='Modal'] button", "[role='dialog'] button",
+    ]:
+        try:
+            btn = page.locator(sel).first
+            if btn.is_visible(timeout=1500):
+                btn.click()
+                throttle(0.5)
+                return
+        except Exception:
+            continue
 
 
-def download_noticeboard_packages(page, tenders):
-    """Download packages from Noticeboard Open tenders.
+def _find_project_link(page, pname):
+    """Return Playwright locator for the projectLink row matching pname, or None."""
+    try:
+        loc = page.locator("[class*='projectLink']").filter(has_text=pname[:40]).first
+        if loc.is_visible(timeout=2000):
+            return loc
+    except Exception:
+        pass
+    return None
 
-    Flow per tender:
-    1. Navigate to find-tenders, click into the tender detail page
-    2. Click "Builders & Docs" tab
-    3. For each builder row, look for EPS-relevant package dropdowns
-    4. Select Painting/Building Cleaning/etc. package
-    5. Click "Interested" / "Express Interest" if required
-    6. Try RFQ API download (same as leads), fall back to click-based download
-    7. Save to projects/eps/.tmp/estimateone/docs/{project_id}/
+
+def _click_next_page(page):
+    """Click the Next Page pagination button. Returns True if clicked."""
+    for sel in [
+        "[class*='paginationItem']:has-text('Next Page')",
+        "button:has-text('Next Page')",
+        "a:has-text('Next Page')",
+    ]:
+        try:
+            btn = page.locator(sel).first
+            cls = btn.get_attribute("class") or ""
+            if btn.is_visible(timeout=2000) and "disabled" not in cls:
+                btn.click()
+                page.wait_for_load_state("networkidle", timeout=15000)
+                throttle()
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def download_noticeboard_packages(page, tenders, download_docs=False):
+    """Express interest + optionally download docs for Open tenders via the find-tenders SPA panel.
+
+    Stays on /find-tenders throughout — panel opens on the right when a project row is clicked.
+    Per tender: mark interest via row dropdown → optionally click row to open panel → download docs.
 
     Args:
         page: Playwright page (logged in)
         tenders: list of tender dicts from scrape_find_tenders (must have project_id, project)
+        download_docs: if True, open panel after marking interest and attempt doc download
     """
     if not tenders:
-        print("\nNo open tenders to download packages for.")
+        print("\nNo open tenders to process.")
         return tenders
 
-    print(f"\nDownloading Noticeboard Open packages for {len(tenders)} tenders...")
+    print(f"\nProcessing {len(tenders)} open tenders (express interest + docs)...")
+
+    page.goto(f"{BASE_URL}/find-tenders", wait_until="networkidle", timeout=30000)
+    throttle(1)
+    _dismiss_modal(page)
+
+    # Ensure Open tab + reset all filters so all tenders are visible
+    for tab_sel in ["button:has-text('Open')", "a:has-text('Open')", "[role='tab']:has-text('Open')"]:
+        try:
+            tab = page.locator(tab_sel).first
+            if tab.is_visible(timeout=2000):
+                tab.click()
+                page.wait_for_load_state("networkidle", timeout=15000)
+                throttle(0.5)
+                break
+        except Exception:
+            continue
+
+    try:
+        reset = page.locator("button:has-text('Reset filters'), a:has-text('Reset filters')").first
+        if reset.is_visible(timeout=3000):
+            reset.click()
+            page.wait_for_load_state("networkidle", timeout=15000)
+            throttle(1)
+            print("  Filters reset")
+    except Exception:
+        pass
+
+    interested_count = 0
 
     for tender in tenders:
         pid = tender.get("project_id", "").replace("#", "").strip()
@@ -1280,320 +1346,175 @@ def download_noticeboard_packages(page, tenders):
         if not pid:
             continue
 
-        # Check if already downloaded
-        docs_dir = DOCS_DIR / pid
-        if docs_dir.exists() and any(docs_dir.iterdir()):
-            print(f"  #{pid}: already downloaded, skipping")
-            tender["documents"] = [
-                {"name": f.name, "local_path": str(f), "type": classify_document(f.name),
-                 "downloaded": True}
-                for f in docs_dir.iterdir() if f.is_file()
-            ]
+        if tender.get("interested"):
+            print(f"  #{pid}: already marked interested, skipping")
             continue
 
         print(f"\n  #{pid} — {pname}")
 
-        # Navigate to find-tenders and click into the tender
-        page.goto(f"{BASE_URL}/find-tenders", wait_until="domcontentloaded", timeout=20000)
-        throttle()
-
-        # Find and click the tender link
-        detail_found = False
-
-        # Try clicking project name link
-        link = page.query_selector(f"a:has-text('{pname}')") if pname else None
+        # Find the row for this tender and paginate if needed
+        link = _find_project_link(page, pname)
         if not link:
-            # Search by project ID in href
-            links = page.query_selector_all("a[href]")
-            for l in links:
-                href = l.get_attribute("href") or ""
-                if pid in href:
-                    link = l
+            page.goto(f"{BASE_URL}/find-tenders", wait_until="networkidle", timeout=30000)
+            throttle(1)
+            for _ in range(30):
+                link = _find_project_link(page, pname)
+                if link:
                     break
+                if not _click_next_page(page):
+                    print(f"    #{pid}: reached last page, not found")
+                    break
+                throttle(0.5)
 
-        if link and link.is_visible():
-            link.click(force=True)
-            page.wait_for_load_state("domcontentloaded", timeout=15000)
-            throttle()
-            detail_found = True
-            screenshot(page, f"nb_detail_{pid}")
-
-        # Fallback: try direct URL patterns
-        if not detail_found:
-            for url_pattern in [f"/noticeboard/projects/{pid}", f"/tenders/{pid}",
-                                f"/projects/{pid}", f"/tender/{pid}", f"/project/{pid}"]:
-                try:
-                    page.goto(f"{BASE_URL}{url_pattern}", wait_until="domcontentloaded", timeout=15000)
-                    throttle()
-                    body_start = page.inner_text("body")[:500].lower()
-                    if "not found" not in body_start and "error" not in body_start:
-                        detail_found = True
-                        screenshot(page, f"nb_detail_{pid}")
-                        break
-                except PlaywrightTimeout:
-                    continue
-
-        if not detail_found:
-            print(f"    Could not find detail page for #{pid}")
-            tender["documents"] = []
-            tender["noticeboard_error"] = "detail page not found"
+        if not link:
+            print(f"    #{pid}: not found in noticeboard")
+            tender["interested"] = False
             continue
 
-        detail_url = page.url
-        print(f"    Detail: {detail_url}")
-
-        # Click "Builders & Docs" tab
-        builders_docs_tab = None
-        for sel in [
-            "a:has-text('Builders & Docs')",
-            "button:has-text('Builders & Docs')",
-            "[role='tab']:has-text('Builders & Docs')",
-            "a:has-text('Builders')",
-            "button:has-text('Builders')",
-            "[role='tab']:has-text('Builders')",
-            "a:has-text('Docs')",
-        ]:
-            try:
-                el = page.query_selector(sel)
-                if el and el.is_visible():
-                    builders_docs_tab = el
-                    break
-            except Exception:
-                continue
-
-        if builders_docs_tab:
-            builders_docs_tab.click(force=True)
-            page.wait_for_load_state("domcontentloaded", timeout=10000)
-            throttle()
-            screenshot(page, f"nb_builders_docs_{pid}")
-            print(f"    Clicked Builders & Docs tab")
-        else:
-            print(f"    WARNING: Could not find Builders & Docs tab")
-            screenshot(page, f"nb_no_builders_tab_{pid}")
-
-        # Click "Express Interest" / "Interested" if present
-        for sel in [
-            "button:has-text('Express Interest')",
-            "a:has-text('Express Interest')",
-            "button:has-text('Register Interest')",
-            "a:has-text('Register Interest')",
-        ]:
-            try:
-                btn = page.query_selector(sel)
-                if btn and btn.is_visible():
-                    btn.click(force=True)
-                    throttle(1)
-                    print(f"    Clicked Express Interest")
-                    screenshot(page, f"nb_expressed_{pid}")
-                    break
-            except Exception:
-                continue
-
-        # Look for package dropdowns and select EPS-relevant trades
-        # E1 shows builder rows with dropdown menus to pick packages
-        selected_packages = []
-
-        # Strategy 1: Find select/dropdown elements with trade options
-        selects = page.query_selector_all("select")
-        for sel_el in selects:
-            options = sel_el.query_selector_all("option")
-            for opt in options:
-                opt_text = (opt.inner_text().strip()).lower()
-                if any(trade in opt_text for trade in EPS_TRADES):
-                    opt_value = opt.get_attribute("value") or opt.inner_text().strip()
-                    sel_el.select_option(value=opt_value)
+        # Get index of this link in the page, find matching interestLevelDropdown
+        marked = False
+        try:
+            idx = link.evaluate(
+                "(el) => Array.from(document.querySelectorAll('[class*=\"projectLink\"]')).indexOf(el)"
+            )
+            interest_dd = page.locator("[class*='interestLevelDropdown']").nth(idx)
+            current_text = interest_dd.inner_text(timeout=2000).strip()
+            if current_text.lower() not in ("please select", ""):
+                print(f"    Already set: {current_text}")
+                marked = True
+            else:
+                interest_dd.click(force=True)
+                throttle(0.5)
+                opt = page.locator("[class*='option']:has-text('Interested')").first
+                if opt.is_visible(timeout=3000):
+                    opt.click(force=True)
                     throttle(0.5)
-                    selected_packages.append(opt.inner_text().strip())
-                    print(f"    Selected package: {opt.inner_text().strip()}")
-                    break  # One trade per dropdown
-
-        # Strategy 2: Click-based dropdowns (custom UI, not <select>)
-        if not selected_packages:
-            # Look for "Please Select" or similar dropdown triggers
-            for sel in [
-                "button:has-text('Please Select')",
-                "div:has-text('Please Select') >> visible=true",
-                "[class*='dropdown']:has-text('Please Select')",
-                "button:has-text('Select Package')",
-                "[class*='package'] button",
-                "[class*='Package'] button",
-            ]:
-                try:
-                    dropdowns = page.query_selector_all(sel)
-                    for dd in dropdowns:
-                        if not dd.is_visible():
-                            continue
-                        dd.click(force=True)
+                    print(f"    Marked Interested")
+                    marked = True
+                    interested_count += 1
+                else:
+                    # Try any first option
+                    opt = page.locator("[class*='option']").first
+                    if opt.is_visible(timeout=2000):
+                        opt_text = opt.inner_text().strip()
+                        opt.click(force=True)
                         throttle(0.5)
-
-                        # Now look for trade options in the opened dropdown
-                        for trade in ["Painting", "Building Cleaning", "Cleaning",
-                                      "Rendering", "Protective Coatings"]:
-                            option = page.query_selector(
-                                f"li:has-text('{trade}'), "
-                                f"[class*='option']:has-text('{trade}'), "
-                                f"a:has-text('{trade}'), "
-                                f"span:has-text('{trade}')"
-                            )
-                            if option and option.is_visible():
-                                option.click(force=True)
-                                throttle(0.5)
-                                selected_packages.append(trade)
-                                print(f"    Selected package: {trade}")
-                                break
-                except Exception:
-                    continue
-
-        if selected_packages:
-            # Wait for docs to load after package selection
-            throttle(1)
-            screenshot(page, f"nb_packages_selected_{pid}")
-
-        # Now try to download docs
-        # Strategy A: RFQ API approach (same as leads)
-        downloaded = []
-        docs_dir.mkdir(parents=True, exist_ok=True)
-
-        # Look for download buttons with rfq data attributes
-        download_btns = page.query_selector_all(
-            "button[aria-label='Download Package'], "
-            "button[data-rfq-id], "
-            "button:has-text('Download'), "
-            "a:has-text('Download Package'), "
-            "a:has-text('Download Docs'), "
-            "a:has-text('Download Documents')"
-        )
-
-        rfq_downloaded = False
-        for btn in download_btns:
-            rfq_id = btn.get_attribute("data-rfq-id") or ""
-            if not rfq_id:
-                # Try to extract rfq_id from nearby elements or onclick
-                onclick = btn.get_attribute("onclick") or ""
-                rfq_match = re.search(r"rfq[/_-]?(\d+)", onclick, re.IGNORECASE)
-                if rfq_match:
-                    rfq_id = rfq_match.group(1)
-
-            if rfq_id:
-                print(f"    RFQ API download (rfq={rfq_id})")
-                try:
-                    result = page.evaluate(f"""async () => {{
-                        const resp = await fetch('/rfq/{rfq_id}/download');
-                        return await resp.json();
-                    }}""")
-
-                    if result.get("success") and result.get("downloadUrl"):
-                        download_url = result["downloadUrl"]
-                        with page.expect_download(timeout=60000) as download_info:
-                            page.evaluate(f"""() => {{
-                                const a = document.createElement('a');
-                                a.href = '{download_url}';
-                                a.download = '';
-                                document.body.appendChild(a);
-                                a.click();
-                                a.remove();
-                            }}""")
-                        dl = download_info.value
-                        filename = dl.suggested_filename or f"package_{rfq_id}.zip"
-                        local_path = docs_dir / filename
-                        dl.save_as(str(local_path))
-                        print(f"    Saved: {filename}")
-                        downloaded.append({
-                            "name": filename,
-                            "local_path": str(local_path),
-                            "rfq_id": rfq_id,
-                            "downloaded": True,
-                        })
-                        rfq_downloaded = True
+                        print(f"    Set to: {opt_text}")
+                        marked = True
+                        interested_count += 1
                     else:
-                        print(f"    API returned no downloadUrl: {result}")
-                        downloaded.append({
-                            "name": f"package_{rfq_id}",
-                            "rfq_id": rfq_id,
-                            "downloaded": False,
-                            "error": f"No downloadUrl: {result}",
-                        })
-                except Exception as e:
-                    print(f"    RFQ download failed: {e}")
-                    downloaded.append({
-                        "name": f"package_{rfq_id}",
-                        "rfq_id": rfq_id,
-                        "downloaded": False,
-                        "error": str(e)[:200],
-                    })
-                throttle()
+                        print(f"    No options in dropdown")
+        except Exception as e:
+            print(f"    Interest dropdown error: {e}")
 
-        # Strategy B: Click-based download fallback (if no RFQ buttons found)
-        if not rfq_downloaded:
-            # Try clicking any download button and catch download event
-            for btn in download_btns:
-                btn_text = btn.inner_text().strip()
-                if not btn_text:
-                    btn_text = btn.get_attribute("aria-label") or "download"
-                print(f"    Click-based download: {btn_text}")
+        tender["interested"] = marked
+        tender["documents"] = []
+
+        if download_docs and marked and link:
+            try:
+                link.click()
+                page.wait_for_load_state("networkidle", timeout=15000)
+                throttle(1)
+
+                # Panel is a ReactModal slide-pane — wait for it to render
+                downloaded = []
                 try:
-                    with page.expect_download(timeout=30000) as download_info:
-                        btn.click(force=True)
-                    dl = download_info.value
-                    filename = dl.suggested_filename or f"docs_{pid}.zip"
-                    local_path = docs_dir / filename
-                    dl.save_as(str(local_path))
-                    print(f"    Saved: {filename}")
-                    downloaded.append({
-                        "name": filename,
-                        "local_path": str(local_path),
-                        "downloaded": True,
-                    })
-                    rfq_downloaded = True
-                except (PlaywrightTimeout, Exception) as e:
-                    print(f"    Click download failed: {e}")
+                    page.wait_for_selector(
+                        ".ReactModal__Content, .slide-pane__content, [class*='slide-pane']",
+                        timeout=8000
+                    )
+                    throttle(0.5)
 
-            # Strategy C: Find download links (href-based)
-            if not rfq_downloaded:
-                doc_links = page.query_selector_all(
-                    "a[href*='download'], a[href*='.pdf'], a[href*='.zip'], "
-                    "a[href*='/documents/'], a[href*='/files/']"
-                )
-                for link in doc_links:
-                    href = link.get_attribute("href") or ""
-                    text = link.inner_text().strip()
-                    # Skip nav links
-                    if any(skip in href for skip in ("/login", "/leads", "/find-tenders",
-                                                      "/directory", "javascript:", "#")):
-                        continue
-                    print(f"    Downloading link: {text or href}")
+                    # Panel opens on Description tab — switch to Builders & Docs tab
+                    for tab_sel in [
+                        "button:has-text('Builders & Docs')",
+                        "button:has-text('Builders')",
+                        "a:has-text('Builders & Docs')",
+                        "[role='tab']:has-text('Builders')",
+                    ]:
+                        tab_btn = page.locator(tab_sel).first
+                        try:
+                            if tab_btn.is_visible(timeout=2000):
+                                tab_btn.click(force=True)
+                                page.wait_for_load_state("networkidle", timeout=10000)
+                                throttle(0.5)
+                                break
+                        except Exception:
+                            continue
+
+                    # Select a package from the React Select dropdown (options portal to body)
                     try:
-                        with page.expect_download(timeout=30000) as download_info:
-                            link.click(force=True)
-                        dl = download_info.value
-                        filename = dl.suggested_filename or f"{text or 'doc'}_{pid}"
-                        local_path = docs_dir / filename
-                        dl.save_as(str(local_path))
-                        print(f"    Saved: {filename}")
-                        downloaded.append({
-                            "name": filename,
-                            "local_path": str(local_path),
-                            "downloaded": True,
-                        })
-                    except (PlaywrightTimeout, Exception) as e:
-                        print(f"    Link download failed: {e}")
-                    throttle()
+                        pkg_dropdown = page.locator(
+                            "[class*='slide-pane'] [class*='Select__control'], .ReactModal__Content [class*='Select__control']"
+                        ).first
+                        if pkg_dropdown.is_visible(timeout=3000):
+                            pkg_dropdown.click(force=True)
+                            throttle(0.5)
+                            # Options portalled to document.body — pick first non-placeholder
+                            opts = page.locator("[class*='Select__option']").all()
+                            if opts:
+                                opts[0].click(force=True)
+                                throttle(0.5)
+                                print(f"    Package selected")
+                    except Exception:
+                        pass
 
-        # Clean up empty docs dir
-        if not downloaded and docs_dir.exists() and not any(docs_dir.iterdir()):
-            docs_dir.rmdir()
+                    # Try Download / View buttons
+                    for dl_sel in [
+                        "button:has-text('Download')",
+                        "a:has-text('Download')",
+                        "button:has-text('View')",
+                        "a:has-text('View')",
+                        "[class*='slide-pane'] *:has-text('Download')",
+                        ".ReactModal__Content *:has-text('Download')",
+                    ]:
+                        btns = page.locator(dl_sel).all()
+                        for btn in btns:
+                            try:
+                                if btn.is_visible(timeout=1000):
+                                    with page.expect_download(timeout=30000) as dl_info:
+                                        btn.click(force=True)
+                                    dl = dl_info.value
+                                    dest = DOCS_DIR / pid / dl.suggested_filename
+                                    dest.parent.mkdir(parents=True, exist_ok=True)
+                                    dl.save_as(str(dest))
+                                    downloaded.append({"name": dl.suggested_filename, "local_path": str(dest), "downloaded": True})
+                                    print(f"    Downloaded: {dl.suggested_filename}")
+                            except Exception:
+                                continue
+                        if downloaded:
+                            break
 
-        tender["documents"] = downloaded
-        tender["detail_url"] = detail_url
-        tender["selected_packages"] = selected_packages
-        ok = sum(1 for d in downloaded if d.get("downloaded"))
-        print(f"  #{pid}: {ok}/{len(downloaded)} packages downloaded")
+                    if not downloaded:
+                        # Log all panel interactive elements for debugging
+                        btns_text = []
+                        for el in page.locator(".ReactModal__Content *, [class*='slide-pane'] *").all():
+                            try:
+                                t = el.inner_text(timeout=200).strip()
+                                if t and len(t) < 40 and t not in btns_text:
+                                    btns_text.append(t)
+                            except Exception:
+                                pass
+                        print(f"    Panel elements: {btns_text[:15]}")
 
-    total_ok = sum(
-        sum(1 for d in t.get("documents", []) if d.get("downloaded"))
-        for t in tenders
-    )
-    print(f"\nNoticeboard download complete: {total_ok} total packages downloaded")
+                except Exception as e:
+                    print(f"    Panel error: {e}")
+
+                if not downloaded:
+                    screenshot(page, f"panel_open_{pid}")
+                    print(f"    No packages downloaded — screenshot saved")
+                tender["documents"] = downloaded
+            except Exception as e:
+                print(f"    Doc download error: {e}")
+
+        # Close panel
+        try:
+            page.keyboard.press("Escape")
+            throttle(0.3)
+        except Exception:
+            pass
+
+    print(f"\nNoticeboard complete: {interested_count} marked Interested")
     return tenders
 
 
@@ -1741,9 +1662,30 @@ def run_scraper(args):
 
                 # Then open tenders — use Noticeboard package download
                 if "open_tenders" in results["sections"]:
+                    open_tenders = results["sections"]["open_tenders"]
+                    if project_ids:
+                        clean_ids = {pid.replace("#", "").strip() for pid in project_ids}
+                        open_tenders = [t for t in open_tenders if t.get("project_id", "").replace("#", "").strip() in clean_ids]
                     results["sections"]["open_tenders"] = download_noticeboard_packages(
-                        page, results["sections"]["open_tenders"],
+                        page, open_tenders, download_docs=True,
                     )
+
+                # Fallback — direct detail-page nav for any project_ids not covered above
+                if project_ids:
+                    clean_ids = {pid.replace("#", "").strip() for pid in project_ids}
+                    covered = set()
+                    for section in results["sections"].values():
+                        if isinstance(section, list):
+                            for t in section:
+                                covered.add(t.get("project_id", "").replace("#", "").strip())
+                    missing = clean_ids - covered
+                    if missing:
+                        stub_tenders = [{"project_id": pid, "project": f"Project #{pid}"} for pid in missing]
+                        print(f"\nDirect detail-page download for: {missing}")
+                        results["sections"]["direct"] = process_tender_docs(
+                            page, stub_tenders, project_ids=list(missing),
+                            auto_express=args.auto_express_interest,
+                        )
 
             save_output(results, f"e1_scrape_{timestamp}.json")
             save_output(results, "e1_latest.json")

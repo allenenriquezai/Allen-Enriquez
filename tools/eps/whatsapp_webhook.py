@@ -34,7 +34,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 ENV_FILE = BASE_DIR / "projects" / "eps" / ".env"
 INBOX_FILE = BASE_DIR / "projects" / "eps" / ".tmp" / "whatsapp_inbox.json"
 

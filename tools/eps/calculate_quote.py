@@ -58,7 +58,7 @@ import re
 import sys
 from datetime import date
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PRICING_CONFIG = os.path.join(BASE_DIR, 'projects', 'eps', 'config', 'pricing.json')
 OUTPUT_FILE = os.path.join(BASE_DIR, 'projects', 'eps', '.tmp', 'quote_data.json')
 
@@ -92,8 +92,8 @@ def parse_scope(scope_str):
         (r'(\d+(?:\.\d+)?)\s*lm\s+skirting',                         'INT-04'),
         (r'(\d+(?:\.\d+)?)\s*lm\s+architraves?',                     'INT-05'),
         # External
-        (r'(\d+(?:\.\d+)?)\s*sqm\s+external\s+walls?\s*>?\s*3m',     'EXT-02'),
-        (r'(\d+(?:\.\d+)?)\s*sqm\s+external\s+walls?(?!\s*>?\s*3m)', 'EXT-01'),
+        (r'(\d+(?:\.\d+)?)\s*sqm\s+external\s+walls\s*>?\s*3m',     'EXT-02'),
+        (r'(\d+(?:\.\d+)?)\s*sqm\s+external\s+walls(?!\s*>?\s*3m)', 'EXT-01'),
         (r'(\d+(?:\.\d+)?)\s*sqm\s+roof',                            'EXT-06'),
         (r'(\d+(?:\.\d+)?)\s+garage\s+doors?',                       'EXT-05'),
         (r'(\d+(?:\.\d+)?)\s*sqm\s+deck',                            'EXT-04'),

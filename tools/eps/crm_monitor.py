@@ -24,7 +24,7 @@ import urllib.request
 from datetime import datetime, timedelta
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 ENV_FILE = BASE_DIR / 'projects' / 'eps' / '.env'
 TMP_DIR = BASE_DIR / '.tmp'
 OUTPUT_FILE = TMP_DIR / 'crm_monitor.json'
@@ -669,12 +669,19 @@ def print_summary(result):
                     'email': 'Send email nudge',
                     'urgent': 'URGENT — follow up immediately',
                 }.get(item['recommended_action'], item['recommended_action'])
-                print(f"\n  {icon} [{item['priority']}] FOLLOW UP: {item['deal_title']}")
+                ctx_tag = item.get('context_tag', '')
+                ctx_detail = item.get('context_detail', '')
+                rescheduled_flag = ' ⚠ RESCHEDULED' if ctx_tag == 'RESCHEDULED' else ''
+                print(f"\n  {icon} [{item['priority']}] FOLLOW UP: {item['deal_title']}{rescheduled_flag}")
                 print(f"     Pipeline: {item['pipeline']} | Stage: {item['stage']}")
                 print(f"     Owner: {item.get('owner_name', 'Unknown')}")
                 print(f"     Last activity: {item['last_activity_date']} ({item['days_since_activity']} days ago)")
                 if item['value']:
                     print(f"     Value: ${item['value']:,.0f} {item['currency']}")
+                if ctx_tag and ctx_tag not in ('HAS_NEXT_STEP',):
+                    print(f"     Context: {ctx_tag} — {ctx_detail}")
+                elif ctx_tag == 'HAS_NEXT_STEP':
+                    print(f"     Next: {ctx_detail}")
                 print(f"     → {action_text}")
             elif item['type'] == 'overdue_activity':
                 print(f"\n  {icon} [{item['priority']}] OVERDUE: {item['subject']}")

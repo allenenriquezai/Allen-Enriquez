@@ -29,7 +29,7 @@ from pathlib import Path
 import requests
 
 # --- Paths ---
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 ENV_FILE = BASE_DIR / 'projects' / 'eps' / '.env'
 TMP_DIR = BASE_DIR / '.tmp'
 OUTPUT_FILE = TMP_DIR / 'crm_sync.json'

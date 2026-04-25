@@ -16,7 +16,7 @@ Complete SOP for creating EPS quotes. Follow this exactly — every rule, every 
 8. **Doc naming** — `[serviceType] Quote - [project] - [#ID if tender] - [org]`. No deal ID in the name. Project ID only for tenders (#182968 from E1). Org only if applicable.
 9. **Never suggest day rates** — Allen prices on sqm rates. Don't offer day rate alternatives, comparisons, or "sanity checks." Just build the quote using sqm/unit rates from pricing.json.
 10. **Show Allen line items before generating docs** — Get approval first, then generate.
-11. **Tender/plan-based quotes** — Add as first JOB SUMMARY bullet: "This is a draft quote, based on plans and information available. Site visit is required to finalise."
+11. **Tender/plan-based quotes** — Add as first JOB SUMMARY bullet: "This is a draft quote. A site inspection is required to finalise scope & pricing." Applies to ALL tenders (painting AND cleaning). Use this exact wording.
 12. **QA order** — Draft email first (no send), then run QA on doc + email together. Never run QA before drafting the email.
 
 ---

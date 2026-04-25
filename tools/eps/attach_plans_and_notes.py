@@ -21,7 +21,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 DOCS_DIR = BASE_DIR / "projects" / "eps" / ".tmp" / "estimateone" / "docs"
 BRIEFS_DIR = BASE_DIR / "projects" / "eps" / ".tmp" / "estimateone" / "briefs"
 ENV_FILE = BASE_DIR / "projects" / "eps" / ".env"

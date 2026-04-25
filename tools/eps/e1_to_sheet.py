@@ -30,7 +30,7 @@ from pathlib import Path
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 TOKEN_FILE = BASE_DIR / "projects" / "eps" / "token_eps.pickle"
 DEFAULT_SCRAPE = BASE_DIR / "projects" / "eps" / ".tmp" / "estimateone" / "e1_latest.json"
 SHEET_ID_FILE = BASE_DIR / "projects" / "eps" / ".tmp" / "e1_sheet_id.txt"

@@ -19,7 +19,7 @@ import sys
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TOKEN_FILE = os.path.join(BASE_DIR, 'projects', 'eps', 'token_eps.pickle')
 PRICING_CONFIG = os.path.join(BASE_DIR, 'projects', 'eps', 'config', 'pricing.json')
 

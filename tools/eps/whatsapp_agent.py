@@ -35,7 +35,7 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 SHARED_ENV = BASE_DIR / "projects" / ".env"
 EPS_ENV = BASE_DIR / "projects" / "eps" / ".env"
 PERSONAL_ENV = BASE_DIR / "projects" / "personal" / ".env"

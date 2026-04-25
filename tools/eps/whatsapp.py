@@ -31,7 +31,7 @@ from pathlib import Path
 import requests
 from dotenv import load_dotenv
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 ENV_FILE = BASE_DIR / "projects" / "eps" / ".env"
 
 load_dotenv(ENV_FILE)

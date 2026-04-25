@@ -26,7 +26,7 @@ import json
 import sys
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 TEMPLATES_DIR = BASE_DIR / 'projects' / 'eps' / 'templates' / 'email'
 ENV_FILE = BASE_DIR / 'projects' / 'eps' / '.env'
 

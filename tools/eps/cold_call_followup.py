@@ -47,7 +47,7 @@ from pathlib import Path
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 TOKEN_FILE = BASE_DIR / 'projects' / 'personal' / 'token_personal_ai.pickle'
 LEADS_FILE = BASE_DIR / 'projects' / 'personal' / '.tmp' / 'cold_call_leads.json'
 LEAD_MAGNET = BASE_DIR / 'projects' / 'personal' / 'sales' / 'lead-magnet.pdf'

@@ -34,7 +34,7 @@ from dotenv import load_dotenv
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 TOKEN_FILE = BASE_DIR / 'projects' / 'eps' / 'token_eps.pickle'
 ENV_FILE = BASE_DIR / 'projects' / 'eps' / '.env'
 

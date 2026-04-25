@@ -33,7 +33,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 # --- Paths ---
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 ENV_FILE = BASE_DIR / 'projects' / 'eps' / '.env'
 TMP_DIR = BASE_DIR / '.tmp'
 DEALS_DIR = BASE_DIR / 'projects' / 'eps' / '.tmp' / 'deals'

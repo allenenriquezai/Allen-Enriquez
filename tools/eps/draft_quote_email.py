@@ -33,7 +33,7 @@ import os
 import sys
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 QUOTE_DATA = BASE_DIR / 'projects' / 'eps' / '.tmp' / 'quote_data.json'
 TEMPLATES_DIR = BASE_DIR / 'projects' / 'eps' / 'templates' / 'email'
 ENV_FILE = BASE_DIR / 'projects' / 'eps' / '.env'
