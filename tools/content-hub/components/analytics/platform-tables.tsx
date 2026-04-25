@@ -180,6 +180,7 @@ export function YouTubeTable({ stats, sortKey, sortDir, onSort, onSelect, select
                   {v.title}
                 </a>
               </td>
+              <td className="px-4 py-2 text-right text-xs text-muted-foreground">{v.published_at.slice(0, 10)}</td>
               <td className="px-4 py-2 text-right font-mono">{v.views.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{v.likes.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{v.comments.toLocaleString()}</td>
@@ -303,9 +304,9 @@ export function FacebookTable({ posts, sortKey, sortDir, onSort, onSelect, selec
                   ) : (
                     <span className="truncate text-muted-foreground">{(p.message ?? "(no caption)").slice(0, 60)}</span>
                   )}
-                  <span className="text-xs text-muted-foreground">{p.created_time.slice(0, 10)}</span>
                 </div>
               </td>
+              <td className="px-4 py-2 text-right text-xs text-muted-foreground">{p.created_time.slice(0, 10)}</td>
               <td className="px-4 py-2 text-right font-mono">{p.reactions.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{p.comments_count.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{p.shares_count.toLocaleString()}</td>
@@ -430,11 +431,10 @@ export function InstagramTable({ posts, sortKey, sortDir, onSort, onSelect, sele
                   ) : (
                     <span className="truncate text-muted-foreground">{(p.caption ?? "(no caption)").slice(0, 60)}</span>
                   )}
-                  <span className="text-xs text-muted-foreground">
-                    {p.timestamp.slice(0, 10)}{p.media_type ? ` · ${p.media_type}` : ""}
-                  </span>
+                  {p.media_type && <span className="text-xs text-muted-foreground">{p.media_type}</span>}
                 </div>
               </td>
+              <td className="px-4 py-2 text-right text-xs text-muted-foreground">{p.timestamp.slice(0, 10)}</td>
               <td className="px-4 py-2 text-right font-mono">{p.like_count.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{p.comments_count.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{p.saved.toLocaleString()}</td>
