@@ -72,6 +72,8 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
   const [savingScript, setSavingScript] = React.useState(false);
   const [scriptSavedAt, setScriptSavedAt] = React.useState<number | null>(null);
   const [captionDirty, setCaptionDirty] = React.useState<Record<string, boolean>>({});
+  const [syndicating, setSyndicating] = React.useState(false);
+  const [syndicateError, setSyndicateError] = React.useState<string | null>(null);
 
   // Publish controls
   const [selected, setSelected] = React.useState<Set<PlatformKey>>(new Set(["ig"]));
@@ -217,6 +219,38 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ asset_id: asset.id, platform, url: asset.url }),
     }).catch(() => {});
+  };
+
+  const syndicateCaptions = async () => {
+    const sourceBody = (captions[activeCaption] ?? "").trim();
+    if (!ideaId || !sourceBody || syndicating) return;
+    setSyndicating(true);
+    setSyndicateError(null);
+    try {
+      const res = await fetch(`/api/library/${asset.id}/syndicate-captions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sourceVariant: activeCaption, sourceBody, ideaId }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        setSyndicateError(j.error || `HTTP ${res.status}`);
+        return;
+      }
+      const { captions: synth } = (await res.json()) as { captions: Record<string, string> };
+      setCaptions((prev) => ({ ...prev, ...synth }));
+      captionBaseline.current = { ...captionBaseline.current, ...synth };
+      setCaptionDirty((d) => {
+        const next = { ...d };
+        for (const k of Object.keys(synth)) next[k] = false;
+        return next;
+      });
+      setScriptSavedAt(Date.now());
+    } catch (e) {
+      setSyndicateError(String(e));
+    } finally {
+      setSyndicating(false);
+    }
   };
 
   const publish = async () => {
@@ -551,6 +585,25 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
                   overLimit ? "border-red-400/60" : "border-border/40 focus:border-border"
                 }`}
               />
+              <div className="flex items-center justify-between mt-2 gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={syndicateCaptions}
+                  disabled={!ideaId || !activeValue.trim() || syndicating}
+                  className="text-[10px] font-mono px-2 py-1 rounded border border-border/40 hover:border-brand transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                >
+                  {syndicating ? (
+                    <>
+                      <Loader2 className="size-3 animate-spin" /> Syndicating…
+                    </>
+                  ) : (
+                    <>Syndicate {activeCaptionTab.label} → other platforms</>
+                  )}
+                </button>
+                {syndicateError && (
+                  <span className="text-[10px] font-mono text-red-400">{syndicateError}</span>
+                )}
+              </div>
             </div>
           </div>
 

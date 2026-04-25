@@ -18,8 +18,16 @@ import db from "@/lib/db";
 // Returns: { ok, added, total, stdout, stderr }
 
 const REPO_ROOT = path.resolve(process.cwd(), "../../..");
+const IS_RAILWAY = Boolean(process.env.RAILWAY_ENVIRONMENT);
 
 export async function POST(req: Request) {
+  if (IS_RAILWAY) {
+    return NextResponse.json(
+      { ok: false, skipped: true, reason: "Creator feed refresh is local-only. Run tools/creator_feed.py locally." },
+      { status: 503 },
+    );
+  }
+
   const { searchParams } = new URL(req.url);
 
   const args: string[] = [];
