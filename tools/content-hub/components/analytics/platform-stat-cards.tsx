@@ -85,7 +85,7 @@ export function PlatformStatCards(props: PlatformStatCardsProps) {
 
   if (props.platform === "instagram") {
     const { stats } = props;
-    const totalReach = stats.reduce((a, p) => a + p.reach, 0);
+    const totalViews = stats.reduce((a, p) => a + p.impressions, 0);
     const totalLikes = stats.reduce((a, p) => a + p.like_count, 0);
     const totalSaves = stats.reduce((a, p) => a + p.saved, 0);
     const avgEng =
@@ -93,13 +93,13 @@ export function PlatformStatCards(props: PlatformStatCardsProps) {
         ? stats.reduce(
             (a, p) =>
               a +
-              (p.reach > 0 ? ((p.like_count + p.comments_count + p.saved) / p.reach) * 100 : 0),
+              (p.impressions > 0 ? ((p.like_count + p.comments_count + p.saved) / p.impressions) * 100 : 0),
             0,
           ) / stats.length
         : 0;
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <KpiCard label="Total Reach" value={totalReach.toLocaleString()} />
+        <KpiCard label="Total Views" value={totalViews.toLocaleString()} />
         <KpiCard label="Total Saves" value={totalSaves.toLocaleString()} />
         <KpiCard label="Avg Engagement" value={`${avgEng.toFixed(2)}%`} />
         <KpiCard label="Total Likes" value={totalLikes.toLocaleString()} />
@@ -109,7 +109,7 @@ export function PlatformStatCards(props: PlatformStatCardsProps) {
 
   if (props.platform === "facebook") {
     const { stats } = props;
-    const totalReach = stats.reduce((a, p) => a + p.reach, 0);
+    const totalViews = stats.reduce((a, p) => a + p.reach, 0);
     const totalReactions = stats.reduce((a, p) => a + p.reactions, 0);
     const totalShares = stats.reduce((a, p) => a + p.shares_count, 0);
     const avgEng =
@@ -125,7 +125,7 @@ export function PlatformStatCards(props: PlatformStatCardsProps) {
         : 0;
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <KpiCard label="Total Reach" value={totalReach.toLocaleString()} />
+        <KpiCard label="Total Views" value={totalViews.toLocaleString()} />
         <KpiCard label="Total Reactions" value={totalReactions.toLocaleString()} />
         <KpiCard label="Avg Engagement" value={`${avgEng.toFixed(2)}%`} />
         <KpiCard label="Total Shares" value={totalShares.toLocaleString()} />
@@ -139,8 +139,8 @@ export function PlatformStatCards(props: PlatformStatCardsProps) {
 
   const totalViews = hasPlatformData
     ? ytStats.reduce((a, v) => a + v.views, 0) +
-      fbPosts.reduce((a, p) => a + (p.impressions || p.reach), 0) +
-      igPosts.reduce((a, p) => a + (p.impressions || p.reach), 0) +
+      fbPosts.reduce((a, p) => a + p.reach, 0) +
+      igPosts.reduce((a, p) => a + p.impressions, 0) +
       ttStats.reduce((a, v) => a + v.view_count, 0)
     : props.rows.reduce((a, r) => a + (r.views ?? 0), 0);
 

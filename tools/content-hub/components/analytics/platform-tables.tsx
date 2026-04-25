@@ -39,7 +39,7 @@ export interface FbPost {
   shares_count: number;
 }
 
-export type FbSortKey = "created_time" | "reactions" | "comments_count" | "shares_count" | "reach";
+export type FbSortKey = "created_time" | "reactions" | "comments_count" | "shares_count" | "reach" | "impressions";
 
 export interface IgPost {
   post_id: string;
@@ -54,7 +54,7 @@ export interface IgPost {
   saved: number;
 }
 
-export type IgSortKey = "timestamp" | "like_count" | "comments_count" | "saved" | "reach";
+export type IgSortKey = "timestamp" | "like_count" | "comments_count" | "saved" | "impressions" | "reach";
 
 export interface TtStat {
   video_id: string;
@@ -269,7 +269,7 @@ export function FacebookTable({ posts, sortKey, sortDir, onSort, onSelect, selec
 
   const cols: { key: FbSortKey; label: string }[] = [
     { key: "created_time", label: "Date" },
-    { key: "reach", label: "Reach" },
+    { key: "reach", label: "Views" },
     { key: "reactions", label: "Reactions" },
     { key: "comments_count", label: "Comments" },
     { key: "shares_count", label: "Shares" },
@@ -392,14 +392,14 @@ export function InstagramTable({ posts, sortKey, sortDir, onSort, onSelect, sele
   if (sorted.length === 0)
     return <p className="text-sm text-muted-foreground">No Instagram data. Hit "Refresh" to pull.</p>;
 
-  const hasReach = sorted.some(p => p.reach > 0);
+  const hasViews = sorted.some(p => p.impressions > 0);
 
   const cols: { key: IgSortKey; label: string }[] = [
     { key: "timestamp", label: "Date" },
     { key: "like_count", label: "Likes" },
     { key: "comments_count", label: "Comments" },
     { key: "saved", label: "Saved" },
-    ...(hasReach ? [{ key: "reach" as IgSortKey, label: "Reach" }] : []),
+    ...(hasViews ? [{ key: "impressions" as IgSortKey, label: "Views" }] : []),
   ];
 
   return (
@@ -443,7 +443,7 @@ export function InstagramTable({ posts, sortKey, sortDir, onSort, onSelect, sele
               <td className="px-4 py-2 text-right font-mono">{p.like_count.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{p.comments_count.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{p.saved.toLocaleString()}</td>
-              {hasReach && <td className="px-4 py-2 text-right font-mono">{p.reach.toLocaleString()}</td>}
+              {hasViews && <td className="px-4 py-2 text-right font-mono">{p.impressions.toLocaleString()}</td>}
             </tr>
           ))}
         </tbody>
