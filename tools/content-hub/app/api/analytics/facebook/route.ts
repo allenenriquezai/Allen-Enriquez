@@ -35,6 +35,7 @@ async function refreshFbPosts() {
     "reactions.summary(true)",
     "comments.summary(true)",
     "shares",
+    "insights.metric(post_impressions,post_impressions_unique,post_engaged_users){name,values}",
   ].join(",");
 
   const url = new URL(`${FB_BASE}/${PAGE_ID}/posts`);
@@ -91,15 +92,24 @@ async function refreshFbPosts() {
   return posts.length;
 }
 
+function isStale() {
+  const row = db.prepare("SELECT MAX(fetched_at) as last FROM facebook_posts").get() as { last: string | null };
+  if (!row?.last) return true;
+  return Date.now() - new Date(row.last).getTime() > 60 * 60 * 1000;
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
+  const forceRefresh = searchParams.get("refresh") === "1";
 
-  if (searchParams.get("refresh") === "1") {
+  if (forceRefresh || isStale()) {
     try {
       await refreshFbPosts();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      return NextResponse.json({ error: "Refresh failed", detail: msg }, { status: 500 });
+      if (forceRefresh) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return NextResponse.json({ error: "Refresh failed", detail: msg }, { status: 500 });
+      }
     }
   }
 

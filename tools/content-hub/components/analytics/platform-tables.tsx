@@ -168,17 +168,22 @@ export function YouTubeTable({ stats, sortKey, sortDir, onSort, onSelect, select
               className={`border-b border-border/40 hover:bg-muted/10 transition-colors ${selectedId === v.video_id ? "bg-[color:var(--brand)]/10" : ""} ${onSelect ? "cursor-pointer" : ""}`}
               onClick={onSelect ? () => onSelect(v) : undefined}
             >
-              <td className="px-4 py-2 max-w-xs truncate">
-                <a
-                  href={v.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:underline"
-                  style={{ color: "var(--brand)" }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {v.title}
-                </a>
+              <td className="px-4 py-2 max-w-xs">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="truncate hover:underline cursor-pointer" style={{ color: "var(--brand)" }}>
+                    {v.title}
+                  </span>
+                  <a
+                    href={v.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="shrink-0 text-muted-foreground hover:text-foreground text-xs"
+                    onClick={(e) => e.stopPropagation()}
+                    title="Open on YouTube"
+                  >
+                    ↗
+                  </a>
+                </div>
               </td>
               <td className="px-4 py-2 text-right text-xs text-muted-foreground">{v.published_at.slice(0, 10)}</td>
               <td className="px-4 py-2 text-right font-mono">{v.views.toLocaleString()}</td>
@@ -264,10 +269,10 @@ export function FacebookTable({ posts, sortKey, sortDir, onSort, onSelect, selec
 
   const cols: { key: FbSortKey; label: string }[] = [
     { key: "created_time", label: "Date" },
+    { key: "reach", label: "Reach" },
     { key: "reactions", label: "Reactions" },
     { key: "comments_count", label: "Comments" },
     { key: "shares_count", label: "Shares" },
-    ...(hasReach ? [{ key: "reach" as FbSortKey, label: "Reach" }] : []),
   ];
 
   return (
@@ -307,10 +312,10 @@ export function FacebookTable({ posts, sortKey, sortDir, onSort, onSelect, selec
                 </div>
               </td>
               <td className="px-4 py-2 text-right text-xs text-muted-foreground">{p.created_time.slice(0, 10)}</td>
+              <td className="px-4 py-2 text-right font-mono">{p.reach.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{p.reactions.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{p.comments_count.toLocaleString()}</td>
               <td className="px-4 py-2 text-right font-mono">{p.shares_count.toLocaleString()}</td>
-              {hasReach && <td className="px-4 py-2 text-right font-mono">{p.reach.toLocaleString()}</td>}
             </tr>
           ))}
         </tbody>

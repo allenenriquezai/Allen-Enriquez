@@ -12,11 +12,17 @@ function readCached() {
     .all();
 }
 
+function isStale() {
+  const row = db.prepare("SELECT MAX(updated_at) as last FROM tiktok_stats").get() as { last: string | null };
+  if (!row?.last) return true;
+  return Date.now() - new Date(row.last).getTime() > 60 * 60 * 1000;
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const refresh = searchParams.get("refresh") === "1";
+  const forceRefresh = searchParams.get("refresh") === "1";
 
-  if (!refresh) {
+  if (!forceRefresh && !isStale()) {
     return NextResponse.json({ stats: readCached() });
   }
 
@@ -27,7 +33,7 @@ export async function GET(req: Request) {
     const msg = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
       { error: msg, stats: readCached() },
-      { status: 401 },
+      { status: forceRefresh ? 401 : 200 },
     );
   }
 

@@ -101,14 +101,21 @@ export default function AnalyticsPage() {
         <TabsList variant="line">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="youtube">YouTube</TabsTrigger>
-          <TabsTrigger value="tiktok">TikTok</TabsTrigger>
-          <TabsTrigger value="instagram">Instagram</TabsTrigger>
           <TabsTrigger value="facebook">Facebook</TabsTrigger>
+          <TabsTrigger value="instagram">Instagram</TabsTrigger>
+          <TabsTrigger value="tiktok">TikTok</TabsTrigger>
           <TabsTrigger value="manual">Manual</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
-          <PlatformStatCards platform="overview" rows={rows} />
+          <PlatformStatCards
+            platform="overview"
+            rows={rows}
+            ytStats={ytStats}
+            fbPosts={fbPosts}
+            igPosts={igPosts}
+            ttStats={ttStats}
+          />
           <div className="mt-6">
             <MetricsChart rows={rows} />
           </div>
@@ -128,13 +135,13 @@ export default function AnalyticsPage() {
           />
         </TabsContent>
 
-        <TabsContent value="tiktok" className="mt-6">
-          <PlatformStatCards platform="tiktok" stats={ttStats} />
+        <TabsContent value="facebook" className="mt-6">
+          <PlatformStatCards platform="facebook" stats={fbPosts} />
           <PostsSection
-            platform="tiktok"
-            stats={ttStats}
-            loading={ttLoading}
-            onRefresh={() => loadTikTok(true)}
+            platform="facebook"
+            stats={fbPosts}
+            loading={fbLoading}
+            onRefresh={() => loadFacebook(true)}
           />
         </TabsContent>
 
@@ -148,13 +155,13 @@ export default function AnalyticsPage() {
           />
         </TabsContent>
 
-        <TabsContent value="facebook" className="mt-6">
-          <PlatformStatCards platform="facebook" stats={fbPosts} />
+        <TabsContent value="tiktok" className="mt-6">
+          <PlatformStatCards platform="tiktok" stats={ttStats} />
           <PostsSection
-            platform="facebook"
-            stats={fbPosts}
-            loading={fbLoading}
-            onRefresh={() => loadFacebook(true)}
+            platform="tiktok"
+            stats={ttStats}
+            loading={ttLoading}
+            onRefresh={() => loadTikTok(true)}
           />
         </TabsContent>
 

@@ -25,7 +25,14 @@ type PlatformStatCardsProps =
   | { platform: "tiktok"; stats: TtStat[] }
   | { platform: "instagram"; stats: IgPost[] }
   | { platform: "facebook"; stats: FbPost[] }
-  | { platform: "overview"; rows: MetricRow[] };
+  | {
+      platform: "overview";
+      rows: MetricRow[];
+      ytStats?: YtStat[];
+      fbPosts?: FbPost[];
+      igPosts?: IgPost[];
+      ttStats?: TtStat[];
+    };
 
 export function PlatformStatCards(props: PlatformStatCardsProps) {
   if (props.platform === "youtube") {
@@ -126,21 +133,39 @@ export function PlatformStatCards(props: PlatformStatCardsProps) {
     );
   }
 
-  // overview (manual metrics)
-  const { rows } = props;
-  const totalViews = rows.reduce((a, r) => a + (r.views ?? 0), 0);
-  const totalEng = rows.reduce(
-    (a, r) => a + (r.likes ?? 0) + (r.comments ?? 0) + (r.shares ?? 0) + (r.saves ?? 0),
-    0,
-  );
-  const follows = rows.reduce((a, r) => a + (r.follows_gained ?? 0), 0);
-  const ctr = totalViews > 0 ? (totalEng / totalViews) * 100 : 0;
+  // overview — aggregate from platform APIs, fall back to manual rows
+  const { ytStats = [], fbPosts = [], igPosts = [], ttStats = [] } = props;
+  const hasPlatformData = ytStats.length + fbPosts.length + igPosts.length + ttStats.length > 0;
+
+  const totalViews = hasPlatformData
+    ? ytStats.reduce((a, v) => a + v.views, 0) +
+      fbPosts.reduce((a, p) => a + (p.impressions || p.reach), 0) +
+      igPosts.reduce((a, p) => a + (p.impressions || p.reach), 0) +
+      ttStats.reduce((a, v) => a + v.view_count, 0)
+    : props.rows.reduce((a, r) => a + (r.views ?? 0), 0);
+
+  const totalEng = hasPlatformData
+    ? ytStats.reduce((a, v) => a + v.likes + v.comments, 0) +
+      fbPosts.reduce((a, p) => a + p.reactions + p.comments_count + p.shares_count, 0) +
+      igPosts.reduce((a, p) => a + p.like_count + p.comments_count + p.saved, 0) +
+      ttStats.reduce((a, v) => a + v.like_count + v.comment_count + v.share_count, 0)
+    : props.rows.reduce(
+        (a, r) => a + (r.likes ?? 0) + (r.comments ?? 0) + (r.shares ?? 0) + (r.saves ?? 0),
+        0,
+      );
+
+  const totalPosts = hasPlatformData
+    ? ytStats.length + fbPosts.length + igPosts.length + ttStats.length
+    : props.rows.length;
+
+  const engRate = totalViews > 0 ? (totalEng / totalViews) * 100 : 0;
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-      <KpiCard label="Total Views" value={totalViews.toLocaleString()} />
-      <KpiCard label="Follows Gained" value={follows.toLocaleString()} />
-      <KpiCard label="Total Engagement" value={totalEng.toLocaleString()} />
-      <KpiCard label="Avg CTR" value={`${ctr.toFixed(2)}%`} />
+      <KpiCard label="Total Views" value={totalViews.toLocaleString()} sub={hasPlatformData ? "across all platforms" : "manual only"} />
+      <KpiCard label="Total Engagement" value={totalEng.toLocaleString()} sub="likes + comments + shares" />
+      <KpiCard label="Avg Eng Rate" value={`${engRate.toFixed(2)}%`} />
+      <KpiCard label="Total Posts" value={totalPosts.toLocaleString()} sub={hasPlatformData ? `YT ${ytStats.length} · FB ${fbPosts.length} · IG ${igPosts.length} · TT ${ttStats.length}` : "manual"} />
     </div>
   );
 }

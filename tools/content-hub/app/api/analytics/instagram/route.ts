@@ -95,15 +95,24 @@ async function refreshIgPosts() {
   return posts.length;
 }
 
+function isStale() {
+  const row = db.prepare("SELECT MAX(fetched_at) as last FROM instagram_posts").get() as { last: string | null };
+  if (!row?.last) return true;
+  return Date.now() - new Date(row.last).getTime() > 60 * 60 * 1000;
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
+  const forceRefresh = searchParams.get("refresh") === "1";
 
-  if (searchParams.get("refresh") === "1") {
+  if (forceRefresh || isStale()) {
     try {
       await refreshIgPosts();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      return NextResponse.json({ error: "Refresh failed", detail: msg }, { status: 500 });
+      if (forceRefresh) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return NextResponse.json({ error: "Refresh failed", detail: msg }, { status: 500 });
+      }
     }
   }
 

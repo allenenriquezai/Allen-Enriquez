@@ -77,18 +77,27 @@ async function refreshYouTubeStats(): Promise<{ count: number; subscriberCount: 
   return { count, subscriberCount };
 }
 
+function isStale(table: string, col = "fetched_at") {
+  const row = db.prepare(`SELECT MAX(${col}) as last FROM ${table}`).get() as { last: string | null };
+  if (!row?.last) return true;
+  return Date.now() - new Date(row.last).getTime() > 60 * 60 * 1000;
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
+  const forceRefresh = searchParams.get("refresh") === "1";
 
   let subscriberCount: number | null = null;
 
-  if (searchParams.get("refresh") === "1") {
+  if (forceRefresh || isStale("youtube_stats")) {
     try {
       const result = await refreshYouTubeStats();
       subscriberCount = result.subscriberCount;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      return NextResponse.json({ error: "Refresh failed", detail: msg }, { status: 500 });
+      if (forceRefresh) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return NextResponse.json({ error: "Refresh failed", detail: msg }, { status: 500 });
+      }
     }
   }
 
