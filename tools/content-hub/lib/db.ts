@@ -43,6 +43,21 @@ function getInstance(): Database.Database {
       }
     }
 
+    // Migrate posts table — track publish status + error detail + attempt count
+    const postsInfo = _instance.prepare("PRAGMA table_info(posts)").all() as { name: string }[];
+    if (postsInfo.length > 0) {
+      const cols = new Set(postsInfo.map((c) => c.name));
+      if (!cols.has("status")) {
+        _instance.exec("ALTER TABLE posts ADD COLUMN status TEXT DEFAULT 'success'");
+      }
+      if (!cols.has("error_detail")) {
+        _instance.exec("ALTER TABLE posts ADD COLUMN error_detail TEXT");
+      }
+      if (!cols.has("attempts")) {
+        _instance.exec("ALTER TABLE posts ADD COLUMN attempts INTEGER DEFAULT 1");
+      }
+    }
+
     // Migrate inbox table — add columns if missing
     const inboxInfo = _instance.prepare("PRAGMA table_info(inbox)").all() as { name: string }[];
     if (inboxInfo.length > 0) {

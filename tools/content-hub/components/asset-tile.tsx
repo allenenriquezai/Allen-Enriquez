@@ -10,6 +10,9 @@ export type AssetPost = {
   platform: string;
   posted_at: string | null;
   url: string | null;
+  status?: string | null;
+  error_detail?: string | null;
+  attempts?: number | null;
 };
 
 export type Asset = {
@@ -41,11 +44,20 @@ function formatDuration(seconds: number | null): string | null {
 }
 
 export function AssetTile({ asset }: { asset: Asset }) {
-  const postedPlatforms = React.useMemo(() => {
-    const set = new Set<string>();
-    for (const p of asset.posts) set.add(p.platform);
-    return Array.from(set).sort();
+  const platformStatus = React.useMemo(() => {
+    // Posts arrive sorted by posted_at DESC — first hit per platform is the latest attempt.
+    const map: Record<string, "success" | "error"> = {};
+    for (const p of asset.posts) {
+      if (!map[p.platform]) {
+        map[p.platform] = p.status === "error" ? "error" : "success";
+      }
+    }
+    return map;
   }, [asset.posts]);
+  const postedPlatforms = React.useMemo(
+    () => Object.keys(platformStatus).sort(),
+    [platformStatus],
+  );
 
   const isVideo = asset.type === "reel" || asset.type === "youtube";
   const duration = formatDuration(asset.duration_seconds);
@@ -88,14 +100,22 @@ export function AssetTile({ asset }: { asset: Asset }) {
 
         {postedPlatforms.length > 0 && (
           <div className="flex gap-1 flex-wrap mt-auto pt-1">
-            {postedPlatforms.map((platform) => (
-              <span
-                key={platform}
-                className="px-1.5 py-0.5 rounded text-[9px] font-mono uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-              >
-                {PLATFORM_LABELS[platform] || platform.slice(0, 2).toUpperCase()}
-              </span>
-            ))}
+            {postedPlatforms.map((platform) => {
+              const failed = platformStatus[platform] === "error";
+              const cls = failed
+                ? "bg-red-500/15 text-red-400 border-red-500/40"
+                : "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
+              return (
+                <span
+                  key={platform}
+                  title={failed ? "Last publish failed — open to retry" : "Posted"}
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-mono uppercase border ${cls}`}
+                >
+                  {PLATFORM_LABELS[platform] || platform.slice(0, 2).toUpperCase()}
+                  {failed && " ⚠"}
+                </span>
+              );
+            })}
           </div>
         )}
       </div>

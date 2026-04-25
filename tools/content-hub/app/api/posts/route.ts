@@ -14,10 +14,12 @@ export async function GET() {
   return NextResponse.json({ posts: rows });
 }
 
-// POST /api/posts  body: { asset_id, platform, url? }
+// POST /api/posts  body: { asset_id, platform, url?, status?, error_detail? }
+// Logs every publish attempt — success or failure. If a previous attempt for
+// the same (asset_id, platform) exists, increments attempts on the new row.
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { asset_id, platform, url = null } = body ?? {};
+  const { asset_id, platform, url = null, status = "success", error_detail = null } = body ?? {};
   if (!asset_id || !platform) {
     return NextResponse.json(
       { error: "asset_id and platform required" },
@@ -25,12 +27,18 @@ export async function POST(req: NextRequest) {
     );
   }
   const posted_at = new Date().toISOString();
+  const prior = db
+    .prepare(
+      `SELECT COUNT(*) AS n FROM posts WHERE asset_id = ? AND platform = ?`,
+    )
+    .get(asset_id, platform) as { n: number };
+  const attempts = (prior?.n ?? 0) + 1;
   const info = db
     .prepare(
-      `INSERT INTO posts (asset_id, platform, posted_at, url)
-       VALUES (?, ?, ?, ?)`,
+      `INSERT INTO posts (asset_id, platform, posted_at, url, status, error_detail, attempts)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
     )
-    .run(asset_id, platform, posted_at, url);
+    .run(asset_id, platform, posted_at, url, status, error_detail, attempts);
   const row = db
     .prepare("SELECT * FROM posts WHERE id = ?")
     .get(info.lastInsertRowid);

@@ -75,8 +75,26 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
   const [syndicating, setSyndicating] = React.useState(false);
   const [syndicateError, setSyndicateError] = React.useState<string | null>(null);
 
-  // Publish controls
-  const [selected, setSelected] = React.useState<Set<PlatformKey>>(new Set(["ig"]));
+  // Publish controls — preselect platforms whose latest publish attempt failed; else default IG.
+  const initialSelected = React.useMemo<Set<PlatformKey>>(() => {
+    const platformToKey: Record<string, PlatformKey> = {
+      facebook: "fb",
+      instagram: "ig",
+      youtube: "yt",
+      tiktok: "tiktok",
+    };
+    const latestByPlatform: Record<string, string> = {};
+    for (const p of asset.posts ?? []) {
+      if (!latestByPlatform[p.platform]) latestByPlatform[p.platform] = p.status ?? "success";
+    }
+    const failed = new Set<PlatformKey>();
+    for (const [name, st] of Object.entries(latestByPlatform)) {
+      if (st === "error" && platformToKey[name]) failed.add(platformToKey[name]);
+    }
+    return failed.size > 0 ? failed : new Set<PlatformKey>(["ig"]);
+  }, [asset.posts]);
+  const [selected, setSelected] = React.useState<Set<PlatformKey>>(initialSelected);
+  const hasRetryQueue = initialSelected.size > 0 && (asset.posts ?? []).some((p) => p.status === "error");
   const [scheduleMode, setScheduleMode] = React.useState(false);
   const [scheduledAt, setScheduledAt] = React.useState("");
   const [status, setStatus] = React.useState<Record<PlatformKey, PlatformStatus>>({
@@ -213,11 +231,11 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
     return null;
   };
 
-  const logPost = (platform: string) => {
+  const logPost = (platform: string, status: "success" | "error" = "success", error_detail: string | null = null) => {
     fetch("/api/posts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ asset_id: asset.id, platform, url: asset.url }),
+      body: JSON.stringify({ asset_id: asset.id, platform, url: asset.url, status, error_detail }),
     }).catch(() => {});
   };
 
@@ -270,6 +288,12 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
     chosen.forEach((p) => setStatus((s) => ({ ...s, [p]: "loading" })));
     const when = scheduleMode && scheduledAt ? scheduledAt : undefined;
 
+    const PLATFORM_NAMES: Record<PlatformKey, string> = {
+      fb: "facebook",
+      ig: "instagram",
+      yt: "youtube",
+      tiktok: "tiktok",
+    };
     const recordError = async (key: PlatformKey, r: Response) => {
       let detail = `HTTP ${r.status}`;
       try {
@@ -277,7 +301,14 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
         detail = j.detail || j.error || JSON.stringify(j);
         if (typeof detail !== "string") detail = JSON.stringify(detail);
       } catch {}
-      setPublishErrors((e) => ({ ...e, [key]: detail.slice(0, 300) }));
+      const trimmed = detail.slice(0, 300);
+      setPublishErrors((e) => ({ ...e, [key]: trimmed }));
+      logPost(PLATFORM_NAMES[key], "error", trimmed);
+    };
+    const recordNetworkError = (key: PlatformKey, e: unknown) => {
+      const detail = String(e).slice(0, 300);
+      setPublishErrors((er) => ({ ...er, [key]: detail }));
+      logPost(PLATFORM_NAMES[key], "error", detail);
     };
 
     const calls: Promise<void>[] = [];
@@ -302,7 +333,7 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
           })
           .catch((e) => {
             setStatus((s) => ({ ...s, fb: "error" }));
-            setPublishErrors((er) => ({ ...er, fb: String(e) }));
+            recordNetworkError("fb", e);
           }),
       );
     }
@@ -321,7 +352,7 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
           })
           .catch((e) => {
             setStatus((s) => ({ ...s, ig: "error" }));
-            setPublishErrors((er) => ({ ...er, ig: String(e) }));
+            recordNetworkError("ig", e);
           }),
       );
     }
@@ -345,7 +376,7 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
           })
           .catch((e) => {
             setStatus((s) => ({ ...s, yt: "error" }));
-            setPublishErrors((er) => ({ ...er, yt: String(e) }));
+            recordNetworkError("yt", e);
           }),
       );
     }
@@ -369,7 +400,7 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
           })
           .catch((e) => {
             setStatus((s) => ({ ...s, tiktok: "error" }));
-            setPublishErrors((er) => ({ ...er, tiktok: String(e) }));
+            recordNetworkError("tiktok", e);
           }),
       );
     }
@@ -449,9 +480,16 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
 
           {/* Platform picker */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-              Post to
-            </p>
+            <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Post to
+              </p>
+              {hasRetryQueue && !done && (
+                <span className="text-[10px] font-mono px-2 py-1 rounded bg-red-500/15 text-red-400 border border-red-500/40">
+                  Retry queued — last attempt failed for {[...initialSelected].join(", ")}
+                </span>
+              )}
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {PLATFORMS.map((p) => {
                 const on = selected.has(p.key);
