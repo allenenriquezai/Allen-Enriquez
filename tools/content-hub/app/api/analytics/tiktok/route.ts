@@ -4,13 +4,31 @@ import { getToken } from "@/lib/oauth-tokens";
 
 const TT_BASE = "https://open.tiktokapis.com/v2";
 
-export async function GET() {
+function readCached() {
+  return db
+    .prepare(
+      "SELECT video_id, title, view_count, like_count, comment_count, share_count, published_at, updated_at FROM tiktok_stats ORDER BY published_at DESC LIMIT 50",
+    )
+    .all();
+}
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const refresh = searchParams.get("refresh") === "1";
+
+  if (!refresh) {
+    return NextResponse.json({ stats: readCached() });
+  }
+
   let token: string;
   try {
     token = await getToken("tiktok");
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: msg }, { status: 401 });
+    return NextResponse.json(
+      { error: msg, stats: readCached() },
+      { status: 401 },
+    );
   }
 
   const res = await fetch(`${TT_BASE}/video/list/`, {
@@ -26,7 +44,10 @@ export async function GET() {
   });
 
   if (!res.ok) {
-    return NextResponse.json({ error: "TikTok API failed", detail: await res.text() }, { status: 500 });
+    return NextResponse.json(
+      { error: "TikTok API failed", detail: await res.text(), stats: readCached() },
+      { status: 500 },
+    );
   }
 
   const json = await res.json();
@@ -58,5 +79,5 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json({ videos, count: videos.length });
+  return NextResponse.json({ videos, count: videos.length, stats: readCached() });
 }

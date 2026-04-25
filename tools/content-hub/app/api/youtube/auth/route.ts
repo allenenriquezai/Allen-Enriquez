@@ -13,6 +13,7 @@ export async function GET() {
     "https://www.googleapis.com/auth/youtube",
     "https://www.googleapis.com/auth/youtube.upload",
     "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/yt-analytics.readonly",
   ];
 
   const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");

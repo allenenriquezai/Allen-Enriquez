@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { MetricsTable, type MetricRow } from "@/components/metrics-table";
 import { MetricsChart } from "@/components/metrics-chart";
+import { YouTubeVideoInsights } from "@/components/youtube-video-insights";
 import {
   ResponsiveContainer,
   BarChart,
@@ -93,6 +94,17 @@ interface IgPost {
 
 type IgSortKey = "timestamp" | "like_count" | "comments_count" | "saved" | "reach";
 
+interface TtStat {
+  video_id: string;
+  title: string | null;
+  view_count: number;
+  like_count: number;
+  comment_count: number;
+  share_count: number;
+  published_at: string | null;
+  updated_at: string;
+}
+
 export default function AnalyticsPage() {
   const [platform, setPlatform] = useState("all");
   const [rows, setRows] = useState<MetricRow[]>([]);
@@ -109,6 +121,9 @@ export default function AnalyticsPage() {
   const [igLoading, setIgLoading] = useState(false);
   const [igSortKey, setIgSortKey] = useState<IgSortKey>("timestamp");
   const [igSortDir, setIgSortDir] = useState<"asc" | "desc">("desc");
+  const [selectedYt, setSelectedYt] = useState<{ id: string; title: string } | null>(null);
+  const [ttStats, setTtStats] = useState<TtStat[]>([]);
+  const [ttLoading, setTtLoading] = useState(false);
 
   const load = useCallback(async () => {
     const url =
@@ -159,11 +174,23 @@ export default function AnalyticsPage() {
     }
   }, []);
 
+  const loadTikTok = useCallback(async (refresh = false) => {
+    setTtLoading(true);
+    try {
+      const res = await fetch(`/api/analytics/tiktok${refresh ? "?refresh=1" : ""}`, { cache: "no-store" });
+      const json = await res.json();
+      setTtStats(json.stats ?? []);
+    } finally {
+      setTtLoading(false);
+    }
+  }, []);
+
   useEffect(() => { load(); }, [load]);
   useEffect(() => { loadPosts(); }, [loadPosts]);
   useEffect(() => { loadYouTube(); }, [loadYouTube]);
   useEffect(() => { loadFacebook(); }, [loadFacebook]);
   useEffect(() => { loadInstagram(); }, [loadInstagram]);
+  useEffect(() => { loadTikTok(); }, [loadTikTok]);
 
   const kpis = useMemo(() => {
     const totalViews = rows.reduce((a, r) => a + (r.views ?? 0), 0);
@@ -224,6 +251,7 @@ export default function AnalyticsPage() {
       <MetricsChart rows={rows} />
       <MetricsTable rows={rows} />
 
+      {(platform === "all" || platform === "youtube") && (
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold">YouTube Videos</h2>
@@ -241,9 +269,33 @@ export default function AnalyticsPage() {
               if (key === ytSortKey) setYtSortDir(d => d === "asc" ? "desc" : "asc");
               else { setYtSortKey(key); setYtSortDir("desc"); }
             }}
+            onSelect={(v) => setSelectedYt({ id: v.video_id, title: v.title })}
+            selectedId={selectedYt?.id ?? null}
           />
         </div>
+        {selectedYt && (
+          <div className="mt-4">
+            <YouTubeVideoInsights
+              videoId={selectedYt.id}
+              title={selectedYt.title}
+              onClose={() => setSelectedYt(null)}
+            />
+          </div>
+        )}
       </div>
+      )}
+
+      {(platform === "all" || platform === "tiktok") && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">TikTok Videos</h2>
+            <Button size="sm" variant="outline" disabled={ttLoading} onClick={() => loadTikTok(true)}>
+              {ttLoading ? "Refreshing…" : "Refresh from TikTok"}
+            </Button>
+          </div>
+          <TikTokTable stats={ttStats} />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div>
@@ -343,11 +395,13 @@ function YouTubeChart({ stats }: { stats: YtStat[] }) {
   );
 }
 
-function YouTubeTable({ stats, sortKey, sortDir, onSort }: {
+function YouTubeTable({ stats, sortKey, sortDir, onSort, onSelect, selectedId }: {
   stats: YtStat[];
   sortKey: YtSortKey;
   sortDir: "asc" | "desc";
   onSort: (key: YtSortKey) => void;
+  onSelect?: (v: YtStat) => void;
+  selectedId?: string | null;
 }) {
   const sorted = [...stats].sort((a, b) => {
     const av = a[sortKey], bv = b[sortKey];
@@ -384,9 +438,20 @@ function YouTubeTable({ stats, sortKey, sortDir, onSort }: {
         </thead>
         <tbody>
           {sorted.map(v => (
-            <tr key={v.video_id} className="border-b border-border/40 hover:bg-muted/10 transition-colors">
+            <tr
+              key={v.video_id}
+              className={`border-b border-border/40 hover:bg-muted/10 transition-colors ${selectedId === v.video_id ? "bg-[color:var(--brand)]/10" : ""} ${onSelect ? "cursor-pointer" : ""}`}
+              onClick={onSelect ? () => onSelect(v) : undefined}
+            >
               <td className="px-4 py-2 max-w-xs truncate">
-                <a href={v.url} target="_blank" rel="noreferrer" className="hover:underline" style={{ color: "var(--brand)" }}>
+                <a
+                  href={v.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:underline"
+                  style={{ color: "var(--brand)" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {v.title}
                 </a>
               </td>
@@ -804,6 +869,61 @@ function FormRow({
     <div className="flex flex-col gap-1">
       <label className="text-xs text-muted-foreground">{label}</label>
       {children}
+    </div>
+  );
+}
+
+function TikTokTable({ stats }: { stats: TtStat[] }) {
+  if (stats.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        No TikTok data. Hit "Refresh from TikTok" to pull (requires TikTok OAuth).
+      </p>
+    );
+  }
+  const sorted = [...stats].sort(
+    (a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? ""),
+  );
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-border bg-muted/20">
+            <th className="text-left px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Title
+            </th>
+            <th className="text-right px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Published
+            </th>
+            <th className="text-right px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Views
+            </th>
+            <th className="text-right px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Likes
+            </th>
+            <th className="text-right px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Comments
+            </th>
+            <th className="text-right px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Shares
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map((v) => (
+            <tr key={v.video_id} className="border-b border-border/40 hover:bg-muted/10 transition-colors">
+              <td className="px-4 py-2 max-w-xs truncate">{v.title ?? v.video_id}</td>
+              <td className="px-4 py-2 text-right text-xs text-muted-foreground">
+                {v.published_at ? new Date(v.published_at).toLocaleDateString() : "—"}
+              </td>
+              <td className="px-4 py-2 text-right font-mono">{v.view_count.toLocaleString()}</td>
+              <td className="px-4 py-2 text-right font-mono">{v.like_count.toLocaleString()}</td>
+              <td className="px-4 py-2 text-right font-mono">{v.comment_count.toLocaleString()}</td>
+              <td className="px-4 py-2 text-right font-mono">{v.share_count.toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
