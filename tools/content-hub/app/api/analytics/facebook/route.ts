@@ -23,6 +23,29 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_fb_posts_created ON facebook_posts(created_time DESC);
 `);
 
+async function fetchPostInsights(postId: string): Promise<{ reach: number; impressions: number }> {
+  try {
+    const url = new URL(`${FB_BASE}/${postId}/insights`);
+    url.searchParams.set("metric", "post_video_views,post_video_views_unique");
+    url.searchParams.set("access_token", PAGE_TOKEN);
+    const res = await fetch(url.toString(), { cache: "no-store" });
+    if (!res.ok) return { reach: 0, impressions: 0 };
+    const json = await res.json();
+    const metrics: Record<string, number> = {};
+    for (const m of json.data ?? []) {
+      if (m.period === "lifetime") {
+        metrics[m.name] = m.values?.[0]?.value ?? 0;
+      }
+    }
+    return {
+      reach: metrics.post_video_views ?? 0,
+      impressions: metrics.post_video_views_unique ?? 0,
+    };
+  } catch {
+    return { reach: 0, impressions: 0 };
+  }
+}
+
 async function refreshFbPosts() {
   if (!PAGE_TOKEN) throw new Error("FACEBOOK_PAGE_ACCESS_TOKEN not set");
 
@@ -35,7 +58,6 @@ async function refreshFbPosts() {
     "reactions.summary(true)",
     "comments.summary(true)",
     "shares",
-    "insights.metric(post_impressions,post_impressions_unique,post_engaged_users){name,values}",
   ].join(",");
 
   const url = new URL(`${FB_BASE}/${PAGE_ID}/posts`);
@@ -48,6 +70,11 @@ async function refreshFbPosts() {
 
   const json = await res.json();
   const posts = json.data ?? [];
+
+  const insightsResults = await Promise.all(
+    posts.map((p: Record<string, unknown>) => fetchPostInsights(p.id as string).then(ins => ({ id: p.id as string, ...ins })))
+  );
+  const insightsMap = new Map(insightsResults.map(r => [r.id, r]));
 
   const upsert = db.prepare(`
     INSERT INTO facebook_posts
@@ -66,26 +93,21 @@ async function refreshFbPosts() {
 
   const now = new Date().toISOString();
   for (const p of posts) {
-    let impressions = 0, reach = 0, engagedUsers = 0;
-    if (Array.isArray(p.insights?.data)) {
-      for (const metric of p.insights.data) {
-        const val = metric.values?.[0]?.value ?? 0;
-        if (metric.name === "post_impressions") impressions = val;
-        if (metric.name === "post_impressions_unique") reach = val;
-        if (metric.name === "post_engaged_users") engagedUsers = val;
-      }
-    }
+    const ins = insightsMap.get(p.id as string) ?? { reach: 0, impressions: 0 };
+    const reactions = (p.reactions as { summary?: { total_count?: number } })?.summary?.total_count ?? 0;
+    const comments = (p.comments as { summary?: { total_count?: number } })?.summary?.total_count ?? 0;
+    const shares = (p.shares as { count?: number })?.count ?? 0;
     upsert.run(
       p.id,
-      p.message ?? p.story ?? null,
+      (p.message ?? p.story ?? null) as string | null,
       p.created_time,
-      p.permalink_url ?? null,
-      impressions,
-      reach,
-      engagedUsers,
-      p.reactions?.summary?.total_count ?? 0,
-      p.comments?.summary?.total_count ?? 0,
-      p.shares?.count ?? 0,
+      (p.permalink_url ?? null) as string | null,
+      ins.impressions,
+      ins.reach,
+      reactions + comments + shares,
+      reactions,
+      comments,
+      shares,
       now,
     );
   }
