@@ -84,6 +84,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No publish_id returned", detail: JSON.stringify(initData) }, { status: 500 });
   }
 
+  if (scheduled_at) {
+    if (schedule_id) {
+      db.prepare("UPDATE schedule SET status = 'scheduled' WHERE id = ?").run(schedule_id);
+    }
+    return NextResponse.json({ ok: true, scheduled: true, publish_id: publishId });
+  }
+
   // Step 2: Poll for completion
   const success = await pollPublishStatus(publishId, token);
   if (!success) {

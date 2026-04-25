@@ -136,6 +136,10 @@ export async function POST(req: Request) {
     }
   }
 
+  if (scheduled_at) {
+    return NextResponse.json({ ok: true, scheduled: true, creation_id: creationId });
+  }
+
   const publishUrl = new URL(`${IG_BASE}/${IG_ACCOUNT_ID}/media_publish`);
   publishUrl.searchParams.set("access_token", IG_TOKEN);
   const publishRes = await fetch(publishUrl.toString(), {
