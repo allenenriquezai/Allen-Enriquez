@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import db from "@/lib/db";
 import { type Asset, type AssetPost } from "@/components/asset-tile";
 import { LibraryUploadButton } from "@/components/library-upload-button";
+import { LibrarySyncButton } from "@/components/library-sync-button";
 import { LibraryGrid } from "@/components/library-grid";
 
 type AssetRow = {
@@ -47,7 +48,10 @@ export default function LibraryPage() {
             Click any asset to post across platforms.
           </p>
         </div>
-        <LibraryUploadButton />
+        <div className="flex items-center gap-2">
+          <LibrarySyncButton />
+          <LibraryUploadButton />
+        </div>
       </div>
 
       <LibraryGrid assets={assets} />
