@@ -78,8 +78,12 @@ CREATE TABLE IF NOT EXISTS inbox (
   thread_text TEXT NOT NULL,
   reply_text TEXT,
   status TEXT DEFAULT 'new', -- new, replied, ignored, escalated
-  received_at TEXT DEFAULT CURRENT_TIMESTAMP
+  received_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  external_id TEXT,
+  post_id TEXT,
+  reply_sent INTEGER DEFAULT 0
 );
+CREATE UNIQUE INDEX IF NOT EXISTS idx_inbox_external ON inbox(platform, external_id) WHERE external_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS learning_refs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -167,6 +171,18 @@ CREATE TABLE IF NOT EXISTS oauth_tokens (
   expires_at TEXT,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS ideation_notes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  body TEXT,
+  tags TEXT,           -- comma-separated: psychology,editing,hooks,frameworks
+  author TEXT,         -- allen, wife, claude
+  pinned INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_ideation_notes_updated ON ideation_notes(updated_at DESC);
 
 CREATE TABLE IF NOT EXISTS youtube_stats (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

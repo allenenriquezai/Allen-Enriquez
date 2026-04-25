@@ -28,6 +28,21 @@ if (!ideaCols.includes("notes")) {
   console.log("[init] Migration: added notes column to ideas");
 }
 
+const inboxCols = (db.prepare("PRAGMA table_info(inbox)").all() as ColInfo[]).map(c => c.name);
+if (!inboxCols.includes("external_id")) {
+  db.prepare("ALTER TABLE inbox ADD COLUMN external_id TEXT").run();
+  console.log("[init] Migration: added external_id column to inbox");
+}
+if (!inboxCols.includes("post_id")) {
+  db.prepare("ALTER TABLE inbox ADD COLUMN post_id TEXT").run();
+  console.log("[init] Migration: added post_id column to inbox");
+}
+if (!inboxCols.includes("reply_sent")) {
+  db.prepare("ALTER TABLE inbox ADD COLUMN reply_sent INTEGER DEFAULT 0").run();
+  console.log("[init] Migration: added reply_sent column to inbox");
+}
+db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_inbox_external ON inbox(platform, external_id) WHERE external_id IS NOT NULL`);
+
 // Create youtube_stats if missing (schema handles IF NOT EXISTS, this is belt-and-suspenders)
 const ytExists = db
   .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='youtube_stats'")
