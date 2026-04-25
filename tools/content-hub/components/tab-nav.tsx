@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Calendar,
-  FileText,
+  Clapperboard,
   Sparkles,
   FolderOpen,
   BarChart3,
@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/calendar", label: "Calendar", icon: Calendar },
-  { href: "/scripts", label: "Scripts", icon: FileText },
+  { href: "/scripts", label: "Studio", icon: Clapperboard, matchPaths: ["/scripts", "/ideation"] },
   { href: "/inspiration", label: "Inspiration", icon: Sparkles },
   { href: "/library", label: "Library", icon: FolderOpen },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
@@ -23,7 +23,7 @@ const NAV = [
 
 const MOBILE_NAV = [
   { href: "/calendar", label: "Calendar", icon: Calendar },
-  { href: "/scripts", label: "Scripts", icon: FileText },
+  { href: "/scripts", label: "Studio", icon: Clapperboard, matchPaths: ["/scripts", "/ideation"] },
   { href: "/inspiration", label: "Inspire", icon: Sparkles },
   { href: "/library", label: "Library", icon: FolderOpen },
   { href: "/analytics", label: "Stats", icon: BarChart3 },
@@ -35,8 +35,10 @@ export function TabNav() {
   return (
     <nav className="flex-1 px-3 py-4 flex flex-col gap-1.5">
       {NAV.map((item) => {
-        const active =
-          pathname === item.href || pathname?.startsWith(item.href + "/");
+        const matches = item.matchPaths ?? [item.href];
+        const active = matches.some(
+          (p) => pathname === p || pathname?.startsWith(p + "/"),
+        );
         const Icon = item.icon;
         return (
           <Link
@@ -81,8 +83,10 @@ export function MobileBottomNav() {
   return (
     <nav className="fixed bottom-0 inset-x-0 z-50 flex md:hidden border-t border-sidebar-border bg-sidebar">
       {MOBILE_NAV.map((item) => {
-        const active =
-          pathname === item.href || pathname?.startsWith(item.href + "/");
+        const matches = item.matchPaths ?? [item.href];
+        const active = matches.some(
+          (p) => pathname === p || pathname?.startsWith(p + "/"),
+        );
         const Icon = item.icon;
         return (
           <Link

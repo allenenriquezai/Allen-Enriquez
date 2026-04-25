@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import db from "@/lib/db";
 import { ScriptsClient } from "./scripts-client";
+import { StudioSubNav } from "@/components/studio-sub-nav";
 
 export type ScheduledScript = {
   scheduleId: number;
@@ -152,11 +153,14 @@ export default async function ScriptsPage({
   }));
 
   return (
-    <ScriptsClient
-      monday={mondayStr}
-      sunday={sundayStr}
-      scheduled={scheduled}
-      kanbanIdeas={kanbanIdeas}
-    />
+    <div className="space-y-2">
+      <StudioSubNav />
+      <ScriptsClient
+        monday={mondayStr}
+        sunday={sundayStr}
+        scheduled={scheduled}
+        kanbanIdeas={kanbanIdeas}
+      />
+    </div>
   );
 }
