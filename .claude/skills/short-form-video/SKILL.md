@@ -244,6 +244,24 @@ Rules:
 - Every text/sticker iteration after → Chrome-headless PNG + ffmpeg overlay. See `FFMPEG-RECIPES.md`.
 - Copy scenes from prior reels. Never author from scratch.
 
+## Carousel handoff (after final render)
+
+After Allen approves the final render, write `video-projects/<slug>/carousel_brief.json`:
+
+```json
+{
+  "angle": "hook angle derived from reel's strongest claim",
+  "key_points": ["sub-point 1", "sub-point 2", "sub-point 3"],
+  "ccn_check": {
+    "core": "what buyers get from this reel",
+    "casual": "what followers would save/share",
+    "new": "what a stranger learns in one read"
+  }
+}
+```
+
+This seeds `/carousel` so it starts with the reel's angle pre-filled rather than re-deriving from transcript.
+
 ## What NOT to do
 
 - Animate `<video>` dimensions — freezes frames. Animate wrapper.

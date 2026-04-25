@@ -303,7 +303,27 @@
 
                 <hr class="border-gray-800">
 
-                <!-- Editable Fields -->
+                <!-- Combined Log Input -->
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-500 uppercase tracking-wider">Call Outcome</label>
+                    <select id="modal-outcome-new"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none">
+                        {% for val in dropdown_values %}
+                        <option value="{{ val }}">{{ val }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="flex gap-2 items-start">
+                        <textarea id="modal-note-input" rows="2"
+                                  class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-none"
+                                  placeholder="Note (optional)..."></textarea>
+                        <button id="log-call-btn" onclick="logCallAndNote()"
+                                class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg transition whitespace-nowrap">
+                            Log Call
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Follow-up Date -->
                 <div>
                     <label class="text-xs text-gray-500 uppercase tracking-wider">Follow-up Date</label>
                     <input id="modal-followup" type="date"
@@ -313,34 +333,13 @@
                 <!-- Call Log -->
                 <div>
                     <label class="text-xs text-gray-500 uppercase tracking-wider">Call Log</label>
-                    <div id="modal-call-log" class="mt-1 mb-2 max-h-28 overflow-y-auto space-y-1 text-xs"></div>
-                    <div class="flex gap-2">
-                        <select id="modal-outcome-new"
-                                class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 outline-none">
-                            {% for val in dropdown_values %}
-                            <option value="{{ val }}">{{ val }}</option>
-                            {% endfor %}
-                        </select>
-                        <button onclick="logCall()"
-                                class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg transition whitespace-nowrap">
-                            Log Call
-                        </button>
-                    </div>
+                    <div id="modal-call-log" class="mt-1 max-h-28 overflow-y-auto space-y-1 text-xs"></div>
                 </div>
 
                 <!-- Notes History -->
                 <div>
                     <label class="text-xs text-gray-500 uppercase tracking-wider">Notes</label>
-                    <div id="modal-notes-log" class="mt-1 mb-2 max-h-28 overflow-y-auto space-y-1 text-xs"></div>
-                    <div class="flex gap-2 items-start">
-                        <textarea id="modal-note-input" rows="2"
-                                  class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-none"
-                                  placeholder="Add a note..."></textarea>
-                        <button onclick="addNote()"
-                                class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition whitespace-nowrap">
-                            Add Note
-                        </button>
-                    </div>
+                    <div id="modal-notes-log" class="mt-1 max-h-28 overflow-y-auto space-y-1 text-xs"></div>
                 </div>
 
                 <hr class="border-gray-800">
@@ -394,6 +393,6 @@
         </div>
     </div>
 
-    <script src="/static/app.js?v=3"></script>
+    <script src="/static/app.js?v=4"></script>
 </body>
 </html>

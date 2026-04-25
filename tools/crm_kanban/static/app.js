@@ -275,27 +275,31 @@ async function saveCard() {
     closeModal();
 }
 
-// --- Log Call ---
-async function logCall() {
+// --- Log Call + optional Note ---
+async function logCallAndNote() {
     if (!currentCard) return;
     const lead = JSON.parse(currentCard.dataset.lead);
     const outcome = document.getElementById('modal-outcome-new').value;
     if (!outcome) return;
 
-    const entry = `[${nowTs()}] [CALL] ${outcome}`;
-    const btn = document.querySelector('[onclick="logCall()"]');
-    btn.textContent = 'Logging...';
+    const ts = nowTs();
+    const entries = [`[${ts}] [CALL] ${outcome}`];
+    const noteText = document.getElementById('modal-note-input').value.trim();
+    if (noteText) entries.push(`[${ts}] [NOTE] ${noteText}`);
+
+    const btn = document.getElementById('log-call-btn');
+    btn.textContent = 'Saving...';
     btn.disabled = true;
 
     try {
         const res = await fetch('/api/append-log', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tab: lead.tab, row_num: lead.row_num, entry, call_outcome: outcome }),
+            body: JSON.stringify({ tab: lead.tab, row_num: lead.row_num, entries, call_outcome: outcome }),
         });
         const data = await res.json();
         if (data.ok) {
-            showToast('Call logged', 'success');
+            showToast('Logged', 'success');
             setTimeout(() => location.reload(), 500);
         } else {
             showToast(`Error: ${data.error}`, 'error');
@@ -305,40 +309,6 @@ async function logCall() {
     } catch (err) {
         showToast('Network error', 'error');
         btn.textContent = 'Log Call';
-        btn.disabled = false;
-    }
-}
-
-// --- Add Note ---
-async function addNote() {
-    if (!currentCard) return;
-    const lead = JSON.parse(currentCard.dataset.lead);
-    const noteText = document.getElementById('modal-note-input').value.trim();
-    if (!noteText) return;
-
-    const entry = `[${nowTs()}] [NOTE] ${noteText}`;
-    const btn = document.querySelector('[onclick="addNote()"]');
-    btn.textContent = 'Adding...';
-    btn.disabled = true;
-
-    try {
-        const res = await fetch('/api/append-log', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tab: lead.tab, row_num: lead.row_num, entry }),
-        });
-        const data = await res.json();
-        if (data.ok) {
-            showToast('Note added', 'success');
-            setTimeout(() => location.reload(), 500);
-        } else {
-            showToast(`Error: ${data.error}`, 'error');
-            btn.textContent = 'Add Note';
-            btn.disabled = false;
-        }
-    } catch (err) {
-        showToast('Network error', 'error');
-        btn.textContent = 'Add Note';
         btn.disabled = false;
     }
 }

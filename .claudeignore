@@ -6,3 +6,18 @@
 **/credentials.json
 **/*secret*
 **/*apikey*
+
+# Runtime / cache
+**/__pycache__/
+**/*.pyc
+node_modules/
+**/*.db
+**/*.sqlite
+
+# Data handoff (large, session-specific)
+.tmp/
+
+# Build / generated
+**/*.log
+**/dist/
+**/.planning/intel/

@@ -420,14 +420,14 @@ def api_update_card():
 
 @app.route('/api/append-log', methods=['POST'])
 def api_append_log():
-    """Append a timestamped note or call entry to the Notes column."""
+    """Append one or more timestamped entries to the Notes column."""
     data = request.json
     tab = data.get('tab')
     row_num = data.get('row_num')
-    entry = data.get('entry')
-    call_outcome = data.get('call_outcome')  # set only for CALL entries
+    entries = data.get('entries') or ([data['entry']] if data.get('entry') else [])
+    call_outcome = data.get('call_outcome')
 
-    if not tab or not row_num or not entry:
+    if not tab or not row_num or not entries:
         return jsonify({'ok': False, 'error': 'Missing fields'}), 400
 
     try:
@@ -447,7 +447,8 @@ def api_append_log():
             range=f"'{tab}'!{notes_letter}{row_num}"
         ).execute()
         curr_notes = (curr.get('values') or [['']])[0][0] if curr.get('values') else ''
-        new_notes = (curr_notes.strip() + '\n' + entry).strip() if curr_notes.strip() else entry
+        combined = '\n'.join(entries)
+        new_notes = (curr_notes.strip() + '\n' + combined).strip() if curr_notes.strip() else combined
 
         batch_data = [{'range': f"'{tab}'!{notes_letter}{row_num}", 'values': [[new_notes]]}]
 
@@ -461,6 +462,7 @@ def api_append_log():
                     'range': f"'{tab}'!{col_letter(col_map['Date Called'])}{row_num}",
                     'values': [[today_label()]],
                 })
+
 
         service.spreadsheets().values().batchUpdate(
             spreadsheetId=SPREADSHEET_ID,

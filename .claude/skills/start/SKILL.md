@@ -6,19 +6,12 @@ disable-model-invocation: true
 
 Start the session lean — load only what's needed, then push Allen with status.
 
-## Step 1: Load Handoffs
-
-Read ALL handoff files (Allen runs parallel sessions):
-- `projects/eps/.tmp/session_handoff.md`
-- `projects/personal/.tmp/session_handoff.md`
-Skip any that don't exist. Do not error.
-
-## Step 2: Check Queues
+## Step 1: Check Queues
 
 - Read `.tmp/pending_inquiries.json` if it exists
 - If items exist, note the count (don't list details yet)
 
-## Step 3: Push Allen Dashboard
+## Step 2: Push Allen Dashboard
 
 Run these checks and print a status dashboard:
 
@@ -68,14 +61,11 @@ Workflow updates: N suggested
 ```
 If no flags or no pending: skip this section entirely
 
-## Step 4: Print Status
+## Step 3: Print Status
 
 Format the full dashboard:
 ```
 ─── ENRIQUEZ OS ───────────────────────────
-EPS: [one-line from handoff] (date)
-Personal: [one-line from handoff] (date)
-
 ─── PUSH ──────────────────────────────────
 Intel: [freshness status]
 Content buffer: [buffer status]
@@ -87,7 +77,7 @@ Outcomes: [tracking status]
 ────────────────────────────────────────────
 ```
 
-## Step 5: Push or Ask
+## Step 4: Push or Ask
 
 If there are pending replies: "You have X replies waiting. Want to handle those first?"
 If content buffer is low (< 1 week): "Content buffer is low. Want to block time to batch record?"
