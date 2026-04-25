@@ -42,14 +42,20 @@ flowchart TD
     REPO[Allen-Enriquez/<br/>full repo + git ls-files] --> MIRROR[mirror.ts<br/>walk + index]
     MIRROR --> STATE[(state/repo.json<br/>state/content.json<br/>state/automations.json)]:::store
 
+    CHDB[(content-hub.db<br/>SQLite — posts · schedule · ideas · metrics)]:::store
+    CHDB --> MIRRORC[mirror-content.ts<br/>read-only · last 30d posts<br/>+ this/next week schedule]
+    MIRRORC --> CHSTATE[(state/content-hub.json)]:::store
+
     STD --> AUDIT{audit.ts<br/>Claude Sonnet<br/>standard vs reality}:::ai
     STATE --> AUDIT
+    CHSTATE --> AUDIT
     ID --> AUDIT
     AUDIT --> AREP[audits/&lt;domain&gt;-YYYY-MM-DD.md<br/>top gaps · impact × ease]:::out
 
     INB1 --> OPP{opportunities.ts<br/>Claude Sonnet<br/>NEW moves only}:::ai
     INB2 --> OPP
     INB3 --> OPP
+    CHSTATE --> OPP
     ID --> OPP
     OPP --> OPPF[opportunities/YYYY-MM-DD.md<br/>top moves · first step]:::out
 

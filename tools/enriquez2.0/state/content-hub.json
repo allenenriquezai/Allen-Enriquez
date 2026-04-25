@@ -1,0 +1,659 @@
+{
+  "generated_at": "2026-04-25T17:46:54.254Z",
+  "source_db": "tools/content-hub/content_hub.db",
+  "schedule_this_week": [
+    {
+      "id": 3,
+      "slot_date": "2026-04-21",
+      "slot_type": "reel_1",
+      "pillar": null,
+      "status": "posted",
+      "notes": "5 Secret Codes for ChatGPT",
+      "script_id": null,
+      "asset_id": null,
+      "idea_title": null
+    },
+    {
+      "id": 4,
+      "slot_date": "2026-04-22",
+      "slot_type": "reel_1",
+      "pillar": "quick_tip",
+      "status": "posted",
+      "notes": "8 AM PH — post reel first, carousel at 10 AM",
+      "script_id": 15,
+      "asset_id": null,
+      "idea_title": "5 Secret Codes for ChatGPT"
+    },
+    {
+      "id": 5,
+      "slot_date": "2026-04-22",
+      "slot_type": "reel_2",
+      "pillar": "pain_point",
+      "status": "posted",
+      "notes": "8 PM PH",
+      "script_id": 21,
+      "asset_id": null,
+      "idea_title": "Your AI Projects Fail"
+    },
+    {
+      "id": 6,
+      "slot_date": "2026-04-23",
+      "slot_type": "reel_1",
+      "pillar": "quick_tip",
+      "status": "filmed",
+      "notes": "8 PM PH — delay 1 day to avoid AI-list fatigue",
+      "script_id": 27,
+      "asset_id": null,
+      "idea_title": "7 Things Claude Does for Business Owners"
+    }
+  ],
+  "schedule_next_week": [],
+  "posts_last_30d": [
+    {
+      "id": 29,
+      "platform": "instagram",
+      "posted_at": "2026-04-24T23:59:09.019Z",
+      "url": "https://pub-329ed64a6ef54f5d921e351060c047c5.r2.dev/uploads/1777072742409-asset17_v2.mp4",
+      "asset_title": "7 Things Claude Does For Business Owners & Pros v2",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 28,
+      "platform": "facebook",
+      "posted_at": "2026-04-24T23:58:35.118Z",
+      "url": "https://pub-329ed64a6ef54f5d921e351060c047c5.r2.dev/uploads/1777072742409-asset17_v2.mp4",
+      "asset_title": "7 Things Claude Does For Business Owners & Pros v2",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 27,
+      "platform": "youtube",
+      "posted_at": "2026-04-24T23:58:29.931Z",
+      "url": "https://pub-329ed64a6ef54f5d921e351060c047c5.r2.dev/uploads/1777072742409-asset17_v2.mp4",
+      "asset_title": "7 Things Claude Does For Business Owners & Pros v2",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 26,
+      "platform": "youtube",
+      "posted_at": "2026-04-24T23:15:34.622Z",
+      "url": "https://pub-329ed64a6ef54f5d921e351060c047c5.r2.dev/uploads/1777072192488-7_Things_Claude_Does_For_Business_Owners___Pros_v2.mov",
+      "asset_title": "7 Things Claude Does For Business Owners & Pros v2",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 25,
+      "platform": "facebook",
+      "posted_at": "2026-04-24T23:15:32.291Z",
+      "url": "https://pub-329ed64a6ef54f5d921e351060c047c5.r2.dev/uploads/1777072192488-7_Things_Claude_Does_For_Business_Owners___Pros_v2.mov",
+      "asset_title": "7 Things Claude Does For Business Owners & Pros v2",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 17,
+      "platform": "instagram",
+      "posted_at": "2026-04-21 23:42:00",
+      "url": "",
+      "asset_title": "Five things AI automations can do for business owners and professionals",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 18,
+      "platform": "facebook",
+      "posted_at": "2026-04-21 23:42:00",
+      "url": "",
+      "asset_title": "Five things AI automations can do for business owners and professionals",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 19,
+      "platform": "tiktok",
+      "posted_at": "2026-04-21 23:42:00",
+      "url": "",
+      "asset_title": "Five things AI automations can do for business owners and professionals",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 20,
+      "platform": "youtube",
+      "posted_at": "2026-04-21 23:42:00",
+      "url": "",
+      "asset_title": "Five things AI automations can do for business owners and professionals",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 21,
+      "platform": "x",
+      "posted_at": "2026-04-21 23:42:00",
+      "url": "",
+      "asset_title": "Five things AI automations can do for business owners and professionals",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 12,
+      "platform": "instagram",
+      "posted_at": "2026-04-21 20:42:00",
+      "url": "",
+      "asset_title": "Your AI emails sound like a robot. Here's a 5-minute fix.",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 13,
+      "platform": "facebook",
+      "posted_at": "2026-04-21 20:42:00",
+      "url": "",
+      "asset_title": "Your AI emails sound like a robot. Here's a 5-minute fix.",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 14,
+      "platform": "tiktok",
+      "posted_at": "2026-04-21 20:42:00",
+      "url": "",
+      "asset_title": "Your AI emails sound like a robot. Here's a 5-minute fix.",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 15,
+      "platform": "youtube",
+      "posted_at": "2026-04-21 20:42:00",
+      "url": "",
+      "asset_title": "Your AI emails sound like a robot. Here's a 5-minute fix.",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 16,
+      "platform": "x",
+      "posted_at": "2026-04-21 20:42:00",
+      "url": "",
+      "asset_title": "Your AI emails sound like a robot. Here's a 5-minute fix.",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 7,
+      "platform": "instagram",
+      "posted_at": "2026-04-20 20:28:00",
+      "url": "",
+      "asset_title": "You're using AI wrong",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 8,
+      "platform": "facebook",
+      "posted_at": "2026-04-20 20:28:00",
+      "url": "",
+      "asset_title": "You're using AI wrong",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 9,
+      "platform": "tiktok",
+      "posted_at": "2026-04-20 20:28:00",
+      "url": "",
+      "asset_title": "You're using AI wrong",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 10,
+      "platform": "youtube",
+      "posted_at": "2026-04-20 20:28:00",
+      "url": "",
+      "asset_title": "You're using AI wrong",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 11,
+      "platform": "x",
+      "posted_at": "2026-04-20 20:28:00",
+      "url": "",
+      "asset_title": "You're using AI wrong",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 2,
+      "platform": "instagram",
+      "posted_at": "2026-04-20 12:00:00",
+      "url": "",
+      "asset_title": "Five things AI agents do for business owners",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 3,
+      "platform": "facebook",
+      "posted_at": "2026-04-20 12:00:00",
+      "url": "",
+      "asset_title": "Five things AI agents do for business owners",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 4,
+      "platform": "tiktok",
+      "posted_at": "2026-04-20 12:00:00",
+      "url": "",
+      "asset_title": "Five things AI agents do for business owners",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 5,
+      "platform": "youtube",
+      "posted_at": "2026-04-20 12:00:00",
+      "url": "",
+      "asset_title": "Five things AI agents do for business owners",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "id": 6,
+      "platform": "x",
+      "posted_at": "2026-04-20 12:00:00",
+      "url": "",
+      "asset_title": "Five things AI agents do for business owners",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0
+    }
+  ],
+  "posts_summary": {
+    "total": 25,
+    "by_platform": {
+      "instagram": 5,
+      "facebook": 6,
+      "youtube": 6,
+      "tiktok": 4,
+      "x": 4
+    },
+    "avg_views": 0,
+    "top_5": [
+      {
+        "title": "7 Things Claude Does For Business Owners & Pros v2",
+        "platform": "instagram",
+        "views": 0,
+        "url": "https://pub-329ed64a6ef54f5d921e351060c047c5.r2.dev/uploads/1777072742409-asset17_v2.mp4"
+      },
+      {
+        "title": "7 Things Claude Does For Business Owners & Pros v2",
+        "platform": "facebook",
+        "views": 0,
+        "url": "https://pub-329ed64a6ef54f5d921e351060c047c5.r2.dev/uploads/1777072742409-asset17_v2.mp4"
+      },
+      {
+        "title": "7 Things Claude Does For Business Owners & Pros v2",
+        "platform": "youtube",
+        "views": 0,
+        "url": "https://pub-329ed64a6ef54f5d921e351060c047c5.r2.dev/uploads/1777072742409-asset17_v2.mp4"
+      },
+      {
+        "title": "7 Things Claude Does For Business Owners & Pros v2",
+        "platform": "youtube",
+        "views": 0,
+        "url": "https://pub-329ed64a6ef54f5d921e351060c047c5.r2.dev/uploads/1777072192488-7_Things_Claude_Does_For_Business_Owners___Pros_v2.mov"
+      },
+      {
+        "title": "7 Things Claude Does For Business Owners & Pros v2",
+        "platform": "facebook",
+        "views": 0,
+        "url": "https://pub-329ed64a6ef54f5d921e351060c047c5.r2.dev/uploads/1777072192488-7_Things_Claude_Does_For_Business_Owners___Pros_v2.mov"
+      }
+    ]
+  },
+  "active_ideas": [
+    {
+      "id": 27,
+      "title": "n8n replaced my entire ops person",
+      "pillar": "before_after_proof",
+      "lane": null,
+      "status": "new",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-23 08:39:30"
+    },
+    {
+      "id": 28,
+      "title": "Claude Code just wrote my sales script",
+      "pillar": "quick_tip",
+      "lane": null,
+      "status": "new",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-23 08:39:30"
+    },
+    {
+      "id": 26,
+      "title": "What is Claude",
+      "pillar": "education",
+      "lane": null,
+      "status": "filmed",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-23 05:05:16"
+    },
+    {
+      "id": 23,
+      "title": "5 Secret Codes for ChatGPT",
+      "pillar": "quick_tip",
+      "lane": "broad",
+      "status": "filmed",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 23:35:42"
+    },
+    {
+      "id": 24,
+      "title": "Your AI Projects Fail",
+      "pillar": "pain_point",
+      "lane": "broad",
+      "status": "filmed",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 23:35:42"
+    },
+    {
+      "id": 25,
+      "title": "7 Things Claude Does for Business Owners",
+      "pillar": "quick_tip",
+      "lane": "proof",
+      "status": "filmed",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 23:35:42"
+    },
+    {
+      "id": 1,
+      "title": "What is an AI agent?",
+      "pillar": "fundamental",
+      "lane": "broad",
+      "status": "bookmarked",
+      "archived": 0,
+      "day_of_week": "Monday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 2,
+      "title": "Why 70% of AI projects fail",
+      "pillar": "fundamental",
+      "lane": "broad",
+      "status": "filmed",
+      "archived": 0,
+      "day_of_week": "Monday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 3,
+      "title": "Stop following up manually",
+      "pillar": "tutorial",
+      "lane": "broad",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Tuesday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 4,
+      "title": "AI can write every email for you",
+      "pillar": "tutorial",
+      "lane": "broad",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Tuesday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 5,
+      "title": "5 tasks you're still doing by hand",
+      "pillar": "use_case_showcase",
+      "lane": "broad",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Wednesday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 6,
+      "title": "How to make AI write like you",
+      "pillar": "tutorial",
+      "lane": "broad",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Wednesday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 7,
+      "title": "Quotes went from 45 min to 5 min",
+      "pillar": "before_after",
+      "lane": "proof",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Thursday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 8,
+      "title": "My team manages 80+ deals with AI",
+      "pillar": "system_showcase",
+      "lane": "proof",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Thursday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 9,
+      "title": "Your morning wastes 2 hours",
+      "pillar": "tutorial",
+      "lane": "broad",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Friday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 10,
+      "title": "AI builds systems from plain English",
+      "pillar": "tutorial",
+      "lane": "broad",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Friday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 11,
+      "title": "Zero leads lost in 3 months",
+      "pillar": "results",
+      "lane": "proof",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Saturday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 12,
+      "title": "Build a client dashboard in 10 minutes",
+      "pillar": "tutorial",
+      "lane": "broad",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Saturday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 13,
+      "title": "I'm not a tech guy",
+      "pillar": "identity",
+      "lane": "proof",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Sunday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 14,
+      "title": "AI won't replace you. But...",
+      "pillar": "fundamental",
+      "lane": "broad",
+      "status": "new",
+      "archived": 0,
+      "day_of_week": "Sunday",
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 15,
+      "title": "I manage $100K/month in sales. My AI does 80% of the admin.\"",
+      "pillar": "research",
+      "lane": null,
+      "status": "new",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 16,
+      "title": "How my company processes 50 quotes/week with zero extra staff\"",
+      "pillar": "research",
+      "lane": null,
+      "status": "new",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 17,
+      "title": "I built an AI sales machine for my business (you can copy it)\"",
+      "pillar": "research",
+      "lane": null,
+      "status": "new",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 18,
+      "title": "My AI agent follows up with every lead automatically (here's what happened)\"",
+      "pillar": "research",
+      "lane": null,
+      "status": "new",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 19,
+      "title": "Stop learning AI tools. Start using AI like this instead.\"",
+      "pillar": "research",
+      "lane": null,
+      "status": "new",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 20,
+      "title": "Every AI guru teaches you to BUILD automations. Here's how to actually USE them.\"",
+      "pillar": "research",
+      "lane": null,
+      "status": "new",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 21,
+      "title": "The AI sales system that books site visits while I sleep\"",
+      "pillar": "research",
+      "lane": null,
+      "status": "new",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 12:08:18"
+    },
+    {
+      "id": 22,
+      "title": "I'm not a tech guy. I built this entire system anyway.\"",
+      "pillar": "research",
+      "lane": null,
+      "status": "picked",
+      "archived": 0,
+      "day_of_week": null,
+      "created_at": "2026-04-21 12:08:18"
+    }
+  ],
+  "cadence_check": {
+    "posts_this_week": 25,
+    "posts_last_week": 0,
+    "target_per_week": 10,
+    "on_track": true
+  }
+}

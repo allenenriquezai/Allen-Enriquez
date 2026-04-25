@@ -7,9 +7,9 @@ import { loadIdentity, type Domain } from "../lib/identity.js";
 const client = new Anthropic({ apiKey: requireEnv("ANTHROPIC_API_KEY") });
 
 const STATE_FILES_BY_DOMAIN: Record<Domain, string[]> = {
-  build: ["repo.json", "automations.json"],
-  reach: ["content.json", "repo.json"],
-  serve: ["content.json", "repo.json"],
+  build: ["repo.json", "automations.json", "content-hub.json"],
+  reach: ["content.json", "content-hub.json", "repo.json"],
+  serve: ["content.json", "content-hub.json", "repo.json"],
 };
 
 function parseDomain(): Domain {

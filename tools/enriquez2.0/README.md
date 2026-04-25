@@ -10,15 +10,23 @@ Knowledge + audit + opportunity engine. Filters world signal through Allen's ide
 - **REACH** — how we grow audience + clients (content, hooks, cadence)
 - **SERVE** — how we turn audience into paid clients (offer, delivery, onboarding)
 
+## Cadence
+Run 3-4x/week (Mon / Wed / Fri, or 4x). Action ≥1 brief move per run, or skip the next run. The engine compounds when output gets shipped — running it without acting wastes API spend.
+
+Cost: ~$0.75/run. ~$10-15/mo at 3-4x/week.
+
 ## Daily Loop
 ```
 npm run ingest                       # pull sources → route → write inbox.md
 # Allen reviews domains/<d>/inbox.md, marks `[promote]`
 npm run distill -- --domain build    # promoted items roll into standard.md
-npm run mirror                       # snapshot repo state to state/*.json
+npm run mirror                       # snapshot repo + content-hub state to state/*.json
 npm run audit -- --domain build      # gap report standard vs state
-npm run opportunities                # surface NEW moves from inbox
-npm run brief                        # daily 1-pager (inbox + audits + opportunities)
+npm run opportunities                # surface NEW moves (now sees content-hub gaps)
+npm run scout                        # blind-spot detector (what you're NOT tracking)
+npm run brief                        # daily 1-pager (blind spots + opportunities + inbox + audits)
+npm run render                       # bundle all into briefs/YYYY-MM-DD.html (open in browser)
+npm run capture <url>                # one-off URL drop (Haiku fetch + summarize + route)
 ```
 
 ## Layout
@@ -26,7 +34,8 @@ npm run brief                        # daily 1-pager (inbox + audits + opportuni
 - `domains/<d>/sources.yaml` — RSS/Reddit/GitHub feeds per domain.
 - `domains/<d>/inbox.md` — routed items pending review.
 - `domains/<d>/standard.md` — current "what good looks like" per domain.
-- `state/*.json` — snapshot of repo / content / automations.
+- `state/*.json` — snapshot of repo / content / automations / content-hub posting state.
+- `state/content-hub.json` — last 30d posts + this/next week schedule + active projects (read-only mirror of content-hub SQLite).
 - `audits/<d>-YYYY-MM-DD.md` — gap reports per domain.
 - `opportunities/YYYY-MM-DD.md` — proposed new moves.
 - `briefs/YYYY-MM-DD.md` — daily summaries.

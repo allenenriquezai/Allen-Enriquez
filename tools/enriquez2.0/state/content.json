@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-25T15:01:14.831Z",
+  "generated_at": "2026-04-25T17:46:53.897Z",
   "db": {
-    "path": "content-hub.db",
-    "bytes": 0,
-    "modified": "2026-04-23T18:04:49.883Z"
+    "path": "tools/content-hub/content_hub.db",
+    "bytes": 167936,
+    "modified": "2026-04-23T18:43:18.481Z"
   }
 }

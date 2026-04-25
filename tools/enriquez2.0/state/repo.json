@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-25T15:01:14.811Z",
+  "generated_at": "2026-04-25T17:46:53.878Z",
   "repo_root": "/Users/allenenriquez/Developer/Allen-Enriquez",
   "top_dirs": [
     {
@@ -45,9 +45,10 @@
     },
     {
       "path": "automation",
-      "files": 35,
+      "files": 36,
       "subdirs": 0,
       "byExt": {
+        ".md": 1,
         ".plist": 23,
         ".sh": 12
       }
@@ -110,6 +111,14 @@
       }
     },
     {
+      "path": "tools/content-hub/components",
+      "files": 21,
+      "subdirs": 3,
+      "byExt": {
+        ".tsx": 21
+      }
+    },
+    {
       "path": "tools/shared",
       "files": 21,
       "subdirs": 0,
@@ -145,14 +154,6 @@
       }
     },
     {
-      "path": "tools/content-hub/components",
-      "files": 18,
-      "subdirs": 2,
-      "byExt": {
-        ".tsx": 18
-      }
-    },
-    {
       "path": "tools/dashboard/static",
       "files": 18,
       "subdirs": 0,
@@ -165,10 +166,10 @@
     },
     {
       "path": "tools/content-hub",
-      "files": 16,
-      "subdirs": 5,
+      "files": 17,
+      "subdirs": 6,
       "byExt": {
-        ".md": 2,
+        ".md": 3,
         ".json": 5,
         ".db": 2,
         ".db-shm": 1,
@@ -297,6 +298,23 @@
       }
     },
     {
+      "path": "tools/content-hub/scripts",
+      "files": 10,
+      "subdirs": 0,
+      "byExt": {
+        ".ts": 9,
+        ".sql": 1
+      }
+    },
+    {
+      "path": "tools/enriquez2.0/scripts",
+      "files": 10,
+      "subdirs": 0,
+      "byExt": {
+        ".ts": 10
+      }
+    },
+    {
       "path": "projects/personal/content/reels/5-things-ai-agents/compositions",
       "files": 9,
       "subdirs": 0,
@@ -359,28 +377,10 @@
         ".png": 1,
         ".css": 1
       }
-    },
-    {
-      "path": "tools/content-hub/scripts",
-      "files": 9,
-      "subdirs": 0,
-      "byExt": {
-        ".ts": 8,
-        ".sql": 1
-      }
-    },
-    {
-      "path": "projects/personal/content/carousels/5-secret-codes-for-chatgpt",
-      "files": 8,
-      "subdirs": 0,
-      "byExt": {
-        ".txt": 1,
-        ".png": 7
-      }
     }
   ],
-  "total_dirs": 359,
-  "total_files": 6672,
+  "total_dirs": 375,
+  "total_files": 6713,
   "packages": [
     {
       "name": "content-hub",
@@ -400,7 +400,9 @@
         "next",
         "react",
         "react-dom",
+        "react-markdown",
         "recharts",
+        "remark-gfm",
         "shadcn",
         "tailwind-merge",
         "tw-animate-css"
@@ -419,6 +421,7 @@
       "deps": [
         "@anthropic-ai/sdk",
         "@octokit/rest",
+        "better-sqlite3",
         "rss-parser",
         "yaml"
       ],
@@ -427,7 +430,11 @@
         "distill",
         "mirror",
         "audit",
-        "brief"
+        "opportunities",
+        "capture",
+        "scout",
+        "brief",
+        "render"
       ]
     }
   ],
@@ -649,16 +656,16 @@
   ],
   "claude_md": {
     "path": "CLAUDE.md",
-    "lines": 82,
-    "bytes": 4903
+    "lines": 83,
+    "bytes": 4999
   },
   "git_tracked": {
-    "total": 1098,
+    "total": 1173,
     "byExt": {
-      ".md": 265,
-      ".json": 86,
-      "(none)": 15,
-      ".html": 227,
+      ".md": 289,
+      ".json": 93,
+      "(none)": 16,
+      ".html": 229,
       ".log": 2,
       ".pid": 1,
       ".plist": 23,
@@ -668,7 +675,7 @@
       ".py": 145,
       ".jsonl": 2,
       ".csv": 1,
-      ".pdf": 5,
+      ".pdf": 6,
       ".jsx": 8,
       ".js": 35,
       ".ttf": 1,
@@ -676,20 +683,21 @@
       ".mjs": 25,
       ".wav": 8,
       ".webp": 3,
-      ".yaml": 2,
+      ".yaml": 5,
       ".example": 1,
       ".css": 17,
       ".mp3": 8,
       ".webm": 3,
       ".gz": 1,
-      ".svg": 20,
+      ".svg": 21,
       ".woff2": 7,
       ".toml": 2,
-      ".tsx": 49,
-      ".ts": 83,
+      ".tsx": 62,
+      ".ts": 105,
       ".ico": 1,
       ".db": 1,
-      ".sql": 2
+      ".sql": 2,
+      ".mmd": 1
     },
     "byTopDir": {
       ".claude": 59,
@@ -706,7 +714,7 @@
       "projects": 645,
       "scripts": 1,
       "services": 26,
-      "tools": 316
+      "tools": 391
     },
     "suspicious_tracked": [
       "tools/content-hub/content_hub.db"
@@ -729,7 +737,7 @@
       "projects/**/.tmp/",
       "/shared/",
       "tools/dashboard/dashboard.db",
-      "tools/second-brain/raw/",
+      "tools/enriquez2.0/raw/",
       "__pycache__/",
       "*.pyc",
       "*.pyo",
@@ -746,6 +754,7 @@
       "*.db-wal",
       ".DS_Store",
       "node_modules/",
+      ".claude/scheduled_tasks.lock",
       "services/**/.venv/",
       "services/**/__pycache__/"
     ]

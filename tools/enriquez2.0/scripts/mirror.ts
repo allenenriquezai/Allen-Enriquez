@@ -160,10 +160,25 @@ function indexGitignore() {
 }
 
 function indexContentHubDb() {
-  const p = path.join(REPO_ROOT, "content-hub.db");
-  if (!fs.existsSync(p)) return null;
-  const stat = fs.statSync(p);
-  return { path: "content-hub.db", bytes: stat.size, modified: stat.mtime.toISOString() };
+  // Prefer canonical content-hub DB, fall back to root copy if present
+  const candidates = [
+    path.join(REPO_ROOT, "tools", "content-hub", "content_hub.db"),
+    path.join(REPO_ROOT, "content-hub.db"),
+  ];
+  for (const p of candidates) {
+    if (!fs.existsSync(p)) continue;
+    const stat = fs.statSync(p);
+    return { path: path.relative(REPO_ROOT, p), bytes: stat.size, modified: stat.mtime.toISOString() };
+  }
+  return null;
+}
+
+function runContentHubMirror() {
+  try {
+    execSync("tsx scripts/mirror-content.ts", { cwd: SB_ROOT, stdio: "inherit" });
+  } catch (e) {
+    console.error("[content-hub] mirror failed:", (e as Error).message);
+  }
 }
 
 function main() {
@@ -205,6 +220,8 @@ function main() {
   };
   fs.writeFileSync(path.join(SB_ROOT, "state/automations.json"), JSON.stringify(automationsState, null, 2));
   console.log(`[automations] ${automationsState.plists.length} plists`);
+
+  runContentHubMirror();
 }
 
 main();
