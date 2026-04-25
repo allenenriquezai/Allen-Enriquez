@@ -36,10 +36,10 @@ const PLATFORM_TABS: { key: string; label: string }[] = [
 ];
 
 const SLOT_LABELS: Record<string, string> = {
-  reel_1: "Reel · Slot 1",
-  reel_2: "Reel · Slot 2",
+  reel_1: "Short-form · Slot 1",
+  reel_2: "Short-form · Slot 2",
   carousel: "Carousel",
-  youtube: "YouTube",
+  youtube: "Long-form",
   fb_post: "FB Post",
 };
 

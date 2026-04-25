@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CreateProjectButton } from "@/components/create-project-button";
 
 export interface LearningRef {
   id: number;
@@ -47,6 +48,11 @@ export function ReferenceCard({
               </Button>
             </a>
           )}
+          <CreateProjectButton
+            sourceTable="learning_refs"
+            sourceId={item.id}
+            defaultTitle={item.title}
+          />
           {onCopyToIdeation && (
             <Button
               size="xs"

@@ -231,11 +231,25 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
     return null;
   };
 
-  const logPost = (platform: string, status: "success" | "error" = "success", error_detail: string | null = null) => {
+  const logPost = (
+    platform: string,
+    status: "success" | "error" = "success",
+    error_detail: string | null = null,
+    platform_post_id: string | null = null,
+    platform_meta: Record<string, unknown> | null = null,
+  ) => {
     fetch("/api/posts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ asset_id: asset.id, platform, url: asset.url, status, error_detail }),
+      body: JSON.stringify({
+        asset_id: asset.id,
+        platform,
+        url: asset.url,
+        status,
+        error_detail,
+        platform_post_id,
+        platform_meta,
+      }),
     }).catch(() => {});
   };
 
@@ -313,6 +327,27 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
 
     const calls: Promise<void>[] = [];
 
+    type PlatformId = { id: string | null; meta: Record<string, unknown> | null };
+    const extractIds: Record<PlatformKey, (j: Record<string, unknown>) => PlatformId> = {
+      // FB returns { ok: true, result: { id: 'pageid_postid' } }
+      fb: (j) => {
+        const result = j.result as Record<string, unknown> | undefined;
+        return { id: (result?.id as string) ?? (j.post_id as string) ?? (j.id as string) ?? null, meta: j };
+      },
+      // IG returns post_id (the published media id)
+      ig: (j) => ({ id: (j.post_id as string) ?? (j.id as string) ?? null, meta: j }),
+      // YT returns video_id
+      yt: (j) => ({ id: (j.video_id as string) ?? (j.id as string) ?? null, meta: j }),
+      // TikTok returns video_id (post_id) once published
+      tiktok: (j) => ({ id: (j.video_id as string) ?? (j.publish_id as string) ?? (j.id as string) ?? null, meta: j }),
+    };
+    const handleSuccess = async (key: PlatformKey, r: Response) => {
+      let json: Record<string, unknown> = {};
+      try { json = await r.json(); } catch {}
+      const { id, meta } = extractIds[key](json);
+      logPost(PLATFORM_NAMES[key], "success", null, id, meta);
+    };
+
     if (chosen.includes("fb")) {
       const caption = captions["caption_fb"] || captions["caption_ig"] || "";
       calls.push(
@@ -328,7 +363,7 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
         })
           .then(async (r) => {
             setStatus((s) => ({ ...s, fb: r.ok ? "success" : "error" }));
-            if (r.ok) logPost("facebook");
+            if (r.ok) await handleSuccess("fb", r);
             else await recordError("fb", r);
           })
           .catch((e) => {
@@ -347,7 +382,7 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
         })
           .then(async (r) => {
             setStatus((s) => ({ ...s, ig: r.ok ? "success" : "error" }));
-            if (r.ok) logPost("instagram");
+            if (r.ok) await handleSuccess("ig", r);
             else await recordError("ig", r);
           })
           .catch((e) => {
@@ -371,7 +406,7 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
         })
           .then(async (r) => {
             setStatus((s) => ({ ...s, yt: r.ok ? "success" : "error" }));
-            if (r.ok) logPost("youtube");
+            if (r.ok) await handleSuccess("yt", r);
             else await recordError("yt", r);
           })
           .catch((e) => {
@@ -395,7 +430,7 @@ export function PostView({ asset, ideas, initialScripts }: PostViewProps) {
         })
           .then(async (r) => {
             setStatus((s) => ({ ...s, tiktok: r.ok ? "success" : "error" }));
-            if (r.ok) logPost("tiktok");
+            if (r.ok) await handleSuccess("tiktok", r);
             else await recordError("tiktok", r);
           })
           .catch((e) => {

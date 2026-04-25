@@ -9,20 +9,24 @@ import {
   FolderOpen,
   BarChart3,
   MessageSquare,
+  Kanban,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
+  { href: "/projects", label: "Projects", icon: Kanban },
   { href: "/calendar", label: "Calendar", icon: Calendar },
   { href: "/scripts", label: "Studio", icon: Clapperboard, matchPaths: ["/scripts", "/ideation"] },
   { href: "/inspiration", label: "Inspiration", icon: Sparkles },
   { href: "/library", label: "Library", icon: FolderOpen },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/inbox", label: "Inbox", icon: MessageSquare },
+  { href: "/docs", label: "Docs", icon: BookOpen },
 ];
 
 const MOBILE_NAV = [
-  { href: "/calendar", label: "Calendar", icon: Calendar },
+  { href: "/projects", label: "Projects", icon: Kanban },
   { href: "/scripts", label: "Studio", icon: Clapperboard, matchPaths: ["/scripts", "/ideation"] },
   { href: "/inspiration", label: "Inspire", icon: Sparkles },
   { href: "/library", label: "Library", icon: FolderOpen },

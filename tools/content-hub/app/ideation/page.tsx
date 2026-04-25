@@ -11,6 +11,7 @@ export type IdeationNote = {
   tags: string | null;
   author: string | null;
   pinned: number;
+  idea_id: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -30,9 +31,9 @@ export default function IdeationPage() {
     <div className="space-y-4">
       <StudioSubNav />
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold">Ideation</h1>
+        <h1 className="text-2xl font-semibold">Notes</h1>
         <p className="text-sm text-muted-foreground">
-          Free-form notes by project. Create projects to group ideas (e.g. Social Media Marketing, Video Editing, Hooks).
+          Free-form notes grouped by tag. Add tags for whatever you need — Social Media Marketing, Video Editing, Hooks, Psychology, anything. Promote a note to a project when it&rsquo;s ready to become content.
         </p>
       </div>
       <IdeationBoard initialNotes={notes} initialTags={tags} />

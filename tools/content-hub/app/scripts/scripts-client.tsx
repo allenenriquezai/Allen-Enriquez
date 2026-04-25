@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { CarouselCreateDialog } from "@/components/carousel-create-dialog";
 import type { ScheduledScript, KanbanIdea, WeekTheme } from "./page";
 
 // ─── constants ───────────────────────────────────────────────────────────────
@@ -101,9 +102,9 @@ function formatWeekRange(monday: string, sunday: string): string {
 
 function slotLabel(slotType: string): string {
   const map: Record<string, string> = {
-    reel_1: "R1",
-    reel_2: "R2",
-    youtube: "YT",
+    reel_1: "SF1",
+    reel_2: "SF2",
+    youtube: "LF",
     carousel: "CA",
     fb_post: "FB",
   };
@@ -147,7 +148,7 @@ function ScriptModal({
   const [hasCarousel, setHasCarousel] = useState(idea.hasCarousel);
   const [saving, setSaving] = useState(false);
   const [rewriting, setRewriting] = useState(false);
-  const [genningCarousel, setGenningCarousel] = useState(false);
+  const [carouselDialogOpen, setCarouselDialogOpen] = useState(false);
   const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
   useEffect(() => {
@@ -200,23 +201,6 @@ function ScriptModal({
     setMsg({ type: "ok", text: "Rewritten." });
   }
 
-  async function handleGenCarousel() {
-    setGenningCarousel(true);
-    setMsg(null);
-    const res = await fetch("/api/ideas/carousel", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idea_id: idea.ideaId }),
-    });
-    setGenningCarousel(false);
-    if (!res.ok) {
-      setMsg({ type: "err", text: "Carousel generation failed." });
-      return;
-    }
-    setHasCarousel(true);
-    setMsg({ type: "ok", text: "Carousel generated." });
-    onCarouselGenerated();
-  }
 
   async function moveToStatus(newStatus: string) {
     setStatus(newStatus);
@@ -295,12 +279,12 @@ function ScriptModal({
           <div className="flex-1 overflow-y-auto px-5 flex flex-col gap-4 py-2">
             <div className="flex flex-col gap-1.5">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Reel script
+                Short-form script
               </p>
               <Textarea
                 value={reelBody}
                 onChange={(e) => setReelBody(e.target.value)}
-                placeholder="No reel script yet — generate one in the full editor."
+                placeholder="No short-form script yet — generate one in the full editor."
                 rows={7}
                 className="resize-y text-sm font-mono leading-relaxed"
               />
@@ -365,15 +349,10 @@ function ScriptModal({
               <Button
                 size="sm"
                 variant="outline"
-                onClick={handleGenCarousel}
-                disabled={genningCarousel}
+                onClick={() => setCarouselDialogOpen(true)}
               >
-                {genningCarousel ? (
-                  <RotateCcw size={12} className="mr-1 animate-spin" />
-                ) : (
-                  <Plus size={12} className="mr-1" />
-                )}
-                {genningCarousel ? "Generating…" : "Carousel"}
+                <Plus size={12} className="mr-1" />
+                Carousel
               </Button>
             )}
             <Link
@@ -386,6 +365,17 @@ function ScriptModal({
           </div>
         </div>
       </div>
+      {carouselDialogOpen && (
+        <CarouselCreateDialog
+          initialIdeaId={idea.ideaId}
+          initialVariant="reel"
+          onClose={() => setCarouselDialogOpen(false)}
+          onCreated={() => {
+            setHasCarousel(true);
+            onCarouselGenerated();
+          }}
+        />
+      )}
     </>
   );
 }
@@ -444,7 +434,7 @@ function KanbanCard({
           )}
           {!idea.reelBody && (
             <span className="text-xs px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
-              no reel
+              no script
             </span>
           )}
         </div>
@@ -1150,7 +1140,7 @@ export function ScriptsClient({
                 className="text-xs gap-1.5"
                 onClick={handleBackfillScripts}
                 disabled={backfilling}
-                title={`${noScriptCount} ideas have no reel script`}
+                title={`${noScriptCount} ideas have no short-form script`}
               >
                 {backfilling ? (
                   <RotateCcw className="h-3.5 w-3.5 animate-spin" />

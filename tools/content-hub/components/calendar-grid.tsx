@@ -61,9 +61,9 @@ const STATUS_STYLES: Record<string, string> = {
 const STATUSES = ["planned", "scripted", "filmed", "edited", "posted"];
 
 const SLOT_LABEL: Record<string, string> = {
-  reel_1: "R1",
-  reel_2: "R2",
-  youtube: "YT",
+  reel_1: "SF1",
+  reel_2: "SF2",
+  youtube: "LF",
   carousel: "CA",
   fb_post: "FB",
 };

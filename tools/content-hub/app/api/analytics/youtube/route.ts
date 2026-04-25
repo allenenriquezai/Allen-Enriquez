@@ -15,11 +15,14 @@ async function ytFetch(path: string, params: Record<string, string>) {
   return res.json();
 }
 
-async function refreshYouTubeStats() {
-  // 1. Get uploads playlist ID
-  const chRes = await ytFetch("/channels", { id: CHANNEL_ID, part: "contentDetails" });
+async function refreshYouTubeStats(): Promise<{ count: number; subscriberCount: number | null }> {
+  // 1. Get uploads playlist ID + channel stats in one call
+  const chRes = await ytFetch("/channels", { id: CHANNEL_ID, part: "contentDetails,statistics" });
   const uploadsId: string = chRes.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
   if (!uploadsId) throw new Error("No uploads playlist found");
+  const subscriberCount: number | null = chRes.items?.[0]?.statistics?.subscriberCount != null
+    ? parseInt(chRes.items[0].statistics.subscriberCount, 10)
+    : null;
 
   // 2. Collect video IDs from playlist
   const videoIds: string[] = [];
@@ -39,7 +42,7 @@ async function refreshYouTubeStats() {
     pageToken = plRes.nextPageToken;
   } while (pageToken && videoIds.length < 50);
 
-  if (!videoIds.length) return 0;
+  if (!videoIds.length) return { count: 0, subscriberCount };
 
   // 3. Fetch stats in batches of 50
   const chunks: string[][] = [];
@@ -71,15 +74,18 @@ async function refreshYouTubeStats() {
       count++;
     }
   }
-  return count;
+  return { count, subscriberCount };
 }
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
 
+  let subscriberCount: number | null = null;
+
   if (searchParams.get("refresh") === "1") {
     try {
-      await refreshYouTubeStats();
+      const result = await refreshYouTubeStats();
+      subscriberCount = result.subscriberCount;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return NextResponse.json({ error: "Refresh failed", detail: msg }, { status: 500 });
@@ -95,5 +101,5 @@ export async function GET(req: Request) {
     )
     .all();
 
-  return NextResponse.json({ stats: rows, count: rows.length });
+  return NextResponse.json({ stats: rows, count: rows.length, subscriberCount });
 }

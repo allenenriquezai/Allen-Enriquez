@@ -23,7 +23,7 @@ SLIDE N: [text]
 Return ONLY the slide content, no preamble.`;
 
 export async function POST(req: Request) {
-  let body: { idea_id?: number };
+  let body: { idea_id?: number; override_body?: string; source_variant?: string };
   try {
     body = await req.json();
   } catch {
@@ -41,14 +41,20 @@ export async function POST(req: Request) {
 
   if (!idea) return NextResponse.json({ error: "idea not found" }, { status: 404 });
 
-  const reelScript = db
-    .prepare("SELECT body FROM scripts WHERE idea_id = ? AND variant = 'reel'")
-    .get(ideaId) as { body: string } | undefined;
+  let sourceBody: string | undefined = body.override_body?.trim() || undefined;
+
+  if (!sourceBody) {
+    const variant = body.source_variant === "youtube" ? "youtube" : "reel";
+    const row = db
+      .prepare("SELECT body FROM scripts WHERE idea_id = ? AND variant = ?")
+      .get(ideaId, variant) as { body: string } | undefined;
+    sourceBody = row?.body?.trim();
+  }
 
   const userPrompt = `Title: ${idea.title}
 Hook: ${idea.hook ?? "(none)"}
-Reel script:
-${reelScript?.body?.trim() || "(no reel script yet — create carousel based on title and hook)"}
+Source script:
+${sourceBody || "(no script yet — create carousel based on title and hook)"}
 
 Write the carousel slides now.`;
 

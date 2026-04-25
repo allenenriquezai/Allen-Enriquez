@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 const TABS = [
   { href: "/scripts", label: "Scripts" },
-  { href: "/ideation", label: "Ideation" },
+  { href: "/ideation", label: "Notes" },
 ];
 
 export function StudioSubNav() {

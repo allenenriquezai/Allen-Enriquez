@@ -1,3 +1,4 @@
+-- "ideas" is the project root. UI surfaces it as "Project". Same table.
 CREATE TABLE IF NOT EXISTS ideas (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
@@ -8,18 +9,23 @@ CREATE TABLE IF NOT EXISTS ideas (
   modeled_after TEXT,
   source_platform TEXT,
   source_url TEXT,
-  status TEXT DEFAULT 'new',  -- new, picked, dismissed, bookmarked
+  status TEXT DEFAULT 'new',  -- new, picked, dismissed, bookmarked (legacy ideation status; project lifecycle lives in v_project_status view)
   day_of_week TEXT,
   slot INTEGER,
   batch TEXT,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  notes TEXT -- reviewer notes
+  notes TEXT, -- reviewer notes
+  theme TEXT,
+  archived INTEGER DEFAULT 0, -- project archived flag
+  source_type TEXT DEFAULT 'raw', -- raw, competitor_post, viral_ref, trending
+  source_ref_table TEXT, -- creator_posts | learning_refs (when source_type != 'raw')
+  source_ref_id INTEGER  -- FK into source_ref_table
 );
 
 CREATE TABLE IF NOT EXISTS scripts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   idea_id INTEGER REFERENCES ideas(id),
-  variant TEXT NOT NULL, -- reel, youtube, carousel, caption_fb, caption_ig, caption_tiktok, caption_yt, caption_x
+  variant TEXT NOT NULL, -- reel (UI: short-form), youtube (UI: long-form), carousel, caption_fb, caption_ig, caption_tiktok, caption_yt, caption_x
   body TEXT NOT NULL,
   word_count INTEGER,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -40,12 +46,18 @@ CREATE TABLE IF NOT EXISTS schedule (
 CREATE TABLE IF NOT EXISTS assets (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   path TEXT NOT NULL UNIQUE,
-  type TEXT NOT NULL, -- reel, youtube, carousel, thumbnail
+  type TEXT NOT NULL, -- reel (UI: short-form), youtube (UI: long-form), carousel, thumbnail
   title TEXT,
   url TEXT,            -- R2 public URL (set after upload)
   thumbnail_url TEXT,  -- custom thumbnail URL (optional override for video first-frame)
   duration_seconds INTEGER, -- video duration; null for carousels
-  idea_id INTEGER REFERENCES ideas(id),
+  idea_id INTEGER REFERENCES ideas(id),  -- project FK (UI: project)
+  script_id INTEGER REFERENCES scripts(id),
+  variant_label TEXT,  -- e.g. "v5", "draft", "final" — parsed from filename
+  hidden INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'ready',     -- editing, animating, ready, posted, archived
+  local_path TEXT,                 -- filesystem path on creator's machine when first rendered
+  render_meta_json TEXT,           -- skill metadata: composition_id, scene_count, audio_duration
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -55,8 +67,11 @@ CREATE TABLE IF NOT EXISTS posts (
   platform TEXT NOT NULL, -- facebook, instagram, tiktok, youtube, x
   posted_at TEXT,
   url TEXT,
+  platform_post_id TEXT,        -- IG media_id, YT video_id, TikTok video_id, FB post_id
+  platform_meta_json TEXT,      -- raw API response for debugging
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
+-- idx_posts_platform_id created in init-railway.ts after ALTER TABLE migration
 
 CREATE TABLE IF NOT EXISTS metrics (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -179,10 +194,12 @@ CREATE TABLE IF NOT EXISTS ideation_notes (
   tags TEXT,           -- comma-separated: psychology,editing,hooks,frameworks
   author TEXT,         -- allen, wife, claude
   pinned INTEGER DEFAULT 0,
+  idea_id INTEGER REFERENCES ideas(id), -- pinned to a project (nullable; UI shows under that project's Notes tab)
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_ideation_notes_updated ON ideation_notes(updated_at DESC);
+-- idx_ideation_notes_idea created in init-railway.ts after ALTER TABLE migration
 
 CREATE TABLE IF NOT EXISTS week_themes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -214,3 +231,11 @@ CREATE TABLE IF NOT EXISTS youtube_stats (
   fetched_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_youtube_stats_published_at ON youtube_stats(published_at DESC);
+
+-- Project lifecycle indexes (idx_assets_status / idx_assets_idea / idx_assets_script
+-- created in init-railway.ts after ALTER TABLE migration since the columns are added
+-- by migration on existing DBs)
+
+-- v_project_status view: created in init-railway.ts AFTER column ALTERs
+-- so the view definition can reference assets.status / ideas.archived which
+-- only exist post-migration on existing DBs.

@@ -1,10 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, Plus } from "lucide-react";
 import { AssetTile, type Asset } from "@/components/asset-tile";
+import { CarouselCreateDialog } from "@/components/carousel-create-dialog";
 
-type Tab = "videos" | "carousels" | "longform";
+type Tab = "shortform" | "longform" | "carousels";
 
 const LONGFORM_THRESHOLD_SEC = 180; // 3 minutes
 
@@ -12,22 +14,36 @@ function classifyAsset(a: Asset): Tab {
   if (a.type === "carousel") return "carousels";
   if (a.duration_seconds && a.duration_seconds >= LONGFORM_THRESHOLD_SEC) return "longform";
   if (a.type === "youtube") return "longform";
-  return "videos";
+  return "shortform";
 }
 
 export function LibraryGrid({ assets }: { assets: Asset[] }) {
-  const [tab, setTab] = React.useState<Tab>("videos");
+  const router = useRouter();
+  const [tab, setTab] = React.useState<Tab>("shortform");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [sortOrder, setSortOrder] = React.useState<"newest" | "oldest" | "unposted">("newest");
+  const [showHidden, setShowHidden] = React.useState(false);
+  const [carouselOpen, setCarouselOpen] = React.useState(false);
+
+  const visibleAssets = React.useMemo(() => {
+    // Always exclude raw thumbnails — they're upload artifacts, not content tiles
+    const content = assets.filter((a) => a.type !== "thumbnail");
+    return showHidden ? content : content.filter((a) => !a.hidden);
+  }, [assets, showHidden]);
 
   const counts = React.useMemo(() => {
-    const c = { videos: 0, carousels: 0, longform: 0 };
-    for (const a of assets) c[classifyAsset(a)]++;
+    const c = { shortform: 0, longform: 0, carousels: 0 };
+    for (const a of visibleAssets) c[classifyAsset(a)]++;
     return c;
-  }, [assets]);
+  }, [visibleAssets]);
+
+  const hiddenCount = React.useMemo(
+    () => assets.filter((a) => a.hidden).length,
+    [assets],
+  );
 
   const filtered = React.useMemo(() => {
-    let result = assets.filter((a) => classifyAsset(a) === tab);
+    let result = visibleAssets.filter((a) => classifyAsset(a) === tab);
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -49,12 +65,12 @@ export function LibraryGrid({ assets }: { assets: Asset[] }) {
       });
     }
     return result;
-  }, [assets, tab, searchQuery, sortOrder]);
+  }, [visibleAssets, tab, searchQuery, sortOrder]);
 
   const TABS: Array<{ key: Tab; label: string; hint: string }> = [
-    { key: "videos", label: "Videos", hint: "< 3 min" },
-    { key: "carousels", label: "Carousels", hint: "images" },
+    { key: "shortform", label: "Short-form", hint: "< 3 min" },
     { key: "longform", label: "Long-form", hint: "≥ 3 min" },
+    { key: "carousels", label: "Carousels", hint: "images" },
   ];
 
   return (
@@ -87,7 +103,7 @@ export function LibraryGrid({ assets }: { assets: Asset[] }) {
         })}
       </div>
 
-      {/* Search + sort */}
+      {/* Toolbar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
@@ -108,6 +124,26 @@ export function LibraryGrid({ assets }: { assets: Asset[] }) {
           <option value="oldest">Oldest first</option>
           <option value="unposted">Unposted first</option>
         </select>
+        <label className="flex items-center gap-2 text-xs text-muted-foreground select-none cursor-pointer px-2">
+          <input
+            type="checkbox"
+            checked={showHidden}
+            onChange={(e) => setShowHidden(e.target.checked)}
+          />
+          Show hidden
+          {hiddenCount > 0 && (
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-muted/40">{hiddenCount}</span>
+          )}
+        </label>
+        {tab === "carousels" && (
+          <button
+            type="button"
+            onClick={() => setCarouselOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-md bg-[var(--brand)] text-white hover:opacity-90"
+          >
+            <Plus className="size-4" /> New carousel
+          </button>
+        )}
       </div>
 
       {/* Grid */}
@@ -120,9 +156,19 @@ export function LibraryGrid({ assets }: { assets: Asset[] }) {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {filtered.map((a) => (
-            <AssetTile key={a.id} asset={a} />
+            <AssetTile key={a.id} asset={a} onChange={() => router.refresh()} />
           ))}
         </div>
+      )}
+
+      {carouselOpen && (
+        <CarouselCreateDialog
+          onClose={() => setCarouselOpen(false)}
+          onCreated={() => {
+            setCarouselOpen(false);
+            router.refresh();
+          }}
+        />
       )}
     </div>
   );

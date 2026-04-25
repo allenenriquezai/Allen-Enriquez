@@ -117,9 +117,9 @@ export function SendToCalendarButton({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="reel_1">Reel 1</SelectItem>
-                  <SelectItem value="reel_2">Reel 2</SelectItem>
-                  <SelectItem value="youtube">YouTube</SelectItem>
+                  <SelectItem value="reel_1">Short-form 1</SelectItem>
+                  <SelectItem value="reel_2">Short-form 2</SelectItem>
+                  <SelectItem value="youtube">Long-form</SelectItem>
                   <SelectItem value="carousel">Carousel</SelectItem>
                   <SelectItem value="fb_post">FB Post</SelectItem>
                 </SelectContent>

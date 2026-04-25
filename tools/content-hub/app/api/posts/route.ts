@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
+import { moveObject } from "@/lib/r2";
 
 // GET /api/posts — list of posts joined with asset metadata (for metrics entry).
 export async function GET() {
@@ -14,12 +15,22 @@ export async function GET() {
   return NextResponse.json({ posts: rows });
 }
 
-// POST /api/posts  body: { asset_id, platform, url?, status?, error_detail? }
+// POST /api/posts  body: { asset_id, platform, url?, status?, error_detail?,
+//                          platform_post_id?, platform_meta? }
 // Logs every publish attempt — success or failure. If a previous attempt for
 // the same (asset_id, platform) exists, increments attempts on the new row.
+// On success: marks asset.status='posted' so v_project_status flips.
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { asset_id, platform, url = null, status = "success", error_detail = null } = body ?? {};
+  const {
+    asset_id,
+    platform,
+    url = null,
+    status = "success",
+    error_detail = null,
+    platform_post_id = null,
+    platform_meta = null,
+  } = body ?? {};
   if (!asset_id || !platform) {
     return NextResponse.json(
       { error: "asset_id and platform required" },
@@ -35,10 +46,45 @@ export async function POST(req: NextRequest) {
   const attempts = (prior?.n ?? 0) + 1;
   const info = db
     .prepare(
-      `INSERT INTO posts (asset_id, platform, posted_at, url, status, error_detail, attempts)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO posts
+         (asset_id, platform, posted_at, url, status, error_detail, attempts,
+          platform_post_id, platform_meta_json)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
-    .run(asset_id, platform, posted_at, url, status, error_detail, attempts);
+    .run(
+      asset_id,
+      platform,
+      posted_at,
+      url,
+      status,
+      error_detail,
+      attempts,
+      platform_post_id,
+      platform_meta ? JSON.stringify(platform_meta) : null,
+    );
+  if (status === "success") {
+    // Look up current asset state to decide whether to move R2 key.
+    const asset = db
+      .prepare("SELECT id, path, url, status FROM assets WHERE id = ?")
+      .get(asset_id) as
+      | { id: number; path: string; url: string | null; status: string | null }
+      | undefined;
+    db.prepare("UPDATE assets SET status = 'posted' WHERE id = ?").run(asset_id);
+
+    // First successful post: move R2 key from ready/<id>/... → posted/<yyyy-mm>/...
+    if (asset && asset.path?.startsWith("ready/")) {
+      const yyyymm = posted_at.slice(0, 7); // 2026-04
+      const filename = asset.path.split("/").pop() ?? `${asset_id}.bin`;
+      const newKey = `posted/${yyyymm}/${filename}`;
+      try {
+        const newUrl = await moveObject(asset.path, newKey);
+        db.prepare("UPDATE assets SET path = ?, url = ? WHERE id = ?")
+          .run(newKey, newUrl, asset_id);
+      } catch (err) {
+        console.warn("[posts] R2 move failed (non-fatal):", err);
+      }
+    }
+  }
   const row = db
     .prepare("SELECT * FROM posts WHERE id = ?")
     .get(info.lastInsertRowid);

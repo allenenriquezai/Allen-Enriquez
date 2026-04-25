@@ -12,11 +12,17 @@ type Idea = {
   title: string;
 };
 
-export function LibraryAddDialog({ onDone }: { onDone: () => void }) {
+export function LibraryAddDialog({
+  onDone,
+  defaultIdeaId = null,
+}: {
+  onDone: () => void;
+  defaultIdeaId?: number | null;
+}) {
   const [file, setFile] = React.useState<File | null>(null);
   const [title, setTitle] = React.useState("");
   const [assetType, setAssetType] = React.useState<AssetType>("reel");
-  const [ideaId, setIdeaId] = React.useState<number | null>(null);
+  const [ideaId, setIdeaId] = React.useState<number | null>(defaultIdeaId);
   const [ideas, setIdeas] = React.useState<Idea[]>([]);
   const [status, setStatus] = React.useState<"idle" | "uploading" | "saving" | "done" | "error">("idle");
   const [progress, setProgress] = React.useState(0);
@@ -186,8 +192,8 @@ export function LibraryAddDialog({ onDone }: { onDone: () => void }) {
             onChange={(e) => setAssetType(e.target.value as AssetType)}
             className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"
           >
-            <option value="reel">Reel (short-form)</option>
-            <option value="youtube">YouTube</option>
+            <option value="reel">Short-form video</option>
+            <option value="youtube">Long-form (YouTube)</option>
             <option value="carousel">Carousel</option>
           </select>
         </label>

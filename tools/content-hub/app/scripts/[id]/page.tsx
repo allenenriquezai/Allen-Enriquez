@@ -25,8 +25,8 @@ type ScriptRow = {
 };
 
 const VARIANTS: { key: string; label: string }[] = [
-  { key: "reel", label: "Reel" },
-  { key: "youtube", label: "YouTube" },
+  { key: "reel", label: "Short-form" },
+  { key: "youtube", label: "Long-form" },
   { key: "carousel", label: "Carousel" },
   { key: "caption_fb", label: "Caption-FB" },
   { key: "caption_ig", label: "Caption-IG" },

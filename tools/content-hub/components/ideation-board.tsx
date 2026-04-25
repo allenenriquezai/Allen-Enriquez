@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Pin, PinOff, Trash2, Save, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, Pin, PinOff, Trash2, Save, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type IdeationNote = {
@@ -11,6 +12,7 @@ export type IdeationNote = {
   tags: string | null;
   author: string | null;
   pinned: number;
+  idea_id: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -317,6 +319,7 @@ function NoteCard({
           </button>
         )}
         <div className="flex items-center gap-1 shrink-0">
+          <PromoteToProjectButton note={note} />
           <button
             type="button"
             title={note.pinned ? "Unpin" : "Pin"}
@@ -396,8 +399,61 @@ function NoteCard({
               {note.author ?? "—"} · {new Date(note.updated_at).toLocaleDateString()}
             </span>
           </div>
+          {note.idea_id && (
+            <div className="text-[10px] text-[color:var(--brand)]">
+              Linked to project #{note.idea_id}
+            </div>
+          )}
         </>
       )}
     </div>
+  );
+}
+
+function PromoteToProjectButton({ note }: { note: IdeationNote }) {
+  const router = useRouter();
+  const [busy, setBusy] = React.useState(false);
+
+  if (note.idea_id) {
+    return (
+      <button
+        type="button"
+        title={`Open project #${note.idea_id}`}
+        onClick={() => router.push(`/scripts/${note.idea_id}`)}
+        className="text-[color:var(--brand)] hover:opacity-80"
+      >
+        <Sparkles className="size-3.5" />
+      </button>
+    );
+  }
+
+  const promote = async () => {
+    setBusy(true);
+    try {
+      const res = await fetch("/api/projects/from-note", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note_id: note.id }),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        router.push(`/scripts/${json.id}`);
+        router.refresh();
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      title="Promote to project"
+      onClick={promote}
+      disabled={busy}
+      className="text-muted-foreground hover:text-[color:var(--brand)]"
+    >
+      <Sparkles className="size-3.5" />
+    </button>
   );
 }

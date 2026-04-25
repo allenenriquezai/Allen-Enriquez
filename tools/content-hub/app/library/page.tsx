@@ -16,6 +16,8 @@ type AssetRow = {
   idea_id: number | null;
   created_at: string;
   duration_seconds: number | null;
+  hidden: number | null;
+  variant_label: string | null;
 };
 
 // Server component — reads assets + posts from SQLite and passes to client component.

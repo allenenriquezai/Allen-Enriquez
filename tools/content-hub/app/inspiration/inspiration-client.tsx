@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ReferenceCard, type LearningRef } from "@/components/reference-card";
+import { CreateProjectButton } from "@/components/create-project-button";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -146,6 +147,14 @@ function CreatorPostCard({ p }: { p: CreatorPost }) {
               </pre>
             </details>
           )}
+          <div className="pt-2">
+            <CreateProjectButton
+              sourceTable="creator_posts"
+              sourceId={p.id}
+              defaultTitle={p.title || p.hook || `Modeled after @${p.creator}`}
+              defaultHook={p.hook}
+            />
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -183,7 +192,12 @@ function TrendingCard({
             Allen angle: {allenAngle}
           </div>
         )}
-        <div className="flex gap-1.5 pt-1">
+        <div className="flex gap-1.5 pt-1 flex-wrap">
+          <CreateProjectButton
+            sourceTable="learning_refs"
+            sourceId={item.id}
+            defaultTitle={item.title}
+          />
           <Button
             size="xs"
             variant="outline"

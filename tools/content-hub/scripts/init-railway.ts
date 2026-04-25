@@ -48,6 +48,113 @@ if (!ideaCols.includes("theme")) {
   console.log("[init] Migration: added theme column to ideas");
 }
 
+// Project lifecycle: ideas as projects (same table; UI says "project")
+if (!ideaCols.includes("archived")) {
+  db.prepare("ALTER TABLE ideas ADD COLUMN archived INTEGER DEFAULT 0").run();
+  console.log("[init] Migration: added archived column to ideas");
+}
+if (!ideaCols.includes("source_type")) {
+  db.prepare("ALTER TABLE ideas ADD COLUMN source_type TEXT DEFAULT 'raw'").run();
+  console.log("[init] Migration: added source_type column to ideas");
+}
+if (!ideaCols.includes("source_ref_table")) {
+  db.prepare("ALTER TABLE ideas ADD COLUMN source_ref_table TEXT").run();
+  console.log("[init] Migration: added source_ref_table column to ideas");
+}
+if (!ideaCols.includes("source_ref_id")) {
+  db.prepare("ALTER TABLE ideas ADD COLUMN source_ref_id INTEGER").run();
+  console.log("[init] Migration: added source_ref_id column to ideas");
+}
+
+const assetCols = (db.prepare("PRAGMA table_info(assets)").all() as ColInfo[]).map(c => c.name);
+if (!assetCols.includes("hidden")) {
+  db.prepare("ALTER TABLE assets ADD COLUMN hidden INTEGER DEFAULT 0").run();
+  console.log("[init] Migration: added hidden column to assets");
+}
+if (!assetCols.includes("variant_label")) {
+  db.prepare("ALTER TABLE assets ADD COLUMN variant_label TEXT").run();
+  console.log("[init] Migration: added variant_label column to assets");
+}
+if (!assetCols.includes("status")) {
+  db.prepare("ALTER TABLE assets ADD COLUMN status TEXT DEFAULT 'ready'").run();
+  console.log("[init] Migration: added status column to assets");
+}
+if (!assetCols.includes("script_id")) {
+  db.prepare("ALTER TABLE assets ADD COLUMN script_id INTEGER REFERENCES scripts(id)").run();
+  console.log("[init] Migration: added script_id column to assets");
+}
+if (!assetCols.includes("local_path")) {
+  db.prepare("ALTER TABLE assets ADD COLUMN local_path TEXT").run();
+  console.log("[init] Migration: added local_path column to assets");
+}
+if (!assetCols.includes("render_meta_json")) {
+  db.prepare("ALTER TABLE assets ADD COLUMN render_meta_json TEXT").run();
+  console.log("[init] Migration: added render_meta_json column to assets");
+}
+
+// Backfill assets.status: 'posted' if a post row references it; else leave default 'ready'
+db.exec(`
+  UPDATE assets SET status='posted'
+  WHERE id IN (SELECT DISTINCT asset_id FROM posts WHERE asset_id IS NOT NULL)
+    AND status != 'posted'
+`);
+
+const postCols = (db.prepare("PRAGMA table_info(posts)").all() as ColInfo[]).map(c => c.name);
+if (!postCols.includes("platform_post_id")) {
+  db.prepare("ALTER TABLE posts ADD COLUMN platform_post_id TEXT").run();
+  console.log("[init] Migration: added platform_post_id column to posts");
+}
+if (!postCols.includes("platform_meta_json")) {
+  db.prepare("ALTER TABLE posts ADD COLUMN platform_meta_json TEXT").run();
+  console.log("[init] Migration: added platform_meta_json column to posts");
+}
+
+const noteCols = (db.prepare("PRAGMA table_info(ideation_notes)").all() as ColInfo[]).map(c => c.name);
+if (!noteCols.includes("idea_id")) {
+  db.prepare("ALTER TABLE ideation_notes ADD COLUMN idea_id INTEGER REFERENCES ideas(id)").run();
+  console.log("[init] Migration: added idea_id column to ideation_notes");
+}
+
+// Indexes for the new columns
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_assets_status ON assets(status);
+  CREATE INDEX IF NOT EXISTS idx_assets_idea ON assets(idea_id);
+  CREATE INDEX IF NOT EXISTS idx_assets_script ON assets(script_id);
+  CREATE INDEX IF NOT EXISTS idx_posts_platform_id ON posts(platform, platform_post_id);
+  CREATE INDEX IF NOT EXISTS idx_ideation_notes_idea ON ideation_notes(idea_id);
+`);
+
+// Computed project status view — derives from children, never set manually.
+// Status order: archived > posted > scheduled > ready > editing > filming > scripted > draft.
+// 'filming' + 'editing' can be advanced via /api/projects/[id]/state phase ping
+// (writes a stub assets row with status=phase) so the Kanban card slides without
+// waiting for a real render to land.
+db.exec(`
+  DROP VIEW IF EXISTS v_project_status;
+  CREATE VIEW v_project_status AS
+  SELECT i.id AS project_id,
+         CASE
+           WHEN i.archived=1 THEN 'archived'
+           WHEN EXISTS(SELECT 1 FROM posts po
+                       JOIN assets a ON po.asset_id=a.id
+                       WHERE a.idea_id=i.id AND po.status='success') THEN 'posted'
+           WHEN EXISTS(SELECT 1 FROM schedule s
+                       JOIN assets a ON s.asset_id=a.id
+                       WHERE a.idea_id=i.id) THEN 'scheduled'
+           WHEN EXISTS(SELECT 1 FROM assets a
+                       WHERE a.idea_id=i.id AND a.status='ready') THEN 'ready'
+           WHEN EXISTS(SELECT 1 FROM assets a
+                       WHERE a.idea_id=i.id AND a.status='editing') THEN 'editing'
+           WHEN EXISTS(SELECT 1 FROM assets a
+                       WHERE a.idea_id=i.id AND a.status='filming') THEN 'filming'
+           WHEN EXISTS(SELECT 1 FROM scripts s
+                       WHERE s.idea_id=i.id) THEN 'scripted'
+           ELSE 'draft'
+         END AS status
+  FROM ideas i;
+`);
+console.log("[init] Migration: refreshed v_project_status view");
+
 // week_themes + ideation_tags (idempotent)
 db.exec(`
   CREATE TABLE IF NOT EXISTS week_themes (

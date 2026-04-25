@@ -74,6 +74,11 @@ export async function PATCH(
     "day_of_week",
     "slot",
     "batch",
+    "archived",
+    "source_type",
+    "source_ref_table",
+    "source_ref_id",
+    "theme",
   ] as const;
 
   const sets: string[] = [];
