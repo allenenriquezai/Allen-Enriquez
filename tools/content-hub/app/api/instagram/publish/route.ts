@@ -1,21 +1,56 @@
 import { NextResponse } from "next/server";
+import db from "@/lib/db";
 
 const IG_ACCOUNT_ID = process.env.INSTAGRAM_ACCOUNT_ID!;
-const IG_TOKEN = process.env.INSTAGRAM_USER_TOKEN!;
 const IG_BASE = "https://graph.facebook.com/v25.0";
 const RUPLOAD_BASE = "https://rupload.facebook.com/ig-api-upload/v25.0";
+
+/**
+ * Resolve the IG access token. Prefer the DB row (kept fresh by
+ * /api/instagram/refresh-token). Fall back to env on cold start.
+ * Emits a console.warn if the stored token is <14 days from expiry.
+ */
+function getIgToken(): string {
+  try {
+    const row = db
+      .prepare(
+        "SELECT access_token, expires_at FROM oauth_tokens WHERE platform = ?",
+      )
+      .get("instagram") as
+      | { access_token: string; expires_at: string | null }
+      | undefined;
+
+    if (row?.access_token) {
+      if (row.expires_at) {
+        const days = Math.floor(
+          (new Date(row.expires_at).getTime() - Date.now()) /
+            (24 * 60 * 60 * 1000),
+        );
+        if (days < 14) {
+          console.warn(
+            `[ig-publish] IG token expires in ${days} days (${row.expires_at}). Trigger /api/instagram/refresh-token.`,
+          );
+        }
+      }
+      return row.access_token;
+    }
+  } catch (err) {
+    console.warn("[ig-publish] oauth_tokens read failed, falling back to env:", err);
+  }
+  return process.env.INSTAGRAM_USER_TOKEN!;
+}
 
 async function wait(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-async function pollStatus(mediaId: string): Promise<{ ok: boolean; detail?: string }> {
+async function pollStatus(mediaId: string, token: string): Promise<{ ok: boolean; detail?: string }> {
   let lastStatus = "";
   for (let i = 0; i < 18; i++) {
     await wait(10_000);
     const url = new URL(`${IG_BASE}/${mediaId}`);
     url.searchParams.set("fields", "status_code,status");
-    url.searchParams.set("access_token", IG_TOKEN);
+    url.searchParams.set("access_token", token);
     const res = await fetch(url.toString(), { cache: "no-store" });
     if (!res.ok) continue;
     const json = await res.json();
@@ -33,6 +68,7 @@ export async function POST(req: Request) {
   }
 
   const isVideo = media_type !== "IMAGE";
+  const IG_TOKEN = getIgToken();
 
   const containerUrl = new URL(`${IG_BASE}/${IG_ACCOUNT_ID}/media`);
   containerUrl.searchParams.set("access_token", IG_TOKEN);
@@ -91,7 +127,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { ok, detail } = await pollStatus(creationId);
+    const { ok, detail } = await pollStatus(creationId, IG_TOKEN);
     if (!ok) {
       return NextResponse.json(
         { error: "Video processing failed", detail: detail || "unknown" },
