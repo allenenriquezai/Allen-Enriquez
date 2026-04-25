@@ -28,10 +28,10 @@ HEIGHT = 1350  # 4:5 ratio — optimal for IG/FB feed
 BRAND_BLUE = (2, 179, 233)  # #02B3E9
 
 # Profile header
-PROFILE_PHOTO_PATH = Path(__file__).resolve().parent.parent / "projects" / "personal" / "assets" / "profile.png"
+PROFILE_PHOTO_PATH = Path(__file__).resolve().parent.parent.parent / "projects" / "personal" / "brand" / "profile.png"
 PROFILE_NAME = "Allen Enriquez"
 PROFILE_HANDLE = "@allenenriquezz"
-PROFILE_PHOTO_SIZE = 100  # diameter
+PROFILE_PHOTO_SIZE = 160  # diameter
 PROFILE_BORDER_WIDTH = 5
 
 # Colors
@@ -163,11 +163,12 @@ def draw_profile_header(img: Image.Image, draw: ImageDraw.ImageDraw, y_start: in
     # Load and crop photo to circle
     if PROFILE_PHOTO_PATH.exists():
         photo = Image.open(PROFILE_PHOTO_PATH).convert("RGBA")
-        # Crop to square (center crop)
+        # Face-biased crop: start near top since photo has headspace above face
         w, h = photo.size
-        side = min(w, h)
+        crop_h = int(h * 0.74)
+        side = min(w, crop_h)
         left = (w - side) // 2
-        top = (h - side) // 2
+        top = h - side
         photo = photo.crop((left, top, left + side, top + side))
         photo = photo.resize((photo_size, photo_size), Image.LANCZOS)
 
@@ -176,35 +177,24 @@ def draw_profile_header(img: Image.Image, draw: ImageDraw.ImageDraw, y_start: in
         mask_draw = ImageDraw.Draw(mask)
         mask_draw.ellipse([0, 0, photo_size - 1, photo_size - 1], fill=255)
 
-        # Draw blue border circle on img
-        border_size = photo_size + border * 2
         photo_x = PADDING_X
-        border_x = photo_x - border
-        border_y = y_start - border
-        draw.ellipse(
-            [border_x, border_y, border_x + border_size, border_y + border_size],
-            fill=ACCENT,
-        )
-
-        # Paste circular photo
         img.paste(photo, (photo_x, y_start), mask)
     else:
         photo_x = PADDING_X
-        border_size = photo_size + border * 2
 
-    # Name — bold, right of photo
-    name_font = load_font(FONT_HEADER_PATHS, 52, bold=True)
-    handle_font = load_font(FONT_BODY_PATHS, 32)
+    # Name — bold, right of photo (vertically centered with photo)
+    name_font = load_font(FONT_HEADER_PATHS, 64, bold=True)
+    handle_font = load_font(FONT_BODY_PATHS, 40)
 
-    text_x = photo_x + photo_size + border + 24
-    name_y = y_start + 10
+    text_x = photo_x + photo_size + 28
+    name_y = y_start + (photo_size // 2) - 44
     draw.text((text_x, name_y), PROFILE_NAME, fill=TEXT_PRIMARY, font=name_font)
 
     # Handle — below name
-    handle_y = name_y + 52
+    handle_y = name_y + 66
     draw.text((text_x, handle_y), PROFILE_HANDLE, fill=TEXT_SECONDARY, font=handle_font)
 
-    return y_start + photo_size + border * 2 + 30
+    return y_start + photo_size + 30
 
 
 def draw_slide_counter(draw: ImageDraw.ImageDraw, current: int, total: int):
@@ -266,7 +256,7 @@ def render_title_slide(text: str, slide_num: int, total: int, handle: str, show_
         subtitle = ""
 
     if show_profile:
-        profile_bottom = draw_profile_header(img, draw, y_start=PADDING_TOP + 60)
+        profile_bottom = draw_profile_header(img, draw, y_start=PADDING_TOP + 160)
         safe_top = profile_bottom + 40
     else:
         # Accent bar at top
@@ -285,14 +275,14 @@ def render_title_slide(text: str, slide_num: int, total: int, handle: str, show_
         subtitle_h = measure_text_block(draw, subtitle, sub_font, MAX_TEXT_WIDTH, 14)
         total_block = header_h + bar_gap + subtitle_h
 
-        block_y = safe_top + (safe_h - total_block) // 2
+        block_y = max(safe_top, HEIGHT // 2 - total_block // 2)
         header_bottom = draw_text_block(draw, header, header_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, block_y, line_spacing=16, align="left")
         draw_accent_bar(draw, header_bottom + 30)
         draw_text_block(draw, subtitle, sub_font, TEXT_SECONDARY, MAX_TEXT_WIDTH, header_bottom + 30 + ACCENT_BAR_HEIGHT + 30, line_spacing=14, align="left")
     else:
         header_h = measure_text_block(draw, header, header_font, MAX_TEXT_WIDTH, 16)
-        header_y = safe_top + (safe_h - header_h) // 2
-        draw_text_block(draw, header, header_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, header_y, line_spacing=16, align="left")
+        block_y = max(safe_top, HEIGHT // 2 - header_h // 2)
+        draw_text_block(draw, header, header_font, TEXT_PRIMARY, MAX_TEXT_WIDTH, block_y, line_spacing=16, align="left")
 
     draw_swipe_dots(draw, slide_num, total)
 
@@ -356,7 +346,7 @@ def render_cta_slide(text: str, slide_num: int, total: int, handle: str, show_pr
     draw = ImageDraw.Draw(img)
 
     if show_profile:
-        profile_bottom = draw_profile_header(img, draw, y_start=PADDING_TOP + 60)
+        profile_bottom = draw_profile_header(img, draw, y_start=PADDING_TOP + 160)
         safe_top = profile_bottom + 40
     else:
         draw.rectangle([0, 0, WIDTH, 12], fill=ACCENT)
@@ -386,7 +376,7 @@ def generate_carousel(
 ) -> Path:
     """Generate all carousel slides and save to projects/personal/content/carousels/<slug>/."""
     slug = slugify(topic)
-    base = Path(__file__).resolve().parent.parent / "projects" / "personal" / "content" / "carousels" / slug
+    base = Path(__file__).resolve().parent.parent.parent / "projects" / "personal" / "content" / "carousels" / slug
     base.mkdir(parents=True, exist_ok=True)
 
     if copy is None:

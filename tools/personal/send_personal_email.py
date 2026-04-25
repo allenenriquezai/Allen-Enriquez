@@ -38,7 +38,7 @@ from pathlib import Path
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 
 ACCOUNTS = {
     'ai': {

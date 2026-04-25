@@ -19,7 +19,7 @@ import pickle
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CREDENTIALS_FILE = os.path.join(BASE_DIR, 'projects', 'personal', 'credentials_personal.json')
 TOKEN_FILE = os.path.join(BASE_DIR, 'projects', 'personal', 'token_personal_ai.pickle')
 
@@ -30,6 +30,7 @@ SCOPES = [
     'https://www.googleapis.com/auth/calendar.readonly',
     'https://www.googleapis.com/auth/spreadsheets',
     'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/youtube.readonly',
 ]
 
 
