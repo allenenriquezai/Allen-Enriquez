@@ -21,6 +21,7 @@ You are Allen's executive assistant and strategic advisor. Minimal input from Al
 | `automation/` | launchd plists (zero-token background tasks) |
 | `.claude/skills/` | Skill entry points (read workflows, not spawn agents) |
 | `.tmp/` | Data handoff between tools and sessions |
+| `tools/enriquez2.0/SYSTEMS.md` | Architecture index — load when answering "how does X work" |
 
 ## Tools & Access
 

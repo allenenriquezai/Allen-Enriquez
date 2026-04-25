@@ -188,6 +188,32 @@ npx hyperframes render --quality standard --output renders/<slug>-vN.mp4
 
 Spot-check 3–4 frames from final render.
 
+### Step 5.5 — promote to Content Hub (auto-link to project)
+
+After Allen approves the final render, promote it to Content Hub so the Library + Projects Kanban sees it:
+
+```bash
+# Replace <PROJECT_ID> with the ideas.id this reel is for
+# Replace <SCRIPT_ID> with the scripts.id (variant=reel) — optional but preferred
+curl -s -X POST http://localhost:3000/api/library/promote \
+  -H 'Content-Type: application/json' \
+  -d "{
+    \"local_path\": \"$(pwd)/renders/<slug>-vN.mp4\",
+    \"project_id\": <PROJECT_ID>,
+    \"script_id\": <SCRIPT_ID>,
+    \"type\": \"reel\",
+    \"variant_label\": \"vN\",
+    \"render_meta\": { \"composition_id\": \"<slug>\", \"scene_count\": <N>, \"audio_duration\": <SEC> }
+  }"
+```
+
+The endpoint:
+- Uploads the MP4 to `r2://content-hub/ready/<project_id>/<asset_id>-<slug>.mp4`
+- Inserts an `assets` row with `status='ready'`, `idea_id=<project_id>`, `script_id=<script_id>`
+- Returns `{ asset_id, key, url }` — paste back to Allen so he can confirm
+
+If `project_id` is unknown (one-off render), call without it and the asset lands as "Unlinked" in Library; pick a project later in the UI.
+
 ## The 10 rules (quality checklist — run BEFORE first draft)
 
 1. **No dead frames.** Every 100ms animating.

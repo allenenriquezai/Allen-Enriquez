@@ -19,6 +19,9 @@ projects/**/.tmp/
 # Dashboard SQLite cache
 tools/dashboard/dashboard.db
 
+# Enriquez2.0 raw ingestion (gitignored, regenerable)
+tools/enriquez2.0/raw/
+
 # Python
 __pycache__/
 *.pyc

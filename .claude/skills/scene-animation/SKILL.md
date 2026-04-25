@@ -217,6 +217,19 @@ If Allen edits the audio AFTER scenes are locked (new cut removes 2s somewhere),
 
 See `/short-form-video` retime protocol for the full mechanics — this skill only handles the scene-internal part.
 
+## Content Hub state ping (optional but recommended)
+
+When Allen kicks off scene work for a known project, ping Content Hub so the Projects Kanban shows the project as `animating` even before any asset exists:
+
+```bash
+# Replace <PROJECT_ID> with the ideas.id this scene belongs to
+curl -s -X POST http://localhost:3000/api/projects/<PROJECT_ID>/state \
+  -H 'Content-Type: application/json' \
+  -d '{"phase": "editing"}'
+```
+
+The endpoint inserts a stub `assets` row with `status='editing'` so the project card flips columns automatically. Skip if Allen hasn't created a project yet — final asset upload happens in `/short-form-video` Step 5.5. (Editing covers CapCut + scene-animation + short-form-video as one stage.)
+
 ## Related skills
 
 - `/hyperframes` — framework rules (always first)
