@@ -104,9 +104,8 @@ def _parse_follower_count(text):
 def _get_profile_data(page, profile_url):
     """Navigate to a profile URL and scrape bio, followers, and recent posts."""
     try:
-        page.goto(profile_url, timeout=15000)
-        page.wait_for_load_state('domcontentloaded', timeout=10000)
-        time.sleep(2)  # Let JS render
+        page.goto(profile_url, timeout=20000, wait_until='domcontentloaded')
+        time.sleep(3)  # Let JS render
     except Exception as e:
         print(f"[scrape_linkedin] profile load failed for {profile_url}: {e}", file=sys.stderr)
         return None
@@ -215,19 +214,32 @@ def scrape_linkedin(limit=5, geo='all', headless=True):
                 page.mouse.wheel(0, 1500)
                 time.sleep(1)
 
-            # Extract search result cards
+            # Extract search result cards by walking up from /in/ links to nearest text-rich ancestor.
+            # LinkedIn obfuscates result-card classnames (hashed), so anchor-based traversal is more stable.
             try:
                 cards = page.eval_on_selector_all(
-                    'div[class*="result"], li[class*="result"]',
-                    """elements => elements
-                        .map(el => {
-                            const text = (el.innerText || '').slice(0, 2000);
-                            const linkEl = el.querySelector('a[href*="/in/"]');
-                            const url = linkEl ? linkEl.getAttribute('href') : null;
-                            return { text, url };
-                        })
-                        .filter(item => item.url && item.text)
-                    """
+                    'a[href*="/in/"]',
+                    """elements => {
+                        const seen = new Set();
+                        const out = [];
+                        for (const a of elements) {
+                            const href = a.getAttribute('href') || '';
+                            const url = href.startsWith('http') ? href.split('?')[0] : `https://www.linkedin.com${href.split('?')[0]}`;
+                            if (seen.has(url)) continue;
+                            let p = a;
+                            for (let i = 0; i < 6; i++) {
+                                p = p.parentElement;
+                                if (!p) break;
+                                const text = (p.innerText || '').trim();
+                                if (text.length > 100) {
+                                    seen.add(url);
+                                    out.push({ url, text: text.slice(0, 2000) });
+                                    break;
+                                }
+                            }
+                        }
+                        return out;
+                    }"""
                 )
             except Exception as e:
                 print(f"[scrape_linkedin] card extraction failed for '{query}': {e}", file=sys.stderr)
