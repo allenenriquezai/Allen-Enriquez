@@ -30,18 +30,21 @@ PLATFORM_CONFIG = {
         'logged_in_marker': 'instagram.com',
         'logged_in_path_excludes': ('login', 'accounts/login', 'challenge'),
         'profile_dir': 'ig-profile',
+        'stealth': False,
     },
     'linkedin': {
         'login_url': 'https://www.linkedin.com/login',
         'logged_in_marker': 'linkedin.com/feed',
         'logged_in_path_excludes': ('login', 'checkpoint'),
         'profile_dir': 'linkedin-profile',
+        'stealth': True,
     },
     'skool': {
         'login_url': 'https://www.skool.com/login',
         'logged_in_marker': 'skool.com',
         'logged_in_path_excludes': ('login', 'signup'),
         'profile_dir': 'skool-profile',
+        'stealth': False,
     },
 }
 
@@ -55,6 +58,7 @@ def platform_browser(platform, headless=True, slow_mo=0):
     """Yield a Playwright Page with persistent Chrome profile loaded."""
     from playwright.sync_api import sync_playwright
 
+    cfg = PLATFORM_CONFIG[platform]
     user_data_dir = profile_path(platform)
     user_data_dir.mkdir(parents=True, exist_ok=True)
 
@@ -66,6 +70,9 @@ def platform_browser(platform, headless=True, slow_mo=0):
             viewport={'width': 1280, 'height': 900},
             user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         )
+        if cfg.get('stealth'):
+            from playwright_stealth import Stealth
+            Stealth().apply_stealth_sync(context)
         page = context.pages[0] if context.pages else context.new_page()
         try:
             yield page
