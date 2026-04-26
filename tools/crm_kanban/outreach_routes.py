@@ -11,7 +11,11 @@ Mounted into the existing crm_kanban Flask app:
 """
 
 import json
+import subprocess
 import sys
+import threading
+import time
+from datetime import datetime
 from pathlib import Path
 
 from flask import Blueprint, jsonify, render_template, request
@@ -22,6 +26,47 @@ sys.path.insert(0, str(REPO_ROOT / 'tools' / 'personal'))
 import outreach_db  # noqa: E402
 
 bp = Blueprint('outreach', __name__)
+
+# In-memory run tracker. Keys: 'ig', 'skool', 'linkedin', 'enrich'.
+# Values: {'running': bool, 'started_at': iso, 'finished_at': iso, 'returncode': int|None, 'tail': str}
+RUN_STATE = {}
+RUN_LOCK = threading.Lock()
+
+RUN_COMMANDS = {
+    'ig':       ['python3', 'tools/personal/outreach_coach.py', 'discover', '--source', 'ig',       '--limit', '15'],
+    'skool':    ['python3', 'tools/personal/outreach_coach.py', 'discover', '--source', 'skool',    '--limit', '10'],
+    'linkedin': ['python3', 'tools/personal/outreach_coach.py', 'discover', '--source', 'linkedin', '--limit', '5'],
+    'enrich':   ['python3', 'tools/personal/outreach_coach.py', 'enrich',   '--limit', '20'],
+}
+
+
+def _run_subprocess(source):
+    cmd = RUN_COMMANDS[source]
+    log_path = Path.home() / 'Library' / 'Logs' / f'outreach-{source}.log'
+    try:
+        with log_path.open('a') as logf:
+            logf.write(f'\n--- {datetime.now().isoformat()} manual run via dashboard ---\n')
+            logf.flush()
+            proc = subprocess.run(cmd, cwd=str(REPO_ROOT), stdout=logf, stderr=subprocess.STDOUT, timeout=600)
+        rc = proc.returncode
+    except subprocess.TimeoutExpired:
+        rc = -1
+    except Exception:
+        rc = -2
+    # Read last few lines of log for UI tail
+    try:
+        with log_path.open() as f:
+            lines = f.readlines()
+        tail = ''.join(lines[-8:])
+    except Exception:
+        tail = ''
+    with RUN_LOCK:
+        RUN_STATE[source].update({
+            'running': False,
+            'finished_at': datetime.now().isoformat(timespec='seconds'),
+            'returncode': rc,
+            'tail': tail[-1500:],
+        })
 
 STAGE_ORDER = [
     'enriched', 'queued', 'sent', 'replied',
@@ -157,6 +202,35 @@ def api_edit_hook():
         return jsonify({'ok': False, 'error': 'bad id/hook'}), 400
     outreach_db.update_prospect(pid, {'personal_hook': new_hook})
     return jsonify({'ok': True})
+
+
+@bp.route('/api/outreach/run', methods=['POST'])
+def api_run():
+    """Manually trigger discover/enrich for a source. Spawns subprocess in thread."""
+    data = request.json or {}
+    source = data.get('source')
+    if source not in RUN_COMMANDS:
+        return jsonify({'ok': False, 'error': f'unknown source {source}'}), 400
+    with RUN_LOCK:
+        existing = RUN_STATE.get(source)
+        if existing and existing.get('running'):
+            return jsonify({'ok': False, 'error': 'already running', 'state': existing}), 409
+        RUN_STATE[source] = {
+            'running': True,
+            'started_at': datetime.now().isoformat(timespec='seconds'),
+            'finished_at': None,
+            'returncode': None,
+            'tail': '',
+        }
+    threading.Thread(target=_run_subprocess, args=(source,), daemon=True).start()
+    return jsonify({'ok': True, 'source': source, 'state': RUN_STATE[source]})
+
+
+@bp.route('/api/outreach/run-status')
+def api_run_status():
+    """Return current run state for all sources."""
+    with RUN_LOCK:
+        return jsonify({'state': dict(RUN_STATE)})
 
 
 @bp.route('/api/ad-leads/intake', methods=['POST'])

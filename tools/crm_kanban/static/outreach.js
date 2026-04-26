@@ -96,8 +96,52 @@
         });
     }
 
+    function bindRunButtons() {
+        document.querySelectorAll('.run-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const source = btn.dataset.run;
+                btn.disabled = true;
+                const orig = btn.textContent;
+                btn.textContent = '…';
+                btn.classList.add('opacity-50');
+                try {
+                    const res = await postJSON('/api/outreach/run', { source });
+                    if (res && res.ok === false && res.error === 'already running') {
+                        btn.textContent = 'running';
+                    } else {
+                        btn.textContent = 'started';
+                    }
+                    pollRunStatus(source, btn, orig);
+                } catch (e) {
+                    btn.textContent = 'err';
+                    setTimeout(() => { btn.textContent = orig; btn.disabled = false; btn.classList.remove('opacity-50'); }, 3000);
+                }
+            });
+        });
+    }
+
+    async function pollRunStatus(source, btn, origLabel) {
+        for (let i = 0; i < 120; i++) {  // ~10min cap
+            await new Promise(r => setTimeout(r, 5000));
+            try {
+                const res = await fetch('/api/outreach/run-status').then(r => r.json());
+                const s = res.state && res.state[source];
+                if (s && !s.running) {
+                    const ok = s.returncode === 0;
+                    btn.textContent = ok ? '✓ ' + origLabel : '✗ ' + origLabel;
+                    btn.title = (s.tail || '').slice(-500);
+                    if (ok) setTimeout(() => location.reload(), 1500);
+                    setTimeout(() => { btn.textContent = origLabel; btn.disabled = false; btn.classList.remove('opacity-50'); }, 8000);
+                    return;
+                }
+            } catch (e) { /* retry */ }
+        }
+        btn.textContent = origLabel; btn.disabled = false; btn.classList.remove('opacity-50');
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.card').forEach(bindCard);
         bindDragDrop();
+        bindRunButtons();
     });
 })();

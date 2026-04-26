@@ -47,6 +47,12 @@
             <span class="text-blue-400">{{ stats.sent }} sent</span>
             <span class="text-purple-400">{{ stats.replied }} replied</span>
             {% if stats.ad_leads %}<span class="text-pink-400">{{ stats.ad_leads }} ad-leads</span>{% endif %}
+            <div class="flex items-center gap-1 ml-2 border-l border-gray-700 pl-3">
+                <button data-run="ig"       class="run-btn px-2 py-1 rounded bg-gray-800 hover:bg-blue-700 text-xs text-gray-300" title="Discover IG (15)">IG</button>
+                <button data-run="skool"    class="run-btn px-2 py-1 rounded bg-gray-800 hover:bg-blue-700 text-xs text-gray-300" title="Discover Skool (10)">Skool</button>
+                <button data-run="linkedin" class="run-btn px-2 py-1 rounded bg-gray-800 hover:bg-blue-700 text-xs text-gray-300" title="Discover LinkedIn (5)">LI</button>
+                <button data-run="enrich"   class="run-btn px-2 py-1 rounded bg-gray-800 hover:bg-emerald-700 text-xs text-gray-300" title="Enrich pending (20)">Enrich</button>
+            </div>
             <button onclick="location.reload()" class="text-gray-500 hover:text-white" title="Refresh">↻</button>
         </div>
     </header>
