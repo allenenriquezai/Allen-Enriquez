@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AECRM — Outreach</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+    <style>
+        body { background: #030712; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; }
+        .card { transition: transform 0.1s ease; }
+        .card:hover { transform: translateY(-1px); }
+        .dm-textarea { font-family: -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.4; }
+        .pill { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .pill-A { background: #1e3a8a; color: #93c5fd; }
+        .pill-B { background: #581c87; color: #d8b4fe; }
+        .pill-C { background: #14532d; color: #86efac; }
+        .geo-pill { background: #374151; color: #d1d5db; font-size: 10px; padding: 1px 6px; border-radius: 4px; }
+        .col-scroll { overflow-y: auto; max-height: calc(100vh - 180px); }
+        .col-scroll::-webkit-scrollbar { width: 6px; }
+        .col-scroll::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Top Bar -->
+    <header class="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between sticky top-0 z-40">
+        <div class="flex items-center gap-4">
+            <h1 class="text-lg font-semibold tracking-tight">AECRM <span class="text-gray-500 font-normal">— Outreach</span></h1>
+            <div class="flex bg-gray-800 rounded-lg p-0.5 gap-0.5 text-sm">
+                <a href="/" class="px-3 py-1 rounded-md text-gray-400 hover:text-white">Painters</a>
+                <a href="/outreach" class="px-3 py-1 rounded-md bg-blue-600 text-white">Coaches</a>
+            </div>
+            <div class="flex bg-gray-800 rounded-lg p-0.5 gap-0.5 text-sm">
+                {% for g in ['all','AU','US','UK','CA','PH'] %}
+                <a href="/outreach?segment={{ segment }}&geo={{ g }}"
+                   class="px-3 py-1 rounded-md {% if geo == g %}bg-blue-600 text-white{% else %}text-gray-400 hover:text-white{% endif %}">
+                    {{ g }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="flex items-center gap-5 text-sm">
+            <span class="text-gray-400">{{ stats.total }} total</span>
+            <span class="text-emerald-400">{{ stats.enriched }} ready</span>
+            <span class="text-amber-400">{{ stats.queued }} queued</span>
+            <span class="text-blue-400">{{ stats.sent }} sent</span>
+            <span class="text-purple-400">{{ stats.replied }} replied</span>
+            {% if stats.ad_leads %}<span class="text-pink-400">{{ stats.ad_leads }} ad-leads</span>{% endif %}
+            <button onclick="location.reload()" class="text-gray-500 hover:text-white" title="Refresh">↻</button>
+        </div>
+    </header>
+
+    <!-- Kanban columns -->
+    <main class="flex-1 overflow-x-auto p-4">
+        <div class="flex gap-4 min-w-max h-full">
+            {% for stage in stage_order %}
+            <div class="w-80 flex-shrink-0 bg-gray-900 rounded-lg border border-gray-800 flex flex-col">
+                <div class="px-3 py-2 border-b border-gray-800 flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-200">{{ stage_labels[stage] }}</span>
+                    <span class="text-xs text-gray-500">{{ columns[stage]|length }}</span>
+                </div>
+                <div class="col-scroll p-2 flex-1" data-stage="{{ stage }}" id="col-{{ stage }}">
+                    {% for card in columns[stage] %}
+                    {% include 'outreach_card.html' %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <script src="/static/outreach.js"></script>
+</body>
+</html>

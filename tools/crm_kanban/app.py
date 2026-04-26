@@ -712,6 +712,11 @@ def api_outreach_detailed():
         return jsonify({'ok': False, 'error': str(e)}), 500
 
 
+# Outreach blueprint (SQLite-backed coach DM kanban)
+from outreach_routes import bp as outreach_bp  # noqa: E402
+app.register_blueprint(outreach_bp)
+
+
 if __name__ == '__main__':
-    print("CRM Kanban Board → http://localhost:5001")
+    print("AECRM → http://localhost:5001  (Painters: /  ·  Coaches: /outreach)")
     app.run(host='0.0.0.0', port=5001, debug=True, threaded=True, use_reloader=False)

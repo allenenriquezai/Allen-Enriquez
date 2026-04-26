@@ -24,7 +24,7 @@
     <!-- Top Bar -->
     <header class="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between sticky top-0 z-40">
         <div class="flex items-center gap-4">
-            <h1 class="text-lg font-semibold tracking-tight">CRM Board</h1>
+            <h1 class="text-lg font-semibold tracking-tight">AECRM <span class="text-gray-500 font-normal">— Painters</span></h1>
             <div class="flex bg-gray-800 rounded-lg p-0.5 gap-0.5">
                 <a href="/?group=paint"
                    class="px-3 py-1 rounded-md text-sm font-medium transition
@@ -40,6 +40,10 @@
                    class="px-3 py-1 rounded-md text-sm font-medium transition
                           {% if group == 'all' %}bg-blue-600 text-white{% else %}text-gray-400 hover:text-white{% endif %}">
                     All
+                </a>
+                <a href="/outreach"
+                   class="px-3 py-1 rounded-md text-sm font-medium text-pink-300 hover:text-white border-l border-gray-700 ml-1 pl-3">
+                    Coaches →
                 </a>
             </div>
         </div>

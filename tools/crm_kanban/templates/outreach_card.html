@@ -1,0 +1,75 @@
+<div class="card bg-gray-800 border border-gray-700 rounded-lg p-3 mb-2 cursor-grab" data-id="{{ card.id }}">
+    <div class="flex items-start gap-2 mb-2">
+        {% if card.profile_pic_url %}
+        <img src="{{ card.profile_pic_url }}" alt="" class="w-10 h-10 rounded-full object-cover bg-gray-700 flex-shrink-0" loading="lazy" onerror="this.style.display='none'">
+        {% else %}
+        <div class="w-10 h-10 rounded-full bg-gray-700 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs">
+            {{ (card.name or '?')[0]|upper }}
+        </div>
+        {% endif %}
+        <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-gray-100 truncate">{{ card.name }}</div>
+            <div class="text-xs text-gray-400 truncate">
+                {% if card.ig_handle %}@{{ card.ig_handle }}{% endif %}
+                {% if card.geo %}<span class="geo-pill ml-1">{{ card.geo }}</span>{% endif %}
+            </div>
+            <div class="text-xs text-gray-500 mt-0.5">
+                {% if card.audience_size %}{{ '{:,}'.format(card.audience_size) }} followers{% endif %}
+                {% if card.community_name %} · {{ card.community_name }}{% endif %}
+            </div>
+        </div>
+        {% if card.hook_variant %}
+        <span class="pill pill-{{ card.hook_variant }}">{{ card.hook_variant }}</span>
+        {% endif %}
+    </div>
+
+    {% if card.pain_signal %}
+    <div class="text-xs text-amber-300 mb-2">Pain: {{ card.pain_signal }}</div>
+    {% endif %}
+
+    {% if card.personal_hook %}
+    <textarea
+        class="dm-textarea w-full text-xs bg-gray-900 border border-gray-700 rounded p-2 text-gray-200 mb-2"
+        rows="6"
+        data-hook-textarea
+    >{{ card.personal_hook }}</textarea>
+    {% endif %}
+
+    <div class="flex items-center gap-1 flex-wrap text-xs">
+        {% if card.personal_hook %}
+        <button class="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded" data-action="copy">Copy DM</button>
+        {% endif %}
+        {% if card.ig_handle %}
+        <a href="https://instagram.com/{{ card.ig_handle }}/" target="_blank" rel="noopener"
+           class="px-2 py-1 bg-pink-700 hover:bg-pink-600 text-white rounded">Open IG</a>
+        {% endif %}
+        {% if card.skool_url %}
+        <a href="{{ card.skool_url }}" target="_blank" rel="noopener"
+           class="px-2 py-1 bg-purple-700 hover:bg-purple-600 text-white rounded">Skool</a>
+        {% endif %}
+        {% if card.linkedin_url %}
+        <a href="{{ card.linkedin_url }}" target="_blank" rel="noopener"
+           class="px-2 py-1 bg-blue-800 hover:bg-blue-700 text-white rounded">LinkedIn</a>
+        {% endif %}
+        {% if card.status in ['enriched', 'queued'] %}
+        <button class="px-2 py-1 bg-emerald-700 hover:bg-emerald-600 text-white rounded ml-auto" data-action="mark-sent">✓ Sent</button>
+        {% elif card.status == 'sent' %}
+        <button class="px-2 py-1 bg-amber-700 hover:bg-amber-600 text-white rounded" data-action="mark-replied" data-classification="INTERESTED">↩ Interested</button>
+        <button class="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded" data-action="mark-replied" data-classification="NOT_INTERESTED">✗ No</button>
+        {% endif %}
+    </div>
+
+    {% if card.recent_posts %}
+    <details class="mt-2 text-xs text-gray-400">
+        <summary class="cursor-pointer hover:text-gray-200">Recent posts ({{ card.recent_posts|length }})</summary>
+        <ul class="mt-1 space-y-1 pl-3 border-l border-gray-700">
+            {% for post in card.recent_posts[:5] %}
+            <li class="text-gray-500">
+                {% if post.text %}{{ post.text[:160] }}{% if post.text|length > 160 %}…{% endif %}{% endif %}
+                {% if post.date %}<span class="text-gray-600 text-[10px] ml-1">{{ post.date }}</span>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </details>
+    {% endif %}
+</div>
