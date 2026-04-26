@@ -105,7 +105,7 @@ def _get_profile_data(page, profile_url):
     """Navigate to a profile URL and scrape bio, followers, and recent posts."""
     try:
         page.goto(profile_url, timeout=15000)
-        page.wait_for_load_state('networkidle', timeout=10000)
+        page.wait_for_load_state('domcontentloaded', timeout=10000)
         time.sleep(2)  # Let JS render
     except Exception as e:
         print(f"[scrape_linkedin] profile load failed for {profile_url}: {e}", file=sys.stderr)
@@ -198,7 +198,7 @@ def scrape_linkedin(limit=5, geo='all', headless=True):
             search_url = f"https://www.linkedin.com/search/results/people/?keywords={quote(query)}"
             try:
                 page.goto(search_url, timeout=30000)
-                page.wait_for_load_state('networkidle', timeout=15000)
+                page.wait_for_load_state('domcontentloaded', timeout=15000)
             except Exception as e:
                 print(f"[scrape_linkedin] search load failed for '{query}': {e}", file=sys.stderr)
                 continue

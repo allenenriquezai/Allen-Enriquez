@@ -83,37 +83,34 @@ def scrape_skool(limit=10, geo='all', headless=True):
         for category in TARGET_CATEGORIES:
             if len(out) >= limit:
                 break
-            url = f"{DISCOVERY_URL}?c={category.lower()}"
+            url = DISCOVERY_URL  # Skool no longer supports ?c= category filter; one feed
             try:
                 page.goto(url, timeout=30000)
-                page.wait_for_load_state('networkidle', timeout=15000)
+                page.wait_for_load_state('domcontentloaded', timeout=15000)
             except Exception as e:
-                print(f"[scrape_skool] {category} load failed: {e}", file=sys.stderr)
-                continue
+                print(f"[scrape_skool] load failed: {e}", file=sys.stderr)
+                break
 
-            # Scroll to load more
-            for _ in range(3):
+            for _ in range(5):
                 page.mouse.wheel(0, 2000)
                 time.sleep(1.2)
 
-            # Community cards live as anchor tags pointing to /<community-slug>
+            # Community cards: <a href="/<slug>/about?utm_..."> with parent containing members/price text
             cards = page.eval_on_selector_all(
-                'a[href^="/"]',
+                'a[href*="/about?"]',
                 """elements => elements
                     .filter(a => {
                         const href = a.getAttribute('href') || '';
-                        if (!href.startsWith('/') || href.length < 3) return false;
-                        if (href.includes('/discovery') || href.includes('/login') || href.includes('/about')) return false;
-                        if (href.split('/').length > 2) return false;
-                        return true;
+                        return href.startsWith('/') && href.includes('/about?utm') && !href.startsWith('/discovery');
                     })
-                    .map(a => {
-                        const card = a.closest('[class*="card"], [class*="Card"], div');
-                        const text = (card?.innerText || a.innerText || '').slice(0, 1500);
-                        return { href: a.getAttribute('href'), text };
-                    })
+                    .map(a => ({
+                        href: a.getAttribute('href'),
+                        text: (a.innerText || '').slice(0, 1500),
+                    }))
                 """
             )
+            seen_local = set()
+            cards = [c for c in cards if c['href'] not in seen_local and not seen_local.add(c['href'])]
 
             for card in cards:
                 if len(out) >= limit:
@@ -135,9 +132,11 @@ def scrape_skool(limit=10, geo='all', headless=True):
                 if members < MIN_MEMBERS and price < MIN_PRICE_USD:
                     continue
 
-                # First text line is usually the community name
+                # Skool card format: '#N\nName\nDescription\nXk Members  •  $Y/month'
                 lines = [l.strip() for l in text.split('\n') if l.strip()]
-                community_name = lines[0] if lines else href.strip('/')
+                if lines and lines[0].startswith('#') and lines[0][1:].strip().isdigit():
+                    lines = lines[1:]
+                community_name = lines[0] if lines else href.split('/')[1] if '/' in href else href
 
                 # Owner extraction is unreliable from card; defer to per-community page
                 owner_name = ''
