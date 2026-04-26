@@ -19,3 +19,24 @@ Action: draft the magnet before replying. Send in DM with 1-line hook.
 Build rule: when someone comments, draft magnet same day. Don't build ahead — no proof anyone wants them yet.
 
 ---
+
+## Website + Landing Page Rebuild
+
+Triggered by: post-Phase-A coach outreach kicking off (need a real public surface for inbound).
+
+Current site: https://allenenriquezai.github.io/connect/ (the brief brand-connect page at `projects/personal/sales/landing-page/`).
+
+What to build:
+- **Main site rebuild** — replace `connect/` with proper personal-brand site. Sections: hero (positioning sentence from `tools/enriquez2.0/identity/positioning.md`), 5-pillar offer (from `projects/personal/offer.md`), proof block (drink-own-champagne + EPS internal stats + Sinan/auto-care once shipped), content feed (recent reels via content-hub API or static cards), CTA → discovery call.
+- **Coach landing page** — already shipped at `projects/personal/sales/ad-landing-coaches/` for the Meta ads. Decide whether main site = landing page, or keep them separate (main = brand, landing = ad funnel). Likely separate.
+- **Stack:** Same as existing — static HTML on GitHub Pages. Don't migrate to Next.js or anything heavy until real traffic justifies it.
+- **Tally form** for inbound (same form sink as ad landing → CRM `/api/ad-leads/intake`).
+
+Open Q before build:
+- Main site URL — keep `allenenriquezai.github.io/connect` or move to custom domain (`allenenriquez.com`/`enriquez.ai`)?
+- Single landing-style page vs multi-section site?
+- Video on hero — same ICP video Allen films for ad landing, or separate brand intro?
+
+Defer until: first 5-10 ad-leads or DM replies land in CRM (signal that public surface is being looked at). No point polishing a brochure no one visits.
+
+---
