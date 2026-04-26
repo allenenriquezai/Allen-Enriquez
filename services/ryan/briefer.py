@@ -335,6 +335,17 @@ def send_brief(subject: str, body: str) -> dict:
 
 def run_brief(dry_run: bool = False) -> dict:
     """End-to-end: fetch data, compose, send (or preview)."""
+    if not dry_run:
+        state = config.load_state()
+        last = state.get("last_brief_sent_at")
+        if last:
+            try:
+                last_dt = datetime.fromisoformat(last)
+                if (_pt_now() - last_dt).total_seconds() < 1800:
+                    return {"skipped": True, "reason": "duplicate suppressed — brief sent within last 30 min", "last_sent": last}
+            except Exception:
+                pass
+
     overnight = fetch_overnight_messages(hours_back=14)
     events = fetch_calendar_today()
     urgent = find_urgent(overnight)
@@ -652,6 +663,17 @@ def run_evening_brief_preview(token: str = "ryan-sc") -> str:
 
 def run_evening_brief(dry_run: bool = False) -> dict:
     """End-to-end: fetch data, compose, send (or preview)."""
+    if not dry_run:
+        state = config.load_state()
+        last = state.get("last_evening_brief_sent_at")
+        if last:
+            try:
+                last_dt = datetime.fromisoformat(last)
+                if (_pt_now() - last_dt).total_seconds() < 1800:
+                    return {"skipped": True, "reason": "duplicate suppressed — evening brief sent within last 30 min", "last_sent": last}
+            except Exception:
+                pass
+
     today_msgs = fetch_overnight_messages(hours_back=12)
     team_daily = fetch_team_daily_today(hours_back=12)
     events_tomorrow = fetch_calendar_tomorrow()

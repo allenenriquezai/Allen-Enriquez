@@ -49,10 +49,12 @@ def _fire_evening_brief() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
-    # 6:30 AM PT
-    scheduler.add_job(_fire_morning_brief, CronTrigger(hour=6, minute=30, timezone="America/Los_Angeles"))
+    # 6:30 AM PT — coalesce+max_instances=1 prevents catch-up fires on restart
+    scheduler.add_job(_fire_morning_brief, CronTrigger(hour=6, minute=30, timezone="America/Los_Angeles"),
+                      coalesce=True, max_instances=1, misfire_grace_time=300)
     # 6:00 PM PT
-    scheduler.add_job(_fire_evening_brief, CronTrigger(hour=18, minute=0, timezone="America/Los_Angeles"))
+    scheduler.add_job(_fire_evening_brief, CronTrigger(hour=18, minute=0, timezone="America/Los_Angeles"),
+                      coalesce=True, max_instances=1, misfire_grace_time=300)
     # Cache warm-up every 5 min so page loads are instant
     scheduler.add_job(warm_all_caches, "interval", minutes=5)
     scheduler.start()
