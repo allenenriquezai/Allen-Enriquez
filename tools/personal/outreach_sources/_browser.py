@@ -46,6 +46,13 @@ PLATFORM_CONFIG = {
         'profile_dir': 'skool-profile',
         'stealth': False,
     },
+    'google': {
+        'login_url': 'https://www.google.com/',
+        'logged_in_marker': 'google.com',
+        'logged_in_path_excludes': (),
+        'profile_dir': 'google-profile',
+        'stealth': True,
+    },
 }
 
 
@@ -126,7 +133,7 @@ def main():
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest='cmd', required=True)
     li = sub.add_parser('login')
-    li.add_argument('--platform', required=True, choices=['ig', 'linkedin', 'skool'])
+    li.add_argument('--platform', required=True, choices=['ig', 'linkedin', 'skool', 'google'])
     li.add_argument('--timeout', type=int, default=600)
     args = p.parse_args()
 

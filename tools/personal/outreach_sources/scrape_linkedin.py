@@ -101,78 +101,72 @@ def _parse_follower_count(text):
         return 0
 
 
+def _parse_main_lines(main_text):
+    """Parse <main> innerText: line 0 = name, headline = line after '· Nth'/'· You', then location, etc."""
+    lines = [l for l in (main_text or '').split('\n') if l.strip()]
+    name = lines[0].strip() if lines else ''
+    headline = ''
+    location = ''
+    # Find headline = first non-degree non-name long line
+    for i, line in enumerate(lines[1:], 1):
+        s = line.strip()
+        if s.startswith('·') or s in ('1st', '2nd', '3rd', 'You'):
+            continue
+        if len(s) > 15:
+            headline = s
+            # Location is usually the next non-bullet line
+            for nxt in lines[i + 1:]:
+                t = nxt.strip()
+                if t == '·' or t.startswith('·'):
+                    continue
+                if t and 'connect' not in t.lower() and 'message' not in t.lower():
+                    location = t
+                    break
+            break
+    return name, headline, location
+
+
 def _get_profile_data(page, profile_url):
-    """Navigate to a profile URL and scrape bio, followers, and recent posts."""
+    """Navigate to a profile URL and scrape name, headline, location, about, followers."""
     try:
         page.goto(profile_url, timeout=20000, wait_until='domcontentloaded')
-        time.sleep(3)  # Let JS render
+        time.sleep(3)
     except Exception as e:
         print(f"[scrape_linkedin] profile load failed for {profile_url}: {e}", file=sys.stderr)
         return None
 
-    # Check if page is restricted
-    page_text = page.content()
-    if 'restricted' in page_text.lower() or 'private account' in page_text.lower():
+    if 'login' in page.url.lower() or 'authwall' in page.url.lower():
         return None
 
-    # Extract headline (usually under name)
-    headline = ''
-    try:
-        headline_el = page.query_selector('h2[class*="headline"], div[class*="headline"]')
-        if headline_el:
-            headline = headline_el.text_content().strip()
-    except Exception:
-        pass
+    main_text = page.evaluate('document.querySelector("main")?.innerText || ""')
+    if not main_text:
+        return None
 
-    # Extract about section
-    about = ''
-    try:
-        about_btn = page.query_selector('button:has-text("Show more")')
-        if about_btn:
-            about_btn.click()
-            time.sleep(1)
-        about_el = page.query_selector('div[class*="about"], div[data-section-target="aboutSection"]')
-        if about_el:
-            about = about_el.text_content().strip()
-    except Exception:
-        pass
+    name, headline, location = _parse_main_lines(main_text)
 
-    # Extract follower count from profile header
-    followers = 0
-    try:
-        header = page.query_selector('div[class*="profile-header"], section[class*="profile"]')
-        if header:
-            header_text = header.text_content()
-            followers = _parse_follower_count(header_text)
-    except Exception:
-        pass
+    # About section — find <section> whose <h2> contains "about"
+    about = page.evaluate("""
+        () => {
+            for (const s of document.querySelectorAll('section')) {
+                const h = s.querySelector('h2');
+                if (h && h.textContent.toLowerCase().includes('about')) {
+                    return s.innerText.replace(/^About\\s*/i, '').trim().slice(0, 2000);
+                }
+            }
+            return '';
+        }
+    """)
 
-    # Extract recent posts
-    recent_posts = []
-    try:
-        post_elements = page.query_selector_all('div[data-urn*="activity"]')
-        for post_el in post_elements[:3]:  # Limit to 3 most recent
-            try:
-                post_text = post_el.text_content().strip()[:500]
-                # Try to find a link
-                link_el = post_el.query_selector('a[href*="/feed/"]')
-                post_url = link_el.get_attribute('href') if link_el else None
-                if post_text:
-                    recent_posts.append({
-                        'text': post_text,
-                        'url': post_url,
-                        'date': None,  # LinkedIn doesn't expose exact date easily
-                    })
-            except Exception:
-                continue
-    except Exception:
-        pass
+    # Followers — search main text for "N followers" or "N connections"
+    followers = _parse_follower_count(main_text)
 
     return {
+        'name': name,
         'headline': headline,
-        'about': about,
+        'location': location,
+        'about': about or '',
         'followers': followers,
-        'recent_posts': recent_posts,
+        'recent_posts': [],
     }
 
 
@@ -214,8 +208,9 @@ def scrape_linkedin(limit=5, geo='all', headless=True):
                 page.mouse.wheel(0, 1500)
                 time.sleep(1)
 
-            # Extract search result cards by walking up from /in/ links to nearest text-rich ancestor.
-            # LinkedIn obfuscates result-card classnames (hashed), so anchor-based traversal is more stable.
+            # Extract search result cards: walk up from /in/ link to first ancestor that
+            # contains text >100 chars AND exactly one /in/ link (avoids overlap from
+            # "mutual connection" sub-anchors pointing to other profiles).
             try:
                 cards = page.eval_on_selector_all(
                     'a[href*="/in/"]',
@@ -227,11 +222,12 @@ def scrape_linkedin(limit=5, geo='all', headless=True):
                             const url = href.startsWith('http') ? href.split('?')[0] : `https://www.linkedin.com${href.split('?')[0]}`;
                             if (seen.has(url)) continue;
                             let p = a;
-                            for (let i = 0; i < 6; i++) {
+                            for (let i = 0; i < 8; i++) {
                                 p = p.parentElement;
                                 if (!p) break;
                                 const text = (p.innerText || '').trim();
-                                if (text.length > 100) {
+                                const inLinks = p.querySelectorAll('a[href*="/in/"]').length;
+                                if (text.length > 100 && inLinks === 1) {
                                     seen.add(url);
                                     out.push({ url, text: text.slice(0, 2000) });
                                     break;
@@ -264,56 +260,43 @@ def scrape_linkedin(limit=5, geo='all', headless=True):
                 if not _has_coach_signals(card_text):
                     continue
 
-                # Extract name (first line usually)
+                # Track program signal from card text (cheap pre-fetch)
                 lines = [l.strip() for l in card_text.split('\n') if l.strip()]
-                name = lines[0] if lines else 'Unknown'
+                has_program = _has_program_signals(card_text)
 
-                # Extract headline (second line usually)
-                card_headline = lines[1] if len(lines) > 1 else ''
-
-                # Quick filter: check if headline/card text has program signals
-                # This avoids fetching every profile
-                combined_signals = card_headline + ' ' + card_text
-                if not _has_program_signals(combined_signals):
-                    continue
-
-                # Safe to fetch profile now
+                # Fetch profile — name/headline/location/about all come from profile page
                 profile_count += 1
                 profile_data = _get_profile_data(page, profile_url)
-                if not profile_data:
+                if not profile_data or not profile_data.get('name'):
                     continue
 
                 time.sleep(5)  # Throttle between profile views
 
-                # Combine signals from card + profile
+                name = profile_data['name']
                 full_bio = ' '.join([
                     profile_data.get('headline') or '',
                     profile_data.get('about') or '',
-                ])
+                ]).strip()
+                if not has_program:
+                    has_program = _has_program_signals(full_bio)
 
-                # Final check: must have program signals in full profile
-                if not _has_program_signals(full_bio):
-                    continue
-
-                # Geo extraction
-                location_text = ''
-                if len(lines) > 2:
-                    location_text = lines[2]
-                extracted_geo = _extract_geo(location_text)
+                extracted_geo = _extract_geo(profile_data.get('location') or '')
                 if geo != 'all' and extracted_geo != geo:
-                    if extracted_geo:  # Skip if geo specified and doesn't match
+                    if extracted_geo:
                         continue
 
-                # Determine sub_segment
+                # Determine sub_segment — community-led wins when program signals present
                 sub_segment = None
-                if 'agency' in full_bio.lower():
-                    sub_segment = 'agency-coach'
-                elif 'cohort' in full_bio.lower() or 'skool' in full_bio.lower():
+                if has_program and ('cohort' in full_bio.lower() or 'skool' in full_bio.lower() or 'community' in full_bio.lower()):
                     sub_segment = 'community-led'
+                elif 'agency' in full_bio.lower():
+                    sub_segment = 'agency-coach'
                 elif 'course' in full_bio.lower() or 'automation' in full_bio.lower():
                     sub_segment = 'tech-course-creator'
+                elif has_program:
+                    sub_segment = 'business-coach-program'
                 else:
-                    sub_segment = 'business-coach'
+                    sub_segment = 'unqualified'
 
                 out.append({
                     'name': name,
