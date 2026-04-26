@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.enriquezOS.outreach-enrich</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/env</string>
+        <string>python3</string>
+        <string>/Users/allenenriquez/Developer/Allen-Enriquez/tools/personal/outreach_coach.py</string>
+        <string>enrich</string>
+        <string>--limit</string>
+        <string>20</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>1800</integer>
+    <key>StandardOutPath</key>
+    <string>/Users/allenenriquez/Library/Logs/outreach-enrich.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/allenenriquez/Library/Logs/outreach-enrich.log</string>
+    <key>WorkingDirectory</key>
+    <string>/Users/allenenriquez/Developer/Allen-Enriquez</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+</dict>
+</plist>
