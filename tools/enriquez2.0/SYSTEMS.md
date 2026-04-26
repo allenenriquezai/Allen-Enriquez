@@ -8,6 +8,10 @@ Master index of every tool, service, and automation in the repo. **Loaded on dem
 
 | Tool / Service | What | Architecture |
 |---|---|---|
+| `tools/enriquez2.0/identity/` | Identity layer — positioning, pricing, system pillars (Aristotle AI Agency Package source of truth) | [system-pillars.md](identity/system-pillars.md) |
+| `tools/enriquez2.0/outreach/` | Outreach factory — stable plumbing + per-ICP configs (cold DM + paid ads + content-led + email) | [plumbing.md](outreach/plumbing.md) |
+| `tools/enriquez2.0/playbook/` | Delivery factory — per-pillar SOPs filled in per client deployment | [pillar-template.md](playbook/pillar-template.md) |
+| `tools/enriquez2.0/content/` | Content factory — ICP-specific hook banks driving the content engine | [icp-hooks.coaches.md](content/icp-hooks.coaches.md) |
 | `tools/enriquez2.0/` | Knowledge + audit + opportunity engine (this tool) | [OVERVIEW](OVERVIEW.md) |
 | `tools/content-hub/` | Multi-platform content production — ideas → assets → publish IG/FB/YT/TikTok → analytics | [OVERVIEW](../content-hub/OVERVIEW.md) |
 | `automation/` | 23 launchd plists (briefings, ingest, token refresh, status checks) | TODO — `automation/README.md` |
@@ -16,7 +20,12 @@ Master index of every tool, service, and automation in the repo. **Loaded on dem
 | `tools/clients/` | Client maintenance scripts (per-client subdirs) | TODO — `tools/clients/OVERVIEW.md` |
 | `tools/shared/` | Cross-domain utilities — automation status, n8n monitor, debug, OAuth re-auth | TODO — `tools/shared/OVERVIEW.md` |
 | `tools/dashboard/` | Internal dashboard (SQLite cache) | TODO — `tools/dashboard/OVERVIEW.md` |
-| `tools/crm_kanban/` | Personal Kanban CRM — http://localhost:5001, launchd `com.enriquezOS.crm-kanban` | TODO — `tools/crm_kanban/OVERVIEW.md` |
+| `tools/crm_kanban/` | AECRM — Painters tab (Sheets-backed) + Coaches tab (`/outreach`, SQLite-backed); single pane for cold-DM workflow + ad-lead intake | http://localhost:5001 · launchd `com.enriquezOS.crm-kanban` |
+| `projects/personal/data/outreach.db` | SQLite source of truth for coach-ICP outreach prospects + ad-leads. Schema in `tools/personal/outreach_db.py`. | run `python3 tools/personal/outreach_db.py stats` |
+| `tools/personal/outreach_coach.py` | Coach-ICP CLI: discover (skool/ig/linkedin) · enrich (Haiku) · list · mark-sent · mark-replied · stats | `python3 tools/personal/outreach_coach.py --help` |
+| `tools/personal/outreach_sources/` | Playwright scrapers — `scrape_skool.py`, `scrape_ig.py`, `scrape_linkedin.py`. One-time interactive login via `_browser.py login --platform <ig\|linkedin\|skool>` | session state in `~/.cache/enriquez-outreach/` |
+| `tools/personal/ad_iterator.py` | Daily Meta ad creative iterator — pulls metrics, Claude generates 3 variants, pushes new ads, pauses bottom performer | needs `META_ADS_TOKEN` + `META_AD_ACCOUNT_ID` from `projects/personal/.env` (see `outreach/ad-setup-checklist.md`) |
+| `projects/personal/sales/ad-landing-coaches/` | Coach-ICP ad landing page (Tally form → `/api/ad-leads/intake` webhook → CRM) | local preview: `cd projects/personal/sales/ad-landing-coaches && python3 -m http.server 8000` |
 | `tools/eps-dashboard/` | EPS dashboard | TODO — `tools/eps-dashboard/OVERVIEW.md` |
 | `services/ryan/` | Gmail auto-labeler app (Railway) — `ryan-labeler-production.up.railway.app` | `services/ryan/README.md` (gold-standard data-flow) |
 
