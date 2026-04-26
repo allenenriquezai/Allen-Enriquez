@@ -133,7 +133,8 @@ def insert_prospect(prospect, db_path=DB_PATH):
         'source', 'source_query', 'status', 'discovered_at', 'notes',
     ]
     row = {k: prospect.get(k) for k in cols}
-    row.setdefault('status', 'discovered')
+    if not row.get('status'):
+        row['status'] = 'discovered'
     if not row.get('discovered_at'):
         row['discovered_at'] = now_iso()
 
