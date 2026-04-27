@@ -239,28 +239,44 @@
                 </button>
             </div>
 
-            <!-- Weekly overview -->
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 mb-3">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs text-gray-400 uppercase tracking-wider">This Week</span>
-                    <span id="spend-week-total" class="text-sm font-semibold text-white">₱0</span>
-                </div>
-                <div id="spend-week-bars" class="flex gap-1 items-end" style="height:56px">
-                    <div class="flex-1 text-center text-xs text-gray-600 py-3">Loading...</div>
-                </div>
-            </div>
-
             <!-- Monthly chart -->
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 mb-3">
-                <div class="flex items-center justify-between mb-2">
-                    <div id="spend-month-summary" class="flex items-center gap-2 text-sm">
-                        <span class="text-gray-500 text-xs">Loading month...</span>
+            <div class="bg-gradient-to-br from-gray-900 to-gray-950 border border-gray-800 rounded-2xl p-4 mb-4 shadow-lg">
+                <!-- Header: month + total + avg -->
+                <div class="flex items-end justify-between mb-4">
+                    <div>
+                        <div id="spend-month-label" class="text-[11px] text-gray-500 uppercase tracking-widest font-medium">Loading…</div>
+                        <div id="spend-month-total" class="text-3xl font-bold text-white tracking-tight mt-0.5">₱0</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[11px] text-gray-500 uppercase tracking-widest font-medium">Avg / day</div>
+                        <div id="spend-month-avg" class="text-base font-semibold text-gray-300 mt-0.5">₱0</div>
                     </div>
                 </div>
-                <div id="spend-month-bars" class="flex gap-px items-end overflow-x-auto" style="height:48px">
+
+                <!-- Stacked bars -->
+                <div id="spend-month-bars" class="flex gap-[2px] items-end" style="height:120px">
                     <div class="text-xs text-gray-600 py-3 w-full text-center">Loading...</div>
                 </div>
-                <div id="spend-month-cats" class="flex gap-3 mt-2 text-xs text-gray-400"></div>
+
+                <!-- Day-of-month axis -->
+                <div id="spend-month-axis" class="flex justify-between mt-1.5 text-[9px] text-gray-600 font-mono"></div>
+
+                <!-- Footer: legend + stats -->
+                <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-800/70 text-xs">
+                    <div class="flex items-center gap-3">
+                        <span class="flex items-center gap-1.5">
+                            <span class="inline-block w-2.5 h-2.5 rounded-sm bg-amber-500"></span>
+                            <span class="text-gray-400">Takeout</span>
+                            <span id="spend-month-takeout" class="text-amber-400 font-semibold">₱0</span>
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <span class="inline-block w-2.5 h-2.5 rounded-sm bg-blue-500"></span>
+                            <span class="text-gray-400">General</span>
+                            <span id="spend-month-general" class="text-blue-400 font-semibold">₱0</span>
+                        </span>
+                    </div>
+                    <span class="text-gray-500"><span id="spend-month-days" class="text-gray-300 font-medium">0</span> days tracked</span>
+                </div>
             </div>
 
             <!-- Date nav + today's log -->

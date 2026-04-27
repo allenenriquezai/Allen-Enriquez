@@ -1,4 +1,4 @@
-// Spend Tracker — inline quick-add + daily log + weekly/monthly views
+// Spend Tracker — inline quick-add + daily log + monthly stacked chart
 // Depends on: showToast() from app.js, currentDate global
 
 let spendData = { entries: [], totals: { takeout: 0, general: 0, total: 0 } };
@@ -14,7 +14,6 @@ async function loadSpend() {
     } catch (err) {
         console.error('Failed to load spend:', err);
     }
-    loadSpendWeekly();
     loadSpendMonthlyBars();
 }
 
@@ -98,102 +97,72 @@ async function quickAddSpend(category) {
     if (btn) { btn.disabled = false; btn.textContent = category; }
 }
 
-// --- Weekly bars ---
-
-async function loadSpendWeekly() {
-    const el = document.getElementById('spend-week-bars');
-    if (!el) return;
-    try {
-        const res = await fetch('/api/spend/weekly');
-        const data = await res.json();
-        if (!data.ok) return;
-
-        const days = data.days || [];
-        const max = Math.max(...days.map(d => d.total), 1);
-
-        const totalEl = document.getElementById('spend-week-total');
-        if (totalEl) totalEl.textContent = `₱${Math.round(data.week_total).toLocaleString()}`;
-
-        el.innerHTML = days.map(d => {
-            const pct = Math.round((d.total / max) * 100);
-            const isToday = d.is_today;
-            const barColor = isToday ? 'bg-blue-500' : 'bg-gray-600';
-            const labelColor = isToday ? 'text-blue-400 font-semibold' : 'text-gray-500';
-            const amtColor = isToday ? 'text-white' : 'text-gray-400';
-            return `
-                <div class="flex-1 flex flex-col items-center gap-1">
-                    <div class="text-[10px] ${amtColor}">${d.total > 0 ? Math.round(d.total / 1000) + 'k' : ''}</div>
-                    <div class="w-full flex flex-col justify-end" style="height:40px">
-                        <div class="${barColor} rounded-t w-full transition-all" style="height:${Math.max(pct, d.total > 0 ? 8 : 2)}%"></div>
-                    </div>
-                    <div class="text-[10px] ${labelColor}">${d.day}</div>
-                </div>
-            `;
-        }).join('');
-    } catch (err) {
-        console.error('Weekly spend failed:', err);
-    }
-}
-
-// --- Monthly summary ---
-
-async function loadSpendMonthly() {
-    const el = document.getElementById('spend-month-summary');
-    if (!el) return;
-    try {
-        const res = await fetch('/api/spend/monthly');
-        const data = await res.json();
-        if (!data.ok) return;
-
-        el.innerHTML = `
-            <span class="text-gray-400 text-xs">${data.month}</span>
-            <span class="text-white font-medium">₱${Math.round(data.month_total).toLocaleString()}</span>
-            <span class="text-gray-600 mx-1">·</span>
-            <span class="text-gray-400 text-xs">avg ₱${Math.round(data.daily_avg).toLocaleString()}/day</span>
-        `;
-    } catch (err) {
-        console.error('Monthly spend failed:', err);
-    }
-}
-
-// --- Monthly bar chart ---
+// --- Monthly stacked bar chart ---
 
 async function loadSpendMonthlyBars() {
     const barsEl = document.getElementById('spend-month-bars');
-    const catsEl = document.getElementById('spend-month-cats');
-    const summaryEl = document.getElementById('spend-month-summary');
+    const axisEl = document.getElementById('spend-month-axis');
+    const labelEl = document.getElementById('spend-month-label');
+    const totalEl = document.getElementById('spend-month-total');
+    const avgEl = document.getElementById('spend-month-avg');
+    const takeoutEl = document.getElementById('spend-month-takeout');
+    const generalEl = document.getElementById('spend-month-general');
+    const daysEl = document.getElementById('spend-month-days');
     if (!barsEl) return;
+
     try {
         const res = await fetch('/api/spend/monthly');
         const data = await res.json();
         if (!data.ok) return;
 
-        if (summaryEl) {
-            summaryEl.innerHTML = `
-                <span class="text-gray-400 text-xs font-medium">${data.month}</span>
-                <span class="text-white font-semibold">₱${Math.round(data.month_total).toLocaleString()}</span>
-                <span class="text-gray-600">·</span>
-                <span class="text-gray-400 text-xs">avg ₱${Math.round(data.daily_avg).toLocaleString()}/day</span>
-            `;
-        }
-
         const days = data.days || [];
         const max = Math.max(...days.map(d => d.total), 1);
+
+        if (labelEl) labelEl.textContent = data.month;
+        if (totalEl) totalEl.textContent = `₱${Math.round(data.month_total).toLocaleString()}`;
+        if (avgEl) avgEl.textContent = `₱${Math.round(data.daily_avg).toLocaleString()}`;
+        if (takeoutEl) takeoutEl.textContent = `₱${Math.round(data.month_takeout).toLocaleString()}`;
+        if (generalEl) generalEl.textContent = `₱${Math.round(data.month_general).toLocaleString()}`;
+        if (daysEl) daysEl.textContent = data.days_with_spend;
+
         barsEl.innerHTML = days.map(d => {
-            const pct = Math.max(Math.round((d.total / max) * 100), d.total > 0 ? 4 : 1);
-            const color = d.is_today ? 'bg-blue-500' : 'bg-gray-600';
-            const title = `Day ${d.day_num}: ₱${Math.round(d.total).toLocaleString()}`;
-            return `<div class="flex-1 flex flex-col justify-end" style="min-width:4px" title="${title}">
-                <div class="${color} rounded-sm w-full transition-all" style="height:${pct}%"></div>
+            const totalPct = (d.total / max) * 100;
+            const takeoutPct = d.total > 0 ? (d.takeout / d.total) * totalPct : 0;
+            const generalPct = d.total > 0 ? (d.general / d.total) * totalPct : 0;
+            const minVisible = d.total > 0 ? 6 : 2;
+            const totalH = Math.max(totalPct, minVisible);
+
+            const empty = d.total === 0;
+            const ring = d.is_today ? 'ring-2 ring-blue-400/70 ring-offset-1 ring-offset-gray-900' : '';
+            const opacity = d.is_today ? '' : 'opacity-90 hover:opacity-100';
+
+            const title = empty
+                ? `Day ${d.day_num} — no spend`
+                : `Day ${d.day_num}: ₱${Math.round(d.total).toLocaleString()}` +
+                  (d.takeout > 0 ? `\n  Takeout ₱${Math.round(d.takeout).toLocaleString()}` : '') +
+                  (d.general > 0 ? `\n  General ₱${Math.round(d.general).toLocaleString()}` : '');
+
+            if (empty) {
+                return `<div class="flex-1 flex flex-col justify-end" style="min-width:6px" title="${title}">
+                    <div class="bg-gray-800/60 rounded-sm w-full" style="height:${minVisible}%"></div>
+                </div>`;
+            }
+
+            return `<div class="flex-1 flex flex-col justify-end transition-all ${opacity}" style="min-width:6px" title="${title}">
+                <div class="rounded-sm overflow-hidden flex flex-col justify-end ${ring}" style="height:${totalH}%">
+                    <div class="bg-blue-500 w-full" style="height:${totalH > 0 ? (generalPct / totalH) * 100 : 0}%"></div>
+                    <div class="bg-amber-500 w-full" style="height:${totalH > 0 ? (takeoutPct / totalH) * 100 : 0}%"></div>
+                </div>
             </div>`;
         }).join('');
 
-        if (catsEl) {
-            catsEl.innerHTML = `
-                <span class="text-amber-400">Takeout ₱${Math.round(data.month_takeout).toLocaleString()}</span>
-                <span class="text-gray-600">·</span>
-                <span class="text-blue-400">General ₱${Math.round(data.month_general).toLocaleString()}</span>
-            `;
+        if (axisEl) {
+            const ticks = [1, 8, 15, 22, days.length].filter((v, i, a) => a.indexOf(v) === i);
+            axisEl.innerHTML = days.map(d => {
+                const show = ticks.includes(d.day_num);
+                const isToday = d.is_today;
+                return `<span class="flex-1 text-center ${isToday ? 'text-blue-400 font-semibold' : ''}" style="min-width:6px">${show ? d.day_num : ''}</span>`;
+            }).join('');
         }
     } catch (err) {
         console.error('Monthly bars failed:', err);
