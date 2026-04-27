@@ -9,10 +9,36 @@ Usage:
     # Opens at http://localhost:5002
 """
 
+import base64
 import json
+import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
+
+
+def _setup_railway():
+    """Decode base64 OAuth tokens from env vars to /tmp (Railway). No-op locally."""
+    personal_b64 = os.environ.get('GOOGLE_TOKEN_PERSONAL_B64')
+    configs = [
+        ('GOOGLE_TOKEN_PERSONAL_B64', 'GOOGLE_TOKEN_PERSONAL_PATH', 'token_personal.pickle'),
+        ('GOOGLE_TOKEN_PERSONAL_AI_B64', 'GOOGLE_PERSONAL_TOKEN_PATH', 'token_personal_ai.pickle'),
+        ('GOOGLE_TOKEN_EPS_B64', 'GOOGLE_EPS_TOKEN_PATH', 'token_eps.pickle'),
+    ]
+    for b64_key, path_key, filename in configs:
+        b64 = os.environ.get(b64_key)
+        if not b64 and b64_key == 'GOOGLE_TOKEN_PERSONAL_AI_B64':
+            b64 = personal_b64  # reuse personal token if AI variant not set separately
+        if b64 and not os.environ.get(path_key):
+            tmp_path = f'/tmp/{filename}'
+            with open(tmp_path, 'wb') as f:
+                f.write(base64.b64decode(b64))
+            os.environ[path_key] = tmp_path
+    # Ensure .tmp dir exists (used by brief/outreach routes)
+    (Path(__file__).parent.parent.parent / '.tmp').mkdir(exist_ok=True)
+
+
+_setup_railway()
 
 from flask import Flask, jsonify, render_template, request
 
@@ -23,8 +49,11 @@ from googleapiclient.discovery import build
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from personal_crm import get_sheets_service, load_token
 
-# Dashboard sheet belongs to 006 account — use token_personal.pickle
-_DASHBOARD_TOKEN = Path(__file__).parent.parent.parent / 'projects' / 'personal' / 'token_personal.pickle'
+# Dashboard Sheets token — env var first (Railway), fallback to local path
+_DASHBOARD_TOKEN = Path(os.environ.get(
+    'GOOGLE_TOKEN_PERSONAL_PATH',
+    str(Path(__file__).parent.parent.parent / 'projects' / 'personal' / 'token_personal.pickle')
+))
 
 def _load_dashboard_creds():
     with open(_DASHBOARD_TOKEN, 'rb') as f:
@@ -252,6 +281,62 @@ def api_checklist_toggle():
 def api_checklist_count():
     """Same as toggle but for count items."""
     return api_checklist_toggle()
+
+
+@app.route('/api/habits/stats')
+def api_habits_stats():
+    """Per-item streak + 30-day consistency stats from SQLite."""
+    from datetime import date, timedelta
+    try:
+        today = today_ph()
+        today_date = datetime.strptime(today, '%Y-%m-%d').date()
+        start = today_date - timedelta(days=29)
+        start_str = start.strftime('%Y-%m-%d')
+
+        config = _load_config()
+        log = db.load_log_range(start_str, today)
+
+        results = []
+        for cat, items in config.items():
+            for item in items:
+                name = item['name']
+                type_ = item['type']
+
+                history = []
+                for i in range(30):
+                    day = start + timedelta(days=i)
+                    key = day.strftime('%Y-%m-%d')
+                    val = (log.get(key) or {}).get(name, '')
+                    if type_ == 'check':
+                        done = val.upper() in ('TRUE', '1', 'YES')
+                    else:
+                        done = bool(val and val != '0')
+                    history.append(done)
+
+                days_done = sum(history)
+                pct = round(days_done / 30 * 100)
+
+                streak = 0
+                for done in reversed(history):
+                    if done:
+                        streak += 1
+                    else:
+                        break
+
+                results.append({
+                    'name': name,
+                    'category': cat,
+                    'type': type_,
+                    'streak': streak,
+                    'days_done': days_done,
+                    'pct': pct,
+                    'history': history,
+                })
+
+        results.sort(key=lambda x: (-x['streak'], -x['pct']))
+        return jsonify({'ok': True, 'items': results, 'window': 30})
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 500
 
 
 @app.route('/api/checklist/weekly')

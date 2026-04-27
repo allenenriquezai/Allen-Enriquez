@@ -117,6 +117,9 @@
             <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
                     data-tab="personal" data-pill="spend"
                     onclick="switchSubpill('personal','spend')">Spend</button>
+            <button class="subpill px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-800 text-gray-400"
+                    data-tab="personal" data-pill="stats"
+                    onclick="switchSubpill('personal','stats')">Stats</button>
         </div>
 
         <!-- Habits -->
@@ -247,11 +250,17 @@
                 </div>
             </div>
 
-            <!-- Monthly summary -->
-            <div class="flex items-center gap-2 text-sm mb-4 px-1">
-                <div id="spend-month-summary" class="flex items-center gap-2 text-sm">
-                    <span class="text-gray-500 text-xs">Loading month...</span>
+            <!-- Monthly chart -->
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 mb-3">
+                <div class="flex items-center justify-between mb-2">
+                    <div id="spend-month-summary" class="flex items-center gap-2 text-sm">
+                        <span class="text-gray-500 text-xs">Loading month...</span>
+                    </div>
                 </div>
+                <div id="spend-month-bars" class="flex gap-px items-end overflow-x-auto" style="height:48px">
+                    <div class="text-xs text-gray-600 py-3 w-full text-center">Loading...</div>
+                </div>
+                <div id="spend-month-cats" class="flex gap-3 mt-2 text-xs text-gray-400"></div>
             </div>
 
             <!-- Date nav + today's log -->
@@ -275,6 +284,14 @@
 
             <div id="spend-list" class="space-y-1.5">
                 <div class="text-center text-gray-500 text-sm py-4">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div id="subpill-personal-stats" class="subpill-content hidden">
+            <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">Habit Consistency — Last 30 Days</div>
+            <div id="habits-stats-list" class="space-y-2">
+                <div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>
             </div>
         </div>
     </div>

@@ -99,6 +99,9 @@ function runSubpillLoader(tab, pill) {
     if (tab === 'personal' && pill === 'habits') {
         if (typeof loadCommandCenter === 'function') loadCommandCenter();
     }
+    if (tab === 'personal' && pill === 'stats') {
+        if (typeof loadHabitsStats === 'function') loadHabitsStats();
+    }
 
     // Brand (was Work/Content/Outreach)
     if (tab === 'brand' && pill === 'content') {

@@ -47,10 +47,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from outreach_sources import (
-    discover_google_places, discover_businesslist, discover_jobstreet,
-    discover_kalibrr, discover_fb_inbox, dedupe_prospects,
-)
 from outreach_enrich import enrich_prospect
 from outreach_messages import render_message, generate_queue_markdown
 from outreach_lifecycle import (
@@ -203,6 +199,10 @@ def current_fb_limit(cfg):
 # ============================================================
 
 def cmd_discover(args, cfg):
+    from outreach_sources import (
+        discover_google_places, discover_businesslist, discover_jobstreet,
+        discover_kalibrr, discover_fb_inbox, dedupe_prospects,
+    )
     svc = sheets_service()
     sid = cfg['spreadsheet_id']
     headers, existing = read_prospects(svc, sid)

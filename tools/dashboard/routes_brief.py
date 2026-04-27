@@ -166,9 +166,10 @@ def _fetch_eps():
                              CLEAN_FOLLOWUP_TYPES, PAINT_FOLLOWUP_TYPES,
                              VIP_TYPES)
 
+    import os as _os
     env = load_env()
-    api_key = env.get('PIPEDRIVE_API_KEY', '')
-    domain = env.get('PIPEDRIVE_COMPANY_DOMAIN', '')
+    api_key = env.get('PIPEDRIVE_API_KEY') or _os.environ.get('PIPEDRIVE_API_KEY', '')
+    domain = env.get('PIPEDRIVE_COMPANY_DOMAIN') or _os.environ.get('PIPEDRIVE_COMPANY_DOMAIN', '')
 
     if not api_key or not domain:
         return None

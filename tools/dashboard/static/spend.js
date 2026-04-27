@@ -15,7 +15,7 @@ async function loadSpend() {
         console.error('Failed to load spend:', err);
     }
     loadSpendWeekly();
-    loadSpendMonthly();
+    loadSpendMonthlyBars();
 }
 
 function renderSpend() {
@@ -155,6 +155,97 @@ async function loadSpendMonthly() {
         console.error('Monthly spend failed:', err);
     }
 }
+
+// --- Monthly bar chart ---
+
+async function loadSpendMonthlyBars() {
+    const barsEl = document.getElementById('spend-month-bars');
+    const catsEl = document.getElementById('spend-month-cats');
+    const summaryEl = document.getElementById('spend-month-summary');
+    if (!barsEl) return;
+    try {
+        const res = await fetch('/api/spend/monthly');
+        const data = await res.json();
+        if (!data.ok) return;
+
+        if (summaryEl) {
+            summaryEl.innerHTML = `
+                <span class="text-gray-400 text-xs font-medium">${data.month}</span>
+                <span class="text-white font-semibold">₱${Math.round(data.month_total).toLocaleString()}</span>
+                <span class="text-gray-600">·</span>
+                <span class="text-gray-400 text-xs">avg ₱${Math.round(data.daily_avg).toLocaleString()}/day</span>
+            `;
+        }
+
+        const days = data.days || [];
+        const max = Math.max(...days.map(d => d.total), 1);
+        barsEl.innerHTML = days.map(d => {
+            const pct = Math.max(Math.round((d.total / max) * 100), d.total > 0 ? 4 : 1);
+            const color = d.is_today ? 'bg-blue-500' : 'bg-gray-600';
+            const title = `Day ${d.day_num}: ₱${Math.round(d.total).toLocaleString()}`;
+            return `<div class="flex-1 flex flex-col justify-end" style="min-width:4px" title="${title}">
+                <div class="${color} rounded-sm w-full transition-all" style="height:${pct}%"></div>
+            </div>`;
+        }).join('');
+
+        if (catsEl) {
+            catsEl.innerHTML = `
+                <span class="text-amber-400">Takeout ₱${Math.round(data.month_takeout).toLocaleString()}</span>
+                <span class="text-gray-600">·</span>
+                <span class="text-blue-400">General ₱${Math.round(data.month_general).toLocaleString()}</span>
+            `;
+        }
+    } catch (err) {
+        console.error('Monthly bars failed:', err);
+    }
+}
+
+// --- Habits stats ---
+
+async function loadHabitsStats() {
+    const el = document.getElementById('habits-stats-list');
+    if (!el) return;
+    el.innerHTML = '<div class="text-gray-400 italic text-center py-8 text-sm">Loading...</div>';
+    try {
+        const res = await fetch('/api/habits/stats');
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Failed');
+
+        const items = data.items || [];
+        if (!items.length) {
+            el.innerHTML = '<div class="text-gray-500 text-sm text-center py-6">No habit data yet.</div>';
+            return;
+        }
+
+        el.innerHTML = items.map(item => {
+            const streakColor = item.streak >= 7 ? 'text-green-400' :
+                                item.streak >= 3 ? 'text-blue-400' :
+                                item.streak >= 1 ? 'text-yellow-400' : 'text-gray-600';
+            const pctColor = item.pct >= 70 ? 'bg-green-500' :
+                             item.pct >= 40 ? 'bg-blue-500' : 'bg-gray-600';
+            const dots = (item.history || []).map(done =>
+                `<span class="inline-block w-2 h-2 rounded-sm ${done ? pctColor : 'bg-gray-800'}"></span>`
+            ).join('');
+            return `<div class="bg-gray-900 border border-gray-800 rounded-xl p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <span class="text-sm font-medium text-gray-100">${item.name}</span>
+                        <span class="text-[10px] text-gray-600 ml-2 uppercase tracking-wider">${item.category}</span>
+                    </div>
+                    <div class="text-right shrink-0 ml-3">
+                        <span class="text-lg font-bold ${streakColor}">${item.streak}d</span>
+                        <span class="text-[10px] text-gray-500 ml-1">${item.pct}%</span>
+                    </div>
+                </div>
+                <div class="flex gap-0.5 flex-wrap">${dots}</div>
+            </div>`;
+        }).join('');
+    } catch (err) {
+        el.innerHTML = `<div class="text-red-400 text-sm text-center py-6">${err.message}</div>`;
+    }
+}
+
+window.loadHabitsStats = loadHabitsStats;
 
 // --- Delete ---
 
