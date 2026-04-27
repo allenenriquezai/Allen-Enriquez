@@ -1,0 +1,50 @@
+# Claude Code runtime files
+.claude/
+
+# Media files
+*.mov
+*.mp4
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Databases (deployed from Railway volumes or fresh)
+*.db
+*.db-shm
+*.db-wal
+
+# Secrets (also in .gitignore)
+*.pickle
+.env
+projects/**/.env
+
+# Large project dirs (media, EPS docs — not needed on Railway)
+projects/personal/content/
+projects/personal/reference/
+projects/eps/
+
+# Other-service node_modules + build output (dashboard doesn't need them)
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+tools/content-hub/
+tools/enriquez2.0/
+services/sc-portal/
+services/ryan/
+
+# Temp
+.tmp/
+projects/**/.tmp/
+
+# Planning artifacts
+.planning/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+services/**/.venv/

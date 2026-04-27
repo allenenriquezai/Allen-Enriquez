@@ -257,6 +257,13 @@ def _fetch_eps():
         elif item['type'] != 'stale_deal':
             allens_plate.append(entry)
 
+    # Demo cap: keep top 8 highest-priority items on Allen's plate, shift rest to AI.
+    DEMO_PLATE_CAP = 8
+    allens_plate.sort(key=lambda e: priority_order.get(e.get('priority', 'LOW'), 4))
+    if len(allens_plate) > DEMO_PLATE_CAP:
+        ai_can_handle.extend(allens_plate[DEMO_PLATE_CAP:])
+        allens_plate = allens_plate[:DEMO_PLATE_CAP]
+
     stale = [
         {
             'deal_id': i.get('deal_id', ''),
