@@ -25,11 +25,17 @@ def _get_client() -> anthropic.Anthropic:
     return _client
 
 
-def classify(from_addr: str, subject: str, snippet: str, body_text: Optional[str] = None) -> dict:
+def classify(
+    from_addr: str,
+    subject: str,
+    snippet: str,
+    body_text: Optional[str] = None,
+    mailbox: str = config.DEFAULT_MAILBOX,
+) -> dict:
     """Classify one email. Returns:
         {category, project_hint, confidence, reason, took_ms}
     """
-    system_prompt = config.load_classifier_prompt()
+    system_prompt = config.load_classifier_prompt(mailbox)
 
     # Truncate body — snippet is usually enough; body_text added for borderline cases
     content_parts = [
@@ -58,12 +64,20 @@ def classify(from_addr: str, subject: str, snippet: str, body_text: Optional[str
             text = resp.content[0].text.strip()
             text = re.sub(r"^```(?:json)?|```$", "", text, flags=re.MULTILINE).strip()
             parsed = json.loads(text)
+            usage = getattr(resp, "usage", None)
+            usage_dict = {
+                "input_tokens": getattr(usage, "input_tokens", 0) or 0,
+                "output_tokens": getattr(usage, "output_tokens", 0) or 0,
+                "cache_read_input_tokens": getattr(usage, "cache_read_input_tokens", 0) or 0,
+                "cache_creation_input_tokens": getattr(usage, "cache_creation_input_tokens", 0) or 0,
+            } if usage is not None else {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
             return {
                 "category": parsed.get("category", "other"),
                 "project_hint": parsed.get("project_hint"),
                 "confidence": float(parsed.get("confidence", 0.0)),
                 "reason": parsed.get("reason", ""),
                 "took_ms": int((time.time() - start) * 1000),
+                "usage": usage_dict,
             }
         except (anthropic.RateLimitError, anthropic.APITimeoutError, anthropic.APIConnectionError) as e:
             last_exc = e
@@ -80,4 +94,5 @@ def classify(from_addr: str, subject: str, snippet: str, body_text: Optional[str
         "confidence": 0.0,
         "reason": f"classifier_error: {type(last_exc).__name__}: {last_exc}" if last_exc else "unknown_error",
         "took_ms": int((time.time() - start) * 1000),
+        "usage": {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0},
     }

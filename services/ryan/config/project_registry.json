@@ -293,7 +293,7 @@
         "The Bar Method - Glenoaks Plaza"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -310,7 +310,7 @@
         "Backsplash Tile @ Break Room 132 - IMI Critical Engineering"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -322,7 +322,7 @@
         "The View Church - Menifee, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -334,7 +334,7 @@
         "Anaheim 82 - Anaheim, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -346,7 +346,7 @@
         "Cafe Refresh - Goleta, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -358,7 +358,7 @@
         "SCE Santa Clara Substation - Ventura, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -374,7 +374,7 @@
         "Osteria LA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -387,7 +387,7 @@
         "Chik Fil A - Commerce, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -400,7 +400,7 @@
         "8901 Melrose - West Hollywood, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -413,7 +413,7 @@
         "Sancon Office T.I. - Huntington Beach Beach, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -425,7 +425,7 @@
         "2811 San Marino Street - Los Angeles, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -437,7 +437,7 @@
         "Oakwell Apartments"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -451,7 +451,7 @@
         "The Melt UCLA TI - Los Angeles, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -464,7 +464,7 @@
         "2607"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -476,7 +476,7 @@
         "Pasadena Towers Refresh - Pasadena, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -489,7 +489,7 @@
         "Stuart + Eureka Apartments - Redlands, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -501,7 +501,7 @@
         "Electric Pickle - Rancho Cucamonga"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -513,7 +513,7 @@
         "Assurance Learning Sunland Boulevard - Los Angeles"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -525,7 +525,7 @@
         "Suite 200 T.I (Musik Peeler) - Westlake Village, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -538,7 +538,7 @@
         "Suite 210 T.I"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -551,7 +551,7 @@
         "Beverly Hills Cheese Store - Beverly Hills, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -563,7 +563,7 @@
         "KidStrong Torrance - Torrance, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -577,7 +577,7 @@
         "Slover Corporate Center Building 1 & 2 - Fontana, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -589,7 +589,7 @@
         "Amazon DJT4-NL - Brea, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -601,7 +601,7 @@
         "OMP - 223rd St Carson"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -613,7 +613,7 @@
         "Kramerwood Apartments - Los Angeles, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -625,7 +625,7 @@
         "My Friend's Place - Los Angeles, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -637,7 +637,7 @@
         "OMP 233rd St"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -649,7 +649,7 @@
         "Cajon Warehouse TI"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -661,7 +661,7 @@
         "WCSS Ontario Mills"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -673,7 +673,7 @@
         "Brandy Melville & Chill"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -685,7 +685,7 @@
         "Genesco Journey's Projects"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -697,7 +697,7 @@
         "CBU Film & Broadcast Studio - Riverside, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -710,7 +710,7 @@
         "Pavillions #1911 - Newport Beach, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -722,7 +722,7 @@
         "Walnut & Lake - Assisted Living & Memory Care Facility"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -734,7 +734,7 @@
         "Ontario Mills Self Storage - Ontario, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -746,7 +746,7 @@
         "Loop Fuel Station - Perris, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -759,7 +759,7 @@
         "Octapharma Plasma - Hawthotne, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -772,7 +772,7 @@
         "First Industrial 2610 Columbia - Torrance, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -785,7 +785,7 @@
         "234 E. Colorado Blvd - Suite 800 (Trust Law Partners TI)"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -798,7 +798,7 @@
         "MAHDAVI TI"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -812,7 +812,7 @@
         "Myo Detox Physical Therapy Service Cilinic - Manhattan Beach, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -825,7 +825,7 @@
         "Brookfield Locust Gateway Logistics Center, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -837,7 +837,7 @@
         "Altadena Self Storage"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -849,7 +849,7 @@
         "Manhattan Village Residential"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -861,7 +861,7 @@
         "915 Goodman"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -873,7 +873,7 @@
         "Rember"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -885,7 +885,7 @@
         "REDA 690 Knox"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -897,7 +897,7 @@
         "Samohi PBL Language Building Modernization - Santa Monica, CA"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -909,7 +909,7 @@
         "Pioneer Blvd"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -921,7 +921,7 @@
         "Charles Schwab"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -933,7 +933,7 @@
         "Long Beach plaza"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -945,7 +945,7 @@
         "Brookfield Locust Gateway - OCCO"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -957,7 +957,7 @@
         "Intuit Dome"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -969,7 +969,7 @@
         "Ventura, CA - Backsplash Repair"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true
@@ -981,7 +981,7 @@
         "Plaza repair work (9 locations)"
       ],
       "label_id": null,
-      "status": "unknown",
+      "status": "active",
       "created_at": "2026-04-22",
       "city": null,
       "auto_created": true

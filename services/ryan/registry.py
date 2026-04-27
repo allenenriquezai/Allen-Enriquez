@@ -61,7 +61,7 @@ def create_project(project_hint: str) -> dict:
         "display_name": project_hint.strip()[:80],
         "aliases": [project_hint.strip()],
         "label_id": None,
-        "status": "upcoming",
+        "status": "active",
         "created_at": date.today().isoformat(),
         "city": None,
         "auto_created": True,

@@ -1,0 +1,118 @@
+{
+  "schema_version": 2,
+  "client": "joseph",
+  "notes": "Joseph Canton's overlay on the base SC routing rules. Adds Company Bills + Bookkeeper labels. Joseph does NOT receive briefs. Office-sender list excludes joseph@ (he IS the inbox), includes admin@ + ryan@.",
+
+  "buckets": {
+    "company_bills": {
+      "label": "6. Admin/Company Bills",
+      "skip_inbox": true,
+      "description": "Recurring company bills/insurance. ADP, Workers' Comp, Acrisure, Berkshire, Redwood, Pie. Out of inbox; Joseph reviews on schedule.",
+      "sub_label_by_sender_contains": {
+        "adp.com": "6. Admin/Company Bills/ADP",
+        "acrisure": "6. Admin/Company Bills/Acrisure",
+        "berkshire": "6. Admin/Company Bills/Berkshire",
+        "redwood": "6. Admin/Company Bills/Redwood",
+        "pieinsurance.com": "6. Admin/Company Bills/Pie Insurance",
+        "workerscomp": "6. Admin/Company Bills/Workers Comp"
+      }
+    },
+    "bookkeeper": {
+      "label": "6. Admin/Bookkeeper",
+      "skip_inbox": false,
+      "description": "Delilah (lilahbookkeepingserv@gmail.com) — bookkeeper communications. Stays in inbox so Joseph sees them."
+    },
+    "office": {
+      "label": "2. Team/Office",
+      "skip_inbox": false,
+      "description": "Internal comms from admin@ or ryan@ (NOT joseph@ — that's Joseph himself). Stays in inbox."
+    }
+  },
+
+  "sender_overrides": {
+    "description": "Per-mailbox sender→category overrides. First match wins. Evaluated AFTER classifier in main.py.",
+    "rules": [
+      {
+        "id": "bookkeeper_delilah",
+        "match_from_contains": ["lilah.bookkeepingserv@gmail.com", "lilahbookkeepingserv@gmail.com", "delilah diaz"],
+        "then_force_category": "bookkeeper",
+        "note": "Delilah → bookkeeper bucket regardless of classifier output."
+      },
+      {
+        "id": "bills_adp",
+        "match_from_contains": ["@adp.com", "adp.com"],
+        "then_force_category": "company_bills"
+      },
+      {
+        "id": "bills_acrisure",
+        "match_from_contains": ["acrisure"],
+        "then_force_category": "company_bills"
+      },
+      {
+        "id": "bills_berkshire",
+        "match_from_contains": ["berkshire"],
+        "then_force_category": "company_bills"
+      },
+      {
+        "id": "bills_redwood",
+        "match_from_contains": ["redwood"],
+        "then_force_category": "company_bills"
+      },
+      {
+        "id": "bills_pie",
+        "match_from_contains": ["pieinsurance.com", "@pieinsurance"],
+        "then_force_category": "company_bills"
+      },
+      {
+        "id": "bills_workers_comp",
+        "match_from_contains": ["workerscomp", "workers-comp", "workerscompensation"],
+        "then_force_category": "company_bills"
+      },
+      {
+        "id": "bills_bhhomestate",
+        "match_from_contains": ["bhhomestate.com", "@bhhomestate"],
+        "then_force_category": "company_bills",
+        "note": "BH Home State (Berkshire subsidiary) — separate domain from berkshire."
+      },
+      {
+        "id": "bills_state_fund",
+        "match_from_contains": ["statefundca.com", "@statefund", "state fund"],
+        "then_force_category": "company_bills",
+        "note": "California State Compensation Insurance Fund."
+      },
+      {
+        "id": "bills_highwire",
+        "match_from_contains": ["highwire.com", "@highwire"],
+        "then_force_category": "company_bills",
+        "note": "Highwire workers' comp / safety compliance platform."
+      },
+      {
+        "id": "bills_insaudit",
+        "match_from_contains": ["insaudit.com", "@insaudit"],
+        "then_force_category": "company_bills",
+        "note": "Insurance audit firm — workers' comp policy audits."
+      },
+      {
+        "id": "bills_intuit",
+        "match_from_contains": ["@intuit.com", "notifications.intuit.com", "no_reply@notifications.intuit"],
+        "then_force_category": "company_bills",
+        "note": "Intuit/QuickBooks subscription billing."
+      },
+      {
+        "id": "office_senders_joseph",
+        "match_from_contains": ["admin@sc-incorporated.com", "ryan@sc-incorporated.com"],
+        "if_category_in": ["bid_invite", "vendor"],
+        "then_force_category": "other",
+        "note": "admin/ryan bid FWDs and pricing → Archive/Review (Joseph filter)."
+      },
+      {
+        "id": "office_senders_joseph_default",
+        "match_from_contains": ["admin@sc-incorporated.com", "ryan@sc-incorporated.com"],
+        "if_category_not_in": ["bid_invite", "vendor", "promo", "personal", "company_bills", "bookkeeper"],
+        "then_force_category": "office"
+      }
+    ]
+  },
+
+  "quiet_categories": ["bid_invite", "vendor", "promo", "company_bills"]
+}

@@ -70,6 +70,7 @@ class LabelRequest(BaseModel):
     message_id: str
     thread_id: Optional[str] = None
     dry_run: bool = False
+    mailbox: str = config.DEFAULT_MAILBOX  # "ryan" | "joseph"
 
 
 class LabelResponse(BaseModel):
@@ -81,6 +82,7 @@ class LabelResponse(BaseModel):
     applied: bool
     error: Optional[str] = None
     took_ms: int
+    mailbox: str = config.DEFAULT_MAILBOX
 
 
 class TaskRequest(BaseModel):
@@ -97,20 +99,59 @@ def _append_audit(entry: dict) -> None:
 
 @app.get("/health")
 def health() -> dict:
-    state = config.load_state()
-    return {
-        "ok": True,
-        "service": "ryan-labeler",
-        "last_brief_sent_at": state.get("last_brief_sent_at"),
-        "run_log_tail": state.get("run_log", [])[-3:],
-    }
+    out = {"ok": True, "service": "ryan-labeler", "mailboxes": {}}
+    for mb in config.MAILBOXES:
+        try:
+            state = config.load_state(mb)
+            out["mailboxes"][mb] = {
+                "last_brief_sent_at": state.get("last_brief_sent_at"),
+                "last_evening_brief_sent_at": state.get("last_evening_brief_sent_at"),
+                "run_log_tail": state.get("run_log", [])[-3:],
+            }
+        except Exception as e:
+            out["mailboxes"][mb] = {"error": str(e)}
+    # Backward-compat: top-level keys still report Ryan
+    ryan_state = out["mailboxes"].get("ryan", {})
+    out["last_brief_sent_at"] = ryan_state.get("last_brief_sent_at")
+    out["run_log_tail"] = ryan_state.get("run_log_tail", [])
+    return out
+
+
+def _apply_sender_overrides(classification: dict, from_addr: str, mailbox: str) -> dict:
+    """Apply per-mailbox sender_overrides defined in routing_rules JSON.
+
+    Each rule shape:
+      {match_from_contains: [...], if_category_in: [...] or if_category_not_in: [...],
+       then_force_category: "..."}
+    First matching rule wins. Falls back to legacy hardcoded office-sender logic
+    if no rules defined for the mailbox.
+    """
+    rules = config.load_routing_rules(mailbox)
+    overrides = (rules.get("sender_overrides") or {}).get("rules") or []
+    from_lower = from_addr.lower()
+    for rule in overrides:
+        needles = rule.get("match_from_contains") or []
+        if not any(n.lower() in from_lower for n in needles):
+            continue
+        if "if_category_in" in rule and classification["category"] not in rule["if_category_in"]:
+            continue
+        if "if_category_not_in" in rule and classification["category"] in rule["if_category_not_in"]:
+            continue
+        forced = rule.get("then_force_category")
+        if forced and forced != classification["category"]:
+            return {**classification, "category": forced,
+                    "reason": f"sender-override:{rule.get('id', '')} → {forced}"}
+    return classification
 
 
 @app.post("/label", response_model=LabelResponse)
 def label(req: LabelRequest) -> LabelResponse:
     start = datetime.now(timezone.utc)
+    if req.mailbox not in config.MAILBOXES:
+        raise HTTPException(status_code=400, detail=f"unknown mailbox: {req.mailbox}")
+
     try:
-        msg = fetch_message(req.message_id)
+        msg = fetch_message(req.message_id, mailbox=req.mailbox)
     except Exception as e:
         took = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
         return LabelResponse(
@@ -121,6 +162,7 @@ def label(req: LabelRequest) -> LabelResponse:
             applied=False,
             error=f"message_not_found: {e}",
             took_ms=took,
+            mailbox=req.mailbox,
         )
 
     # Skip self-sent briefs — allenenriquez.ai@gmail.com is the brief sender
@@ -134,32 +176,28 @@ def label(req: LabelRequest) -> LabelResponse:
             applied=False,
             error="skip: from brief sender",
             took_ms=took,
+            mailbox=req.mailbox,
         )
-
-    # Already labeled (e.g., duplicate webhook) — short-circuit to be idempotent
-    existing_labels = set(msg.get("label_ids", []))
-    already_routed_markers = {"Unimportant", "Bids/Invites", "Vendors/Pricing", "Daily Accomplishments PH", "needs-review"}
-    # We'd need to resolve label IDs to names to check; skip the shortcut for now
-    # (idempotent modify is safe — Gmail API deduplicates addLabelIds)
 
     result = classify(
         from_addr=msg["from"],
         subject=msg["subject"],
         snippet=msg["snippet"],
+        mailbox=req.mailbox,
     )
 
-    # Sender overrides: admin@ and joseph@ routing rules
-    from_lower = msg["from"].lower()
-    office_senders = ["admin@sc-incorporated.com", "joseph@sc-incorporated.com", "ryan@sc-incorporated.com"]
-    if any(s in from_lower for s in office_senders):
-        if result["category"] in ("bid_invite", "vendor"):
-            result = {**result, "category": "other", "reason": "office-sender bid/vendor → archive/review (override)"}
-        elif result["category"] not in ("promo", "personal"):
-            result = {**result, "category": "office", "reason": "office-sender → office label (override)"}
+    # Per-mailbox sender overrides (Joseph excludes himself, Ryan includes joseph@)
+    result = _apply_sender_overrides(result, msg["from"], req.mailbox)
 
-    routing = route_and_label(req.message_id, result, dry_run=req.dry_run)
+    # Pass from_addr through so labeler can apply sub_label_by_sender_contains
+    # (e.g. ADP / Acrisure on Joseph's company_bills bucket).
+    result_for_routing = {**result, "_from": msg["from"]}
 
-    # Bid due date extraction — runs async-ish after labeling, never blocks response
+    routing = route_and_label(
+        req.message_id, result_for_routing, dry_run=req.dry_run, mailbox=req.mailbox,
+    )
+
+    # Bid due date extraction → inbox owner's calendar
     if result["category"] == "bid_invite" and routing.get("applied") and not req.dry_run:
         try:
             extract_bid_due(
@@ -167,12 +205,14 @@ def label(req: LabelRequest) -> LabelResponse:
                 from_addr=msg["from"],
                 subject=msg["subject"],
                 snippet=msg["snippet"],
+                mailbox=req.mailbox,
             )
         except Exception as e:
             log.warning("bid extraction failed: %s", e)
 
     audit_entry = {
         "ts": start.isoformat(),
+        "mailbox": req.mailbox,
         "message_id": req.message_id,
         "thread_id": req.thread_id or msg.get("thread_id"),
         "from": msg["from"][:120],
@@ -191,6 +231,7 @@ def label(req: LabelRequest) -> LabelResponse:
         applied=routing.get("applied", req.dry_run),
         error=routing.get("error"),
         took_ms=result["took_ms"],
+        mailbox=req.mailbox,
     )
 
 

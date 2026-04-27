@@ -1,5 +1,9 @@
 """Gmail label creation + message labeling.
 
+Multi-mailbox: same module serves multiple SC inboxes (Ryan, Joseph). Pass
+`mailbox` ("ryan" | "joseph") to every public function. Gmail service singleton
+and label-id cache are keyed per-mailbox so each inbox holds its own auth.
+
 Handles:
 - Find/create Gmail labels on demand (including nested labels like Projects/Pura Vida)
 - Apply labels + optionally remove INBOX (skip-inbox buckets)
@@ -17,48 +21,57 @@ import config
 import registry
 
 
-_gmail_service = None
-_label_cache: dict[str, str] = {}  # label_name -> label_id
+_gmail_services: dict[str, object] = {}              # mailbox -> Gmail service
+_label_caches: dict[str, dict[str, str]] = {}        # mailbox -> {label_name: label_id}
 
 
-def get_gmail_service():
-    """Build Gmail service using Ryan's OAuth creds. Refreshes token if needed."""
-    global _gmail_service
-    if _gmail_service is not None:
-        return _gmail_service
-    creds = config.ryan_gmail_creds()
+def get_gmail_service(mailbox: str = config.DEFAULT_MAILBOX):
+    """Build Gmail service for the given mailbox. Refreshes token if needed."""
+    svc = _gmail_services.get(mailbox)
+    if svc is not None:
+        return svc
+    creds = config.gmail_creds(mailbox)
     if creds.expired and creds.refresh_token:
         creds.refresh(Request())
-    _gmail_service = build("gmail", "v1", credentials=creds, cache_discovery=False)
-    return _gmail_service
+    svc = build("gmail", "v1", credentials=creds, cache_discovery=False)
+    _gmail_services[mailbox] = svc
+    return svc
 
 
-def get_or_create_label(name: str) -> str:
-    """Return label ID, creating if missing. Caches in-process."""
-    if name in _label_cache:
-        return _label_cache[name]
+def _label_cache(mailbox: str) -> dict[str, str]:
+    cache = _label_caches.get(mailbox)
+    if cache is None:
+        cache = {}
+        _label_caches[mailbox] = cache
+    return cache
 
-    service = get_gmail_service()
+
+def get_or_create_label(name: str, mailbox: str = config.DEFAULT_MAILBOX) -> str:
+    """Return label ID, creating if missing. Caches in-process per mailbox."""
+    cache = _label_cache(mailbox)
+    if name in cache:
+        return cache[name]
+
+    service = get_gmail_service(mailbox)
     labels = service.users().labels().list(userId="me").execute().get("labels", [])
     for lbl in labels:
         if lbl["name"] == name:
-            _label_cache[name] = lbl["id"]
+            cache[name] = lbl["id"]
             return lbl["id"]
 
-    # Create
     body = {
         "name": name,
         "labelListVisibility": "labelShow",
         "messageListVisibility": "show",
     }
     created = service.users().labels().create(userId="me", body=body).execute()
-    _label_cache[name] = created["id"]
+    cache[name] = created["id"]
     return created["id"]
 
 
-def fetch_message(message_id: str) -> dict:
+def fetch_message(message_id: str, mailbox: str = config.DEFAULT_MAILBOX) -> dict:
     """Fetch message metadata + snippet for classifier input."""
-    service = get_gmail_service()
+    service = get_gmail_service(mailbox)
     msg = service.users().messages().get(
         userId="me",
         id=message_id,
@@ -82,9 +95,10 @@ def apply_labels(
     message_id: str,
     add_label_ids: list[str],
     remove_label_ids: Optional[list[str]] = None,
+    mailbox: str = config.DEFAULT_MAILBOX,
 ) -> dict:
     """Apply labels to a message via users.messages.modify."""
-    service = get_gmail_service()
+    service = get_gmail_service(mailbox)
     body = {"addLabelIds": add_label_ids}
     if remove_label_ids:
         body["removeLabelIds"] = remove_label_ids
@@ -93,12 +107,17 @@ def apply_labels(
     ).execute()
 
 
-def route_and_label(message_id: str, classification: dict, dry_run: bool = False) -> dict:
+def route_and_label(
+    message_id: str,
+    classification: dict,
+    dry_run: bool = False,
+    mailbox: str = config.DEFAULT_MAILBOX,
+) -> dict:
     """Main entry: given a classification, apply the right Gmail labels.
 
     Returns a dict describing what was done (bucket, labels applied, skip_inbox).
     """
-    rules = config.load_routing_rules()
+    rules = config.load_routing_rules(mailbox)
     buckets = rules["buckets"]
     category = classification["category"]
     bucket_cfg = buckets.get(category, buckets["other"])
@@ -107,15 +126,13 @@ def route_and_label(message_id: str, classification: dict, dry_run: bool = False
     labels_to_remove: list[str] = []
     project = None
 
-    # Category label
+    # Category label — project bucket has label_prefix_*; flat buckets have `label`
     if bucket_cfg.get("label_prefix"):
-        # project bucket — need project label
         project = registry.find_project(classification.get("project_hint") or "")
         if project is None and classification.get("project_hint") and classification["confidence"] >= 0.7:
             if not dry_run:
                 project = registry.create_project(classification["project_hint"])
             else:
-                # Synthesize ephemeral project for preview only (not persisted)
                 project = {
                     "id": registry._slugify(classification["project_hint"]),
                     "display_name": classification["project_hint"].strip()[:80],
@@ -125,22 +142,34 @@ def route_and_label(message_id: str, classification: dict, dry_run: bool = False
         if project:
             label_name = registry.project_label_name(project)
             if not dry_run:
-                label_id = get_or_create_label(label_name)
+                label_id = get_or_create_label(label_name, mailbox=mailbox)
                 labels_to_add.append(label_id)
                 if not project.get("label_id"):
                     registry.update_label_id(project["id"], label_id)
             else:
                 labels_to_add.append(f"<would-create:{label_name}>")
         else:
-            # project category but no hint — treat as needs-review
             fallback = buckets["other"]["label"]
             if fallback and not dry_run:
-                labels_to_add.append(get_or_create_label(fallback))
+                labels_to_add.append(get_or_create_label(fallback, mailbox=mailbox))
     elif bucket_cfg.get("label"):
         if not dry_run:
-            labels_to_add.append(get_or_create_label(bucket_cfg["label"]))
+            labels_to_add.append(get_or_create_label(bucket_cfg["label"], mailbox=mailbox))
         else:
             labels_to_add.append(f"<would-create:{bucket_cfg['label']}>")
+
+    # If a sub_label_by_sender map exists on the bucket, apply the matching sub-label too.
+    # Used by Joseph's company_bills bucket → ADP / Acrisure / Berkshire / etc sub-labels.
+    sub_map = bucket_cfg.get("sub_label_by_sender_contains") or {}
+    if sub_map:
+        from_addr = (classification.get("_from") or "").lower()
+        for needle, sub_label in sub_map.items():
+            if needle.lower() in from_addr:
+                if not dry_run:
+                    labels_to_add.append(get_or_create_label(sub_label, mailbox=mailbox))
+                else:
+                    labels_to_add.append(f"<would-create:{sub_label}>")
+                break
 
     # Any bucket: if project_hint resolves to a known project, also apply project label
     if classification.get("project_hint"):
@@ -148,20 +177,18 @@ def route_and_label(message_id: str, classification: dict, dry_run: bool = False
         if xp:
             xp_name = registry.project_label_name(xp)
             if not dry_run:
-                labels_to_add.append(get_or_create_label(xp_name))
+                labels_to_add.append(get_or_create_label(xp_name, mailbox=mailbox))
             else:
                 labels_to_add.append(f"<would-create:{xp_name}>")
 
-    # Skip-inbox buckets remove INBOX
     skip_inbox = bucket_cfg.get("skip_inbox", False)
     if skip_inbox:
         labels_to_remove.append("INBOX")
 
-    # Priority override — mark IMPORTANT for everything except bid_invite/vendor
-    if category not in ("bid_invite", "vendor", "promo"):
+    quiet_categories = rules.get("quiet_categories") or ["bid_invite", "vendor", "promo"]
+    if category not in quiet_categories:
         labels_to_add.append("IMPORTANT")
 
-    # De-dupe
     labels_to_add = list(dict.fromkeys(labels_to_add))
 
     if dry_run:
@@ -173,10 +200,11 @@ def route_and_label(message_id: str, classification: dict, dry_run: bool = False
             "would_add": labels_to_add,
             "would_remove": labels_to_remove,
             "skip_inbox": skip_inbox,
+            "mailbox": mailbox,
         }
 
     try:
-        apply_labels(message_id, labels_to_add, labels_to_remove or None)
+        apply_labels(message_id, labels_to_add, labels_to_remove or None, mailbox=mailbox)
         applied = True
         error = None
     except HttpError as e:
@@ -193,4 +221,5 @@ def route_and_label(message_id: str, classification: dict, dry_run: bool = False
         "skip_inbox": skip_inbox,
         "applied": applied,
         "error": error,
+        "mailbox": mailbox,
     }
